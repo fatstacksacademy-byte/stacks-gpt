@@ -76,7 +76,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
     if (!record) return
     const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
-    await markBonusClosed(record.id, actionDate, bonusReceived, parsed)
+    await markBonusClosed(record.id, actionDate, parsed)
     await loadRecords()
     setActionBonus(null)
   }
