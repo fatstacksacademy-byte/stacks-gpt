@@ -5,6 +5,7 @@ export type CompletedBonus = {
   opened_date: string
   closed_date: string | null
   bonus_received: boolean
+  actual_amount: number | null
   created_at?: string
   updated_at?: string
 }
