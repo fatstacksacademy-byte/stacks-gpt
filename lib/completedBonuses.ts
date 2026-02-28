@@ -25,12 +25,12 @@ export async function markBonusStarted(
 }
 
 export async function markBonusClosed(
-  recordId: string, closedDate: string, bonusReceived: boolean
+  recordId: string, closedDate: string, bonusReceived: boolean, actualAmount?: number
 ): Promise<void> {
   const supabase = createClient()
   const { error } = await supabase
     .from("completed_bonuses")
-    .update({ closed_date: closedDate, bonus_received: bonusReceived, updated_at: new Date().toISOString() })
+    .update({ closed_date: closedDate, bonus_received: bonusReceived, actual_amount: actualAmount, updated_at: new Date().toISOString() })
     .eq("id", recordId)
   if (error) console.error("[completedBonuses] update failed:", error.message)
 }
