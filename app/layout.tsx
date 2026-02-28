@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Stacks GPT",
+  title: "Stacks OS",
   description: "Optimize your bank account bonuses",
 }
 

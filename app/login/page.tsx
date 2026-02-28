@@ -33,7 +33,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form onSubmit={handleLogin} className="flex flex-col gap-4 w-80">
-        <h1 className="text-2xl font-bold">Login to Stacks GPT</h1>
+        <h1 className="text-2xl font-bold">Login to Stacks OS</h1>
 
         <input
           type="email"
