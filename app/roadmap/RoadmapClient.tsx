@@ -72,14 +72,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }
 
   async function handleClose() {
-    if (!actionBonus) return
-    const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
-    if (!record) return
-    const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
-await markBonusClosed(record.id, actionDate, true, parsed)
-    await loadRecords()
-    setActionBonus(null)
-  }
+  if (!actionBonus) return
+  console.log("bonus id:", actionBonus.bonus.id)
+  console.log("records:", completedRecords.map(r => ({ id: r.id, bonus_id: r.bonus_id, closed_date: r.closed_date })))
+  const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
+  console.log("found record:", record)
+  if (!record) return
+  const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
+  await markBonusClosed(record.id, actionDate, true, parsed)
+  await loadRecords()
+  setActionBonus(null)
+}
 
   async function handleDelete(bonusId: string) {
     const record = completedRecords.find(r => r.bonus_id === bonusId)
