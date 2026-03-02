@@ -16,23 +16,29 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search)
+  // Check for session immediately — covers PKCE flow where token is already exchanged
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) setReady(true)
+  })
 
-  // If callback already exchanged the token and flagged recovery, just check for a session
-  if (params.get("recovery") === "true") {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true)
-    })
-  }
-
-  // Also listen for the event in case it does fire (e.g. implicit flow)
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-    if (event === "PASSWORD_RECOVERY") {
+  // Also listen for PASSWORD_RECOVERY event — covers implicit flow
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
       setReady(true)
     }
   })
 
-  return () => subscription.unsubscribe()
+  // Fallback: if nothing fires after 3 seconds, check session one more time
+  const timeout = setTimeout(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setReady(true)
+    })
+  }, 3000)
+
+  return () => {
+    subscription.unsubscribe()
+    clearTimeout(timeout)
+  }
 }, [supabase])
 
   const handleSubmit = async (e: React.FormEvent) => {
