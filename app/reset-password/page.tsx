@@ -16,14 +16,24 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    // Supabase fires an AUTH_STATE_CHANGE with RECOVERY event when the reset link is clicked
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true)
-      }
+  const params = new URLSearchParams(window.location.search)
+
+  // If callback already exchanged the token and flagged recovery, just check for a session
+  if (params.get("recovery") === "true") {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setReady(true)
     })
-    return () => subscription.unsubscribe()
-  }, [supabase])
+  }
+
+  // Also listen for the event in case it does fire (e.g. implicit flow)
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    if (event === "PASSWORD_RECOVERY") {
+      setReady(true)
+    }
+  })
+
+  return () => subscription.unsubscribe()
+}, [supabase])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
