@@ -135,7 +135,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 32, marginBottom: 8 }}>Stacks GPT</h1>
+      <h1 style={{ fontSize: 32, marginBottom: 8 }}>Stacks OS</h1>
       <p style={{ marginBottom: 18 }}>Welcome, {userEmail}</p>
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24, alignItems: "center" }}>

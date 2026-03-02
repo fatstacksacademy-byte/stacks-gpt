@@ -47,7 +47,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80 bg-white p-8 rounded-lg shadow-sm border border-gray-200">
         <div className="flex flex-col gap-1 mb-2">
-          <h1 className="text-2xl font-bold">Stacks GPT</h1>
+          <h1 className="text-2xl font-bold">Stacks OS</h1>
           <p className="text-sm text-gray-500">
             {mode === "signin" && "Sign in to your account"}
             {mode === "signup" && "Create an account"}
