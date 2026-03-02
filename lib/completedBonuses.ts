@@ -30,9 +30,26 @@ export async function markBonusClosed(
   const supabase = createClient()
   const { error } = await supabase
     .from("completed_bonuses")
-    .update({ closed_date: closedDate, bonus_received: bonusReceived, actual_amount: actualAmount, updated_at: new Date().toISOString() })
+    .update({
+      closed_date: closedDate,
+      bonus_received: bonusReceived,
+      actual_amount: actualAmount,
+      current_step: "close",
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", recordId)
   if (error) console.error("[completedBonuses] update failed:", error.message)
+}
+
+export async function updateBonusStep(
+  recordId: string, step: string
+): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from("completed_bonuses")
+    .update({ current_step: step, updated_at: new Date().toISOString() })
+    .eq("id", recordId)
+  if (error) console.error("[completedBonuses] step update failed:", error.message)
 }
 
 export async function deleteCompletedBonus(recordId: string): Promise<void> {

@@ -1,4 +1,7 @@
 "use client"
+import StepProgressBar from "../components/StepProgressBar"
+import { getBonusStepDetail } from "../../lib/bonusSteps"
+import { updateBonusStep } from "../../lib/completedBonuses"
 
 import { useEffect, useState, useCallback } from "react"
 import { useProfile } from "../../lib/useProfile"
@@ -90,6 +93,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await deleteCompletedBonus(record.id)
     await loadRecords()
   }
+  async function handleStepOverride(bonusId: string, step: string) {
+  const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
+  if (!record) return
+  await updateBonusStep(record.id, step)
+  await loadRecords()
+}
 
   const bonusesWithMeta = mounted
     ? allBonuses.map((b) => ({
@@ -147,12 +156,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
       {/* ── Available ── */}
       <SectionHeader title="Available" count={available.length} />
-      <BonusTable
-        rows={available}
-        onStart={(b) => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-        onClose={(b) => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-        onUndo={(b) => handleDelete(b.id)}
-      />
+    <BonusTable
+  rows={available}
+  onStart={(b) => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
+  onClose={(b) => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+  onUndo={(b) => handleDelete(b.id)}
+  onStepOverride={handleStepOverride}
+  completedRecords={completedRecords}
+  profile={profile}
+/>
 
       {/* ── In Cooldown ── */}
       {inCooldown.length > 0 && (
@@ -372,11 +384,14 @@ function SectionHeader({ title, count, style }: { title: string; count: number; 
   )
 }
 
-function BonusTable({ rows, onStart, onClose, onUndo }: {
+function BonusTable({ rows, onStart, onClose, onUndo, onStepOverride, completedRecords, profile }: {
   rows: any[]
   onStart: (b: any) => void
   onClose: (b: any) => void
   onUndo: (b: any) => void
+  onStepOverride: (bonusId: string, step: string) => void
+  completedRecords: any[]
+  profile: any
 }) {
   return (
     <div style={{ overflowX: "auto" }}>
@@ -409,8 +424,19 @@ function BonusTable({ rows, onStart, onClose, onUndo }: {
                   </td>
                   <td style={tdTop}>
                     <div style={{ fontWeight: 600 }}>{textOrDash(b.bank_name)}</div>
-                    {isInProgress && <div style={{ fontSize: 11, color: "#1a6ef5", marginTop: 3 }}>🔵 In progress — opened {fmtShortDate(churnStatus.opened_date)}</div>}
-                    {!feasible && reason && <div style={{ fontSize: 11, color: "#e05c2a", marginTop: 4 }}>{reason}</div>}
+{isInProgress && (() => {
+  const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+  if (!record) return null
+  const stepDetail = getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
+  return (
+    <div style={{ marginTop: 6 }}>
+      <StepProgressBar
+        detail={stepDetail}
+        onOverride={(step) => onStepOverride(b.id, step)}
+      />
+    </div>
+  )
+})()}                    {!feasible && reason && <div style={{ fontSize: 11, color: "#e05c2a", marginTop: 4 }}>{reason}</div>}
                   </td>
                   <td style={tdTop}>{money(b.bonus_amount)}</td>
                   <td style={tdTop}>{velocity != null ? <span style={{ fontWeight: 600, color: "#0d9e6e" }}>${velocity.toFixed(1)}</span> : "—"}</td>
