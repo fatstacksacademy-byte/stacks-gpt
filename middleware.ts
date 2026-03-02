@@ -27,6 +27,6 @@ export const config = {
      * - favicon.ico
      * - /login and /auth (public routes)
      */
-    "/((?!_next/static|_next/image|favicon.ico|login|auth).*)",
+    "/((?!_next/static|_next/image|favicon.ico|login|auth|reset-password).*)",
   ],
 }
