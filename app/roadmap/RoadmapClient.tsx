@@ -10,6 +10,7 @@ import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../..
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, CustomBonus } from "../../lib/customBonuses"
+import { createClient } from "../../lib/supabase/client"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -147,6 +148,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
     setSequencerResult(result)
     setShowAdvanced(false)
+  }
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = "/login"
   }
 
   function handleToggleProjection() {
@@ -310,6 +317,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Settings"}</button>
               <button onClick={handleRefreshSequencer} style={{ ...topBtn, color: "#0d7c5f", borderColor: "#c8ede1" }}>Refresh bonuses</button>
               <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
+              <button onClick={handleLogout} style={topBtn}>Log out</button>
             </div>
           )}
         </div>
