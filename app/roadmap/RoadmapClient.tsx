@@ -98,6 +98,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
+  const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
+  const [allowMultiple, setAllowMultiple] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState<"welcome" | "slots" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
@@ -353,6 +355,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+            <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="checkbox" id="allowMultiple" checked={allowMultiple} onChange={e => setAllowMultiple(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                <label htmlFor="allowMultiple" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Allow multiple bonuses at once</label>
+              </div>
+              <div style={{ fontSize: 11, color: "#bbb", marginTop: 4, marginLeft: 26 }}>Show all active bonuses on the dashboard instead of just one</div>
+            </div>
           </div>
         )}
 
@@ -604,153 +613,217 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             )}
 
             {/* ══════════════════════════════════════════════════════════════════
-                 ACTIVE BONUS — Simplified action-first card
-                 Answers: What bonus? → What do I do now? → What's next?
+                 CURRENTLY WORKING ON — Checklist cards
+                 Supports single or multiple active bonuses
                  ══════════════════════════════════════════════════════════════════ */}
-            {currentBonus && currentBonus.churnStatus.status === "in_progress" && (() => {
-              const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
-              if (!record) return null
-              const milestoneDetail = getMilestoneDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
-              const req = currentBonus.bonus.requirements
-
-              // Calculate urgency
-              const openedDate = new Date(record.opened_date + "T00:00:00")
-              const today = new Date(); today.setHours(0, 0, 0, 0)
-              const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
-              const windowDays = req?.deposit_window_days ?? 90
-              const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
-
-              // Deposit math
-              const totalRequired = req?.min_direct_deposit_total ?? 0
-              const daysPerPay = DAYS_PER_PAY[profile.pay_frequency] ?? 14
-              let depositsNeeded = 1
-              if (req?.dd_count_required) depositsNeeded = req.dd_count_required
-              else if (totalRequired && profile.paycheck_amount > 0) depositsNeeded = Math.ceil(totalRequired / profile.paycheck_amount)
-              const depositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
-              const depositedSoFar = Math.min(totalRequired, depositsSoFar * profile.paycheck_amount)
-              const depositRemaining = Math.max(0, totalRequired - depositedSoFar)
-
-              const isSafeToClose = milestoneDetail.safeToClose && milestoneDetail.bonusPosted
-              const isWaiting = milestoneDetail.currentMilestone === "deposit_met" || milestoneDetail.currentMilestone === "bonus_posted"
-
-              // Action button
-              let actionLabel = "Confirm first deposit"
-              if (isSafeToClose) actionLabel = "Close account and collect"
-              else if (milestoneDetail.currentMilestone === "account_opened") actionLabel = "Set up direct deposit"
-              else if (milestoneDetail.currentMilestone === "dd_confirmed") actionLabel = "Confirm deposit received"
+            {(() => {
+              const activeBonuses = allowMultiple ? inProgress : inProgress.slice(0, 1)
+              if (activeBonuses.length === 0) return null
 
               return (
-                <div style={{
-                  background: "#fff", border: "2px solid #2563eb", borderRadius: 16, marginBottom: 20,
-                  boxShadow: "0 4px 24px rgba(37,99,235,0.06)", overflow: "hidden",
-                }}>
-                  {/* ── Header: Bank + Amount ── */}
-                  <div style={{ padding: "24px 28px 0" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f" }}>{money(currentBonus.bonus.bonus_amount)}</div>
-                    </div>
-                  </div>
+                <div style={{ marginBottom: 20 }}>
+                  {activeBonuses.length > 0 && (
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {activeBonuses.map(({ bonus: b, churnStatus }) => {
+                      const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+                      if (!record) return null
+                      const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
+                      const req = b.requirements
+                      const fees = b.fees
 
-                  {/* ── NEXT STEP — the dominant element ── */}
-                  <div style={{
-                    margin: "20px 20px 0",
-                    background: "#f0f4ff",
-                    border: "1px solid #d4dffa",
-                    borderRadius: 12,
-                    padding: "22px 24px",
-                  }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
-                      Next step to unlock {money(currentBonus.bonus.bonus_amount)}
-                    </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: "#111", lineHeight: 1.3 }}>
-                      {milestoneDetail.nextStep}
-                    </div>
+                      // Deposit math
+                      const totalRequired = req?.min_direct_deposit_total ?? 0
+                      const openedDate = new Date(record.opened_date + "T00:00:00")
+                      const today = new Date(); today.setHours(0, 0, 0, 0)
+                      const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
+                      const windowDays = req?.deposit_window_days ?? 90
+                      const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
+                      const daysPerPay = DAYS_PER_PAY[profile.pay_frequency] ?? 14
+                      let depositsNeeded = 1
+                      if (req?.dd_count_required) depositsNeeded = req.dd_count_required
+                      else if (totalRequired && profile.paycheck_amount > 0) depositsNeeded = Math.ceil(totalRequired / profile.paycheck_amount)
+                      const depositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
+                      const depositedSoFar = Math.min(totalRequired, depositsSoFar * profile.paycheck_amount)
 
-                    {/* Requirement + remaining inline */}
-                    {totalRequired > 0 && !milestoneDetail.bonusPosted && (
-                      <div style={{ display: "flex", gap: 20, marginTop: 14, paddingTop: 12, borderTop: "1px solid #dce4f8" }}>
-                        <div>
-                          <div style={{ fontSize: 11, color: "#7b8db8", fontWeight: 600, marginBottom: 2 }}>Requirement</div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-                            Deposit ${totalRequired.toLocaleString()}{windowDays ? ` in ${windowDays} days` : ""}
+                      const isSafeToClose = milestoneDetail.safeToClose && milestoneDetail.bonusPosted
+                      const isDetailsExpanded = expandedDetails === b.id
+
+                      // Fee avoidance info
+                      const hasFee = fees?.monthly_fee && fees.monthly_fee > 0
+                      const feeWaiverText = fees?.monthly_fee_waiver_text ?? null
+
+                      return (
+                        <div key={b.id} style={{
+                          background: "#fff", border: "2px solid #2563eb", borderRadius: 14, overflow: "hidden",
+                          boxShadow: "0 2px 12px rgba(37,99,235,0.05)",
+                        }}>
+                          {/* ── Header: Bank + Amount ── */}
+                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                           </div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 11, color: "#7b8db8", fontWeight: 600, marginBottom: 2 }}>Remaining</div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-                            ${depositRemaining.toLocaleString()} left
+
+                          {/* ── Checklist ── */}
+                          <div style={{ padding: "16px 24px 0" }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              {milestoneDetail.milestones.map((m) => {
+                                const isCompleted = m.status === "completed"
+                                const isActive = m.status === "active"
+                                return (
+                                  <div key={m.key}
+                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: "pointer", borderRadius: 6 }}
+                                    onClick={() => handleMilestoneOverride(b.id, m.key)}>
+                                    {/* Checkbox */}
+                                    <div style={{
+                                      width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                      border: isCompleted ? "none" : `2px solid ${isActive ? "#2563eb" : "#d4d4d4"}`,
+                                      background: isCompleted ? "#0d7c5f" : "transparent",
+                                      display: "flex", alignItems: "center", justifyContent: "center",
+                                    }}>
+                                      {isCompleted && (
+                                        <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                          <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    {/* Label */}
+                                    <span style={{
+                                      fontSize: 14,
+                                      color: isCompleted ? "#888" : isActive ? "#111" : "#bbb",
+                                      fontWeight: isActive ? 600 : 400,
+                                      textDecoration: isCompleted ? "line-through" : "none",
+                                    }}>
+                                      {m.label}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Urgency */}
-                    {!milestoneDetail.bonusPosted && windowDays > 0 && (
-                      <div style={{
-                        marginTop: 12,
-                        fontSize: 13,
-                        color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#6b7fa3",
-                        fontWeight: daysRemaining <= 30 ? 600 : 500,
-                      }}>
-                        {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete this bonus
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ── Action button ── */}
-                  <div style={{ padding: "16px 28px 0", display: "flex", gap: 10, alignItems: "center" }}>
-                    {isSafeToClose ? (
-                      <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
-                        style={{ padding: "14px 28px", fontSize: 15, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>
-                        {actionLabel}
-                      </button>
-                    ) : isWaiting ? (
-                      <div style={{ padding: "14px 28px", fontSize: 15, fontWeight: 600, background: "#f5f5f5", color: "#888", borderRadius: 10 }}>
-                        {milestoneDetail.currentMilestone === "deposit_met" ? "Waiting for bonus to post" : "Waiting for safe-to-close date"}
-                      </div>
-                    ) : (
-                      <button onClick={() => {
-                        if (milestoneDetail.currentMilestone === "dd_confirmed") handleMilestoneOverride(currentBonus.bonus.id, "deposit_met")
-                        else handleMilestoneOverride(currentBonus.bonus.id, "dd_confirmed")
-                      }}
-                        style={{ padding: "14px 28px", fontSize: 15, fontWeight: 700, background: "#2563eb", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>
-                        {actionLabel}
-                      </button>
-                    )}
-                    <button onClick={() => handleDelete(currentBonus.bonus.id)}
-                      style={{ padding: "14px 16px", fontSize: 12, color: "#ccc", background: "none", border: "1px solid #eee", borderRadius: 10, cursor: "pointer" }}>
-                      Remove
-                    </button>
-                  </div>
-
-                  {/* ── Quiet progress checklist ── */}
-                  <div style={{ padding: "20px 28px 24px", marginTop: 16, borderTop: "1px solid #f0f0f0" }}>
-                    <div style={{ fontSize: 11, color: "#bbb", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>Progress</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      {milestoneDetail.milestones.map((m) => (
-                        <div key={m.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
-                          onClick={() => handleMilestoneOverride(currentBonus.bonus.id, m.key)}>
-                          {m.status === "completed" ? (
-                            <span style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 700, width: 16, textAlign: "center" as const }}>&#10003;</span>
-                          ) : (
-                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.status === "active" ? "#2563eb" : "#ddd", marginLeft: 5, marginRight: 5, flexShrink: 0 }} />
+                          {/* ── Deposit progress ── */}
+                          {totalRequired > 0 && !milestoneDetail.bonusPosted && (
+                            <div style={{ padding: "12px 24px 0" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Deposit progress</span>
+                                <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}</span>
+                              </div>
+                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden" }}>
+                                <div style={{
+                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
+                                  width: `${totalRequired > 0 ? Math.min(100, (depositedSoFar / totalRequired) * 100) : 0}%`,
+                                  transition: "width 0.3s ease",
+                                }} />
+                              </div>
+                            </div>
                           )}
-                          <span style={{ fontSize: 13, color: m.status === "completed" ? "#555" : m.status === "active" ? "#111" : "#ccc", fontWeight: m.status === "active" ? 600 : 400 }}>
-                            {m.label}
-                          </span>
+
+                          {/* ── Urgency ── */}
+                          {!milestoneDetail.bonusPosted && windowDays > 0 && (
+                            <div style={{
+                              padding: "10px 24px 0",
+                              fontSize: 12,
+                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
+                              fontWeight: daysRemaining <= 30 ? 600 : 400,
+                            }}>
+                              {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
+                            </div>
+                          )}
+
+                          {/* ── Close button (only when safe) ── */}
+                          {isSafeToClose && (
+                            <div style={{ padding: "12px 24px 0" }}>
+                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                                style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                Close account and collect
+                              </button>
+                            </div>
+                          )}
+
+                          {/* ── Bonus details (expandable) ── */}
+                          <div style={{ padding: "14px 24px 4px" }}>
+                            <button
+                              onClick={() => setExpandedDetails(isDetailsExpanded ? null : b.id)}
+                              style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                              {isDetailsExpanded ? "Hide details" : "Bonus details"}
+                            </button>
+                          </div>
+
+                          {isDetailsExpanded && (
+                            <div style={{ padding: "0 24px 8px", marginTop: 4 }}>
+                              {/* Fee avoidance */}
+                              {hasFee && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Avoid monthly fee</div>
+                                  {feeWaiverText ? (
+                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                  ) : (
+                                    <div style={{ fontSize: 12, color: "#666" }}>${fees.monthly_fee}/month fee applies</div>
+                                  )}
+                                </div>
+                              )}
+                              {!hasFee && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f" }}>No monthly fee</div>
+                                </div>
+                              )}
+
+                              {/* Qualification window */}
+                              {windowDays > 0 && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Qualification window</div>
+                                  <div style={{ fontSize: 12, color: "#666" }}>Complete within {windowDays} days of account opening.</div>
+                                </div>
+                              )}
+
+                              {/* Other requirements */}
+                              {req?.other_requirements_text && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Requirements</div>
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{req.other_requirements_text}</div>
+                                </div>
+                              )}
+
+                              {/* Eligibility notes */}
+                              {b.eligibility?.eligibility_notes && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Eligibility</div>
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
+                                </div>
+                              )}
+
+                              {/* Screening */}
+                              <div style={{ display: "flex", gap: 16, fontSize: 11, color: "#999" }}>
+                                {b.screening?.chex_sensitive && <span>ChexSystems: {b.screening.chex_sensitive}</span>}
+                                {b.screening?.hard_pull !== null && b.screening?.hard_pull !== undefined && <span>Hard pull: {b.screening.hard_pull ? "Yes" : "No"}</span>}
+                              </div>
+
+                              <div style={{ fontSize: 11, color: "#bbb", marginTop: 8 }}>Requirements are set by the bank and may change.</div>
+                            </div>
+                          )}
+
+                          {/* ── Remove (always quiet) ── */}
+                          <div style={{ padding: "4px 24px 16px", display: "flex", justifyContent: "flex-end" }}>
+                            <button onClick={() => handleDelete(b.id)}
+                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              Remove bonus
+                            </button>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                      )
+                    })}
                   </div>
                 </div>
               )
             })()}
 
-            {/* ── Next Bonuses: Forward momentum ── */}
+            {/* ── Available next ── */}
             {upNextBonuses.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Next bonuses</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {upNextBonuses.map(({ bonus: b, weeksToComplete, churnStatus }, i) => {
                     const isActive = churnStatus.status === "in_progress"
