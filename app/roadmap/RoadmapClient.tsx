@@ -9,6 +9,7 @@ import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../lib/sequencer"
+import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, CustomBonus } from "../../lib/customBonuses"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -101,13 +102,25 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
+  // Custom bonuses
+  const [customBonuses, setCustomBonuses] = useState<CustomBonus[]>([])
+  const [showAddCustom, setShowAddCustom] = useState(false)
+  const [customBank, setCustomBank] = useState("")
+  const [customAmount, setCustomAmount] = useState("")
+  const [customDate, setCustomDate] = useState(todayStr())
+  const [customNotes, setCustomNotes] = useState("")
+  const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
   const loadRecords = useCallback(async () => {
     setLoadingRecords(true)
-    const records = await getCompletedBonuses(userId)
+    const [records, custom] = await Promise.all([
+      getCompletedBonuses(userId),
+      getCustomBonuses(userId),
+    ])
     setCompletedRecords(records)
+    setCustomBonuses(custom)
     setLoadingRecords(false)
   }, [userId])
 
@@ -176,6 +189,36 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await updateBonusStep(record.id, step)
     await loadRecords()
   }
+
+  async function handleAddCustom() {
+    if (!customBank || !customAmount) return
+    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined)
+    await loadRecords()
+    setShowAddCustom(false)
+    setCustomBank("")
+    setCustomAmount("")
+    setCustomDate(todayStr())
+    setCustomNotes("")
+  }
+
+  async function handleCloseCustom() {
+    if (!actionCustom) return
+    const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
+    await closeCustomBonus(actionCustom.bonus.id, actionDate, bonusReceived, parsed)
+    await loadRecords()
+    setActionCustom(null)
+  }
+
+  async function handleDeleteCustom(id: string) {
+    await deleteCustomBonus(id)
+    await loadRecords()
+  }
+
+  // Active custom bonuses (not closed)
+  const activeCustom = customBonuses.filter(c => !c.closed_date)
+  const closedCustom = customBonuses.filter(c => c.closed_date)
+  const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
+  const customInProgress = activeCustom.reduce((s, c) => s + c.bonus_amount, 0)
 
   const bonusesWithMeta = mounted
     ? allBonuses.map((b) => ({
@@ -446,12 +489,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
                   <div>
                     <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total earned</div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>${totalEarned.toLocaleString()}</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0).toLocaleString()}</div>
-                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 1 }}>{inProgress.length} bonus{inProgress.length !== 1 ? "es" : ""}</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 1 }}>{inProgress.length + activeCustom.length} bonus{(inProgress.length + activeCustom.length) !== 1 ? "es" : ""}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available</div>
@@ -666,11 +709,71 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </details>
             )}
 
-            {/* Advanced Toggle */}
-            <button onClick={() => setShowAdvanced(a => !a)}
-              style={{ width: "100%", padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, color: "#999", cursor: "pointer", marginBottom: 16 }}>
-              {showAdvanced ? "Hide all bonuses" : `Show all ${available.length + inProgress.length} bonuses`}
-            </button>
+            {/* Custom Bonuses */}
+            {(activeCustom.length > 0 || closedCustom.length > 0) && (
+              <div style={{ marginBottom: 28 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Your Custom Bonuses</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {activeCustom.map(c => (
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "18px 22px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
+                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                          </div>
+                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Opened {fmtShortDate(c.opened_date)}{c.notes ? ` · ${c.notes}` : ""}</div>
+                          <div style={{ fontSize: 11, color: "#2563eb", marginTop: 2 }}>In progress</div>
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                        <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                          style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
+                        <button onClick={() => handleDeleteCustom(c.id)}
+                          style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
+                      </div>
+                    </div>
+                  ))}
+                  {closedCustom.map(c => (
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 22px", opacity: 0.7 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                          </div>
+                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Closed {fmtShortDate(c.closed_date!)}</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          {c.bonus_received ? (
+                            <span style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>{money(c.actual_amount ?? c.bonus_amount)}</span>
+                          ) : (
+                            <span style={{ fontSize: 12, color: "#999" }}>Not received</span>
+                          )}
+                          <button onClick={() => handleDeleteCustom(c.id)}
+                            style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Add Custom + Advanced Toggle */}
+            <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+              <button onClick={() => setShowAddCustom(true)}
+                style={{ flex: 1, padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #0d7c5f", borderRadius: 10, color: "#0d7c5f", cursor: "pointer" }}>
+                + Add custom bonus
+              </button>
+              <button onClick={() => setShowAdvanced(a => !a)}
+                style={{ flex: 1, padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, color: "#999", cursor: "pointer" }}>
+                {showAdvanced ? "Hide all bonuses" : `Show all ${available.length + inProgress.length} bonuses`}
+              </button>
+            </div>
 
             {showAdvanced && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
@@ -788,6 +891,71 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Add Custom Bonus Modal */}
+      {showAddCustom && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Custom Bonus</div>
+            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bonus that isn't in our database yet.</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={modalLabel}>Bank name</label>
+                <input type="text" value={customBank} onChange={e => setCustomBank(e.target.value)} placeholder="e.g. Discover" style={modalInput} />
+              </div>
+              <div>
+                <label style={modalLabel}>Bonus amount</label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} placeholder="200" style={{ ...modalInput, paddingLeft: 24 }} />
+                </div>
+              </div>
+              <div>
+                <label style={modalLabel}>Account opened date</label>
+                <input type="date" value={customDate} onChange={e => setCustomDate(e.target.value)} style={modalInput} />
+              </div>
+              <div>
+                <label style={modalLabel}>Notes (optional)</label>
+                <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Any requirements or details" style={modalInput} />
+              </div>
+            </div>
+            <div style={modalActions}>
+              <button onClick={() => setShowAddCustom(false)} style={cancelBtnLight}>Cancel</button>
+              <button onClick={handleAddCustom} disabled={!customBank || !customAmount} style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Add Bonus</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Close Custom Bonus Modal */}
+      {actionCustom && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionCustom.bonus.bank_name}</div>
+            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
+            <label style={modalLabel}>Account closed date</label>
+            <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
+            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
+              <input type="checkbox" id="customBonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+              <label htmlFor="customBonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+            </div>
+            {bonusReceived && (
+              <>
+                <label style={modalLabel}>Amount received</label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionCustom.bonus.bonus_amount)} />
+                </div>
+                <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionCustom.bonus.bonus_amount.toLocaleString()}</div>
+              </>
+            )}
+            <div style={modalActions}>
+              <button onClick={() => setActionCustom(null)} style={cancelBtnLight}>Cancel</button>
+              <button onClick={handleCloseCustom} style={confirmBtnLight}>Close Account</button>
+            </div>
           </div>
         </div>
       )}
