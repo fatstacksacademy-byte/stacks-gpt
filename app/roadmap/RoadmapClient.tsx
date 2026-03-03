@@ -587,7 +587,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                  Supports single or multiple active bonuses
                  ══════════════════════════════════════════════════════════════════ */}
             {(() => {
-              const activeBonuses = allowMultiple ? inProgress : inProgress.slice(0, 1)
+              const rawActive = allowMultiple ? inProgress : inProgress.slice(0, 1)
+              // Sort: bonuses where bonus is already posted sink to the bottom
+              const activeBonuses = [...rawActive].sort((a, b) => {
+                const recA = completedRecords.find(r => r.bonus_id === a.bonus.id && !r.closed_date)
+                const recB = completedRecords.find(r => r.bonus_id === b.bonus.id && !r.closed_date)
+                const aPosted = recA ? getMilestoneDetail(a.bonus, recA, profile.pay_frequency, profile.paycheck_amount).bonusPosted : false
+                const bPosted = recB ? getMilestoneDetail(b.bonus, recB, profile.pay_frequency, profile.paycheck_amount).bonusPosted : false
+                if (aPosted && !bPosted) return 1
+                if (!aPosted && bPosted) return -1
+                return 0
+              })
               if (activeBonuses.length === 0) return null
 
               return (
@@ -625,8 +635,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
                       return (
                         <div key={b.id} style={{
-                          background: "#fff", border: "2px solid #2563eb", borderRadius: 14, overflow: "hidden",
-                          boxShadow: "0 2px 12px rgba(37,99,235,0.05)",
+                          background: "#fff",
+                          border: milestoneDetail.bonusPosted ? "1px solid #e0e0e0" : "2px solid #2563eb",
+                          borderRadius: 14, overflow: "hidden",
+                          boxShadow: milestoneDetail.bonusPosted ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
                         }}>
                           {/* ── Header: Bank + Amount ── */}
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -656,12 +668,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                 const handleCheck = () => {
                                   if (isCompleted) return
                                   if (m.key === "bonus_posted") {
-                                    // Checking "Bonus Posted" = bonus is done, open close modal
+                                    // Just mark bonus as posted — don't open close modal
                                     handleMilestoneOverride(b.id, "safe_to_close")
-                                    setActionBonus({ bonus: b, mode: "close" })
-                                    setActionDate(todayStr())
-                                    setBonusReceived(true)
-                                    setActualAmount(String(b.bonus_amount))
                                     return
                                   }
                                   const allKeys: MilestoneKey[] = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted"]
@@ -733,23 +741,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           )}
 
                           {/* ── Actions ── */}
-                          {milestoneDetail.bonusPosted && (
-                            <div style={{ padding: "16px 24px 0", display: "flex", gap: 10, flexWrap: "wrap" }}>
-                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                Close account and collect
-                              </button>
-                              <div style={{ fontSize: 12, color: "#999", alignSelf: "center" }}>Closing makes you eligible for this bonus again in the future.</div>
-                            </div>
-                          )}
-                          {!milestoneDetail.bonusPosted && (
-                            <div style={{ padding: "12px 24px 0" }}>
-                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
-                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                                Close account early
-                              </button>
-                            </div>
-                          )}
+                          <div style={{ padding: "14px 24px 0" }}>
+                            <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(milestoneDetail.bonusPosted); setActualAmount(milestoneDetail.bonusPosted ? String(b.bonus_amount) : "") }}
+                              style={{
+                                padding: "10px 20px", fontSize: 14, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: "none",
+                                background: milestoneDetail.bonusPosted ? "#0d7c5f" : "transparent",
+                                color: milestoneDetail.bonusPosted ? "#fff" : "#bbb",
+                                ...(milestoneDetail.bonusPosted ? {} : { border: "1px solid #e8e8e8", padding: "8px 16px", fontSize: 12, fontWeight: 500 }),
+                              }}>
+                              Close account
+                            </button>
+                          </div>
 
                           {/* ── Bonus details (expandable) ── */}
                           <div style={{ padding: "14px 24px 4px" }}>
@@ -813,15 +815,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
 
-                          {/* ── Bottom actions ── */}
-                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            {milestoneDetail.bonusPosted ? (
-                              <span style={{ fontSize: 12, color: "#999" }}>
-                                No rush — you can close whenever you're ready.
-                              </span>
-                            ) : (
-                              <span />
-                            )}
+                          {/* ── Remove ── */}
+                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end" }}>
                             <button onClick={() => handleDelete(b.id)}
                               style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                               Remove
