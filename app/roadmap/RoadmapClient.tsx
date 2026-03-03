@@ -1,9 +1,9 @@
 "use client"
+
+import React, { useEffect, useState, useCallback } from "react"
 import StepProgressBar from "../components/StepProgressBar"
 import { getBonusStepDetail } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
-
-import { useEffect, useState, useCallback } from "react"
 import { useProfile } from "../../lib/useProfile"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
@@ -46,6 +46,9 @@ function numOrDash(v: number | null | undefined, suffix?: string) { return v == 
 function bestLink(links: string[] | null | undefined) { return links?.[0] ?? null }
 function todayStr() { return new Date().toISOString().split("T")[0] }
 
+/* ─────────────────────────────────────────────
+   MAIN COMPONENT
+   ───────────────────────────────────────────── */
 export default function RoadmapClient({ userEmail, userId }: { userEmail: string; userId: string }) {
   const { profile, loaded } = useProfile()
   const [mounted, setMounted] = useState(false)
@@ -55,6 +58,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [actionDate, setActionDate] = useState(todayStr())
   const [bonusReceived, setBonusReceived] = useState(true)
   const [actualAmount, setActualAmount] = useState<string>("")
+  const [expandedCard, setExpandedCard] = useState<string | null>(null)
+  const [showAllAvailable, setShowAllAvailable] = useState(false)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -75,17 +80,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }
 
   async function handleClose() {
-  if (!actionBonus) return
-  console.log("bonus id:", actionBonus.bonus.id)
-  console.log("records:", completedRecords.map(r => ({ id: r.id, bonus_id: r.bonus_id, closed_date: r.closed_date })))
-  const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
-  console.log("found record:", record)
-  if (!record) return
-  const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
-  await markBonusClosed(record.id, actionDate, true, parsed)
-  await loadRecords()
-  setActionBonus(null)
-}
+    if (!actionBonus) return
+    const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
+    if (!record) return
+    const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
+    await markBonusClosed(record.id, actionDate, true, parsed)
+    await loadRecords()
+    setActionBonus(null)
+  }
 
   async function handleDelete(bonusId: string) {
     const record = completedRecords.find(r => r.bonus_id === bonusId)
@@ -93,13 +95,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await deleteCompletedBonus(record.id)
     await loadRecords()
   }
-  async function handleStepOverride(bonusId: string, step: string) {
-  const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
-  if (!record) return
-  await updateBonusStep(record.id, step)
-  await loadRecords()
-}
 
+  async function handleStepOverride(bonusId: string, step: string) {
+    const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
+    if (!record) return
+    await updateBonusStep(record.id, step)
+    await loadRecords()
+  }
+
+  // ── Compute bonus metadata ──
   const bonusesWithMeta = mounted
     ? allBonuses.map((b) => ({
         bonus: b,
@@ -111,8 +115,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         churnStatus: { status: "available" } as ChurnStatus,
       }))
 
+  const inProgress = bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress")
+
   const available = bonusesWithMeta
-    .filter(b => b.churnStatus.status === "available" || b.churnStatus.status === "in_progress")
+    .filter(b => b.churnStatus.status === "available")
     .sort((a, b) => {
       if (a.feasible && !b.feasible) return -1
       if (!a.feasible && b.feasible) return 1
@@ -129,242 +135,510 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const lifetime = bonusesWithMeta.filter(b => b.churnStatus.status === "lifetime")
 
-  // Earnings tracker — all closed records with bonus_received = true
+  // Earnings
   const allEarned = completedRecords.filter(r => r.bonus_received && r.closed_date)
   const earnedAmt = (r: CompletedBonus) => { const b = allBonuses.find(x => x.id === r.bonus_id); return r.actual_amount ?? b?.bonus_amount ?? 0 }
   const totalEarned = allEarned.reduce((sum, r) => sum + earnedAmt(r), 0)
-  const lifetimeEarned = allEarned.filter(r => {
-    const bonus = allBonuses.find(b => b.id === r.bonus_id)
-    return bonus && (bonus as any).cooldown_months === null
-  })
-  const churnEarned = allEarned.filter(r => {
-    const bonus = allBonuses.find(b => b.id === r.bonus_id)
-    return bonus && (bonus as any).cooldown_months !== null
-  })
 
+  const isNewUser = completedRecords.length === 0 && !loadingRecords
+  const topBonus = available[0]
+
+  /* ═══════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════ */
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 32, marginBottom: 8 }}>Stacks OS</h1>
-      <p style={{ marginBottom: 18 }}>Welcome, {userEmail}</p>
-
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24, alignItems: "center" }}>
-        <div style={pill}>Bonuses: {allBonuses.length}</div>
-        {inCooldown.length > 0 && <div style={{ ...pill, background: "#fff8e6", borderColor: "#f0c040" }}>⏳ {inCooldown.length} in cooldown</div>}
-        {totalEarned > 0 && <div style={{ ...pill, background: "#f0faf5", borderColor: "#0d9e6e", color: "#0d9e6e", fontWeight: 600 }}>💰 ${totalEarned.toLocaleString()} earned</div>}
-        <a href="/roadmap/sequencer" style={sequencerLink}>→ Build my paycheck stack</a>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e8e8e8" }}>
+      {/* ── Top Bar ── */}
+      <div style={{
+        borderBottom: "1px solid #1a1a1a",
+        padding: "16px 32px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        maxWidth: 1200,
+        margin: "0 auto",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#fff" }}>Stacks OS</span>
+          {totalEarned > 0 && (
+            <span style={{ fontSize: 13, color: "#34d399", fontWeight: 600 }}>${totalEarned.toLocaleString()} earned</span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {inProgress.length > 0 && (
+            <span style={{ fontSize: 12, color: "#60a5fa", background: "#1e3a5f", padding: "4px 10px", borderRadius: 99 }}>
+              {inProgress.length} active
+            </span>
+          )}
+          {inCooldown.length > 0 && (
+            <span style={{ fontSize: 12, color: "#fbbf24", background: "#3d2e0a", padding: "4px 10px", borderRadius: 99 }}>
+              {inCooldown.length} cooling down
+            </span>
+          )}
+          <a href="/roadmap/sequencer" style={{ fontSize: 12, color: "#888", textDecoration: "none", borderBottom: "1px solid #333" }}>
+            Sequencer
+          </a>
+        </div>
       </div>
 
-      {/* ── Available ── */}
-      <SectionHeader title="Available" count={available.length} />
-    <BonusTable
-  rows={available}
-  onStart={(b) => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-  onClose={(b) => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-  onUndo={(b) => handleDelete(b.id)}
-  onStepOverride={handleStepOverride}
-  completedRecords={completedRecords}
-  profile={profile}
-/>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 32px 80px" }}>
 
-      {/* ── In Cooldown ── */}
-      {inCooldown.length > 0 && (
-        <>
-          <SectionHeader title="In Cooldown" count={inCooldown.length} style={{ marginTop: 40 }} />
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
-              <thead>
-                <tr>
-                  <th style={th}>Bank</th>
-                  <th style={th}>Bonus</th>
-                  <th style={th}>Received</th>
-                  <th style={th}>Closed</th>
-                  <th style={th}>Available again</th>
-                  <th style={th}>Days left</th>
-                  <th style={th}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {inCooldown.map(({ bonus: b, churnStatus }) => {
-                  const s = churnStatus as Extract<ChurnStatus, { status: "in_cooldown" }>
-                  const record = completedRecords.find(r => r.bonus_id === b.id && r.closed_date)
-                  return (
-                    <tr key={b.id} style={{ opacity: 0.75 }}>
-                      <td style={tdTop}><div style={{ fontWeight: 600 }}>{b.bank_name}</div></td>
-                      <td style={tdTop}>{money(b.bonus_amount)}</td>
-                      <td style={tdTop}>
-                        {record?.bonus_received
-                          ? <span style={{ color: "#0d9e6e", fontWeight: 600 }}>{money(record.actual_amount ?? b.bonus_amount)}</span>
-                          : <span style={{ color: "#aaa" }}>—</span>}
-                      </td>
-                      <td style={tdTop}>{fmtShortDate(s.closed_date)}</td>
-                      <td style={tdTop}><span style={{ color: "#0d9e6e", fontWeight: 600 }}>{fmtShortDate(s.available_date)}</span></td>
-                      <td style={tdTop}>{s.days_remaining}d</td>
-                      <td style={tdTop}><button onClick={() => handleDelete(b.id)} style={undoBtn}>Remove</button></td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+        {/* ═══════════════════════════════════
+           NEW USER ONBOARDING
+           ═══════════════════════════════════ */}
+        {isNewUser && topBonus && (
+          <div style={{ marginBottom: 48 }}>
+            {/* Welcome */}
+            <div style={{ marginBottom: 40 }}>
+              <h1 style={{ fontSize: 28, fontWeight: 700, color: "#fff", margin: 0, letterSpacing: "-0.02em" }}>
+                Welcome to Stacks OS
+              </h1>
+              <p style={{ fontSize: 15, color: "#777", marginTop: 8, maxWidth: 500, lineHeight: 1.5 }}>
+                We find bank bonuses you qualify for, then walk you through every step to earn them. Let's start with your best one.
+              </p>
+            </div>
+
+            {/* Hero Card — Your First Bonus */}
+            <div style={{
+              background: "linear-gradient(135deg, #111 0%, #1a1a2e 100%)",
+              border: "1px solid #2a2a2a",
+              borderRadius: 16,
+              padding: 40,
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: -60, right: -60, width: 200, height: 200,
+                background: "radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 70%)",
+                borderRadius: "50%",
+              }} />
+              <div style={{ position: "relative" }}>
+                <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "#34d399", marginBottom: 16, fontWeight: 600 }}>
+                  Recommended first bonus
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 24 }}>
+                  <div>
+                    <h2 style={{ fontSize: 26, fontWeight: 700, color: "#fff", margin: 0 }}>
+                      {topBonus.bonus.bank_name}
+                    </h2>
+                    <div style={{ display: "flex", gap: 24, marginTop: 16 }}>
+                      <div>
+                        <div style={{ fontSize: 11, color: "#666", textTransform: "uppercase", letterSpacing: "0.05em" }}>You'll earn</div>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: "#34d399", marginTop: 2 }}>{money(topBonus.bonus.bonus_amount)}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 11, color: "#666", textTransform: "uppercase", letterSpacing: "0.05em" }}>Time</div>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: "#fff", marginTop: 2 }}>
+                          {topBonus.weeksToComplete ? `${topBonus.weeksToComplete} wks` : "—"}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 11, color: "#666", textTransform: "uppercase", letterSpacing: "0.05em" }}>Monthly fee</div>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: "#fff", marginTop: 2 }}>
+                          {topBonus.bonus.fees?.monthly_fee === 0 ? "$0" : money(topBonus.bonus.fees?.monthly_fee)}
+                        </div>
+                      </div>
+                    </div>
+                    {/* What you need */}
+                    <div style={{ marginTop: 20, fontSize: 13, color: "#888", lineHeight: 1.6, maxWidth: 480 }}>
+                      {topBonus.bonus.requirements?.min_direct_deposit_total
+                        ? `Deposit $${topBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} total within ${topBonus.bonus.requirements.deposit_window_days ?? "—"} days using your regular paycheck.`
+                        : topBonus.bonus.requirements?.min_direct_deposit_per_deposit
+                          ? `Make ${topBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit${(topBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of $${topBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each.`
+                          : "Set up direct deposit to qualify."
+                      }
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 180 }}>
+                    <button
+                      onClick={() => { setActionBonus({ bonus: topBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                      style={{
+                        padding: "14px 28px", fontSize: 15, fontWeight: 700,
+                        background: "#34d399", color: "#0a0a0a", border: "none",
+                        borderRadius: 10, cursor: "pointer",
+                        transition: "transform 0.1s",
+                      }}
+                      onMouseOver={e => (e.currentTarget.style.transform = "scale(1.03)")}
+                      onMouseOut={e => (e.currentTarget.style.transform = "scale(1)")}
+                    >
+                      Start this bonus
+                    </button>
+                    {bestLink(topBonus.bonus.source_links) && (
+                      <a
+                        href={bestLink(topBonus.bonus.source_links)!}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          padding: "10px 28px", fontSize: 13, fontWeight: 600,
+                          color: "#888", border: "1px solid #333",
+                          borderRadius: 10, textDecoration: "none", textAlign: "center",
+                        }}
+                      >
+                        Open bank site
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* How it works — 4 steps */}
+                <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid #222" }}>
+                  <div style={{ fontSize: 12, color: "#555", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>How it works</div>
+                  <div style={{ display: "flex", gap: 0, alignItems: "flex-start" }}>
+                    {["Open the account", "Fund with paychecks", "Wait for bonus", "Close & collect"].map((label, i) => (
+                      <React.Fragment key={i}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", minWidth: 80 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: "50%", background: "#1a1a1a", border: "1px solid #333",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 12, fontWeight: 700, color: "#666",
+                          }}>{i + 1}</div>
+                          <span style={{ fontSize: 11, color: "#666", marginTop: 6, textAlign: "center", maxWidth: 90 }}>{label}</span>
+                        </div>
+                        {i < 3 && <div style={{ flex: 1, height: 1, background: "#222", marginTop: 14, minWidth: 16 }} />}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* All available — collapsed preview */}
+            <div style={{ marginTop: 32 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", margin: 0 }}>All available bonuses</h2>
+                <span style={{ fontSize: 12, color: "#555" }}>{available.length} bonuses</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+                {available.slice(0, showAllAvailable ? 999 : 6).map(({ bonus: b, velocity, weeksToComplete, feasible }) => (
+                  <BonusCard
+                    key={b.id}
+                    bonus={b}
+                    velocity={velocity}
+                    weeksToComplete={weeksToComplete}
+                    feasible={feasible}
+                    isExpanded={expandedCard === b.id}
+                    onExpand={() => setExpandedCard(expandedCard === b.id ? null : b.id)}
+                    onStart={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
+                  />
+                ))}
+              </div>
+              {available.length > 6 && !showAllAvailable && (
+                <button
+                  onClick={() => setShowAllAvailable(true)}
+                  style={{ marginTop: 16, fontSize: 13, color: "#555", background: "none", border: "1px solid #222", borderRadius: 8, padding: "10px 20px", cursor: "pointer", width: "100%" }}
+                >
+                  Show all {available.length} bonuses
+                </button>
+              )}
+            </div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* ── Completed (Lifetime) ── */}
-      {lifetime.length > 0 && (
-        <>
-          <SectionHeader title="Completed — One Time Only" count={lifetime.length} style={{ marginTop: 40 }} />
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
-              <thead>
-                <tr>
-                  <th style={th}>Bank</th>
-                  <th style={th}>Listed bonus</th>
-                  <th style={th}>Actual received</th>
-                  <th style={th}>Opened</th>
-                  <th style={th}>Closed</th>
-                  <th style={th}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {lifetime.map(({ bonus: b }) => {
-                  const record = completedRecords.find(r => r.bonus_id === b.id)
-                  return (
-                    <tr key={b.id} style={{ opacity: 0.55 }}>
-                      <td style={tdTop}><div style={{ fontWeight: 600 }}>{b.bank_name}</div></td>
-                      <td style={tdTop}>{money(b.bonus_amount)}</td>
-                      <td style={tdTop}>
-                        {record?.bonus_received
-                          ? <span style={{ color: "#0d9e6e", fontWeight: 600 }}>{money(record.actual_amount ?? b.bonus_amount)}</span>
-                          : <span style={{ color: "#aaa" }}>Not received</span>}
-                      </td>
-                      <td style={tdTop}>{record ? fmtShortDate(record.opened_date) : "—"}</td>
-                      <td style={tdTop}>{record?.closed_date ? fmtShortDate(record.closed_date) : "—"}</td>
-                      <td style={tdTop}><button onClick={() => handleDelete(b.id)} style={undoBtn}>Remove</button></td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+        {/* ═══════════════════════════════════
+           ACTIVE USER DASHBOARD
+           ═══════════════════════════════════ */}
+        {!isNewUser && (
+          <>
+            {/* ── Stats Bar ── */}
+            {totalEarned > 0 && (
+              <div style={{
+                display: "flex", gap: 24, marginBottom: 32,
+                padding: "20px 24px", background: "#111", borderRadius: 12, border: "1px solid #1a1a1a",
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: "#34d399", marginTop: 2 }}>${totalEarned.toLocaleString()}</div>
+                </div>
+                <div style={{ width: 1, background: "#222" }} />
+                <div>
+                  <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em" }}>Active bonuses</div>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: "#60a5fa", marginTop: 2 }}>{inProgress.length}</div>
+                </div>
+                <div style={{ width: 1, background: "#222" }} />
+                <div>
+                  <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em" }}>Completed</div>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginTop: 2 }}>{allEarned.length}</div>
+                </div>
+                <div style={{ width: 1, background: "#222" }} />
+                <div>
+                  <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em" }}>Avg per bonus</div>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginTop: 2 }}>
+                    {allEarned.length > 0 ? `$${Math.round(totalEarned / allEarned.length).toLocaleString()}` : "—"}
+                  </div>
+                </div>
+              </div>
+            )}
 
-      {/* ── Earnings Tracker ── */}
-      {allEarned.length > 0 && (
-        <>
-          <SectionHeader title="Earnings Tracker" count={allEarned.length} style={{ marginTop: 40 }} />
-          <div style={earningsGrid}>
-            <div style={earningsCard}>
-              <div style={earningsLabel}>Total earned</div>
-              <div style={earningsValue}>${totalEarned.toLocaleString()}</div>
-            </div>
-            <div style={earningsCard}>
-              <div style={earningsLabel}>From lifetime bonuses</div>
-              <div style={earningsValue}>${lifetimeEarned.reduce((s, r) => s + earnedAmt(r), 0).toLocaleString()}</div>
-              <div style={earningsCount}>{lifetimeEarned.length} bonus{lifetimeEarned.length !== 1 ? "es" : ""}</div>
-            </div>
-            <div style={earningsCard}>
-              <div style={earningsLabel}>From churnable bonuses</div>
-              <div style={earningsValue}>${churnEarned.reduce((s, r) => s + earnedAmt(r), 0).toLocaleString()}</div>
-              <div style={earningsCount}>{churnEarned.length} bonus{churnEarned.length !== 1 ? "es" : ""}</div>
-            </div>
-            <div style={earningsCard}>
-              <div style={earningsLabel}>Avg per bonus</div>
-              <div style={earningsValue}>${Math.round(totalEarned / allEarned.length).toLocaleString()}</div>
-            </div>
-          </div>
+            {/* ── Next Recommended ── */}
+            {available.length > 0 && available[0].feasible && (
+              <div style={{
+                background: "#111", border: "1px solid #1a1a1a", borderRadius: 12,
+                padding: "20px 24px", marginBottom: 32,
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#34d399", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 4 }}>Next up</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{available[0].bonus.bank_name}</div>
+                  <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>
+                    Earn {money(available[0].bonus.bonus_amount)} in ~{available[0].weeksToComplete ?? "?"}  weeks
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setActionBonus({ bonus: available[0].bonus, mode: "start" }); setActionDate(todayStr()) }}
+                  style={{
+                    padding: "10px 24px", fontSize: 14, fontWeight: 700,
+                    background: "#34d399", color: "#0a0a0a", border: "none",
+                    borderRadius: 8, cursor: "pointer",
+                  }}
+                >
+                  Start this bonus
+                </button>
+              </div>
+            )}
 
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
-              <thead>
-                <tr>
-                  <th style={th}>Bank</th>
-                  <th style={th}>Listed</th>
-                  <th style={th}>Received</th>
-                  <th style={th}>Difference</th>
-                  <th style={th}>Closed</th>
-                  <th style={th}>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allEarned
-                  .sort((a, b) => new Date(b.closed_date!).getTime() - new Date(a.closed_date!).getTime())
-                  .map((r) => {
-                    const bonus = allBonuses.find(b => b.id === r.bonus_id)
-                    if (!bonus) return null
-                    const listed = bonus.bonus_amount
-                    const received = r.actual_amount ?? listed  // fall back to listed if no amount entered
-                    const diff = received - listed
-                    const isLifetime = (bonus as any).cooldown_months === null
+            {/* ── Active Bonuses ── */}
+            {inProgress.length > 0 && (
+              <div style={{ marginBottom: 40 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", margin: "0 0 16px" }}>Active Bonuses</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {inProgress.map(({ bonus: b, velocity, weeksToComplete }) => {
+                    const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+                    const stepDetail = record ? getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
                     return (
-                      <tr key={r.id}>
-                        <td style={tdTop}><div style={{ fontWeight: 600 }}>{bonus.bank_name}</div></td>
-                        <td style={tdTop}>{money(listed)}</td>
-                        <td style={tdTop}><span style={{ color: "#0d9e6e", fontWeight: 600 }}>{money(received)}</span></td>
-                        <td style={tdTop}>
-                          {diff === 0
-                            ? <span style={{ color: "#aaa" }}>—</span>
-                            : <span style={{ color: diff > 0 ? "#0d9e6e" : "#e05c2a", fontWeight: 500 }}>{diff > 0 ? "+" : ""}{money(diff)}</span>}
-                        </td>
-                        <td style={tdTop}>{fmtShortDate(r.closed_date!)}</td>
-                        <td style={tdTop}>
-                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 999, background: isLifetime ? "#f0f0f0" : "#f0faf5", color: isLifetime ? "#888" : "#0d9e6e" }}>
-                            {isLifetime ? "one-time" : "churnable"}
-                          </span>
-                        </td>
-                      </tr>
+                      <div key={b.id} style={{
+                        background: "#111", border: "1px solid #1a1a1a", borderRadius: 12,
+                        padding: "20px 24px",
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                          <div>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>{b.bank_name}</div>
+                            <div style={{ fontSize: 13, color: "#666", marginTop: 2 }}>
+                              Earn {money(b.bonus_amount)} · ~{weeksToComplete ?? "?"}w
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <button
+                              onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                              style={{ fontSize: 12, padding: "6px 14px", borderRadius: 6, border: "1px solid #ef4444", color: "#ef4444", background: "none", cursor: "pointer" }}
+                            >
+                              Close account
+                            </button>
+                            <button
+                              onClick={() => handleDelete(b.id)}
+                              style={{ fontSize: 12, padding: "6px 14px", borderRadius: 6, border: "1px solid #333", color: "#555", background: "none", cursor: "pointer" }}
+                            >
+                              Undo
+                            </button>
+                          </div>
+                        </div>
+                        {stepDetail && (
+                          <StepProgressBar
+                            detail={stepDetail}
+                            onOverride={(step) => handleStepOverride(b.id, step)}
+                          />
+                        )}
+                        {/* Quick details */}
+                        <details style={{ marginTop: 8 }}>
+                          <summary style={{ fontSize: 12, color: "#444", cursor: "pointer", padding: "4px 0", userSelect: "none" }}>Details</summary>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10, fontSize: 12 }}>
+                            <div style={{ color: "#555" }}>Total deposit needed: <span style={{ color: "#999" }}>{money(b.requirements?.min_direct_deposit_total)}</span></div>
+                            <div style={{ color: "#555" }}>Deposit window: <span style={{ color: "#999" }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
+                            <div style={{ color: "#555" }}>Monthly fee: <span style={{ color: "#999" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+                            <div style={{ color: "#555" }}>Bonus posts in: <span style={{ color: "#999" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
+                          </div>
+                          {bestLink(b.source_links) && (
+                            <a href={bestLink(b.source_links)!} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "#60a5fa", textDecoration: "none", display: "inline-block", marginTop: 8 }}>
+                              Open bank site →
+                            </a>
+                          )}
+                        </details>
+                      </div>
                     )
                   })}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+                </div>
+              </div>
+            )}
 
-      {/* ── Action Modal ── */}
+            {/* ── Available Bonuses ── */}
+            {available.length > 0 && (
+              <div style={{ marginBottom: 40 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", margin: 0 }}>Available Bonuses</h2>
+                  <span style={{ fontSize: 12, color: "#555" }}>{available.length}</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+                  {available.slice(0, showAllAvailable ? 999 : 6).map(({ bonus: b, velocity, weeksToComplete, feasible }) => (
+                    <BonusCard
+                      key={b.id}
+                      bonus={b}
+                      velocity={velocity}
+                      weeksToComplete={weeksToComplete}
+                      feasible={feasible}
+                      isExpanded={expandedCard === b.id}
+                      onExpand={() => setExpandedCard(expandedCard === b.id ? null : b.id)}
+                      onStart={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
+                    />
+                  ))}
+                </div>
+                {available.length > 6 && !showAllAvailable && (
+                  <button
+                    onClick={() => setShowAllAvailable(true)}
+                    style={{ marginTop: 12, fontSize: 13, color: "#555", background: "none", border: "1px solid #222", borderRadius: 8, padding: "10px 20px", cursor: "pointer", width: "100%" }}
+                  >
+                    Show all {available.length} bonuses
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* ── In Cooldown ── */}
+            {inCooldown.length > 0 && (
+              <div style={{ marginBottom: 40 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", margin: "0 0 16px" }}>Cooling Down</h2>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+                  {inCooldown.map(({ bonus: b, churnStatus }) => {
+                    const s = churnStatus as Extract<ChurnStatus, { status: "in_cooldown" }>
+                    const record = completedRecords.find(r => r.bonus_id === b.id && r.closed_date)
+                    return (
+                      <div key={b.id} style={{
+                        background: "#111", border: "1px solid #1a1a1a", borderRadius: 12,
+                        padding: "18px 20px", opacity: 0.7,
+                      }}>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{b.bank_name}</div>
+                        <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12 }}>
+                          <div>
+                            <span style={{ color: "#555" }}>Earned: </span>
+                            <span style={{ color: "#34d399", fontWeight: 600 }}>
+                              {record?.bonus_received ? money(record.actual_amount ?? b.bonus_amount) : "—"}
+                            </span>
+                          </div>
+                          <div>
+                            <span style={{ color: "#555" }}>Available: </span>
+                            <span style={{ color: "#fbbf24", fontWeight: 600 }}>{fmtShortDate(s.available_date)}</span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#555", marginTop: 6 }}>{s.days_remaining} days left</div>
+                        <button onClick={() => handleDelete(b.id)} style={{ marginTop: 10, fontSize: 11, color: "#444", background: "none", border: "1px solid #222", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>Remove</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Completed (Lifetime) ── */}
+            {lifetime.length > 0 && (
+              <details style={{ marginBottom: 40 }}>
+                <summary style={{ fontSize: 16, fontWeight: 600, color: "#fff", cursor: "pointer", padding: "8px 0", userSelect: "none" }}>
+                  Completed — One Time Only <span style={{ fontSize: 12, color: "#555", fontWeight: 400 }}>({lifetime.length})</span>
+                </summary>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12, marginTop: 12 }}>
+                  {lifetime.map(({ bonus: b }) => {
+                    const record = completedRecords.find(r => r.bonus_id === b.id)
+                    return (
+                      <div key={b.id} style={{
+                        background: "#111", border: "1px solid #1a1a1a", borderRadius: 12,
+                        padding: "18px 20px", opacity: 0.5,
+                      }}>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: "#555", marginTop: 6 }}>
+                          {record?.bonus_received
+                            ? <span>Earned <span style={{ color: "#34d399" }}>{money(record.actual_amount ?? b.bonus_amount)}</span></span>
+                            : "Not received"}
+                        </div>
+                        <button onClick={() => handleDelete(b.id)} style={{ marginTop: 10, fontSize: 11, color: "#444", background: "none", border: "1px solid #222", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>Remove</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </details>
+            )}
+
+            {/* ── Earnings History ── */}
+            {allEarned.length > 0 && (
+              <details style={{ marginBottom: 40 }}>
+                <summary style={{ fontSize: 16, fontWeight: 600, color: "#fff", cursor: "pointer", padding: "8px 0", userSelect: "none" }}>
+                  Earnings History <span style={{ fontSize: 12, color: "#555", fontWeight: 400 }}>({allEarned.length} bonuses)</span>
+                </summary>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
+                  {allEarned
+                    .sort((a, b) => new Date(b.closed_date!).getTime() - new Date(a.closed_date!).getTime())
+                    .map((r) => {
+                      const bonus = allBonuses.find(b => b.id === r.bonus_id)
+                      if (!bonus) return null
+                      const received = r.actual_amount ?? bonus.bonus_amount
+                      return (
+                        <div key={r.id} style={{
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "12px 16px", background: "#111", borderRadius: 8, border: "1px solid #1a1a1a",
+                        }}>
+                          <div>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{bonus.bank_name}</span>
+                            <span style={{ fontSize: 12, color: "#555", marginLeft: 12 }}>{fmtShortDate(r.closed_date!)}</span>
+                          </div>
+                          <span style={{ fontSize: 15, fontWeight: 700, color: "#34d399" }}>{money(received)}</span>
+                        </div>
+                      )
+                    })}
+                </div>
+              </details>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ═══════════════════════════════════
+         ACTION MODAL
+         ═══════════════════════════════════ */}
       {actionBonus && (
-        <div style={modalOverlay}>
-          <div style={modalBox}>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{actionBonus.bonus.bank_name}</div>
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+        }}>
+          <div style={{
+            background: "#151515", borderRadius: 16, padding: 32, width: 400,
+            border: "1px solid #2a2a2a", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#fff" }}>{actionBonus.bonus.bank_name}</div>
             {actionBonus.mode === "start" && (
               <>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>When did you open this account?</div>
+                <div style={{ fontSize: 13, color: "#666", marginBottom: 20 }}>When did you open this account?</div>
                 <label style={modalLabel}>Account opened date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
                 <div style={modalActions}>
                   <button onClick={() => setActionBonus(null)} style={cancelBtn}>Cancel</button>
-                  <button onClick={handleStart} style={confirmBtn}>Mark as Started</button>
+                  <button onClick={handleStart} style={confirmBtn}>Start Bonus</button>
                 </div>
               </>
             )}
             {actionBonus.mode === "close" && (
               <>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>When did you close this account? This starts the cooldown clock.</div>
+                <div style={{ fontSize: 13, color: "#666", marginBottom: 20 }}>When did you close this account?</div>
                 <label style={modalLabel}>Account closed date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
-                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "14px 0 10px" }}>
-                  <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} />
-                  <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#333" }}>I received the bonus</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
+                  <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#34d399" }} />
+                  <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#999" }}>I received the bonus</label>
                 </div>
                 {bonusReceived && (
                   <>
-                    <label style={modalLabel}>Actual amount received</label>
+                    <label style={modalLabel}>Amount received</label>
                     <div style={{ position: "relative" }}>
-                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#555", fontSize: 13 }}>$</span>
+                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#666", fontSize: 14 }}>$</span>
                       <input
                         type="number"
                         value={actualAmount}
                         onChange={e => setActualAmount(e.target.value)}
-                        style={{ ...modalInput, paddingLeft: 22 }}
+                        style={{ ...modalInput, paddingLeft: 24 }}
                         placeholder={String(actionBonus.bonus.bonus_amount)}
                       />
                     </div>
-                    <div style={{ fontSize: 11, color: "#aaa", marginTop: 4 }}>Listed bonus: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: "#444", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
                   </>
                 )}
                 <div style={modalActions}>
                   <button onClick={() => setActionBonus(null)} style={cancelBtn}>Cancel</button>
-                  <button onClick={handleClose} style={confirmBtn}>Mark as Closed</button>
+                  <button onClick={handleClose} style={confirmBtn}>Close Account</button>
                 </div>
               </>
             )}
@@ -375,158 +649,118 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   )
 }
 
-function SectionHeader({ title, count, style }: { title: string; count: number; style?: React.CSSProperties }) {
-  return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12, ...style }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{title}</h2>
-      <span style={{ fontSize: 13, color: "#aaa" }}>{count}</span>
-    </div>
-  )
-}
-
-function BonusTable({ rows, onStart, onClose, onUndo, onStepOverride, completedRecords, profile }: {
-  rows: any[]
-  onStart: (b: any) => void
-  onClose: (b: any) => void
-  onUndo: (b: any) => void
-  onStepOverride: (bonusId: string, step: string) => void
-  completedRecords: any[]
-  profile: any
+/* ─────────────────────────────────────────────
+   BONUS CARD — Available bonuses
+   ───────────────────────────────────────────── */
+function BonusCard({ bonus: b, velocity, weeksToComplete, feasible, isExpanded, onExpand, onStart }: {
+  bonus: Bonus
+  velocity: number | null
+  weeksToComplete: number | null
+  feasible: boolean
+  isExpanded: boolean
+  onExpand: () => void
+  onStart: () => void
 }) {
+  const link = bestLink(b.source_links)
   return (
-    <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1060 }}>
-        <thead>
-          <tr>
-            <th style={th}>#</th>
-            <th style={th}>Bank</th>
-            <th style={th}>Bonus</th>
-            <th style={th}>$/week</th>
-            <th style={th}>Weeks</th>
-            <th style={th}>Min per DD</th>
-            <th style={th}>DD Window</th>
-            <th style={th}>Monthly Fee</th>
-            <th style={th}>Status</th>
-            <th style={th}>Open</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(({ bonus: b, velocity, weeksToComplete, feasible, reason, churnStatus }, idx) => {
-            const link = bestLink(b.source_links)
-            const isInProgress = churnStatus.status === "in_progress"
-            return (
-              <React.Fragment key={b.id}>
-                <tr style={{ opacity: feasible ? 1 : 0.45 }}>
-                  <td style={tdTop}>
-                    {feasible
-                      ? <span style={{ ...rankBadge, background: idx < 3 ? "#111" : "#e8e8e8", color: idx < 3 ? "#fff" : "#555" }}>{idx + 1}</span>
-                      : <span style={{ fontSize: 11, color: "#bbb" }}>—</span>}
-                  </td>
-                  <td style={tdTop}>
-                    <div style={{ fontWeight: 600 }}>{textOrDash(b.bank_name)}</div>
-{isInProgress && (() => {
-  const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
-  if (!record) return null
-  const stepDetail = getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
-  return (
-    <div style={{ marginTop: 6 }}>
-      <StepProgressBar
-        detail={stepDetail}
-        onOverride={(step) => onStepOverride(b.id, step)}
-      />
-    </div>
-  )
-})()}                    {!feasible && reason && <div style={{ fontSize: 11, color: "#e05c2a", marginTop: 4 }}>{reason}</div>}
-                  </td>
-                  <td style={tdTop}>{money(b.bonus_amount)}</td>
-                  <td style={tdTop}>{velocity != null ? <span style={{ fontWeight: 600, color: "#0d9e6e" }}>${velocity.toFixed(1)}</span> : "—"}</td>
-                  <td style={tdTop}>{weeksToComplete != null ? `${weeksToComplete}w` : "—"}</td>
-                  <td style={tdTop}>{b.requirements?.min_direct_deposit_per_deposit ? money(b.requirements.min_direct_deposit_per_deposit) : "—"}</td>
-                  <td style={tdTop}>{b.requirements?.deposit_window_days ? `${b.requirements.deposit_window_days}d` : "—"}</td>
-                  <td style={tdTop}>{b.fees?.monthly_fee === 0 ? "$0" : b.fees?.monthly_fee ? money(b.fees.monthly_fee) : "—"}</td>
-                  <td style={tdTop}>
-                    {isInProgress
-                      ? <><button onClick={() => onClose(b)} style={closeBtn}>Close account</button><button onClick={() => onUndo(b)} style={undoBtn}>Undo</button></>
-                      : <button onClick={() => onStart(b)} style={startBtn}>Mark started</button>}
-                  </td>
-                  <td style={tdTop}>{link ? <a href={link} target="_blank" rel="noreferrer" style={linkStyle}>Open</a> : "—"}</td>
-                </tr>
-                <tr key={`${b.id}-details`}>
-                  <td style={detailsCell} colSpan={10}>
-                    <details>
-                      <summary style={summaryStyle}>Show details</summary>
-                      <div style={detailsGrid}>
-                        <div>
-                          <div style={sectionTitle}>Requirements</div>
-                          <div style={kv}><span style={k}>Direct deposit required</span><span style={v}>{yesNo(b.requirements?.direct_deposit_required)}</span></div>
-                          <div style={kv}><span style={k}>Paychecks required</span><span style={v}>{numOrDash(b.requirements?.dd_count_required)}</span></div>
-                          <div style={kv}><span style={k}>Min per paycheck</span><span style={v}>{money(b.requirements?.min_direct_deposit_per_deposit)}</span></div>
-                          <div style={kv}><span style={k}>Min total deposit</span><span style={v}>{money(b.requirements?.min_direct_deposit_total)}</span></div>
-                          <div style={kv}><span style={k}>Deposit window</span><span style={v}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
-                          <div style={kv}><span style={k}>Min opening deposit</span><span style={v}>{money(b.requirements?.min_opening_deposit)}</span></div>
-                        </div>
-                        <div>
-                          <div style={sectionTitle}>Fees & Timeline</div>
-                          <div style={kv}><span style={k}>Monthly fee</span><span style={v}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
-                          <div style={kv}><span style={k}>How to waive</span><span style={v}>{textOrDash(b.fees?.monthly_fee_waiver_text)}</span></div>
-                          <div style={kv}><span style={k}>Bonus posting est.</span><span style={v}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
-                          <div style={kv}><span style={k}>Must remain open</span><span style={v}>{numOrDash(b.timeline?.must_remain_open_days, "days")}</span></div>
-                          <div style={kv}><span style={k}>Cooldown</span><span style={v}>{(b as any).cooldown_months == null ? "One-time only" : `${(b as any).cooldown_months} months`}</span></div>
-                        </div>
-                        <div>
-                          <div style={sectionTitle}>Screening & Eligibility</div>
-                          <div style={kv}><span style={k}>Chex sensitivity</span><span style={v}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
-                          <div style={kv}><span style={k}>Hard pull</span><span style={v}>{yesNo(b.screening?.hard_pull)}</span></div>
-                          <div style={kv}><span style={k}>Lifetime language</span><span style={v}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
-                          <div style={{ marginTop: 10, fontSize: 13, color: "#333" }}>{textOrDash(b.eligibility?.eligibility_notes)}</div>
-                          {b.source_links?.length ? (
-                            <div style={{ marginTop: 10 }}>
-                              {b.source_links.map((u: string, i: number) => (
-                                <div key={i}><a href={u} target="_blank" rel="noreferrer" style={linkStyle}>{u}</a></div>
-                              ))}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </details>
-                  </td>
-                </tr>
-              </React.Fragment>
-            )
-          })}
-        </tbody>
-      </table>
+    <div style={{
+      background: "#111", border: "1px solid #1a1a1a", borderRadius: 12,
+      padding: "18px 20px", opacity: feasible ? 1 : 0.4,
+      transition: "border-color 0.15s",
+      cursor: "pointer",
+    }}
+      onClick={onExpand}
+      onMouseOver={e => (e.currentTarget.style.borderColor = "#333")}
+      onMouseOut={e => (e.currentTarget.style.borderColor = "#1a1a1a")}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{b.bank_name}</div>
+        <div style={{ fontSize: 17, fontWeight: 700, color: "#34d399" }}>{money(b.bonus_amount)}</div>
+      </div>
+
+      <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12 }}>
+        <div><span style={{ color: "#555" }}>Time: </span><span style={{ color: "#999" }}>{weeksToComplete ? `${weeksToComplete}w` : "—"}</span></div>
+        <div><span style={{ color: "#555" }}>Fee: </span><span style={{ color: "#999" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+        {velocity && <div><span style={{ color: "#555" }}>$/wk: </span><span style={{ color: "#34d399" }}>${velocity.toFixed(0)}</span></div>}
+      </div>
+
+      {!feasible && (
+        <div style={{ fontSize: 11, color: "#ef4444", marginTop: 8 }}>Not feasible with current paycheck</div>
+      )}
+
+      {isExpanded && (
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #1a1a1a" }} onClick={e => e.stopPropagation()}>
+          {/* Overview */}
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6, marginBottom: 12 }}>
+            {b.requirements?.min_direct_deposit_total
+              ? `Deposit $${b.requirements.min_direct_deposit_total.toLocaleString()} total within ${b.requirements.deposit_window_days ?? "—"} days.`
+              : b.requirements?.min_direct_deposit_per_deposit
+                ? `${b.requirements.dd_count_required ?? "1"}× deposits of $${b.requirements.min_direct_deposit_per_deposit.toLocaleString()}+`
+                : "Set up direct deposit."
+            }
+          </div>
+
+          {/* Key details */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginBottom: 12 }}>
+            <div><span style={{ color: "#555" }}>Min deposit total: </span><span style={{ color: "#999" }}>{money(b.requirements?.min_direct_deposit_total)}</span></div>
+            <div><span style={{ color: "#555" }}>Window: </span><span style={{ color: "#999" }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
+            <div><span style={{ color: "#555" }}>Monthly fee: </span><span style={{ color: "#999" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+            <div><span style={{ color: "#555" }}>Bonus posts: </span><span style={{ color: "#999" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
+            <div><span style={{ color: "#555" }}>Cooldown: </span><span style={{ color: "#999" }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
+          </div>
+
+          {/* Advanced */}
+          <details>
+            <summary style={{ fontSize: 11, color: "#444", cursor: "pointer", userSelect: "none" }}>Advanced details</summary>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginTop: 8 }}>
+              <div><span style={{ color: "#555" }}>Chex: </span><span style={{ color: "#999" }}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
+              <div><span style={{ color: "#555" }}>Hard pull: </span><span style={{ color: "#999" }}>{yesNo(b.screening?.hard_pull)}</span></div>
+              <div><span style={{ color: "#555" }}>Lifetime limit: </span><span style={{ color: "#999" }}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
+              <div><span style={{ color: "#555" }}>Fee waiver: </span><span style={{ color: "#999" }}>{textOrDash(b.fees?.monthly_fee_waiver_text)}</span></div>
+            </div>
+            {b.eligibility?.eligibility_notes && (
+              <div style={{ fontSize: 11, color: "#666", marginTop: 8, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
+            )}
+          </details>
+
+          {/* Actions */}
+          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <button onClick={onStart} style={{
+              flex: 1, padding: "10px", fontSize: 13, fontWeight: 700,
+              background: "#34d399", color: "#0a0a0a", border: "none", borderRadius: 8, cursor: "pointer",
+            }}>
+              Start this bonus
+            </button>
+            {link && (
+              <a href={link} target="_blank" rel="noreferrer" style={{
+                padding: "10px 16px", fontSize: 12, color: "#888", border: "1px solid #333",
+                borderRadius: 8, textDecoration: "none", display: "flex", alignItems: "center",
+              }}>
+                Open site
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-import React from "react"
-
-const pill: React.CSSProperties = { fontSize: 12, border: "1px solid #e6e6e6", padding: "6px 10px", borderRadius: 999, color: "#333", background: "#fff" }
-const sequencerLink: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#0a58ca", textDecoration: "none", padding: "6px 14px", border: "1px solid #0a58ca", borderRadius: 999 }
-const th: React.CSSProperties = { textAlign: "left", borderBottom: "1px solid #ddd", padding: "12px 10px", whiteSpace: "nowrap", fontSize: 13 }
-const tdTop: React.CSSProperties = { borderBottom: "1px solid #eee", padding: "12px 10px", verticalAlign: "top", fontSize: 14 }
-const detailsCell: React.CSSProperties = { borderBottom: "1px solid #eee", padding: "10px 10px 18px 10px", background: "#fafafa" }
-const summaryStyle: React.CSSProperties = { cursor: "pointer", userSelect: "none", fontSize: 13, color: "#333", padding: "6px 0" }
-const detailsGrid: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 18, marginTop: 12 }
-const sectionTitle: React.CSSProperties = { fontSize: 13, fontWeight: 700, marginBottom: 8 }
-const kv: React.CSSProperties = { display: "flex", justifyContent: "space-between", gap: 10, padding: "6px 0", borderBottom: "1px dashed #e6e6e6", fontSize: 13 }
-const k: React.CSSProperties = { color: "#555" }
-const v: React.CSSProperties = { color: "#111", textAlign: "right" }
-const linkStyle: React.CSSProperties = { color: "#0a58ca", textDecoration: "none" }
-const rankBadge: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700 }
-const startBtn: React.CSSProperties = { fontSize: 11, padding: "4px 10px", borderRadius: 4, border: "1px solid #0d9e6e", color: "#0d9e6e", background: "none", cursor: "pointer", whiteSpace: "nowrap" }
-const closeBtn: React.CSSProperties = { fontSize: 11, padding: "4px 10px", borderRadius: 4, border: "1px solid #e05c2a", color: "#e05c2a", background: "none", cursor: "pointer", whiteSpace: "nowrap" }
-const undoBtn: React.CSSProperties = { fontSize: 11, padding: "4px 10px", borderRadius: 4, border: "1px solid #ccc", color: "#888", background: "none", cursor: "pointer", marginLeft: 6 }
-const modalOverlay: React.CSSProperties = { position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }
-const modalBox: React.CSSProperties = { background: "#fff", borderRadius: 12, padding: 28, width: 380, boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }
-const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#555", display: "block", marginBottom: 6 }
-const modalInput: React.CSSProperties = { width: "100%", padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, boxSizing: "border-box" as const }
-const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }
-const cancelBtn: React.CSSProperties = { padding: "8px 16px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, background: "#fff", cursor: "pointer" }
-const confirmBtn: React.CSSProperties = { padding: "8px 16px", fontSize: 13, border: "none", borderRadius: 6, background: "#111", color: "#fff", cursor: "pointer", fontWeight: 600 }
-const earningsGrid: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 8 }
-const earningsCard: React.CSSProperties = { border: "1px solid #e6e6e6", borderRadius: 8, padding: "14px 18px", background: "#fff" }
-const earningsLabel: React.CSSProperties = { fontSize: 12, color: "#888", marginBottom: 4 }
-const earningsValue: React.CSSProperties = { fontSize: 22, fontWeight: 700, color: "#0d9e6e" }
-const earningsCount: React.CSSProperties = { fontSize: 12, color: "#aaa", marginTop: 2 }
+/* ─────────────────────────────────────────────
+   STYLES
+   ───────────────────────────────────────────── */
+const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#666", display: "block", marginBottom: 6 }
+const modalInput: React.CSSProperties = {
+  width: "100%", padding: "10px 12px", fontSize: 14,
+  border: "1px solid #333", borderRadius: 8, boxSizing: "border-box" as const,
+  background: "#0a0a0a", color: "#fff",
+}
+const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }
+const cancelBtn: React.CSSProperties = {
+  padding: "10px 20px", fontSize: 13, border: "1px solid #333",
+  borderRadius: 8, background: "none", color: "#888", cursor: "pointer",
+}
+const confirmBtn: React.CSSProperties = {
+  padding: "10px 20px", fontSize: 13, border: "none",
+  borderRadius: 8, background: "#34d399", color: "#0a0a0a", cursor: "pointer", fontWeight: 700,
+}
