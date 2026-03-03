@@ -438,16 +438,31 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <>
             {/* Expected Earnings */}
             <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
                 <div>
                   <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings next 12 months</div>
                   <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
-                  {totalEarned > 0 && <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far {"\u00b7"} {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
                 </div>
-                <div style={{ display: "flex", gap: 24 }}>
-                  {inProgress.length > 0 && <DashStat value={inProgress.length} label="Active" color="#2563eb" />}
-                  <DashStat value={available.length} label="Available" color="#111" />
-                  {inCooldown.length > 0 && <DashStat value={inCooldown.length} label="Cooling" color="#d97706" />}
+                <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total earned</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>${totalEarned.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0).toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 1 }}>{inProgress.length} bonus{inProgress.length !== 1 ? "es" : ""}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length}</div>
+                  </div>
+                  {inCooldown.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Cooling</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: "#d97706", marginTop: 2 }}>{inCooldown.length}</div>
+                    </div>
+                  )}
                 </div>
               </div>
               <button onClick={handleToggleProjection} style={{ marginTop: 14, fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
