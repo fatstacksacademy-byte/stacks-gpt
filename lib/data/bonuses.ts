@@ -40,14 +40,14 @@ export const bonuses: any[] = [
       "bonus_posting_days_est": 145,
       "must_remain_open_days": null
     },
-    "source_links": [
-      "https://paconsumercouncil.org/",
-      "https://prps.org/join-now",
-      "https://refer.psecu.com/Clayton4",
-      "https://www.doctorofcredit.com/pa-only-psecu-100-250-checking-bonus/",
-      "https://www.profitablecontent.com/psecu-300-checking-bonus/",
-      "https://go.psecu.com/refer?extole_share_channel=%5C%22SHARE_LINK%5C%22&extole_shareable_code=Clayton4"
-    ],
+   "source_links": [
+  "https://go.psecu.com/refer?extole_share_channel=%5C%22SHARE_LINK%5C%22&extole_shareable_code=Clayton4",
+  "https://paconsumercouncil.org/",
+  "https://prps.org/join-now",
+  "https://refer.psecu.com/Clayton4",
+  "https://www.doctorofcredit.com/pa-only-psecu-100-250-checking-bonus/",
+  "https://www.profitablecontent.com/psecu-300-checking-bonus/"
+],
     "raw_excerpt": "Two payroll direct deposits of $500+ each within 100 days; bonus within 145 days.",
     "missing_fields": [
       "requirements.holding_period_days",
@@ -1007,9 +1007,9 @@ export const bonuses: any[] = [
       "bonus_posting_days_est": 120,
       "must_remain_open_days": 120
     },
-    "source_links": [
-      "https://www.usbank.com/bank-accounts/checking-accounts/bank-smartly-checking.html"
-    ],
+   "source_links": [
+  "https://www.usbank.com/splash/checking/2026-all-market-checking-offer.html"
+],
     "raw_excerpt": "Open by 04/06/2026, fund with $25 within 30 days, complete 2+ direct deposits totaling $8,000+ within 90 days for $450 bonus. Posts within 30 days of completing requirements.",
     "missing_fields": [
       "requirements.min_direct_deposit_per_deposit",
