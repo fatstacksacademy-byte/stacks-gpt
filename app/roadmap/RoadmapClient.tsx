@@ -100,7 +100,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
   const [allowMultiple, setAllowMultiple] = useState(false)
-  const [onboardingStep, setOnboardingStep] = useState<"welcome" | "slots" | "frequency" | "paycheck" | "sequencer" | "done">("done")
+  const [onboardingStep, setOnboardingStep] = useState<"welcome" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
@@ -132,13 +132,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     if (!loadingRecords && completedRecords.length === 0 && loaded) {
-      const isDefault = profile.paycheck_amount === 1500 && profile.pay_frequency === "biweekly" && profile.dd_slots === 1
+      const isDefault = profile.paycheck_amount === 1500 && profile.pay_frequency === "biweekly"
       if (isDefault) setOnboardingStep("welcome")
     }
-  }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency, profile.dd_slots])
+  }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency])
 
   function handleRunSequencer() {
-    const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+    const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
     setSequencerResult(result)
     setOnboardingStep("sequencer")
   }
@@ -146,7 +146,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   function handleSequencerDone() { setOnboardingStep("done"); setSequencerResult(null) }
 
   function handleRefreshSequencer() {
-    const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+    const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
     setSequencerResult(result)
     setShowAdvanced(false)
   }
@@ -163,7 +163,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       return
     }
     if (!projectionResult) {
-      const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -282,10 +282,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
-      const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, onboardingStep, profile.dd_slots, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult])
+  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
@@ -333,14 +333,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Pay Profile</div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
               <div>
-                <div style={settingsLabel}>Direct deposit slots</div>
-                <div style={{ display: "flex", gap: 4 }}>
-                  {[1, 2, 3].map(n => (
-                    <button key={n} onClick={() => setProfile({ dd_slots: n })} style={profile.dd_slots === n ? segBtnActiveLight : segBtnLight}>{n}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
                 <div style={settingsLabel}>Pay frequency</div>
                 <select value={profile.pay_frequency} onChange={e => setProfile({ pay_frequency: e.target.value as PayFrequency })} style={settingsSelectLight}>
                   {FREQ_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
@@ -377,33 +369,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 Banks pay you for moving your direct deposit. We'll tell you exactly where to send it next.
               </p>
               <p style={{ fontSize: 14, color: "#aaa", margin: "0 0 36px" }}>
-                3 quick questions. Takes 30 seconds.
+                2 quick questions. Takes 20 seconds.
               </p>
-              <button onClick={() => setOnboardingStep("slots")} style={primaryBtn}>
+              <button onClick={() => setOnboardingStep("frequency")} style={primaryBtn}>
                 Let's go
               </button>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════ ONBOARDING: DD SLOTS ═══════ */}
-        {onboardingStep === "slots" && (
-          <div style={onboardingScreen}>
-            <div style={onboardingCard}>
-              <div style={stepIndicator}>Step 1 of 3</div>
-              <h2 style={onboardingQ}>Can you split your paycheck into multiple accounts?</h2>
-              <p style={onboardingHint}>Most employers let you split into 2 or more accounts. If you're not sure, pick 1 — you can change it later.</p>
-              <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-                {[1, 2, 3].map(n => (
-                  <button key={n} onClick={() => { setProfile({ dd_slots: n }); setOnboardingStep("frequency") }}
-                    style={profile.dd_slots === n ? obOptionActive : obOption}>
-                    <div style={{ fontSize: 28, fontWeight: 800 }}>{n}</div>
-                    <div style={{ fontSize: 12, color: profile.dd_slots === n ? "#fff" : "#999", marginTop: 2 }}>
-                      {n === 1 ? "account" : "accounts"}
-                    </div>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         )}
@@ -412,7 +382,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {onboardingStep === "frequency" && (
           <div style={onboardingScreen}>
             <div style={onboardingCard}>
-              <div style={stepIndicator}>Step 2 of 3</div>
+              <div style={stepIndicator}>Step 1 of 2</div>
               <h2 style={onboardingQ}>How often do you get paid?</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
                 {FREQ_OPTIONS.map(f => (
@@ -422,7 +392,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   </button>
                 ))}
               </div>
-              <button onClick={() => setOnboardingStep("slots")} style={backLink}>Back</button>
+              <button onClick={() => setOnboardingStep("welcome")} style={backLink}>Back</button>
             </div>
           </div>
         )}
@@ -431,7 +401,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {onboardingStep === "paycheck" && (
           <div style={onboardingScreen}>
             <div style={onboardingCard}>
-              <div style={stepIndicator}>Step 3 of 3</div>
+              <div style={stepIndicator}>Step 2 of 2</div>
               <h2 style={onboardingQ}>What's your take-home pay per paycheck?</h2>
               <p style={onboardingHint}>After taxes. A rough estimate is fine.</p>
               <div style={{ position: "relative", marginTop: 24, maxWidth: 240 }}>
@@ -532,7 +502,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               return (
                 <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
                   <div style={{ fontSize: 12, color: "#bbb", marginBottom: 10 }}>
-                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
+                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {yearBonuses.map((p, i) => (
