@@ -113,6 +113,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customChurnable, setCustomChurnable] = useState(false)
   const [customCooldown, setCustomCooldown] = useState("12")
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
+  const [showThreeYear, setShowThreeYear] = useState(false)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -365,7 +366,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 Let's find you an extra $2,000+ this year
               </h1>
               <p style={{ fontSize: 16, color: "#777", lineHeight: 1.6, margin: "0 0 12px" }}>
-                Banks pay you hundreds of dollars just for setting up direct deposit. We'll tell you exactly which bonuses to sign up for, in what order, to get you the most money.
+                Banks pay you for moving your direct deposit. We'll tell you exactly where to send it next.
               </p>
               <p style={{ fontSize: 14, color: "#aaa", margin: "0 0 36px" }}>
                 3 quick questions. Takes 30 seconds.
@@ -382,7 +383,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <div style={onboardingScreen}>
             <div style={onboardingCard}>
               <div style={stepIndicator}>Step 1 of 3</div>
-              <h2 style={onboardingQ}>How many direct deposits can you split your paycheck into?</h2>
+              <h2 style={onboardingQ}>Can you split your paycheck into multiple accounts?</h2>
               <p style={onboardingHint}>Most employers let you split into 2 or more accounts. If you're not sure, pick 1 — you can change it later.</p>
               <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
                 {[1, 2, 3].map(n => (
@@ -410,7 +411,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <button key={f.value} onClick={() => { setProfile({ pay_frequency: f.value }); setOnboardingStep("paycheck") }}
                     style={profile.pay_frequency === f.value ? obRowActive : obRow}>
                     <span style={{ fontSize: 15, fontWeight: 600 }}>{f.label}</span>
-                    <span style={{ fontSize: 13, color: profile.pay_frequency === f.value ? "rgba(255,255,255,0.7)" : "#999" }}>{f.desc}</span>
                   </button>
                 ))}
               </div>
@@ -425,7 +425,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={onboardingCard}>
               <div style={stepIndicator}>Step 3 of 3</div>
               <h2 style={onboardingQ}>What's your take-home pay per paycheck?</h2>
-              <p style={onboardingHint}>After taxes. A rough estimate is totally fine — this helps us figure out which bonuses you qualify for.</p>
+              <p style={onboardingHint}>After taxes. A rough estimate is fine.</p>
               <div style={{ position: "relative", marginTop: 24, maxWidth: 240 }}>
                 <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 22, fontWeight: 600 }}>$</span>
                 <input
@@ -438,7 +438,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 />
               </div>
               <button onClick={handleRunSequencer} style={{ ...primaryBtn, marginTop: 28, width: "100%" }}>
-                Find my bonuses
+                Build my plan
               </button>
               <button onClick={() => setOnboardingStep("frequency")} style={backLink}>Back</button>
             </div>
@@ -451,32 +451,43 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           const endDate = addDays(todayStr(), 365)
           const yearTotal = projected.filter(p => new Date(p.payout_date) <= endDate).reduce((s, p) => s + p.bonus_amount, 0)
           const multiYearTotal = yearTotal * 3
+          const firstBonus = projected[0]
+          const firstAmount = firstBonus ? firstBonus.bonus_amount : yearTotal
           return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "75vh", padding: "32px" }}>
               <div style={{ textAlign: "center", maxWidth: 520 }}>
                 <div style={{ fontSize: 14, color: "#0d7c5f", fontWeight: 600, marginBottom: 8 }}>Your personalized plan is ready</div>
-                <h2 style={{ fontSize: 34, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
-                  You could earn ${multiYearTotal.toLocaleString()}
+                <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
+                  Your First {money(firstAmount)} Is Ready
                 </h2>
-                <p style={{ fontSize: 16, color: "#888", marginTop: 0, lineHeight: 1.6 }}>
-                  over the next 3 years by following your optimized bonus plan.
+                <p style={{ fontSize: 15, color: "#888", marginTop: 0, lineHeight: 1.6 }}>
+                  You qualify based on your paycheck.
                 </p>
-                <div style={{ display: "flex", justifyContent: "center", gap: 32, margin: "28px 0" }}>
-                  <div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${yearTotal.toLocaleString()}</div>
-                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 1</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${(yearTotal * 2).toLocaleString()}</div>
-                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 2</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${multiYearTotal.toLocaleString()}</div>
-                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 3</div>
-                  </div>
+                <div style={{ margin: "28px 0 8px" }}>
+                  <div style={{ fontSize: 14, color: "#999" }}>Projected this year</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${yearTotal.toLocaleString()}</div>
                 </div>
+                <button onClick={() => setShowThreeYear(s => !s)} style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 24 }}>
+                  {showThreeYear ? "Hide 3-year projection" : "See 3-year projection"}
+                </button>
+                {showThreeYear && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: 32, marginBottom: 24 }}>
+                    <div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${yearTotal.toLocaleString()}</div>
+                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 1</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${(yearTotal * 2).toLocaleString()}</div>
+                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 2</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${multiYearTotal.toLocaleString()}</div>
+                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 3</div>
+                    </div>
+                  </div>
+                )}
                 <button onClick={handleSequencerDone} style={{ ...primaryBtn, width: "100%", padding: "16px 28px", fontSize: 16 }}>
-                  Go to dashboard →
+                  Go to dashboard
                 </button>
               </div>
             </div>
