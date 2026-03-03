@@ -973,3 +973,4 @@ const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", f
 const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }
 const cancelBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#888", cursor: "pointer" }
 const confirmBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: "#0d7c5f", color: "#fff", cursor: "pointer", fontWeight: 700 }
+
