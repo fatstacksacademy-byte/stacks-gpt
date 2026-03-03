@@ -11,6 +11,7 @@ export type CustomBonus = {
   actual_amount: number | null
   current_step: string | null
   notes: string | null
+  cooldown_months: number | null
   created_at: string
 }
 
@@ -30,7 +31,8 @@ export async function addCustomBonus(
   bankName: string,
   bonusAmount: number,
   openedDate: string,
-  notes?: string
+  notes?: string,
+  cooldownMonths?: number | null
 ): Promise<CustomBonus | null> {
   const supabase = createClient()
   const { data, error } = await supabase
@@ -41,6 +43,7 @@ export async function addCustomBonus(
       bonus_amount: bonusAmount,
       opened_date: openedDate,
       notes: notes || null,
+      cooldown_months: cooldownMonths ?? null,
     })
     .select()
     .single()

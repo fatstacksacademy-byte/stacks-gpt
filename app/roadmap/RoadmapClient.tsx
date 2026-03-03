@@ -109,6 +109,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customAmount, setCustomAmount] = useState("")
   const [customDate, setCustomDate] = useState(todayStr())
   const [customNotes, setCustomNotes] = useState("")
+  const [customChurnable, setCustomChurnable] = useState(false)
+  const [customCooldown, setCustomCooldown] = useState("12")
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -192,13 +194,16 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
-    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined)
+    const cooldown = customChurnable ? parseInt(customCooldown) || null : null
+    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined, cooldown)
     await loadRecords()
     setShowAddCustom(false)
     setCustomBank("")
     setCustomAmount("")
     setCustomDate(todayStr())
     setCustomNotes("")
+    setCustomChurnable(false)
+    setCustomCooldown("12")
   }
 
   async function handleCloseCustom() {
@@ -219,6 +224,19 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const closedCustom = customBonuses.filter(c => c.closed_date)
   const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
   const customInProgress = activeCustom.reduce((s, c) => s + c.bonus_amount, 0)
+
+  // Custom bonuses in cooldown (closed, churnable, cooldown not yet elapsed)
+  const customInCooldown = closedCustom.filter(c => {
+    if (!c.cooldown_months || !c.closed_date) return false
+    const cooldownEnd = new Date(c.closed_date + "T00:00:00")
+    cooldownEnd.setMonth(cooldownEnd.getMonth() + c.cooldown_months)
+    return cooldownEnd > new Date()
+  }).map(c => {
+    const cooldownEnd = new Date(c.closed_date! + "T00:00:00")
+    cooldownEnd.setMonth(cooldownEnd.getMonth() + c.cooldown_months!)
+    const daysLeft = Math.ceil((cooldownEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return { ...c, days_remaining: daysLeft, available_date: cooldownEnd.toISOString().split("T")[0] }
+  })
 
   const bonusesWithMeta = mounted
     ? allBonuses.map((b) => ({
@@ -653,7 +671,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             )}
 
             {/* Cooldown */}
-            {inCooldown.length > 0 && (
+            {(inCooldown.length > 0 || customInCooldown.length > 0) && (
               <div style={{ marginBottom: 28 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 12 }}>Cooling Down</div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -667,6 +685,16 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       </div>
                     )
                   })}
+                  {customInCooldown.map(c => (
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{c.bank_name}</div>
+                        <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#d97706", marginTop: 4 }}>{c.days_remaining} days left</div>
+                      <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Available {fmtShortDate(c.available_date)}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -706,7 +734,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
                           <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Opened {fmtShortDate(c.opened_date)}{c.notes ? ` · ${c.notes}` : ""}</div>
-                          <div style={{ fontSize: 11, color: "#2563eb", marginTop: 2 }}>In progress</div>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 2 }}>
+                            <span style={{ fontSize: 11, color: "#2563eb" }}>In progress</span>
+                            {c.cooldown_months && <span style={{ fontSize: 10, color: "#d97706" }}>· Churnable every {c.cooldown_months}mo</span>}
+                            {!c.cooldown_months && <span style={{ fontSize: 10, color: "#bbb" }}>· One-time</span>}
+                          </div>
                         </div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
                       </div>
@@ -879,7 +911,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       {/* Add Custom Bonus Modal */}
       {showAddCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Custom Bonus</div>
             <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bonus that isn't in our database yet.</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -902,9 +934,23 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <label style={modalLabel}>Notes (optional)</label>
                 <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Any requirements or details" style={modalInput} />
               </div>
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => setCustomChurnable(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="customChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
+                </div>
+                {customChurnable && (
+                  <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                    <label style={{ fontSize: 13, color: "#666" }}>Cooldown period:</label>
+                    <input type="number" value={customCooldown} onChange={e => setCustomCooldown(e.target.value)}
+                      style={{ ...modalInput, width: 70, padding: "6px 10px", textAlign: "center" as const }} min={1} />
+                    <span style={{ fontSize: 13, color: "#666" }}>months</span>
+                  </div>
+                )}
+              </div>
             </div>
             <div style={modalActions}>
-              <button onClick={() => setShowAddCustom(false)} style={cancelBtnLight}>Cancel</button>
+              <button onClick={() => { setShowAddCustom(false); setCustomChurnable(false); setCustomCooldown("12") }} style={cancelBtnLight}>Cancel</button>
               <button onClick={handleAddCustom} disabled={!customBank || !customAmount} style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Add Bonus</button>
             </div>
           </div>
@@ -973,4 +1019,3 @@ const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", f
 const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }
 const cancelBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#888", cursor: "pointer" }
 const confirmBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: "#0d7c5f", color: "#fff", cursor: "pointer", fontWeight: 700 }
-
