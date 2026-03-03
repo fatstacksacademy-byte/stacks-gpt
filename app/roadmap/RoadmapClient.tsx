@@ -456,8 +456,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             </div>
           )
         })()}
-          </div>
-        )}
 
         {/* ═══════ MAIN DASHBOARD ═══════ */}
         {onboardingStep === "done" && (
