@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useCallback } from "react"
-import { getMilestoneDetail, BonusStep, MilestoneKey } from "../../lib/bonusSteps"
+import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
@@ -85,15 +85,6 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "semimonthly", label: "Twice a month", desc: "24 paychecks/year" },
   { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
 ]
-
-// Map milestone keys to legacy step keys for the override API
-const MILESTONE_TO_STEP: Record<MilestoneKey, BonusStep> = {
-  account_opened: "open",
-  dd_confirmed: "fund",
-  deposit_met: "fund",
-  bonus_posted: "wait",
-  safe_to_close: "close",
-}
 
 export default function RoadmapClient({ userEmail, userId }: { userEmail: string; userId: string }) {
   const { profile, setProfile, loaded } = useProfile()
@@ -208,8 +199,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }
 
   async function handleMilestoneOverride(bonusId: string, milestone: MilestoneKey) {
-    const legacyStep = MILESTONE_TO_STEP[milestone]
-    await handleStepOverride(bonusId, legacyStep)
+    // Write the milestone key directly — getMilestoneDetail reads it back
+    // via the fallback: LEGACY_STEP_MAP[manualStep] ?? (manualStep as MilestoneKey)
+    await handleStepOverride(bonusId, milestone)
   }
 
   async function handleAddCustom() {
