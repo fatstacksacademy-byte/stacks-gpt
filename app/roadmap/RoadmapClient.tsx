@@ -43,6 +43,41 @@ function numOrDash(v: number | null | undefined, suffix?: string) { return v == 
 function bestLink(links: string[] | null | undefined) { return links?.[0] ?? null }
 function todayStr() { return new Date().toISOString().split("T")[0] }
 
+function addDays(dateStr: string, days: number): Date {
+  const d = new Date(dateStr + "T00:00:00")
+  d.setDate(d.getDate() + days)
+  return d
+}
+
+function fmtDate(d: Date): string {
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+}
+
+type ProjectedBonus = {
+  bank_name: string
+  bonus_amount: number
+  start_date: string
+  payout_date: string
+  weeks: number
+}
+
+function getProjectedBonuses(sequencerResult: SequencerResult): ProjectedBonus[] {
+  const today = todayStr()
+  const bonuses = sequencerResult.slots.flat().filter(e => e.type === "bonus") as SequencedBonus[]
+  return bonuses.map(b => {
+    const startDate = addDays(today, (b.start_week - 1) * 7)
+    const payoutWeeks = b.bonus_posting_days_est ? Math.ceil(b.bonus_posting_days_est / 7) : b.weeks_to_complete + 4
+    const payoutDate = addDays(today, ((b.start_week - 1) + payoutWeeks) * 7)
+    return {
+      bank_name: b.bank_name,
+      bonus_amount: b.bonus_amount,
+      start_date: fmtDate(startDate),
+      payout_date: fmtDate(payoutDate),
+      weeks: b.weeks_to_complete,
+    }
+  })
+}
+
 const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "weekly", label: "Every week", desc: "52 paychecks/year" },
   { value: "biweekly", label: "Every 2 weeks", desc: "26 paychecks/year" },
@@ -64,6 +99,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [onboardingStep, setOnboardingStep] = useState<"welcome" | "slots" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
+  const [showProjection, setShowProjection] = useState(false)
+  const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -95,6 +132,18 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
     setSequencerResult(result)
     setShowAdvanced(false)
+  }
+
+  function handleToggleProjection() {
+    if (showProjection) {
+      setShowProjection(false)
+      return
+    }
+    if (!projectionResult) {
+      const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      setProjectionResult(result)
+    }
+    setShowProjection(true)
   }
 
   async function handleStart() {
@@ -344,7 +393,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     boxShadow: isFirst ? "0 4px 20px rgba(13,124,95,0.08)" : "none",
                   }}>
                     <div style={{ fontSize: 11, color: isFirst ? "#0d7c5f" : "#bbb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 6 }}>
-                      {isFirst ? "Start here" : `Then \u2192 Step ${i + 1}`}
+                      {isFirst ? "Start here" : `Then → Step ${i + 1}`}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
@@ -359,7 +408,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
                         {link && (
                           <a href={link} target="_blank" rel="noreferrer" style={primaryBtn}>
-                            Open your account \u2192
+                            Open your account →
                           </a>
                         )}
                         <button onClick={() => { setActionBonus({ bonus: fullBonus, mode: "start" }); setActionDate(todayStr()) }}
@@ -370,7 +419,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 )
               })}
             </div>
-            <button onClick={handleSequencerDone} style={{ ...secondaryBtn, width: "100%", marginTop: 20 }}>Go to dashboard \u2192</button>
+            <button onClick={handleSequencerDone} style={{ ...secondaryBtn, width: "100%", marginTop: 20 }}>Go to dashboard →</button>
           </div>
         )}
 
@@ -378,20 +427,52 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {onboardingStep === "done" && (
           <>
             {/* Expected Earnings */}
-            <div style={{
-              background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24,
-              display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16,
-            }}>
-              <div>
-                <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings this year</div>
-                <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
-                {totalEarned > 0 && <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far \u00b7 {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
+            <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings this year</div>
+                  <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
+                  {totalEarned > 0 && <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far {"\u00b7"} {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
+                </div>
+                <div style={{ display: "flex", gap: 24 }}>
+                  {inProgress.length > 0 && <DashStat value={inProgress.length} label="Active" color="#2563eb" />}
+                  <DashStat value={available.length} label="Available" color="#111" />
+                  {inCooldown.length > 0 && <DashStat value={inCooldown.length} label="Cooling" color="#d97706" />}
+                </div>
               </div>
-              <div style={{ display: "flex", gap: 24 }}>
-                {inProgress.length > 0 && <DashStat value={inProgress.length} label="Active" color="#2563eb" />}
-                <DashStat value={available.length} label="Available" color="#111" />
-                {inCooldown.length > 0 && <DashStat value={inCooldown.length} label="Cooling" color="#d97706" />}
-              </div>
+              <button onClick={handleToggleProjection} style={{ marginTop: 14, fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                {showProjection ? "Hide breakdown" : "How is this calculated?"}
+              </button>
+              {showProjection && projectionResult && (() => {
+                const projected = getProjectedBonuses(projectionResult)
+                const thisYear = new Date().getFullYear()
+                const yearBonuses = projected.filter(p => new Date(p.payout_date).getFullYear() === thisYear)
+                return (
+                  <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
+                    <div style={{ fontSize: 12, color: "#bbb", marginBottom: 12 }}>
+                      Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {yearBonuses.map((p, i) => (
+                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f8f8f8", borderRadius: 8 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{i + 1}</span>
+                            <div>
+                              <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{p.bank_name}</div>
+                              <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>Start {p.start_date} → Payout ~{p.payout_date}</div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 14px", marginTop: 8, background: "#f0faf5", borderRadius: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected this year</span>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: "#0d7c5f" }}>${yearBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
 
             {/* Sequencer Results */}
@@ -464,7 +545,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       <>
                         {bestLink(currentBonus.bonus.source_links) && (
                           <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer" style={primaryBtn}>
-                            Open your account \u2192
+                            Open your account →
                           </a>
                         )}
                         <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
@@ -479,7 +560,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* Timeline hint */}
             {nextBonus && currentWeeks > 0 && (
               <div style={{ background: "#f0faf5", border: "1px solid #c8ede1", borderRadius: 10, padding: "12px 18px", marginBottom: 24, fontSize: 13, color: "#0d7c5f" }}>
-                <strong>Next up:</strong> Start {nextBonus.bonus.bank_name} in ~{currentWeeks} weeks \u2192 Earn {money(nextBonus.bonus.bonus_amount)}
+                <strong>Next up:</strong> Start {nextBonus.bonus.bank_name} in ~{currentWeeks} weeks → Earn {money(nextBonus.bonus.bonus_amount)}
               </div>
             )}
 
