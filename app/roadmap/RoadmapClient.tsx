@@ -420,59 +420,42 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         )}
 
         {/* ═══════ ONBOARDING: SEQUENCER RESULTS ═══════ */}
-        {onboardingStep === "sequencer" && sequencerResult && (
-          <div style={{ maxWidth: 640, margin: "0 auto", paddingTop: 40 }}>
-            <div style={{ textAlign: "center", marginBottom: 32 }}>
-              <div style={{ fontSize: 14, color: "#0d7c5f", fontWeight: 600, marginBottom: 8 }}>Your personalized plan</div>
-              <h2 style={{ fontSize: 30, fontWeight: 800, color: "#111", margin: 0, letterSpacing: "-0.02em" }}>
-                You could earn ${sequencerResult.total_bonus.toLocaleString()}
-              </h2>
-              <p style={{ fontSize: 15, color: "#888", marginTop: 8 }}>
-                from {sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bank bonuses. Here's where to start.
-              </p>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {sequencerResult.slots.flat().filter(e => e.type === "bonus").slice(0, 3).map((entry, i) => {
-                const b = entry as SequencedBonus
-                const fullBonus = allBonuses.find(x => x.id === b.id)
-                if (!fullBonus) return null
-                const isFirst = i === 0
-                const link = bestLink(fullBonus.source_links)
-                return (
-                  <div key={`${b.id}-${b.cycle}`} style={{
-                    background: "#fff", border: isFirst ? "2px solid #0d7c5f" : "1px solid #e8e8e8",
-                    borderRadius: 14, padding: isFirst ? "28px 24px" : "20px 24px",
-                    boxShadow: isFirst ? "0 4px 20px rgba(13,124,95,0.08)" : "none",
-                  }}>
-                    <div style={{ fontSize: 11, color: isFirst ? "#0d7c5f" : "#bbb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 6 }}>
-                      {isFirst ? "Start here" : `Then → Step ${i + 1}`}
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div>
-                        <div style={{ fontSize: isFirst ? 22 : 17, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>
-                          ~{b.weeks_to_complete} weeks{b.monthly_fee ? ` \u00b7 ${money(b.monthly_fee)}/mo fee` : " \u00b7 No fee"}
-                        </div>
-                      </div>
-                      <div style={{ fontSize: isFirst ? 26 : 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
-                    </div>
-                    {isFirst && (
-                      <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-                        {link && (
-                          <a href={link} target="_blank" rel="noreferrer" style={primaryBtn}>
-                            Open your account →
-                          </a>
-                        )}
-                        <button onClick={() => { setActionBonus({ bonus: fullBonus, mode: "start" }); setActionDate(todayStr()) }}
-                          style={secondaryBtn}>I already opened it</button>
-                      </div>
-                    )}
+        {onboardingStep === "sequencer" && sequencerResult && (() => {
+          const projected = getProjectedBonuses(sequencerResult)
+          const endDate = addDays(todayStr(), 365)
+          const yearTotal = projected.filter(p => new Date(p.payout_date) <= endDate).reduce((s, p) => s + p.bonus_amount, 0)
+          const multiYearTotal = yearTotal * 3
+          return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "75vh", padding: "32px" }}>
+              <div style={{ textAlign: "center", maxWidth: 520 }}>
+                <div style={{ fontSize: 14, color: "#0d7c5f", fontWeight: 600, marginBottom: 8 }}>Your personalized plan is ready</div>
+                <h2 style={{ fontSize: 34, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
+                  You could earn ${multiYearTotal.toLocaleString()}
+                </h2>
+                <p style={{ fontSize: 16, color: "#888", marginTop: 0, lineHeight: 1.6 }}>
+                  over the next 3 years by following your optimized bonus plan.
+                </p>
+                <div style={{ display: "flex", justifyContent: "center", gap: 32, margin: "28px 0" }}>
+                  <div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${yearTotal.toLocaleString()}</div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 1</div>
                   </div>
-                )
-              })}
+                  <div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${(yearTotal * 2).toLocaleString()}</div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 2</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${multiYearTotal.toLocaleString()}</div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 3</div>
+                  </div>
+                </div>
+                <button onClick={handleSequencerDone} style={{ ...primaryBtn, width: "100%", padding: "16px 28px", fontSize: 16 }}>
+                  Go to dashboard →
+                </button>
+              </div>
             </div>
-            <button onClick={handleSequencerDone} style={{ ...secondaryBtn, width: "100%", marginTop: 20 }}>Go to dashboard →</button>
+          )
+        })()}
           </div>
         )}
 
