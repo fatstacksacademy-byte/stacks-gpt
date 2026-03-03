@@ -617,7 +617,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       const depositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
                       const depositedSoFar = Math.min(totalRequired, depositsSoFar * profile.paycheck_amount)
 
-                      const isSafeToClose = milestoneDetail.safeToClose && milestoneDetail.bonusPosted
                       const isDetailsExpanded = expandedDetails === b.id
 
                       // Fee avoidance info
@@ -639,13 +638,31 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           <div style={{ padding: "16px 24px 0" }}>
                             <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                              {milestoneDetail.milestones.map((m) => {
+                              {milestoneDetail.milestones
+                                .filter((m) => m.key !== "safe_to_close")
+                                .map((m) => {
                                 const isCompleted = m.status === "completed"
                                 const isActive = m.status === "active"
+                                const isUpcoming = m.status === "upcoming"
+
+                                // Click handler: if unchecked (active/upcoming), advance to the NEXT milestone after this one
+                                // If already completed, do nothing
+                                const handleCheck = () => {
+                                  if (isCompleted) return
+                                  // Find the milestone AFTER the clicked one to advance past it
+                                  const allKeys: MilestoneKey[] = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted"]
+                                  const clickedIdx = allKeys.indexOf(m.key as MilestoneKey)
+                                  if (clickedIdx >= 0 && clickedIdx < allKeys.length - 1) {
+                                    handleMilestoneOverride(b.id, allKeys[clickedIdx + 1])
+                                  } else if (m.key === "bonus_posted") {
+                                    handleMilestoneOverride(b.id, "bonus_posted")
+                                  }
+                                }
+
                                 return (
                                   <div key={m.key}
-                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: "pointer", borderRadius: 6 }}
-                                    onClick={() => handleMilestoneOverride(b.id, m.key)}>
+                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: isCompleted ? "default" : "pointer", borderRadius: 6 }}
+                                    onClick={handleCheck}>
                                     {/* Checkbox */}
                                     <div style={{
                                       width: 18, height: 18, borderRadius: 4, flexShrink: 0,
@@ -703,12 +720,20 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
 
-                          {/* ── Close button (only when safe) ── */}
-                          {isSafeToClose && (
+                          {/* ── Close account action ── */}
+                          {milestoneDetail.bonusPosted && (
                             <div style={{ padding: "12px 24px 0" }}>
                               <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
                                 style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
                                 Close account and collect
+                              </button>
+                            </div>
+                          )}
+                          {!milestoneDetail.bonusPosted && (
+                            <div style={{ padding: "12px 24px 0" }}>
+                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
+                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                                Close account early
                               </button>
                             </div>
                           )}
