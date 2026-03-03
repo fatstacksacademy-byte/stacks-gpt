@@ -43,11 +43,11 @@ function numOrDash(v: number | null | undefined, suffix?: string) { return v == 
 function bestLink(links: string[] | null | undefined) { return links?.[0] ?? null }
 function todayStr() { return new Date().toISOString().split("T")[0] }
 
-const FREQ_OPTIONS: { value: PayFrequency; label: string }[] = [
-  { value: "weekly", label: "Weekly" },
-  { value: "biweekly", label: "Every 2 weeks" },
-  { value: "semimonthly", label: "Twice a month" },
-  { value: "monthly", label: "Monthly" },
+const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
+  { value: "weekly", label: "Every week", desc: "52 paychecks/year" },
+  { value: "biweekly", label: "Every 2 weeks", desc: "26 paychecks/year" },
+  { value: "semimonthly", label: "Twice a month", desc: "24 paychecks/year" },
+  { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
 ]
 
 export default function RoadmapClient({ userEmail, userId }: { userEmail: string; userId: string }) {
@@ -62,7 +62,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
-  const [onboardingStep, setOnboardingStep] = useState<"setup" | "sequencer" | "done">("done")
+  const [onboardingStep, setOnboardingStep] = useState<"welcome" | "slots" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -79,20 +79,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   useEffect(() => {
     if (!loadingRecords && completedRecords.length === 0 && loaded) {
       const isDefault = profile.paycheck_amount === 1500 && profile.pay_frequency === "biweekly" && profile.dd_slots === 1
-      if (isDefault) setOnboardingStep("setup")
+      if (isDefault) setOnboardingStep("welcome")
     }
   }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency, profile.dd_slots])
 
-  function handleOnboardingComplete() {
+  function handleRunSequencer() {
     const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
     setSequencerResult(result)
     setOnboardingStep("sequencer")
   }
 
-  function handleSequencerDone() {
-    setOnboardingStep("done")
-    setSequencerResult(null)
-  }
+  function handleSequencerDone() { setOnboardingStep("done"); setSequencerResult(null) }
 
   function handleRefreshSequencer() {
     const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
@@ -172,185 +169,252 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       : available.slice(1, 3))
     : []
 
+  // Timeline: when does the current bonus end and next one start?
+  const currentWeeks = currentBonus?.weeksToComplete ?? 0
+  const nextBonus = inProgress.length > 0 ? available[0] : available[1]
+
   if (!mounted || loadingRecords) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ color: "#555", fontSize: 14 }}>Loading...</div>
-      </div>
-    )
+    return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
   }
 
-  return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e8e8e8" }}>
-      {/* Top Bar */}
-      <div style={{ borderBottom: "1px solid #1a1a1a", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto" }}>
-        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#fff" }}>Stacks OS</span>
-        {onboardingStep === "done" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close settings" : "Pay settings"}</button>
-            <button onClick={handleRefreshSequencer} style={{ ...topBtn, color: "#34d399", borderColor: "#1a3a2a" }}>Refresh bonuses</button>
-          </div>
-        )}
-      </div>
+  const isOnboarding = onboardingStep !== "done" && onboardingStep !== "sequencer"
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 32px 80px" }}>
+  return (
+    <div style={{ minHeight: "100vh", background: "#fafafa", color: "#1a1a1a", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+      {/* Top Bar */}
+      {!isOnboarding && (
+        <div style={{ borderBottom: "1px solid #e8e8e8", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
+          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
+          {onboardingStep === "done" && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Settings"}</button>
+              <button onClick={handleRefreshSequencer} style={{ ...topBtn, color: "#0d7c5f", borderColor: "#c8ede1" }}>Refresh bonuses</button>
+              <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isOnboarding ? "0" : "28px 32px 80px" }}>
 
         {/* Settings Panel */}
         {showSettings && onboardingStep === "done" && (
-          <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 16 }}>Pay Profile</div>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Pay Profile</div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
               <div>
                 <div style={settingsLabel}>Direct deposit slots</div>
                 <div style={{ display: "flex", gap: 4 }}>
                   {[1, 2, 3].map(n => (
-                    <button key={n} onClick={() => setProfile({ dd_slots: n })} style={{ ...segBtn, ...(profile.dd_slots === n ? segBtnActive : {}) }}>{n}</button>
+                    <button key={n} onClick={() => setProfile({ dd_slots: n })} style={profile.dd_slots === n ? segBtnActiveLight : segBtnLight}>{n}</button>
                   ))}
                 </div>
               </div>
               <div>
                 <div style={settingsLabel}>Pay frequency</div>
-                <select value={profile.pay_frequency} onChange={e => setProfile({ pay_frequency: e.target.value as PayFrequency })} style={settingsSelect}>
+                <select value={profile.pay_frequency} onChange={e => setProfile({ pay_frequency: e.target.value as PayFrequency })} style={settingsSelectLight}>
                   {FREQ_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                 </select>
               </div>
               <div>
                 <div style={settingsLabel}>Paycheck amount</div>
                 <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#555", fontSize: 14 }}>$</span>
-                  <input type="number" value={profile.paycheck_amount} onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })} style={settingsInput} min={0} step={100} />
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={profile.paycheck_amount} onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })} style={settingsInputLight} min={0} step={100} />
                 </div>
               </div>
             </div>
-            <div style={{ fontSize: 11, color: "#444", marginTop: 12 }}>Changes save automatically</div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
           </div>
         )}
 
-        {/* ONBOARDING: SETUP */}
-        {onboardingStep === "setup" && (
-          <div style={{ maxWidth: 520, margin: "0 auto", paddingTop: 40 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: "#fff", margin: 0, letterSpacing: "-0.02em" }}>Welcome to Stacks OS</h1>
-            <p style={{ fontSize: 15, color: "#666", marginTop: 10, lineHeight: 1.6 }}>We find the best bank bonuses for your paycheck and walk you through every step. Takes 30 seconds.</p>
-            <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 24 }}>
-              <div>
-                <div style={setupLabel}>How many direct deposit slots does your employer allow?</div>
-                <div style={setupHint}>Most employers allow at least 2. Not sure? Start with 1.</div>
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                  {[1, 2, 3].map(n => (
-                    <button key={n} onClick={() => setProfile({ dd_slots: n })} style={{ ...setupSegBtn, ...(profile.dd_slots === n ? setupSegBtnActive : {}) }}>{n} slot{n > 1 ? "s" : ""}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div style={setupLabel}>How often do you get paid?</div>
-                <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-                  {FREQ_OPTIONS.map(f => (
-                    <button key={f.value} onClick={() => setProfile({ pay_frequency: f.value })} style={{ ...setupSegBtn, ...(profile.pay_frequency === f.value ? setupSegBtnActive : {}) }}>{f.label}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div style={setupLabel}>What is your paycheck amount (after taxes)?</div>
-                <div style={setupHint}>Per paycheck, not per month. A rough estimate is fine.</div>
-                <div style={{ position: "relative", marginTop: 10, maxWidth: 200 }}>
-                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#666", fontSize: 18 }}>$</span>
-                  <input type="number" value={profile.paycheck_amount} onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })} style={setupPayInput} min={0} step={100} />
-                </div>
+        {/* ═══════ ONBOARDING: WELCOME ═══════ */}
+        {onboardingStep === "welcome" && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: "32px" }}>
+            <div style={{ textAlign: "center", maxWidth: 520 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Stacks OS</div>
+              <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111", margin: "0 0 16px", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+                Let's find you an extra $2,000+ this year
+              </h1>
+              <p style={{ fontSize: 16, color: "#777", lineHeight: 1.6, margin: "0 0 12px" }}>
+                Banks pay you hundreds of dollars just for setting up direct deposit. We'll tell you exactly which bonuses to sign up for, in what order, to get you the most money.
+              </p>
+              <p style={{ fontSize: 14, color: "#aaa", margin: "0 0 36px" }}>
+                3 quick questions. Takes 30 seconds.
+              </p>
+              <button onClick={() => setOnboardingStep("slots")} style={primaryBtn}>
+                Let's go
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════ ONBOARDING: DD SLOTS ═══════ */}
+        {onboardingStep === "slots" && (
+          <div style={onboardingScreen}>
+            <div style={onboardingCard}>
+              <div style={stepIndicator}>Step 1 of 3</div>
+              <h2 style={onboardingQ}>How many direct deposits can you split your paycheck into?</h2>
+              <p style={onboardingHint}>Most employers let you split into 2 or more accounts. If you're not sure, pick 1 — you can change it later.</p>
+              <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                {[1, 2, 3].map(n => (
+                  <button key={n} onClick={() => { setProfile({ dd_slots: n }); setOnboardingStep("frequency") }}
+                    style={profile.dd_slots === n ? obOptionActive : obOption}>
+                    <div style={{ fontSize: 28, fontWeight: 800 }}>{n}</div>
+                    <div style={{ fontSize: 12, color: profile.dd_slots === n ? "#fff" : "#999", marginTop: 2 }}>
+                      {n === 1 ? "account" : "accounts"}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
-            <button onClick={handleOnboardingComplete} style={setupContinueBtn}>Find my bonuses \u2192</button>
           </div>
         )}
 
-        {/* ONBOARDING: SEQUENCER RESULTS */}
+        {/* ═══════ ONBOARDING: FREQUENCY ═══════ */}
+        {onboardingStep === "frequency" && (
+          <div style={onboardingScreen}>
+            <div style={onboardingCard}>
+              <div style={stepIndicator}>Step 2 of 3</div>
+              <h2 style={onboardingQ}>How often do you get paid?</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+                {FREQ_OPTIONS.map(f => (
+                  <button key={f.value} onClick={() => { setProfile({ pay_frequency: f.value }); setOnboardingStep("paycheck") }}
+                    style={profile.pay_frequency === f.value ? obRowActive : obRow}>
+                    <span style={{ fontSize: 15, fontWeight: 600 }}>{f.label}</span>
+                    <span style={{ fontSize: 13, color: profile.pay_frequency === f.value ? "rgba(255,255,255,0.7)" : "#999" }}>{f.desc}</span>
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setOnboardingStep("slots")} style={backLink}>Back</button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════ ONBOARDING: PAYCHECK ═══════ */}
+        {onboardingStep === "paycheck" && (
+          <div style={onboardingScreen}>
+            <div style={onboardingCard}>
+              <div style={stepIndicator}>Step 3 of 3</div>
+              <h2 style={onboardingQ}>What's your take-home pay per paycheck?</h2>
+              <p style={onboardingHint}>After taxes. A rough estimate is totally fine — this helps us figure out which bonuses you qualify for.</p>
+              <div style={{ position: "relative", marginTop: 24, maxWidth: 240 }}>
+                <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 22, fontWeight: 600 }}>$</span>
+                <input
+                  type="number"
+                  value={profile.paycheck_amount}
+                  onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })}
+                  style={paycheckInput}
+                  min={0} step={100}
+                  autoFocus
+                />
+              </div>
+              <button onClick={handleRunSequencer} style={{ ...primaryBtn, marginTop: 28, width: "100%" }}>
+                Find my bonuses
+              </button>
+              <button onClick={() => setOnboardingStep("frequency")} style={backLink}>Back</button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════ ONBOARDING: SEQUENCER RESULTS ═══════ */}
         {onboardingStep === "sequencer" && sequencerResult && (
-          <div style={{ maxWidth: 680, margin: "0 auto", paddingTop: 32 }}>
-            <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: 0 }}>Here is your bonus plan</h2>
-            <p style={{ fontSize: 14, color: "#666", marginTop: 8 }}>
-              Based on your paycheck, we found {sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses worth <span style={{ color: "#34d399", fontWeight: 700 }}>${sequencerResult.total_bonus.toLocaleString()}</span>. Start with the best one.
-            </p>
-            <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ maxWidth: 640, margin: "0 auto", paddingTop: 40 }}>
+            <div style={{ textAlign: "center", marginBottom: 32 }}>
+              <div style={{ fontSize: 14, color: "#0d7c5f", fontWeight: 600, marginBottom: 8 }}>Your personalized plan</div>
+              <h2 style={{ fontSize: 30, fontWeight: 800, color: "#111", margin: 0, letterSpacing: "-0.02em" }}>
+                You could earn ${sequencerResult.total_bonus.toLocaleString()}
+              </h2>
+              <p style={{ fontSize: 15, color: "#888", marginTop: 8 }}>
+                from {sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bank bonuses. Here's where to start.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {sequencerResult.slots.flat().filter(e => e.type === "bonus").slice(0, 3).map((entry, i) => {
                 const b = entry as SequencedBonus
                 const fullBonus = allBonuses.find(x => x.id === b.id)
                 if (!fullBonus) return null
                 const isFirst = i === 0
+                const link = bestLink(fullBonus.source_links)
                 return (
                   <div key={`${b.id}-${b.cycle}`} style={{
-                    background: isFirst ? "linear-gradient(135deg, #111 0%, #1a1a2e 100%)" : "#111",
-                    border: isFirst ? "1px solid #2a2a2a" : "1px solid #1a1a1a", borderRadius: 12,
-                    padding: isFirst ? "28px 24px" : "18px 24px",
+                    background: "#fff", border: isFirst ? "2px solid #0d7c5f" : "1px solid #e8e8e8",
+                    borderRadius: 14, padding: isFirst ? "28px 24px" : "20px 24px",
+                    boxShadow: isFirst ? "0 4px 20px rgba(13,124,95,0.08)" : "none",
                   }}>
-                    {isFirst && <div style={{ fontSize: 11, color: "#34d399", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>Start here</div>}
-                    {!isFirst && <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 4 }}>Then</div>}
+                    <div style={{ fontSize: 11, color: isFirst ? "#0d7c5f" : "#bbb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 6 }}>
+                      {isFirst ? "Start here" : `Then \u2192 Step ${i + 1}`}
+                    </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
-                        <div style={{ fontSize: isFirst ? 20 : 16, fontWeight: 700, color: "#fff" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 13, color: "#666", marginTop: 2 }}>~{b.weeks_to_complete} weeks{b.monthly_fee ? ` \u00b7 ${money(b.monthly_fee)} fee` : ""}</div>
+                        <div style={{ fontSize: isFirst ? 22 : 17, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>
+                          ~{b.weeks_to_complete} weeks{b.monthly_fee ? ` \u00b7 ${money(b.monthly_fee)}/mo fee` : " \u00b7 No fee"}
+                        </div>
                       </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: isFirst ? 24 : 18, fontWeight: 700, color: "#34d399" }}>{money(b.bonus_amount)}</div>
-                        <div style={{ fontSize: 11, color: "#555" }}>${b.velocity.toFixed(0)}/week</div>
-                      </div>
+                      <div style={{ fontSize: isFirst ? 26 : 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                     </div>
                     {isFirst && (
                       <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-                        <button onClick={() => { setActionBonus({ bonus: fullBonus, mode: "start" }); setActionDate(todayStr()) }} style={heroCTA}>Start this bonus</button>
-                        {bestLink(fullBonus.source_links) && (
-                          <a href={bestLink(fullBonus.source_links)!} target="_blank" rel="noreferrer" style={heroSecondary}>Open bank site</a>
+                        {link && (
+                          <a href={link} target="_blank" rel="noreferrer" style={primaryBtn}>
+                            Open your account \u2192
+                          </a>
                         )}
+                        <button onClick={() => { setActionBonus({ bonus: fullBonus, mode: "start" }); setActionDate(todayStr()) }}
+                          style={secondaryBtn}>I already opened it</button>
                       </div>
                     )}
                   </div>
                 )
               })}
             </div>
-            <button onClick={handleSequencerDone} style={{ ...heroSecondary, width: "100%", marginTop: 20, display: "block", textAlign: "center", cursor: "pointer", border: "1px solid #333" }}>Go to dashboard \u2192</button>
+            <button onClick={handleSequencerDone} style={{ ...secondaryBtn, width: "100%", marginTop: 20 }}>Go to dashboard \u2192</button>
           </div>
         )}
 
-        {/* MAIN DASHBOARD */}
+        {/* ═══════ MAIN DASHBOARD ═══════ */}
         {onboardingStep === "done" && (
           <>
             {/* Expected Earnings */}
             <div style={{
-              background: "linear-gradient(135deg, #0d1117 0%, #111827 100%)",
-              border: "1px solid #1a1a1a", borderRadius: 14, padding: "28px 32px", marginBottom: 28,
+              background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24,
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16,
             }}>
               <div>
-                <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em" }}>Expected earnings this year</div>
-                <div style={{ fontSize: 36, fontWeight: 800, color: "#34d399", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
-                {totalEarned > 0 && <div style={{ fontSize: 13, color: "#555", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far \u00b7 {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
+                <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings this year</div>
+                <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
+                {totalEarned > 0 && <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far \u00b7 {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
               </div>
-              <div style={{ display: "flex", gap: 20 }}>
-                {inProgress.length > 0 && <Stat value={inProgress.length} label="Active" color="#60a5fa" />}
-                <Stat value={available.length} label="Available" color="#fff" />
-                {inCooldown.length > 0 && <Stat value={inCooldown.length} label="Cooling" color="#fbbf24" />}
+              <div style={{ display: "flex", gap: 24 }}>
+                {inProgress.length > 0 && <DashStat value={inProgress.length} label="Active" color="#2563eb" />}
+                <DashStat value={available.length} label="Available" color="#111" />
+                {inCooldown.length > 0 && <DashStat value={inCooldown.length} label="Cooling" color="#d97706" />}
               </div>
             </div>
 
-            {/* Sequencer Results (when refreshed) */}
+            {/* Sequencer Results */}
             {sequencerResult && (
-              <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 12, padding: "20px 24px", marginBottom: 28 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>Your Optimized Stack</div>
-                    <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>{sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses \u00b7 ${sequencerResult.total_bonus.toLocaleString()} total</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Your Optimized Stack</div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses \u00b7 ${sequencerResult.total_bonus.toLocaleString()} total</div>
                   </div>
                   <button onClick={() => setSequencerResult(null)} style={topBtn}>Hide</button>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {sequencerResult.slots.flat().filter(e => e.type === "bonus").slice(0, 5).map((entry, i) => {
                     const b = entry as SequencedBonus
                     return (
-                      <div key={`${b.id}-${b.cycle}-seq`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#0a0a0a", borderRadius: 8 }}>
+                      <div key={`${b.id}-${b.cycle}-seq`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f8f8f8", borderRadius: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ fontSize: 11, color: "#555", fontWeight: 600, width: 18 }}>{i + 1}</span>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{b.bank_name}</span>
-                          <span style={{ fontSize: 11, color: "#555" }}>~{b.weeks_to_complete}w</span>
+                          <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 18 }}>{i + 1}</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</span>
+                          <span style={{ fontSize: 11, color: "#999" }}>~{b.weeks_to_complete}w</span>
                         </div>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#34d399" }}>{money(b.bonus_amount)}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(b.bonus_amount)}</span>
                       </div>
                     )
                   })}
@@ -361,84 +425,95 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* Hero Card */}
             {currentBonus && (
               <div style={{
-                background: "linear-gradient(135deg, #111 0%, #1a1a2e 100%)",
-                border: "1px solid #2a2a2a", borderRadius: 14, padding: "32px 28px", marginBottom: 16,
-                position: "relative", overflow: "hidden",
+                background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "32px 28px", marginBottom: 12,
+                boxShadow: "0 4px 24px rgba(13,124,95,0.06)",
               }}>
-                <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, background: "radial-gradient(circle, rgba(52,211,153,0.06) 0%, transparent 70%)", borderRadius: "50%" }} />
-                <div style={{ position: "relative" }}>
-                  <div style={{ fontSize: 11, color: currentBonus.churnStatus.status === "in_progress" ? "#60a5fa" : "#34d399", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 10 }}>
-                    {currentBonus.churnStatus.status === "in_progress" ? "Currently working on" : "Recommended next"}
+                <div style={{ fontSize: 11, color: currentBonus.churnStatus.status === "in_progress" ? "#2563eb" : "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 10 }}>
+                  {currentBonus.churnStatus.status === "in_progress" ? "Currently working on" : "Your next bonus"}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 20 }}>
+                  <div style={{ flex: 1, minWidth: 280 }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
+                    <div style={{ display: "flex", gap: 24, marginTop: 14 }}>
+                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Earn</div><div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(currentBonus.bonus.bonus_amount)}</div></div>
+                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Time</div><div style={{ fontSize: 28, fontWeight: 800, color: "#111", marginTop: 2 }}>{currentBonus.weeksToComplete ? `${currentBonus.weeksToComplete}w` : "\u2014"}</div></div>
+                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Fee</div><div style={{ fontSize: 28, fontWeight: 800, color: "#111", marginTop: 2 }}>{currentBonus.bonus.fees?.monthly_fee === 0 ? "$0" : money(currentBonus.bonus.fees?.monthly_fee)}</div></div>
+                    </div>
+                    <div style={{ fontSize: 14, color: "#777", marginTop: 14, lineHeight: 1.6, maxWidth: 500 }}>
+                      {currentBonus.bonus.requirements?.min_direct_deposit_total
+                        ? `Deposit $${currentBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} total within ${currentBonus.bonus.requirements.deposit_window_days ?? "\u2014"} days using your regular paycheck.`
+                        : currentBonus.bonus.requirements?.min_direct_deposit_per_deposit
+                          ? `Make ${currentBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit${(currentBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of $${currentBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each.`
+                          : "Set up direct deposit to qualify."}
+                    </div>
+                    {currentBonus.churnStatus.status === "in_progress" && (() => {
+                      const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
+                      if (!record) return null
+                      const stepDetail = getBonusStepDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
+                      return <div style={{ marginTop: 18 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(currentBonus.bonus.id, step)} /></div>
+                    })()}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 20 }}>
-                    <div style={{ flex: 1, minWidth: 280 }}>
-                      <div style={{ fontSize: 24, fontWeight: 700, color: "#fff" }}>{currentBonus.bonus.bank_name}</div>
-                      <div style={{ display: "flex", gap: 20, marginTop: 14 }}>
-                        <HeroStat label="Earn" value={money(currentBonus.bonus.bonus_amount)} color="#34d399" />
-                        <HeroStat label="Time" value={currentBonus.weeksToComplete ? `${currentBonus.weeksToComplete}w` : "\u2014"} color="#fff" />
-                        <HeroStat label="Fee" value={currentBonus.bonus.fees?.monthly_fee === 0 ? "$0" : money(currentBonus.bonus.fees?.monthly_fee)} color="#fff" />
-                      </div>
-                      <div style={{ fontSize: 13, color: "#777", marginTop: 14, lineHeight: 1.6, maxWidth: 480 }}>
-                        {currentBonus.bonus.requirements?.min_direct_deposit_total
-                          ? `Deposit $${currentBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} total within ${currentBonus.bonus.requirements.deposit_window_days ?? "\u2014"} days using your regular paycheck.`
-                          : currentBonus.bonus.requirements?.min_direct_deposit_per_deposit
-                            ? `Make ${currentBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit${(currentBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of $${currentBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each.`
-                            : "Set up direct deposit to qualify."}
-                      </div>
-                      {currentBonus.churnStatus.status === "in_progress" && (() => {
-                        const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
-                        if (!record) return null
-                        const stepDetail = getBonusStepDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
-                        return <div style={{ marginTop: 18 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(currentBonus.bonus.id, step)} /></div>
-                      })()}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 170 }}>
-                      {currentBonus.churnStatus.status === "in_progress" ? (
-                        <>
-                          <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }} style={{ ...heroCTA, background: "#ef4444" }}>Close account</button>
-                          <button onClick={() => handleDelete(currentBonus.bonus.id)} style={heroSecondary}>Undo</button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }} style={heroCTA}>Start this bonus</button>
-                          {bestLink(currentBonus.bonus.source_links) && <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer" style={heroSecondary}>Open bank site</a>}
-                        </>
-                      )}
-                    </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 190 }}>
+                    {currentBonus.churnStatus.status === "in_progress" ? (
+                      <>
+                        <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
+                          style={{ ...primaryBtn, background: "#dc2626" }}>Close account</button>
+                        <button onClick={() => handleDelete(currentBonus.bonus.id)} style={secondaryBtn}>Remove</button>
+                      </>
+                    ) : (
+                      <>
+                        {bestLink(currentBonus.bonus.source_links) && (
+                          <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer" style={primaryBtn}>
+                            Open your account \u2192
+                          </a>
+                        )}
+                        <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                          style={secondaryBtn}>I already opened it</button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Up Next */}
+            {/* Timeline hint */}
+            {nextBonus && currentWeeks > 0 && (
+              <div style={{ background: "#f0faf5", border: "1px solid #c8ede1", borderRadius: 10, padding: "12px 18px", marginBottom: 24, fontSize: 13, color: "#0d7c5f" }}>
+                <strong>Next up:</strong> Start {nextBonus.bonus.bank_name} in ~{currentWeeks} weeks \u2192 Earn {money(nextBonus.bonus.bonus_amount)}
+              </div>
+            )}
+
+            {/* Up Next Cards */}
             {upNextBonuses.length > 0 && (
               <div style={{ display: "grid", gridTemplateColumns: `repeat(${upNextBonuses.length}, 1fr)`, gap: 12, marginBottom: 28 }}>
                 {upNextBonuses.map(({ bonus: b, velocity, weeksToComplete, churnStatus }) => {
                   const isActive = churnStatus.status === "in_progress"
                   const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
                   const stepDetail = record ? getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
+                  const link = bestLink(b.source_links)
                   return (
-                    <div key={b.id} style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 12, padding: "20px 22px" }}>
-                      <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, marginBottom: 6 }}>{isActive ? "In progress" : "Up next"}</div>
+                    <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 22px" }}>
+                      <div style={{ fontSize: 11, color: isActive ? "#2563eb" : "#bbb", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 6 }}>{isActive ? "In progress" : "Up next"}</div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div>
-                          <div style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>{b.bank_name}</div>
-                          <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>~{weeksToComplete ?? "?"}w{b.fees?.monthly_fee ? ` \u00b7 ${money(b.fees.monthly_fee)} fee` : ""}</div>
+                          <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
+                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>~{weeksToComplete ?? "?"}w{b.fees?.monthly_fee ? ` \u00b7 ${money(b.fees.monthly_fee)}/mo` : ""}</div>
                         </div>
-                        <div style={{ fontSize: 20, fontWeight: 700, color: "#34d399" }}>{money(b.bonus_amount)}</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                       </div>
                       {stepDetail && <div style={{ marginTop: 10 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(b.id, step)} /></div>}
                       {!isActive && (
-                        <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-                          style={{ marginTop: 12, width: "100%", padding: "8px", fontSize: 13, fontWeight: 600, background: "#1a1a1a", color: "#34d399", border: "1px solid #1a3a2a", borderRadius: 8, cursor: "pointer" }}>
-                          Start this bonus
-                        </button>
+                        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                          {link && <a href={link} target="_blank" rel="noreferrer" style={{ ...secondaryBtn, flex: 1, textAlign: "center", fontSize: 12, padding: "8px" }}>Open account</a>}
+                          <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
+                            style={{ fontSize: 12, padding: "8px 14px", color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>Already opened</button>
+                        </div>
                       )}
                       {isActive && (
                         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                           <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                            style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #ef4444", color: "#ef4444", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
-                          <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #222", color: "#555", background: "none", borderRadius: 8, cursor: "pointer" }}>Undo</button>
+                            style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
+                          <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
                         </div>
                       )}
                     </div>
@@ -450,15 +525,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* Cooldown */}
             {inCooldown.length > 0 && (
               <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 12 }}>Cooling Down</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 12 }}>Cooling Down</div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                   {inCooldown.map(({ bonus: b, churnStatus }) => {
                     const s = churnStatus as Extract<ChurnStatus, { status: "in_cooldown" }>
                     return (
-                      <div key={b.id} style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "14px 18px", minWidth: 200, opacity: 0.7 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 12, color: "#fbbf24", marginTop: 4 }}>{s.days_remaining} days left</div>
-                        <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>Available {fmtShortDate(s.available_date)}</div>
+                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: "#d97706", marginTop: 4 }}>{s.days_remaining} days left</div>
+                        <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Available {fmtShortDate(s.available_date)}</div>
                       </div>
                     )
                   })}
@@ -469,15 +544,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* Earnings */}
             {allEarned.length > 0 && (
               <details style={{ marginBottom: 28 }}>
-                <summary style={{ fontSize: 14, fontWeight: 600, color: "#fff", cursor: "pointer", padding: "8px 0" }}>Earnings History <span style={{ fontSize: 12, color: "#555", fontWeight: 400 }}>({allEarned.length})</span></summary>
+                <summary style={{ fontSize: 14, fontWeight: 600, color: "#111", cursor: "pointer", padding: "8px 0" }}>Earnings History <span style={{ fontSize: 12, color: "#bbb", fontWeight: 400 }}>({allEarned.length})</span></summary>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
                   {allEarned.sort((a, b) => new Date(b.closed_date!).getTime() - new Date(a.closed_date!).getTime()).map(r => {
                     const bonus = allBonuses.find(b => b.id === r.bonus_id)
                     if (!bonus) return null
                     return (
-                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#111", borderRadius: 8 }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{bonus.bank_name} <span style={{ fontSize: 12, color: "#555" }}>{fmtShortDate(r.closed_date!)}</span></span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#34d399" }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
+                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#fff", borderRadius: 8, border: "1px solid #e8e8e8" }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{bonus.bank_name} <span style={{ fontSize: 12, color: "#bbb" }}>{fmtShortDate(r.closed_date!)}</span></span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
                       </div>
                     )
                   })}
@@ -487,7 +562,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
             {/* Advanced Toggle */}
             <button onClick={() => setShowAdvanced(a => !a)}
-              style={{ width: "100%", padding: "12px", fontSize: 13, fontWeight: 600, background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, color: "#555", cursor: "pointer", marginBottom: 16 }}>
+              style={{ width: "100%", padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, color: "#999", cursor: "pointer", marginBottom: 16 }}>
               {showAdvanced ? "Hide all bonuses" : `Show all ${available.length + inProgress.length} bonuses`}
             </button>
 
@@ -499,29 +574,27 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   const isExpanded = expandedCard === b.id
                   return (
                     <div key={b.id} style={{
-                      background: "#111", border: isActive ? "1px solid #2a3f5f" : "1px solid #1a1a1a",
+                      background: "#fff", border: isActive ? "1px solid #bfdbfe" : "1px solid #e8e8e8",
                       borderRadius: 12, padding: "18px 20px", opacity: feasible !== false ? 1 : 0.4,
                       cursor: "pointer", transition: "border-color 0.15s",
                     }}
                       onClick={() => setExpandedCard(isExpanded ? null : b.id)}
-                      onMouseOver={e => { e.currentTarget.style.borderColor = "#333" }}
-                      onMouseOut={e => { e.currentTarget.style.borderColor = isActive ? "#2a3f5f" : "#1a1a1a" }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <div>
-                          <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{b.bank_name}</div>
-                          {isActive && <div style={{ fontSize: 11, color: "#60a5fa", marginTop: 2 }}>Active</div>}
+                          <div style={{ fontSize: 15, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
+                          {isActive && <div style={{ fontSize: 11, color: "#2563eb", marginTop: 2 }}>Active</div>}
                         </div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#34d399" }}>{money(b.bonus_amount)}</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                       </div>
                       <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 12 }}>
-                        <span><span style={{ color: "#555" }}>Time </span><span style={{ color: "#999" }}>{weeksToComplete ? `${weeksToComplete}w` : "\u2014"}</span></span>
-                        <span><span style={{ color: "#555" }}>Fee </span><span style={{ color: "#999" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></span>
-                        {velocity && <span><span style={{ color: "#555" }}>$/wk </span><span style={{ color: "#34d399" }}>${velocity.toFixed(0)}</span></span>}
+                        <span><span style={{ color: "#bbb" }}>Time </span><span style={{ color: "#666" }}>{weeksToComplete ? `${weeksToComplete}w` : "\u2014"}</span></span>
+                        <span><span style={{ color: "#bbb" }}>Fee </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></span>
+                        {velocity && <span><span style={{ color: "#bbb" }}>$/wk </span><span style={{ color: "#0d7c5f" }}>${velocity.toFixed(0)}</span></span>}
                       </div>
                       {isExpanded && (
-                        <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #1a1a1a" }} onClick={e => e.stopPropagation()}>
-                          <div style={{ fontSize: 12, color: "#777", lineHeight: 1.6, marginBottom: 10 }}>
+                        <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }} onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6, marginBottom: 10 }}>
                             {b.requirements?.min_direct_deposit_total
                               ? `Deposit $${b.requirements.min_direct_deposit_total.toLocaleString()} within ${b.requirements.deposit_window_days ?? "\u2014"} days.`
                               : b.requirements?.min_direct_deposit_per_deposit
@@ -529,31 +602,31 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                 : "Set up direct deposit."}
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginBottom: 10 }}>
-                            <div><span style={{ color: "#555" }}>Window: </span><span style={{ color: "#999" }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
-                            <div><span style={{ color: "#555" }}>Bonus posts: </span><span style={{ color: "#999" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
-                            <div><span style={{ color: "#555" }}>Cooldown: </span><span style={{ color: "#999" }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
-                            <div><span style={{ color: "#555" }}>Fee: </span><span style={{ color: "#999" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+                            <div><span style={{ color: "#bbb" }}>Window: </span><span style={{ color: "#666" }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
+                            <div><span style={{ color: "#bbb" }}>Bonus posts: </span><span style={{ color: "#666" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
+                            <div><span style={{ color: "#bbb" }}>Cooldown: </span><span style={{ color: "#666" }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
+                            <div><span style={{ color: "#bbb" }}>Fee: </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
                           </div>
-                          <details><summary style={{ fontSize: 11, color: "#444", cursor: "pointer" }}>Advanced details</summary>
+                          <details><summary style={{ fontSize: 11, color: "#bbb", cursor: "pointer" }}>Advanced details</summary>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginTop: 8 }}>
-                              <div><span style={{ color: "#555" }}>Chex: </span><span style={{ color: "#999" }}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
-                              <div><span style={{ color: "#555" }}>Hard pull: </span><span style={{ color: "#999" }}>{yesNo(b.screening?.hard_pull)}</span></div>
-                              <div><span style={{ color: "#555" }}>Lifetime: </span><span style={{ color: "#999" }}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
+                              <div><span style={{ color: "#bbb" }}>Chex: </span><span style={{ color: "#666" }}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
+                              <div><span style={{ color: "#bbb" }}>Hard pull: </span><span style={{ color: "#666" }}>{yesNo(b.screening?.hard_pull)}</span></div>
+                              <div><span style={{ color: "#bbb" }}>Lifetime: </span><span style={{ color: "#666" }}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
                             </div>
-                            {b.eligibility?.eligibility_notes && <div style={{ fontSize: 11, color: "#666", marginTop: 8, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>}
+                            {b.eligibility?.eligibility_notes && <div style={{ fontSize: 11, color: "#999", marginTop: 8, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>}
                           </details>
                           <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                             {isActive ? (
                               <>
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                  style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #ef4444", color: "#ef4444", background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
-                                <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #222", color: "#555", background: "none", borderRadius: 8, cursor: "pointer" }}>Undo</button>
+                                  style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
+                                <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
                               </>
                             ) : (
                               <>
+                                {link && <a href={link} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", textAlign: "center" }}>Open account</a>}
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-                                  style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#34d399", color: "#0a0a0a", border: "none", borderRadius: 8, cursor: "pointer" }}>Start</button>
-                                {link && <a href={link} target="_blank" rel="noreferrer" style={{ padding: "8px 14px", fontSize: 12, color: "#888", border: "1px solid #333", borderRadius: 8, textDecoration: "none" }}>Open site</a>}
+                                  style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>Already opened</button>
                               </>
                             )}
                           </div>
@@ -570,42 +643,42 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
       {/* Modal */}
       {actionBonus && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#151515", borderRadius: 16, padding: 32, width: 400, border: "1px solid #2a2a2a", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#fff" }}>{actionBonus.bonus.bank_name}</div>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionBonus.bonus.bank_name}</div>
             {actionBonus.mode === "start" && (
               <>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 20 }}>When did you open this account?</div>
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you open this account?</div>
                 <label style={modalLabel}>Account opened date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
                 <div style={modalActions}>
-                  <button onClick={() => setActionBonus(null)} style={cancelBtn}>Cancel</button>
-                  <button onClick={handleStart} style={confirmBtn}>Start Bonus</button>
+                  <button onClick={() => setActionBonus(null)} style={cancelBtnLight}>Cancel</button>
+                  <button onClick={handleStart} style={confirmBtnLight}>Start Bonus</button>
                 </div>
               </>
             )}
             {actionBonus.mode === "close" && (
               <>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 20 }}>When did you close this account?</div>
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
                 <label style={modalLabel}>Account closed date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
-                  <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#34d399" }} />
-                  <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#999" }}>I received the bonus</label>
+                  <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
                 </div>
                 {bonusReceived && (
                   <>
                     <label style={modalLabel}>Amount received</label>
                     <div style={{ position: "relative" }}>
-                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#666", fontSize: 14 }}>$</span>
+                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
                       <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionBonus.bonus.bonus_amount)} />
                     </div>
-                    <div style={{ fontSize: 11, color: "#444", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
                   </>
                 )}
                 <div style={modalActions}>
-                  <button onClick={() => setActionBonus(null)} style={cancelBtn}>Cancel</button>
-                  <button onClick={handleClose} style={confirmBtn}>Close Account</button>
+                  <button onClick={() => setActionBonus(null)} style={cancelBtnLight}>Cancel</button>
+                  <button onClick={handleClose} style={confirmBtnLight}>Close Account</button>
                 </div>
               </>
             )}
@@ -616,42 +689,32 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   )
 }
 
-/* ── Tiny helper components ── */
-function Stat({ value, label, color }: { value: number; label: string; color: string }) {
-  return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: 24, fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: 11, color: "#555" }}>{label}</div>
-    </div>
-  )
-}
-
-function HeroStat({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div>
-      <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
-    </div>
-  )
+function DashStat({ value, label, color }: { value: number; label: string; color: string }) {
+  return <div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 800, color }}>{value}</div><div style={{ fontSize: 11, color: "#999" }}>{label}</div></div>
 }
 
 /* ── Styles ── */
-const topBtn: React.CSSProperties = { fontSize: 12, color: "#555", background: "none", border: "1px solid #222", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
-const settingsLabel: React.CSSProperties = { fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
-const segBtn: React.CSSProperties = { padding: "6px 14px", fontSize: 13, background: "#0a0a0a", color: "#666", border: "1px solid #222", borderRadius: 6, cursor: "pointer" }
-const segBtnActive: React.CSSProperties = { background: "#34d399", color: "#0a0a0a", borderColor: "#34d399", fontWeight: 700 }
-const settingsSelect: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#0a0a0a", color: "#fff", border: "1px solid #222", borderRadius: 6 }
-const settingsInput: React.CSSProperties = { padding: "8px 12px 8px 26px", fontSize: 14, background: "#0a0a0a", color: "#fff", border: "1px solid #222", borderRadius: 6, width: 140 }
-const setupLabel: React.CSSProperties = { fontSize: 15, fontWeight: 600, color: "#fff" }
-const setupHint: React.CSSProperties = { fontSize: 12, color: "#555", marginTop: 4 }
-const setupSegBtn: React.CSSProperties = { padding: "10px 20px", fontSize: 14, background: "#111", color: "#888", border: "1px solid #222", borderRadius: 8, cursor: "pointer" }
-const setupSegBtnActive: React.CSSProperties = { background: "#34d399", color: "#0a0a0a", borderColor: "#34d399", fontWeight: 700 }
-const setupPayInput: React.CSSProperties = { padding: "12px 14px 12px 32px", fontSize: 18, background: "#111", color: "#fff", border: "1px solid #222", borderRadius: 8, width: "100%" }
-const setupContinueBtn: React.CSSProperties = { marginTop: 36, padding: "16px 32px", fontSize: 16, fontWeight: 700, background: "#34d399", color: "#0a0a0a", border: "none", borderRadius: 10, cursor: "pointer", width: "100%" }
-const heroCTA: React.CSSProperties = { padding: "12px 28px", fontSize: 15, fontWeight: 700, background: "#34d399", color: "#0a0a0a", border: "none", borderRadius: 10, cursor: "pointer" }
-const heroSecondary: React.CSSProperties = { padding: "12px 28px", fontSize: 13, fontWeight: 600, color: "#888", border: "1px solid #333", borderRadius: 10, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }
-const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#666", display: "block", marginBottom: 6 }
-const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: "1px solid #333", borderRadius: 8, boxSizing: "border-box" as const, background: "#0a0a0a", color: "#fff" }
+const topBtn: React.CSSProperties = { fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
+const primaryBtn: React.CSSProperties = { padding: "14px 28px", fontSize: 15, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", textDecoration: "none", textAlign: "center" as const, display: "inline-block" }
+const secondaryBtn: React.CSSProperties = { padding: "12px 28px", fontSize: 13, fontWeight: 600, color: "#666", border: "1px solid #ddd", borderRadius: 10, background: "#fff", cursor: "pointer", textDecoration: "none", textAlign: "center" as const, display: "inline-block" }
+const onboardingScreen: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: "32px" }
+const onboardingCard: React.CSSProperties = { maxWidth: 480, width: "100%" }
+const stepIndicator: React.CSSProperties = { fontSize: 12, color: "#bbb", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }
+const onboardingQ: React.CSSProperties = { fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 8px", lineHeight: 1.3 }
+const onboardingHint: React.CSSProperties = { fontSize: 14, color: "#999", lineHeight: 1.5, margin: 0 }
+const obOption: React.CSSProperties = { flex: 1, padding: "24px 16px", background: "#fff", border: "2px solid #e8e8e8", borderRadius: 12, cursor: "pointer", textAlign: "center" as const, transition: "border-color 0.15s" }
+const obOptionActive: React.CSSProperties = { ...obOption, background: "#0d7c5f", borderColor: "#0d7c5f", color: "#fff" }
+const obRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "#fff", border: "2px solid #e8e8e8", borderRadius: 12, cursor: "pointer", textAlign: "left" as const }
+const obRowActive: React.CSSProperties = { ...obRow, background: "#0d7c5f", borderColor: "#0d7c5f", color: "#fff" }
+const paycheckInput: React.CSSProperties = { padding: "16px 16px 16px 38px", fontSize: 28, fontWeight: 700, background: "#fff", color: "#111", border: "2px solid #e8e8e8", borderRadius: 12, width: "100%", boxSizing: "border-box" as const }
+const backLink: React.CSSProperties = { display: "block", marginTop: 16, fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }
+const settingsLabel: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
+const segBtnLight: React.CSSProperties = { padding: "6px 14px", fontSize: 13, background: "#fff", color: "#666", border: "1px solid #e0e0e0", borderRadius: 6, cursor: "pointer" }
+const segBtnActiveLight: React.CSSProperties = { ...segBtnLight, background: "#0d7c5f", color: "#fff", borderColor: "#0d7c5f", fontWeight: 700 }
+const settingsSelectLight: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6 }
+const settingsInputLight: React.CSSProperties = { padding: "8px 12px 8px 26px", fontSize: 14, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: 140 }
+const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#888", display: "block", marginBottom: 6 }
+const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, boxSizing: "border-box" as const, background: "#fff", color: "#111" }
 const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }
-const cancelBtn: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "1px solid #333", borderRadius: 8, background: "none", color: "#888", cursor: "pointer" }
-const confirmBtn: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: "#34d399", color: "#0a0a0a", cursor: "pointer", fontWeight: 700 }
+const cancelBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#888", cursor: "pointer" }
+const confirmBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: "#0d7c5f", color: "#fff", cursor: "pointer", fontWeight: 700 }
