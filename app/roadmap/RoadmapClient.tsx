@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import StepProgressBar from "../components/StepProgressBar"
-import { getBonusStepDetail, BonusStep } from "../../lib/bonusSteps"
+import MilestoneProgressCard from "../components/MilestoneProgressCard"
+import { getBonusStepDetail, getMilestoneDetail, BonusStep, MilestoneKey } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
@@ -87,6 +88,15 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
 ]
 
+// Map milestone keys to legacy step keys for the override API
+const MILESTONE_TO_STEP: Record<MilestoneKey, BonusStep> = {
+  account_opened: "open",
+  dd_confirmed: "fund",
+  deposit_met: "fund",
+  bonus_posted: "wait",
+  safe_to_close: "close",
+}
+
 export default function RoadmapClient({ userEmail, userId }: { userEmail: string; userId: string }) {
   const { profile, setProfile, loaded } = useProfile()
   const [mounted, setMounted] = useState(false)
@@ -103,7 +113,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
-  // Custom bonuses
   const [customBonuses, setCustomBonuses] = useState<CustomBonus[]>([])
   const [showAddCustom, setShowAddCustom] = useState(false)
   const [customBank, setCustomBank] = useState("")
@@ -200,6 +209,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await loadRecords()
   }
 
+  async function handleMilestoneOverride(bonusId: string, milestone: MilestoneKey) {
+    const legacyStep = MILESTONE_TO_STEP[milestone]
+    await handleStepOverride(bonusId, legacyStep)
+  }
+
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
     const cooldown = customChurnable ? parseInt(customCooldown) || null : null
@@ -227,13 +241,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await loadRecords()
   }
 
-  // Active custom bonuses (not closed)
   const activeCustom = customBonuses.filter(c => !c.closed_date)
   const closedCustom = customBonuses.filter(c => c.closed_date)
   const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
   const customInProgress = activeCustom.reduce((s, c) => s + c.bonus_amount, 0)
 
-  // Custom bonuses in cooldown (closed, churnable, cooldown not yet elapsed)
   const customInCooldown = closedCustom.filter(c => {
     if (!c.cooldown_months || !c.closed_date) return false
     const cooldownEnd = new Date(c.closed_date + "T00:00:00")
@@ -276,7 +288,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const earnedAmt = (r: CompletedBonus) => { const b = allBonuses.find(x => x.id === r.bonus_id); return r.actual_amount ?? b?.bonus_amount ?? 0 }
   const totalEarned = allEarned.reduce((sum, r) => sum + earnedAmt(r), 0)
 
-  // Auto-run sequencer on mount for accurate projection
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
       const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
@@ -284,7 +295,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     }
   }, [mounted, loadingRecords, loaded, onboardingStep, profile.dd_slots, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult])
 
-  // 365-day projection from today
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
   const yearBonuses365 = projected365.filter(p => new Date(p.payout_date) <= today365End)
@@ -297,7 +307,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       : available.slice(1, 3))
     : []
 
-  // Timeline: when does the current bonus end and next one start?
   const currentWeeks = currentBonus?.weeksToComplete ?? 0
   const nextBonus = inProgress.length > 0 ? available[0] : available[1]
 
@@ -497,7 +506,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {/* ═══════ MAIN DASHBOARD ═══════ */}
         {onboardingStep === "done" && (
           <>
-            {/* ── HERO: Primary Action Card ── */}
+            {/* ── HERO: Primary Action Card (not yet started) ── */}
             {currentBonus && currentBonus.churnStatus.status !== "in_progress" && (
               <div style={{
                 background: "#fff", border: "2px solid #0d7c5f", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
@@ -542,7 +551,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   {bestLink(currentBonus.bonus.source_links) && (
                     <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
                       style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
-                      Open your account →
+                      Open your account
                     </a>
                   )}
                   <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
@@ -553,29 +562,108 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
 
-            {/* ── HERO: Active Bonus (in progress) ── */}
-            {currentBonus && currentBonus.churnStatus.status === "in_progress" && (
-              <div style={{
-                background: "#fff", border: "2px solid #2563eb", borderRadius: 16, padding: "32px 28px", marginBottom: 20,
-                boxShadow: "0 4px 24px rgba(37,99,235,0.06)",
-              }}>
-                <div style={{ fontSize: 11, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>Currently working on</div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
-                <div style={{ fontSize: 14, color: "#888", marginTop: 4 }}>Earn {money(currentBonus.bonus.bonus_amount)}</div>
-                {(() => {
-                  const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
-                  if (!record) return null
-                  const stepDetail = getBonusStepDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
-                  return <div style={{ marginTop: 18 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(currentBonus.bonus.id, step)} /></div>
-                })()}
-                <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-                  <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
-                    style={{ padding: "12px 24px", fontSize: 14, fontWeight: 600, background: "#dc2626", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Close account</button>
-                  <button onClick={() => handleDelete(currentBonus.bonus.id)}
-                    style={secondaryBtn}>Remove</button>
+            {/* ══════════════════════════════════════════════════════════════════
+                 REDESIGNED: Active Bonus (in progress) — Milestone-based card
+                 ══════════════════════════════════════════════════════════════════ */}
+            {currentBonus && currentBonus.churnStatus.status === "in_progress" && (() => {
+              const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
+              if (!record) return null
+              const milestoneDetail = getMilestoneDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
+
+              // Determine the next available bonus for momentum indicator
+              const nextAvailable = available[0] ?? null
+
+              return (
+                <div style={{
+                  background: "#fff", border: "2px solid #2563eb", borderRadius: 16, padding: "28px 28px 24px", marginBottom: 20,
+                  boxShadow: "0 4px 24px rgba(37,99,235,0.06)",
+                }}>
+                  {/* Header */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 6 }}>Currently working on</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: "#111", lineHeight: 1.2 }}>{currentBonus.bonus.bank_name}</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: "#0d7c5f" }}>{money(currentBonus.bonus.bonus_amount)}</div>
+                    </div>
+                  </div>
+
+                  {/* Milestone progression */}
+                  <MilestoneProgressCard
+                    detail={milestoneDetail}
+                    onOverride={(milestone: MilestoneKey) => handleMilestoneOverride(currentBonus.bonus.id, milestone)}
+                  />
+
+                  {/* ── Next Step callout ── */}
+                  <div style={{
+                    marginTop: 16,
+                    padding: "12px 14px",
+                    background: "#f7f8fc",
+                    borderRadius: 8,
+                    border: "1px solid #e8ecf4",
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 4 }}>Next step</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{milestoneDetail.nextStep}</div>
+                  </div>
+
+                  {/* ── Momentum indicator ── */}
+                  {nextAvailable && (
+                    <div style={{
+                      marginTop: 12,
+                      padding: "10px 14px",
+                      background: "#fafafa",
+                      borderRadius: 8,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}>
+                      <span style={{ fontSize: 12, color: "#888" }}>
+                        Bonus in progress: <span style={{ fontWeight: 700, color: "#111" }}>{money(currentBonus.bonus.bonus_amount)}</span>
+                      </span>
+                      <span style={{ fontSize: 12, color: "#888" }}>
+                        Next unlock: <span style={{ fontWeight: 600, color: "#111" }}>{nextAvailable.bonus.bank_name}</span> — <span style={{ fontWeight: 700, color: "#0d7c5f" }}>{money(nextAvailable.bonus.bonus_amount)}</span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* ── Actions: de-emphasized destructive, forward-moving dominant ── */}
+                  <div style={{ display: "flex", gap: 10, marginTop: 20, alignItems: "center" }}>
+                    {/* Primary forward action: if safe to close, show close as primary green */}
+                    {milestoneDetail.safeToClose && milestoneDetail.bonusPosted && (
+                      <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
+                        style={{ padding: "12px 24px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>
+                        Close account and collect
+                      </button>
+                    )}
+
+                    {/* If not safe yet, show the open-account link as primary action if relevant */}
+                    {!milestoneDetail.safeToClose && milestoneDetail.currentMilestone === "account_opened" && bestLink(currentBonus.bonus.source_links) && (
+                      <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
+                        style={{ padding: "12px 24px", fontSize: 14, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 10, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                        Set up direct deposit
+                      </a>
+                    )}
+
+                    {/* Remove (always available but quiet) */}
+                    <button onClick={() => handleDelete(currentBonus.bonus.id)}
+                      style={{ padding: "12px 16px", fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 10, cursor: "pointer" }}>
+                      Remove
+                    </button>
+
+                    {/* Close account — ONLY shown as a muted text link when both conditions met, or hidden entirely */}
+                    {milestoneDetail.safeToClose && !milestoneDetail.bonusPosted && (
+                      <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
+                        style={{ fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "12px 8px" }}>
+                        Close without bonus
+                      </button>
+                    )}
+
+                    {/* If neither posted nor safe, no close button at all — only forward actions */}
+                  </div>
                 </div>
-              </div>
-            )}
+              )
+            })()}
 
             {/* ── What's Next: Momentum section ── */}
             {upNextBonuses.length > 0 && (
@@ -585,9 +673,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   {upNextBonuses.map(({ bonus: b, velocity, weeksToComplete, churnStatus }, i) => {
                     const isActive = churnStatus.status === "in_progress"
                     const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
-                    const stepDetail = record ? getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
+
+                    // For in-progress "what comes next" cards, use milestone system too
+                    const milestoneDetail = record ? getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
+
                     const link = bestLink(b.source_links)
-                    // Calculate unlock time based on cumulative weeks of bonuses before this one
                     const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (upNextBonuses[0]?.weeksToComplete ?? 0)
                     return (
                       <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "18px 22px" }}>
@@ -598,12 +688,25 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
                               <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                             </div>
-                            {stepDetail && <div style={{ marginTop: 10 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(b.id, step)} /></div>}
+                            {milestoneDetail && (
+                              <div style={{ marginTop: 10 }}>
+                                <MilestoneProgressCard detail={milestoneDetail} onOverride={(milestone: MilestoneKey) => handleMilestoneOverride(b.id, milestone)} />
+                              </div>
+                            )}
+                            {/* Next step for secondary in-progress cards */}
+                            {milestoneDetail && (
+                              <div style={{ marginTop: 8, fontSize: 12, color: "#555" }}>
+                                <span style={{ color: "#999", fontWeight: 600 }}>Next: </span>{milestoneDetail.nextStep}
+                              </div>
+                            )}
                             <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
+                              {/* De-emphasized: only show close if safe */}
+                              {milestoneDetail?.safeToClose && milestoneDetail?.bonusPosted && (
+                                <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                                  style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Close and collect</button>
+                              )}
                               <button onClick={() => handleDelete(b.id)}
-                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
+                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#bbb", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
                             </div>
                           </>
                         ) : (
