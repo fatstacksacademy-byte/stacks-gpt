@@ -207,9 +207,19 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const earnedAmt = (r: CompletedBonus) => { const b = allBonuses.find(x => x.id === r.bonus_id); return r.actual_amount ?? b?.bonus_amount ?? 0 }
   const totalEarned = allEarned.reduce((sum, r) => sum + earnedAmt(r), 0)
 
-  const expectedThisYear = [...inProgress, ...available.slice(0, 6)]
-    .filter(b => b.feasible !== false)
-    .reduce((sum, b) => sum + b.bonus.bonus_amount, 0)
+  // Auto-run sequencer on mount for accurate projection
+  useEffect(() => {
+    if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
+      const result = runSequencer({ slots: profile.dd_slots, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      setProjectionResult(result)
+    }
+  }, [mounted, loadingRecords, loaded, onboardingStep, profile.dd_slots, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult])
+
+  // 365-day projection from today
+  const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
+  const today365End = addDays(todayStr(), 365)
+  const yearBonuses365 = projected365.filter(p => new Date(p.payout_date) <= today365End)
+  const expectedThisYear = yearBonuses365.reduce((sum, p) => sum + p.bonus_amount, 0)
 
   const currentBonus = inProgress[0] ?? available[0] ?? null
   const upNextBonuses = currentBonus
@@ -430,7 +440,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
                 <div>
-                  <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings this year</div>
+                  <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings next 12 months</div>
                   <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
                   {totalEarned > 0 && <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>${totalEarned.toLocaleString()} earned so far {"\u00b7"} {allEarned.length} bonus{allEarned.length !== 1 ? "es" : ""} completed</div>}
                 </div>
@@ -445,12 +455,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </button>
               {showProjection && projectionResult && (() => {
                 const projected = getProjectedBonuses(projectionResult)
-                const thisYear = new Date().getFullYear()
-                const yearBonuses = projected.filter(p => new Date(p.payout_date).getFullYear() === thisYear)
+                const endDate = addDays(todayStr(), 365)
+                const yearBonuses = projected.filter(p => new Date(p.payout_date) <= endDate)
                 return (
                   <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
                     <div style={{ fontSize: 12, color: "#bbb", marginBottom: 12 }}>
-                      Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
+                      Projected payouts over the next 12 months based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                       {yearBonuses.map((p, i) => (
@@ -467,7 +477,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       ))}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 14px", marginTop: 8, background: "#f0faf5", borderRadius: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected this year</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected (next 12 months)</span>
                       <span style={{ fontSize: 15, fontWeight: 800, color: "#0d7c5f" }}>${yearBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
                     </div>
                   </div>
