@@ -478,36 +478,150 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {/* ═══════ MAIN DASHBOARD ═══════ */}
         {onboardingStep === "done" && (
           <>
-            {/* Expected Earnings */}
-            <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "28px 32px", marginBottom: 24 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 12, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Expected earnings next 12 months</div>
-                  <div style={{ fontSize: 38, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
+            {/* ── HERO: Primary Action Card ── */}
+            {currentBonus && currentBonus.churnStatus.status !== "in_progress" && (
+              <div style={{
+                background: "#fff", border: "2px solid #0d7c5f", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                boxShadow: "0 4px 24px rgba(13,124,95,0.08)",
+              }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+                  Your First {money(currentBonus.bonus.bonus_amount)} Is Ready
                 </div>
-                <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
+
+                <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
                   <div>
-                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total earned</div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
+                  </div>
+                  <div style={{ fontSize: 14, color: "#666" }}>
+                    Complete in {currentBonus.weeksToComplete ? `${Math.ceil(currentBonus.weeksToComplete / 2)} pay cycle${Math.ceil(currentBonus.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {currentBonus.bonus.requirements?.min_direct_deposit_total && (
+                    <div style={{ fontSize: 14, color: "#555" }}>
+                      Deposit ${currentBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {currentBonus.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
+                    </div>
+                  )}
+                  {!currentBonus.bonus.requirements?.min_direct_deposit_total && currentBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                    <div style={{ fontSize: 14, color: "#555" }}>
+                      Make {currentBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit{(currentBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${currentBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
+                    </div>
+                  )}
+                  {!currentBonus.bonus.requirements?.min_direct_deposit_total && !currentBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                    <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
+                  )}
+                  {currentBonus.bonus.fees?.monthly_fee && currentBonus.bonus.fees.monthly_fee > 0 ? (
+                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${currentBonus.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
+                  ) : (
+                    <div style={{ fontSize: 13, color: "#0d7c5f" }}>No monthly fee</div>
+                  )}
+                </div>
+
+                <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
+                  {bestLink(currentBonus.bonus.source_links) && (
+                    <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
+                      style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                      Open your account →
+                    </a>
+                  )}
+                  <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                    style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                    I already opened it
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── HERO: Active Bonus (in progress) ── */}
+            {currentBonus && currentBonus.churnStatus.status === "in_progress" && (
+              <div style={{
+                background: "#fff", border: "2px solid #2563eb", borderRadius: 16, padding: "32px 28px", marginBottom: 20,
+                boxShadow: "0 4px 24px rgba(37,99,235,0.06)",
+              }}>
+                <div style={{ fontSize: 11, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>Currently working on</div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
+                <div style={{ fontSize: 14, color: "#888", marginTop: 4 }}>Earn {money(currentBonus.bonus.bonus_amount)}</div>
+                {(() => {
+                  const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
+                  if (!record) return null
+                  const stepDetail = getBonusStepDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
+                  return <div style={{ marginTop: 18 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(currentBonus.bonus.id, step)} /></div>
+                })()}
+                <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+                  <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
+                    style={{ padding: "12px 24px", fontSize: 14, fontWeight: 600, background: "#dc2626", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Close account</button>
+                  <button onClick={() => handleDelete(currentBonus.bonus.id)}
+                    style={secondaryBtn}>Remove</button>
+                </div>
+              </div>
+            )}
+
+            {/* ── What's Next: Momentum section ── */}
+            {upNextBonuses.length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>What comes next</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {upNextBonuses.map(({ bonus: b, velocity, weeksToComplete, churnStatus }, i) => {
+                    const isActive = churnStatus.status === "in_progress"
+                    const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
+                    const stepDetail = record ? getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
+                    const link = bestLink(b.source_links)
+                    // Calculate unlock time based on cumulative weeks of bonuses before this one
+                    const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (upNextBonuses[0]?.weeksToComplete ?? 0)
+                    return (
+                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "18px 22px" }}>
+                        {isActive ? (
+                          <>
+                            <div style={{ fontSize: 11, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600, marginBottom: 4 }}>In progress</div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
+                              <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                            </div>
+                            {stepDetail && <div style={{ marginTop: 10 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(b.id, step)} /></div>}
+                            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
+                              <button onClick={() => handleDelete(b.id)}
+                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize: 13, color: "#555" }}>After this, you can safely start <strong style={{ color: "#111" }}>{b.bank_name}</strong></div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+                              <div style={{ fontSize: 12, color: "#999" }}>Unlocks in ~{weeksUntil} weeks</div>
+                              <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>Earn {money(b.bonus_amount)}</div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Stats: Projection + Progress ── */}
+            <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "24px 28px", marginBottom: 24 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 20 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>Projected next 12 months</div>
+                  <div style={{ fontSize: 32, fontWeight: 800, color: "#0d7c5f", marginTop: 2, letterSpacing: "-0.02em" }}>${expectedThisYear.toLocaleString()}</div>
+                </div>
+                <div style={{ display: "flex", gap: 24 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
-                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 1 }}>{inProgress.length + activeCustom.length} bonus{(inProgress.length + activeCustom.length) !== 1 ? "es" : ""}</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available</div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length}</div>
-                  </div>
-                  {inCooldown.length > 0 && (
-                    <div>
-                      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Cooling</div>
-                      <div style={{ fontSize: 24, fontWeight: 800, color: "#d97706", marginTop: 2 }}>{inCooldown.length}</div>
-                    </div>
-                  )}
                 </div>
               </div>
-              <button onClick={handleToggleProjection} style={{ marginTop: 14, fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+              <button onClick={handleToggleProjection} style={{ marginTop: 12, fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 {showProjection ? "Hide breakdown" : "How is this calculated?"}
               </button>
               {showProjection && projectionResult && (() => {
@@ -515,40 +629,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 const endDate = addDays(todayStr(), 365)
                 const yearBonuses = projected.filter(p => new Date(p.payout_date) <= endDate)
                 return (
-                  <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
-                    <div style={{ fontSize: 12, color: "#bbb", marginBottom: 12 }}>
-                      Projected payouts over the next 12 months based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }}>
+                    <div style={{ fontSize: 12, color: "#bbb", marginBottom: 10 }}>
+                      Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck with {profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                       {yearBonuses.map((p, i) => (
-                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f8f8f8", borderRadius: 8 }}>
+                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                             <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{i + 1}</span>
                             <div>
-                              <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{p.bank_name}</div>
-                              <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>Start {p.start_date} → Payout ~{p.payout_date}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{p.bank_name}</div>
+                              <div style={{ fontSize: 11, color: "#999" }}>Start {p.start_date} → Payout ~{p.payout_date}</div>
                             </div>
                           </div>
-                          <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
                         </div>
                       ))}
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 14px", marginTop: 8, background: "#f0faf5", borderRadius: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected (next 12 months)</span>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: "#0d7c5f" }}>${yearBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>${yearBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
                     </div>
                   </div>
                 )
               })()}
             </div>
 
-            {/* Sequencer Results */}
+            {/* Sequencer Results (from refresh) */}
             {sequencerResult && (
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Your Optimized Stack</div>
-                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses \u00b7 ${sequencerResult.total_bonus.toLocaleString()} total</div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses · ${sequencerResult.total_bonus.toLocaleString()} total</div>
                   </div>
                   <button onClick={() => setSequencerResult(null)} style={topBtn}>Hide</button>
                 </div>
@@ -560,7 +674,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 18 }}>{i + 1}</span>
                           <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</span>
-                          <span style={{ fontSize: 11, color: "#999" }}>~{b.weeks_to_complete}w</span>
                         </div>
                         <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(b.bonus_amount)}</span>
                       </div>
@@ -570,147 +683,45 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
 
-            {/* Hero Card */}
-            {currentBonus && (
-              <div style={{
-                background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "32px 28px", marginBottom: 12,
-                boxShadow: "0 4px 24px rgba(13,124,95,0.06)",
-              }}>
-                <div style={{ fontSize: 11, color: currentBonus.churnStatus.status === "in_progress" ? "#2563eb" : "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 10 }}>
-                  {currentBonus.churnStatus.status === "in_progress" ? "Currently working on" : "Your next bonus"}
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 20 }}>
-                  <div style={{ flex: 1, minWidth: 280 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
-                    <div style={{ display: "flex", gap: 24, marginTop: 14 }}>
-                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Earn</div><div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(currentBonus.bonus.bonus_amount)}</div></div>
-                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Time</div><div style={{ fontSize: 28, fontWeight: 800, color: "#111", marginTop: 2 }}>{currentBonus.weeksToComplete ? `${currentBonus.weeksToComplete}w` : "\u2014"}</div></div>
-                      <div><div style={{ fontSize: 11, color: "#999", textTransform: "uppercase" }}>Fee</div><div style={{ fontSize: 28, fontWeight: 800, color: "#111", marginTop: 2 }}>{currentBonus.bonus.fees?.monthly_fee === 0 ? "$0" : money(currentBonus.bonus.fees?.monthly_fee)}</div></div>
-                    </div>
-                    <div style={{ fontSize: 14, color: "#777", marginTop: 14, lineHeight: 1.6, maxWidth: 500 }}>
-                      {currentBonus.bonus.requirements?.min_direct_deposit_total
-                        ? `Deposit $${currentBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} total within ${currentBonus.bonus.requirements.deposit_window_days ?? "\u2014"} days using your regular paycheck.`
-                        : currentBonus.bonus.requirements?.min_direct_deposit_per_deposit
-                          ? `Make ${currentBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit${(currentBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of $${currentBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each.`
-                          : "Set up direct deposit to qualify."}
-                    </div>
-                    {currentBonus.churnStatus.status === "in_progress" && (() => {
-                      const record = completedRecords.find(r => r.bonus_id === currentBonus.bonus.id && !r.closed_date)
-                      if (!record) return null
-                      const stepDetail = getBonusStepDetail(currentBonus.bonus, record, profile.pay_frequency, profile.paycheck_amount)
-                      return <div style={{ marginTop: 18 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(currentBonus.bonus.id, step)} /></div>
-                    })()}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 190 }}>
-                    {currentBonus.churnStatus.status === "in_progress" ? (
-                      <>
-                        <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(currentBonus.bonus.bonus_amount)) }}
-                          style={{ ...primaryBtn, background: "#dc2626" }}>Close account</button>
-                        <button onClick={() => handleDelete(currentBonus.bonus.id)} style={secondaryBtn}>Remove</button>
-                      </>
-                    ) : (
-                      <>
-                        {bestLink(currentBonus.bonus.source_links) && (
-                          <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer" style={primaryBtn}>
-                            Open your account →
-                          </a>
-                        )}
-                        <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
-                          style={secondaryBtn}>I already opened it</button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Timeline hint */}
-            {nextBonus && currentWeeks > 0 && (
-              <div style={{ background: "#f0faf5", border: "1px solid #c8ede1", borderRadius: 10, padding: "12px 18px", marginBottom: 24, fontSize: 13, color: "#0d7c5f" }}>
-                <strong>Next up:</strong> Start {nextBonus.bonus.bank_name} in ~{currentWeeks} weeks → Earn {money(nextBonus.bonus.bonus_amount)}
-              </div>
-            )}
-
-            {/* Up Next Cards */}
-            {upNextBonuses.length > 0 && (
-              <div style={{ display: "grid", gridTemplateColumns: `repeat(${upNextBonuses.length}, 1fr)`, gap: 12, marginBottom: 28 }}>
-                {upNextBonuses.map(({ bonus: b, velocity, weeksToComplete, churnStatus }) => {
-                  const isActive = churnStatus.status === "in_progress"
-                  const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
-                  const stepDetail = record ? getBonusStepDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
-                  const link = bestLink(b.source_links)
-                  return (
-                    <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 22px" }}>
-                      <div style={{ fontSize: 11, color: isActive ? "#2563eb" : "#bbb", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 6 }}>{isActive ? "In progress" : "Up next"}</div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <div>
-                          <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>~{weeksToComplete ?? "?"}w{b.fees?.monthly_fee ? ` \u00b7 ${money(b.fees.monthly_fee)}/mo` : ""}</div>
-                        </div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
-                      </div>
-                      {stepDetail && <div style={{ marginTop: 10 }}><StepProgressBar detail={stepDetail} onOverride={(step) => handleStepOverride(b.id, step)} /></div>}
-                      {!isActive && (
-                        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                          {link && <a href={link} target="_blank" rel="noreferrer" style={{ ...secondaryBtn, flex: 1, textAlign: "center", fontSize: 12, padding: "8px" }}>Open account</a>}
-                          <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-                            style={{ fontSize: 12, padding: "8px 14px", color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>Already opened</button>
-                        </div>
-                      )}
-                      {isActive && (
-                        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                          <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                            style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
-                          <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {/* Cooldown */}
+            {/* ── Cooldown ── */}
             {(inCooldown.length > 0 || customInCooldown.length > 0) && (
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 12 }}>Cooling Down</div>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Cooling down</div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   {inCooldown.map(({ bonus: b, churnStatus }) => {
                     const s = churnStatus as Extract<ChurnStatus, { status: "in_cooldown" }>
                     return (
-                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 12, color: "#d97706", marginTop: 4 }}>{s.days_remaining} days left</div>
-                        <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Available {fmtShortDate(s.available_date)}</div>
+                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: "#d97706", marginTop: 3 }}>{s.days_remaining} days left</div>
                       </div>
                     )
                   })}
                   {customInCooldown.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{c.bank_name}</div>
-                        <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                        <span style={{ fontSize: 9, color: "#999", background: "#f0f0f0", padding: "1px 6px", borderRadius: 99 }}>Custom</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "#d97706", marginTop: 4 }}>{c.days_remaining} days left</div>
-                      <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Available {fmtShortDate(c.available_date)}</div>
+                      <div style={{ fontSize: 12, color: "#d97706", marginTop: 3 }}>{c.days_remaining} days left</div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Earnings */}
+            {/* ── Earnings History ── */}
             {allEarned.length > 0 && (
-              <details style={{ marginBottom: 28 }}>
-                <summary style={{ fontSize: 14, fontWeight: 600, color: "#111", cursor: "pointer", padding: "8px 0" }}>Earnings History <span style={{ fontSize: 12, color: "#bbb", fontWeight: 400 }}>({allEarned.length})</span></summary>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+              <details style={{ marginBottom: 24 }}>
+                <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Earnings history ({allEarned.length})</summary>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                   {allEarned.sort((a, b) => new Date(b.closed_date!).getTime() - new Date(a.closed_date!).getTime()).map(r => {
                     const bonus = allBonuses.find(b => b.id === r.bonus_id)
                     if (!bonus) return null
                     return (
-                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#fff", borderRadius: 8, border: "1px solid #e8e8e8" }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{bonus.bank_name} <span style={{ fontSize: 12, color: "#bbb" }}>{fmtShortDate(r.closed_date!)}</span></span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
+                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 14px", background: "#fff", borderRadius: 8, border: "1px solid #e8e8e8" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{bonus.bank_name} <span style={{ fontSize: 11, color: "#bbb" }}>{fmtShortDate(r.closed_date!)}</span></span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
                       </div>
                     )
                   })}
@@ -718,19 +729,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </details>
             )}
 
-            {/* Custom Bonuses */}
+            {/* ── Custom Bonuses ── */}
             {(activeCustom.length > 0 || closedCustom.length > 0) && (
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Your Custom Bonuses</div>
-                </div>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Your custom bonuses</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {activeCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "18px 22px" }}>
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
                             <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
                           <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Opened {fmtShortDate(c.opened_date)}{c.notes ? ` · ${c.notes}` : ""}</div>
@@ -740,7 +749,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             {!c.cooldown_months && <span style={{ fontSize: 10, color: "#bbb" }}>· One-time</span>}
                           </div>
                         </div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
                       </div>
                       <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                         <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
@@ -751,18 +760,18 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     </div>
                   ))}
                   {closedCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 22px", opacity: 0.7 }}>
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: 0.7 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
                             <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
-                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Closed {fmtShortDate(c.closed_date!)}</div>
+                          <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>Closed {fmtShortDate(c.closed_date!)}</div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           {c.bonus_received ? (
-                            <span style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>{money(c.actual_amount ?? c.bonus_amount)}</span>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{money(c.actual_amount ?? c.bonus_amount)}</span>
                           ) : (
                             <span style={{ fontSize: 12, color: "#999" }}>Not received</span>
                           )}
@@ -776,15 +785,16 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
 
-            {/* Add Custom + Advanced Toggle */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            {/* ── Bottom links ── */}
+            <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 16 }}>
               <button onClick={() => setShowAddCustom(true)}
-                style={{ flex: 1, padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #0d7c5f", borderRadius: 10, color: "#0d7c5f", cursor: "pointer" }}>
+                style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add custom bonus
               </button>
+              <span style={{ color: "#e0e0e0" }}>|</span>
               <button onClick={() => setShowAdvanced(a => !a)}
-                style={{ flex: 1, padding: "12px", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, color: "#999", cursor: "pointer" }}>
-                {showAdvanced ? "Hide all bonuses" : `Show all ${available.length + inProgress.length} bonuses`}
+                style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                {showAdvanced ? "Hide full plan" : "View full bonus plan"}
               </button>
             </div>
 
