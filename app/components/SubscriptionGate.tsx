@@ -10,11 +10,14 @@ type Props = {
 
 export default function SubscriptionGate({ children, isSubscribed }: Props) {
   const [loading, setLoading] = useState<"monthly" | "annual" | null>(null)
+  // BUG FIX: added error state so failures aren't silent
+  const [error, setError] = useState<string | null>(null)
 
   if (isSubscribed) return <>{children}</>
 
   async function handleCheckout(plan: "monthly" | "annual") {
     setLoading(plan)
+    setError(null)
     try {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -22,15 +25,20 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
         body: JSON.stringify({ plan }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else setLoading(null)
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setError(data.error ?? "Something went wrong. Please try again.")
+        setLoading(null)
+      }
     } catch {
+      setError("Network error. Please check your connection and try again.")
       setLoading(null)
     }
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
+    <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center", padding: 32, fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <div style={{ maxWidth: 440, width: "100%", textAlign: "center" }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em", marginBottom: 32 }}>Stacks OS</div>
 
@@ -75,6 +83,17 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
             </span>
           </button>
         </div>
+
+        {/* BUG FIX: show error message if checkout fails */}
+        {error && (
+          <div style={{
+            background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8,
+            padding: "12px 16px", marginBottom: 16,
+            fontSize: 13, color: "#dc2626", lineHeight: 1.5,
+          }}>
+            {error}
+          </div>
+        )}
 
         <p style={{ fontSize: 12, color: "#bbb", lineHeight: 1.5, margin: "0 0 16px" }}>
           Most bonuses are $200–$500. The subscription pays for itself with your first bonus.

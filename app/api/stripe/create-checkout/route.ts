@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "../../../../lib/supabase/server"
-import { stripe, getOrCreateCustomer } from "../../../../lib/stripe"
+import { stripe, PRICES, getOrCreateCustomer } from "../../../../lib/stripe"
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,16 +8,27 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
 
+    const { plan } = await req.json() as { plan: "monthly" | "annual" }
+    const priceId = plan === "annual" ? PRICES.annual : PRICES.monthly
+
+    if (!priceId) return NextResponse.json({ error: "Invalid plan" }, { status: 400 })
+
     const customerId = await getOrCreateCustomer(user.id, user.email!)
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      return_url: `${req.nextUrl.origin}/roadmap`,
+      mode: "subscription",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${req.nextUrl.origin}/roadmap?checkout=success`,
+      cancel_url: `${req.nextUrl.origin}/?checkout=cancelled`,
+      subscription_data: {
+        metadata: { supabase_user_id: user.id },
+      },
     })
 
     return NextResponse.json({ url: session.url })
   } catch (err: any) {
-    console.error("Portal error:", err)
+    console.error("Checkout error:", err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }

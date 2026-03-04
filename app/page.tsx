@@ -5,6 +5,23 @@ import Link from "next/link"
 
 export default function LandingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual")
+  const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "annual" | null>(null)
+
+  async function handleCheckout(plan: "monthly" | "annual") {
+    setCheckoutLoading(plan)
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else setCheckoutLoading(null)
+    } catch {
+      setCheckoutLoading(null)
+    }
+  }
 
   return (
     <div style={{ background: "#fafafa", minHeight: "100vh", fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
@@ -50,11 +67,18 @@ export default function LandingPage() {
           Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
         </p>
         <div style={{ display: "flex", gap: 14 }}>
-          <Link href="/login" style={{
-            fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-            padding: "16px 36px", borderRadius: 10, textDecoration: "none",
-            boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-          }}>Start earning</Link>
+          {/* BUG FIX: Hero CTA now triggers checkout directly instead of going to /login */}
+          <button
+            onClick={() => handleCheckout(billingCycle)}
+            disabled={checkoutLoading !== null}
+            style={{
+              fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              padding: "16px 36px", borderRadius: 10, textDecoration: "none",
+              boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
+              border: "none", cursor: checkoutLoading ? "wait" : "pointer",
+            }}>
+            {checkoutLoading ? "Loading..." : "Start earning"}
+          </button>
           <a href="#how-it-works" style={{
             fontSize: 16, fontWeight: 500, color: "#666",
             padding: "16px 28px", borderRadius: 10, textDecoration: "none",
@@ -133,14 +157,15 @@ export default function LandingPage() {
         }}>
           Everything you need to stack bonuses
         </h2>
+        {/* BUG FIX: removed duplicate "Step-by-step bonus checklist" (was item 6, same as item 2) */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {[
             { title: "Personalized bonus queue", desc: "Ranked by your paycheck amount, pay frequency, and eligibility. Always know what's next." },
-            { title: "Step-by-step checklist", desc: "Each bonus is a simple checklist. Check off steps as you go. No guesswork." },
+            { title: "Step-by-step checklists", desc: "Each bonus is a simple checklist. Check off steps as you go. No guesswork." },
             { title: "Deposit tracking", desc: "Log your deposits and see exactly how much you've contributed toward each requirement." },
             { title: "12-month projection", desc: "See how much you'll earn this year if you follow the plan. Updated as you complete bonuses." },
             { title: "Cooldown tracking", desc: "We remember when you earned each bonus so you know exactly when you're eligible again." },
-            { title: "Step-by-step bonus checklist", desc: "Follow a simple checklist so you always know what to do next to unlock each bonus." },
+            { title: "Open accounts tracker", desc: "See every account you currently have open, what's pending, and when you can close safely." },
           ].map((f, i) => (
             <div key={i} style={{
               background: "#fff", borderRadius: 12, padding: "24px 24px",
@@ -169,9 +194,7 @@ export default function LandingPage() {
 
         {/* Toggle */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
-          <div style={{
-            display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3,
-          }}>
+          <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3 }}>
             <button onClick={() => setBillingCycle("monthly")} style={{
               padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 6,
               border: "none", cursor: "pointer",
@@ -215,13 +238,19 @@ export default function LandingPage() {
           {billingCycle === "monthly" && (
             <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Cancel anytime</div>
           )}
-          <Link href="/login" style={{
-            display: "block", fontSize: 16, fontWeight: 700, color: "#fff",
-            background: "#0d7c5f", padding: "16px 0", borderRadius: 10,
-            textDecoration: "none", marginBottom: 20,
-          }}>
-            Start earning
-          </Link>
+          {/* BUG FIX: button triggers Stripe checkout directly, not a Link to /login */}
+          <button
+            onClick={() => handleCheckout(billingCycle)}
+            disabled={checkoutLoading !== null}
+            style={{
+              display: "block", width: "100%", fontSize: 16, fontWeight: 700, color: "#fff",
+              background: checkoutLoading ? "#5aaa8a" : "#0d7c5f",
+              padding: "16px 0", borderRadius: 10,
+              border: "none", cursor: checkoutLoading ? "wait" : "pointer",
+              marginBottom: 20, transition: "background 0.15s",
+            }}>
+            {checkoutLoading ? "Loading..." : "Start earning"}
+          </button>
           <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 10 }}>
             {[
               "Personalized bonus queue",
@@ -241,9 +270,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{
-        maxWidth: 700, margin: "0 auto", padding: "60px 40px",
-      }}>
+      <section style={{ maxWidth: 700, margin: "0 auto", padding: "60px 40px" }}>
         <h2 style={{
           fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
           letterSpacing: "-0.02em", margin: "0 0 40px",
@@ -276,9 +303,7 @@ export default function LandingPage() {
             a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time.",
           },
         ].map((faq, i) => (
-          <div key={i} style={{
-            borderBottom: "1px solid #eee", padding: "20px 0",
-          }}>
+          <div key={i} style={{ borderBottom: "1px solid #eee", padding: "20px 0" }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{faq.q}</div>
             <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>{faq.a}</div>
           </div>
@@ -299,20 +324,24 @@ export default function LandingPage() {
         <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>
           Set up in minutes. Start earning this week.
         </p>
-        <Link href="/login" style={{
-          fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-          padding: "16px 40px", borderRadius: 10, textDecoration: "none",
-          display: "inline-block",
-          boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-        }}>
-          Get started — ${billingCycle === "monthly" ? "5" : "50"}/{billingCycle === "monthly" ? "mo" : "yr"}
-        </Link>
+        {/* BUG FIX: triggers checkout, shows correct price for selected billing cycle */}
+        <button
+          onClick={() => handleCheckout(billingCycle)}
+          disabled={checkoutLoading !== null}
+          style={{
+            fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+            padding: "16px 40px", borderRadius: 10,
+            border: "none", cursor: checkoutLoading ? "wait" : "pointer",
+            boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
+          }}>
+          {checkoutLoading
+            ? "Loading..."
+            : `Get started — $${billingCycle === "monthly" ? "5/mo" : "50/yr"}`}
+        </button>
       </section>
 
       {/* ── DISCLAIMER ── */}
-      <div style={{
-        maxWidth: 1100, margin: "0 auto", padding: "0 40px 24px",
-      }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px 24px" }}>
         <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0, textAlign: "center" }}>
           Bonus offers, requirements, and fees are determined by each financial institution and may change at any time. Always verify the current terms directly with the bank before applying.
         </p>
@@ -330,9 +359,6 @@ export default function LandingPage() {
           <Link href="/privacy" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Privacy</Link>
         </div>
       </footer>
-
-      {/* ── Font ── */}
-      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     </div>
   )
 }
