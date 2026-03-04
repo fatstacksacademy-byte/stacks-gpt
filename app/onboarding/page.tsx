@@ -27,7 +27,7 @@ function fmtDate(d: Date) {
 
 export default function OnboardingPage() {
   const searchParams = useSearchParams()
-  const plan = searchParams.get("plan") ?? "annual"
+  const initialPlan = (searchParams.get("plan") ?? "annual") as "monthly" | "annual"
 
   const [step, setStep] = useState<Step>("frequency")
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
@@ -36,6 +36,8 @@ export default function OnboardingPage() {
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showAll, setShowAll] = useState(false)
+  // User can change plan on the paywall card
+  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">(initialPlan)
 
   function handleFrequencySelect(f: PayFrequency) {
     setFrequency(f)
@@ -54,7 +56,6 @@ export default function OnboardingPage() {
       incomeSources: [{ pay_frequency: frequency, paycheck_amount: amt }],
     })
 
-    // Pull all bonus entries from slot 0, filter to first 52 weeks (~1 year)
     const allBonusEntries = result.slots.flat().filter(
       (e): e is SequencedBonus => e.type === "bonus" && e.payout_week <= 52
     )
@@ -71,7 +72,7 @@ export default function OnboardingPage() {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan: selectedPlan }),
       })
       const data = await res.json()
       if (data.url) window.location.href = data.url
@@ -94,7 +95,7 @@ export default function OnboardingPage() {
     }}>
       {/* Progress dots */}
       <div style={{ display: "flex", gap: 6, marginBottom: 40 }}>
-        {(["frequency", "paycheck", "projection"] as Step[]).map((s, i) => {
+        {(["frequency", "paycheck", "projection"] as Step[]).map((s) => {
           const steps = ["frequency", "paycheck", "projection"]
           const currentIdx = steps.indexOf(step)
           const thisIdx = steps.indexOf(s)
@@ -211,9 +212,7 @@ export default function OnboardingPage() {
                     <div>
                       <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600, marginBottom: 2 }}>First bonus</div>
                       <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
-                      <div style={{ fontSize: 12, color: "#666" }}>
-                        ~{fmtDate(addDays(firstBonus.payout_week * 7))}
-                      </div>
+                      <div style={{ fontSize: 12, color: "#666" }}>~{fmtDate(addDays(firstBonus.payout_week * 7))}</div>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
                   </div>
@@ -242,23 +241,41 @@ export default function OnboardingPage() {
                   </button>
                 )}
 
-                {/* Paywall CTA */}
+                {/* ── Paywall CTA ── */}
                 <div style={{
                   background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14,
                   padding: "24px", marginTop: 8,
                   boxShadow: "0 4px 20px rgba(13,124,95,0.08)",
                 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>Stacks OS</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>
-                      ${plan === "annual" ? "50" : "5"}
-                      <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>/{plan === "annual" ? "yr" : "mo"}</span>
-                      {plan === "annual" && <span style={{ fontSize: 12, color: "#999", fontWeight: 400, marginLeft: 6 }}>· $4.17/mo</span>}
-                    </div>
+                  {/* Plan toggle */}
+                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 20 }}>
+                    <button onClick={() => setSelectedPlan("annual")} style={{
+                      flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: 600, borderRadius: 6,
+                      border: "none", cursor: "pointer",
+                      background: selectedPlan === "annual" ? "#fff" : "transparent",
+                      color: selectedPlan === "annual" ? "#111" : "#999",
+                      boxShadow: selectedPlan === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                      transition: "all 0.15s",
+                    }}>
+                      Annual · $50/yr
+                      <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 700, marginLeft: 6 }}>Save 17%</span>
+                    </button>
+                    <button onClick={() => setSelectedPlan("monthly")} style={{
+                      flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: 600, borderRadius: 6,
+                      border: "none", cursor: "pointer",
+                      background: selectedPlan === "monthly" ? "#fff" : "transparent",
+                      color: selectedPlan === "monthly" ? "#111" : "#999",
+                      boxShadow: selectedPlan === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                      transition: "all 0.15s",
+                    }}>
+                      Monthly · $5/mo
+                    </button>
                   </div>
+
                   <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                    Your first bonus alone is {firstBonus ? `${Math.round(firstBonus.bonus_amount / (plan === "annual" ? 50 : 5))}x` : "many times"} the cost of a subscription.
+                    Your first bonus alone is {firstBonus ? `${Math.round(firstBonus.bonus_amount / (selectedPlan === "annual" ? 50 : 5))}x` : "many times"} the cost of a subscription.
                   </div>
+
                   <button onClick={handleCheckout} disabled={checkoutLoading}
                     style={{
                       width: "100%", padding: "16px", fontSize: 16, fontWeight: 700,
@@ -266,18 +283,16 @@ export default function OnboardingPage() {
                       color: "#fff", border: "none", borderRadius: 10,
                       cursor: checkoutLoading ? "wait" : "pointer",
                     }}>
-                    {checkoutLoading ? "Loading…" : `Start earning — $${plan === "annual" ? "50/yr" : "5/mo"}`}
+                    {checkoutLoading ? "Loading…" : `Start earning — $${selectedPlan === "annual" ? "50/yr" : "5/mo"}`}
                   </button>
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
-                    {plan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
+                    {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
                   </div>
                 </div>
               </>
             ) : (
               <div style={{ textAlign: "center" }}>
-                <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111", marginBottom: 12 }}>
-                  No matching bonuses found
-                </h1>
+                <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111", marginBottom: 12 }}>No matching bonuses found</h1>
                 <p style={{ fontSize: 15, color: "#888", marginBottom: 24 }}>
                   Most bonuses require a paycheck of at least $500. Try a different amount.
                 </p>
