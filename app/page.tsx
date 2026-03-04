@@ -2,25 +2,18 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function LandingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual")
-  const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "annual" | null>(null)
+  const router = useRouter()
 
-  async function handleCheckout(plan: "monthly" | "annual") {
-    setCheckoutLoading(plan)
-    try {
-      const res = await fetch("/api/stripe/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
-      })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else setCheckoutLoading(null)
-    } catch {
-      setCheckoutLoading(null)
+  function handleCTA() {
+    // Store selected plan so SubscriptionGate picks it up after login
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("preferred_plan", billingCycle)
     }
+    router.push("/login")
   }
 
   return (
@@ -31,13 +24,7 @@ export default function LandingPage() {
         padding: "20px 40px", maxWidth: 1100, margin: "0 auto",
       }}>
         <span style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em" }}>Stacks OS</span>
-        <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-          <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
-          <Link href="/login" style={{
-            fontSize: 14, fontWeight: 600, color: "#fff", background: "#111",
-            padding: "10px 22px", borderRadius: 8, textDecoration: "none",
-          }}>Get started</Link>
-        </div>
+        <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
       </nav>
 
       {/* ── HERO ── */}
@@ -61,24 +48,16 @@ export default function LandingPage() {
           <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
         </h1>
         <p style={{
-          fontSize: 19, color: "#777", lineHeight: 1.6, margin: "0 0 40px",
-          maxWidth: 520,
+          fontSize: 19, color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520,
         }}>
           Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
         </p>
         <div style={{ display: "flex", gap: 14 }}>
-          {/* BUG FIX: Hero CTA now triggers checkout directly instead of going to /login */}
-          <button
-            onClick={() => handleCheckout(billingCycle)}
-            disabled={checkoutLoading !== null}
-            style={{
-              fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-              padding: "16px 36px", borderRadius: 10, textDecoration: "none",
-              boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-              border: "none", cursor: checkoutLoading ? "wait" : "pointer",
-            }}>
-            {checkoutLoading ? "Loading..." : "Start earning"}
-          </button>
+          <button onClick={handleCTA} style={{
+            fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+            padding: "16px 36px", borderRadius: 10, border: "none", cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
+          }}>Start earning</button>
           <a href="#how-it-works" style={{
             fontSize: 16, fontWeight: 500, color: "#666",
             padding: "16px 28px", borderRadius: 10, textDecoration: "none",
@@ -105,40 +84,18 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" style={{
-        maxWidth: 1100, margin: "0 auto", padding: "60px 40px",
-      }}>
-        <h2 style={{
-          fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
-          letterSpacing: "-0.02em", margin: "0 0 12px",
-        }}>
+      <section id="how-it-works" style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Three steps. Repeat.
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>
-          No gimmicks. Just a system.
-        </p>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No gimmicks. Just a system.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
           {[
-            {
-              step: "01",
-              title: "Open the account",
-              desc: "We match you with the highest-value bonus based on your paycheck. Click the link, open the account in minutes.",
-            },
-            {
-              step: "02",
-              title: "Route your deposit",
-              desc: "Point your direct deposit to the new account. Meet the deposit requirement with your regular paycheck — no extra money needed.",
-            },
-            {
-              step: "03",
-              title: "Collect and repeat",
-              desc: "Once a bonus posts, move on to the next opportunity. You can also run multiple bonuses at once if you want to accelerate your earnings.",
-            },
+            { step: "01", title: "Open the account", desc: "We match you with the highest-value bonus based on your paycheck. Click the link, open the account in minutes." },
+            { step: "02", title: "Route your deposit", desc: "Point your direct deposit to the new account. Meet the deposit requirement with your regular paycheck — no extra money needed." },
+            { step: "03", title: "Collect and repeat", desc: "Once a bonus posts, move on to the next opportunity. You can also run multiple bonuses at once if you want to accelerate your earnings." },
           ].map((item, i) => (
-            <div key={i} style={{
-              background: "#fff", borderRadius: 14, padding: "32px 28px",
-              border: "1px solid #e8e8e8",
-            }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "32px 28px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 32, fontWeight: 800, color: "#e0e0e0", marginBottom: 16 }}>{item.step}</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 10 }}>{item.title}</div>
               <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>{item.desc}</div>
@@ -148,16 +105,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── WHAT YOU GET ── */}
-      <section style={{
-        maxWidth: 1100, margin: "0 auto", padding: "60px 40px",
-      }}>
-        <h2 style={{
-          fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
-          letterSpacing: "-0.02em", margin: "0 0 48px",
-        }}>
+      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 48px" }}>
           Everything you need to stack bonuses
         </h2>
-        {/* BUG FIX: removed duplicate "Step-by-step bonus checklist" (was item 6, same as item 2) */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {[
             { title: "Personalized bonus queue", desc: "Ranked by your paycheck amount, pay frequency, and eligibility. Always know what's next." },
@@ -167,10 +118,7 @@ export default function LandingPage() {
             { title: "Cooldown tracking", desc: "We remember when you earned each bonus so you know exactly when you're eligible again." },
             { title: "Open accounts tracker", desc: "See every account you currently have open, what's pending, and when you can close safely." },
           ].map((f, i) => (
-            <div key={i} style={{
-              background: "#fff", borderRadius: 12, padding: "24px 24px",
-              border: "1px solid #e8e8e8",
-            }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 12, padding: "24px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{f.title}</div>
               <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>{f.desc}</div>
             </div>
@@ -179,32 +127,23 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRICING ── */}
-      <section id="pricing" style={{
-        maxWidth: 1100, margin: "0 auto", padding: "60px 40px",
-      }}>
-        <h2 style={{
-          fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
-          letterSpacing: "-0.02em", margin: "0 0 8px",
-        }}>
+      <section id="pricing" style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           Your first bonus covers the cost
         </h2>
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 32px" }}>
           Your first bonus often earns $300–$400, easily covering the subscription.
         </p>
-
-        {/* Toggle */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
           <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3 }}>
             <button onClick={() => setBillingCycle("monthly")} style={{
-              padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 6,
-              border: "none", cursor: "pointer",
+              padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
               background: billingCycle === "monthly" ? "#fff" : "transparent",
               color: billingCycle === "monthly" ? "#111" : "#999",
               boxShadow: billingCycle === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
             }}>Monthly</button>
             <button onClick={() => setBillingCycle("annual")} style={{
-              padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 6,
-              border: "none", cursor: "pointer",
+              padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
               background: billingCycle === "annual" ? "#fff" : "transparent",
               color: billingCycle === "annual" ? "#111" : "#999",
               boxShadow: billingCycle === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
@@ -213,53 +152,27 @@ export default function LandingPage() {
             </button>
           </div>
         </div>
-
-        {/* Card */}
         <div style={{
-          maxWidth: 400, margin: "0 auto",
-          background: "#fff", border: "2px solid #0d7c5f", borderRadius: 16,
-          padding: "36px 32px", textAlign: "center",
+          maxWidth: 400, margin: "0 auto", background: "#fff", border: "2px solid #0d7c5f",
+          borderRadius: 16, padding: "36px 32px", textAlign: "center",
           boxShadow: "0 8px 32px rgba(13,124,95,0.08)",
         }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>
-            Stacks OS
-          </div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS</div>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4, marginBottom: 4 }}>
-            <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>
-              ${billingCycle === "monthly" ? "5" : "50"}
-            </span>
-            <span style={{ fontSize: 16, color: "#999" }}>
-              /{billingCycle === "monthly" ? "mo" : "yr"}
-            </span>
+            <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "5" : "50"}</span>
+            <span style={{ fontSize: 16, color: "#999" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
           </div>
-          {billingCycle === "annual" && (
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>$4.17/mo billed annually</div>
-          )}
-          {billingCycle === "monthly" && (
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Cancel anytime</div>
-          )}
-          {/* BUG FIX: button triggers Stripe checkout directly, not a Link to /login */}
-          <button
-            onClick={() => handleCheckout(billingCycle)}
-            disabled={checkoutLoading !== null}
-            style={{
-              display: "block", width: "100%", fontSize: 16, fontWeight: 700, color: "#fff",
-              background: checkoutLoading ? "#5aaa8a" : "#0d7c5f",
-              padding: "16px 0", borderRadius: 10,
-              border: "none", cursor: checkoutLoading ? "wait" : "pointer",
-              marginBottom: 20, transition: "background 0.15s",
-            }}>
-            {checkoutLoading ? "Loading..." : "Start earning"}
-          </button>
+          {billingCycle === "annual"
+            ? <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>$4.17/mo billed annually</div>
+            : <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Cancel anytime</div>
+          }
+          <button onClick={handleCTA} style={{
+            display: "block", width: "100%", fontSize: 16, fontWeight: 700, color: "#fff",
+            background: "#0d7c5f", padding: "16px 0", borderRadius: 10,
+            border: "none", cursor: "pointer", marginBottom: 20,
+          }}>Start earning</button>
           <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 10 }}>
-            {[
-              "Personalized bonus queue",
-              "Step-by-step checklists",
-              "Deposit tracking",
-              "12-month earnings projection",
-              "Cooldown + eligibility tracking",
-              "Bonus details + requirements",
-            ].map((f, i) => (
+            {["Personalized bonus queue", "Step-by-step checklists", "Deposit tracking", "12-month earnings projection", "Cooldown + eligibility tracking", "Bonus details + requirements"].map((f, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#555" }}>
                 <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>
                 {f}
@@ -271,37 +184,14 @@ export default function LandingPage() {
 
       {/* ── FAQ ── */}
       <section style={{ maxWidth: 700, margin: "0 auto", padding: "60px 40px" }}>
-        <h2 style={{
-          fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
-          letterSpacing: "-0.02em", margin: "0 0 40px",
-        }}>
-          Common questions
-        </h2>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
         {[
-          {
-            q: "Is this legal?",
-            a: "Yes. Bank bonuses are promotional offers banks use to attract new customers. They want you to sign up.",
-          },
-          {
-            q: "Do I need extra money?",
-            a: "Not usually. Most bonuses only require that a deposit pass through the account. In many cases you can transfer the money back to your main bank after it arrives, as long as the bank's requirements are met.",
-          },
-          {
-            q: "Will this affect my credit score?",
-            a: "Most checking account bonuses don't require a hard credit pull. We flag the ones that do so you can decide.",
-          },
-          {
-            q: "Will opening these accounts hurt my credit?",
-            a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead.",
-          },
-          {
-            q: "How much time does this take?",
-            a: "Opening an account takes 10–15 minutes. After that, you're just checking off steps as they happen. The system tells you when to act.",
-          },
-          {
-            q: "What if a bonus offer changes?",
-            a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time.",
-          },
+          { q: "Is this legal?", a: "Yes. Bank bonuses are promotional offers banks use to attract new customers. They want you to sign up." },
+          { q: "Do I need extra money?", a: "Not usually. Most bonuses only require that a deposit pass through the account. In many cases you can transfer the money back to your main bank after it arrives, as long as the bank's requirements are met." },
+          { q: "Will this affect my credit score?", a: "Most checking account bonuses don't require a hard credit pull. We flag the ones that do so you can decide." },
+          { q: "Will opening these accounts hurt my credit?", a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead." },
+          { q: "How much time does this take?", a: "Opening an account takes 10–15 minutes. After that, you're just checking off steps as they happen. The system tells you when to act." },
+          { q: "What if a bonus offer changes?", a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time." },
         ].map((faq, i) => (
           <div key={i} style={{ borderBottom: "1px solid #eee", padding: "20px 0" }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{faq.q}</div>
@@ -311,32 +201,17 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section style={{
-        maxWidth: 1100, margin: "0 auto", padding: "60px 40px 40px",
-        textAlign: "center",
-      }}>
-        <h2 style={{
-          fontSize: 36, fontWeight: 800, color: "#111",
-          letterSpacing: "-0.02em", margin: "0 0 12px",
-        }}>
+      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px 40px", textAlign: "center" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Your first bonus is waiting
         </h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>
-          Set up in minutes. Start earning this week.
-        </p>
-        {/* BUG FIX: triggers checkout, shows correct price for selected billing cycle */}
-        <button
-          onClick={() => handleCheckout(billingCycle)}
-          disabled={checkoutLoading !== null}
-          style={{
-            fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-            padding: "16px 40px", borderRadius: 10,
-            border: "none", cursor: checkoutLoading ? "wait" : "pointer",
-            boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-          }}>
-          {checkoutLoading
-            ? "Loading..."
-            : `Get started — $${billingCycle === "monthly" ? "5/mo" : "50/yr"}`}
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>Set up in minutes. Start earning this week.</p>
+        <button onClick={handleCTA} style={{
+          fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+          padding: "16px 40px", borderRadius: 10, border: "none", cursor: "pointer",
+          boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
+        }}>
+          Get started — ${billingCycle === "monthly" ? "5/mo" : "50/yr"}
         </button>
       </section>
 
