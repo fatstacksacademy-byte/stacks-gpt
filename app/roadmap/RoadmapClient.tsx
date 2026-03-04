@@ -99,6 +99,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showSettings, setShowSettings] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
+  const [deposits, setDeposits] = useState<Record<string, { amount: number; date: string }[]>>({})
+  const [addingDeposit, setAddingDeposit] = useState<string | null>(null)
+  const [newDepositAmt, setNewDepositAmt] = useState("")
+  const [newDepositDate, setNewDepositDate] = useState(todayStr())
   const [onboardingStep, setOnboardingStep] = useState<"welcome" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
@@ -630,12 +634,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
                       const windowDays = req?.deposit_window_days ?? 90
                       const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
-                      const daysPerPay = DAYS_PER_PAY[profile.pay_frequency] ?? 14
-                      let depositsNeeded = 1
-                      if (req?.dd_count_required) depositsNeeded = req.dd_count_required
-                      else if (totalRequired && profile.paycheck_amount > 0) depositsNeeded = Math.ceil(totalRequired / profile.paycheck_amount)
-                      const depositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
-                      const depositedSoFar = Math.min(totalRequired, depositsSoFar * profile.paycheck_amount)
+                      const bonusDeposits = deposits[b.id] ?? []
+                      const depositedSoFar = bonusDeposits.reduce((s, d) => s + d.amount, 0)
 
                       const isDetailsExpanded = expandedDetails === b.id
 
@@ -737,20 +737,63 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           </div>
 
-                          {/* ── Deposit progress ── */}
+                          {/* ── Deposits ── */}
                           {totalRequired > 0 && !milestoneDetail.bonusPosted && (
                             <div style={{ padding: "12px 24px 0" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Deposit progress</span>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}</span>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
+                                  Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
+                                </span>
+                                <button onClick={() => { setAddingDeposit(addingDeposit === b.id ? null : b.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
+                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
+                                  +
+                                </button>
                               </div>
-                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden" }}>
+                              {/* Progress bar */}
+                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: bonusDeposits.length > 0 ? 8 : 0 }}>
                                 <div style={{
                                   height: "100%", borderRadius: 2, background: "#0d7c5f",
                                   width: `${totalRequired > 0 ? Math.min(100, (depositedSoFar / totalRequired) * 100) : 0}%`,
                                   transition: "width 0.3s ease",
                                 }} />
                               </div>
+                              {/* Deposit entries */}
+                              {bonusDeposits.length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                  {bonusDeposits.map((d, i) => (
+                                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                      <span style={{ color: "#888" }}>{fmtShortDate(d.date)}</span>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                        <button onClick={() => setDeposits(prev => ({ ...prev, [b.id]: (prev[b.id] ?? []).filter((_, idx) => idx !== i) }))}
+                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {/* Inline add form */}
+                              {addingDeposit === b.id && (
+                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
+                                  <div style={{ position: "relative", flex: 1 }}>
+                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                                      placeholder="Amount" />
+                                  </div>
+                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
+                                  <button onClick={() => {
+                                    const amt = parseInt(newDepositAmt.replace(/\D/g, ""))
+                                    if (!amt || amt <= 0) return
+                                    setDeposits(prev => ({ ...prev, [b.id]: [...(prev[b.id] ?? []), { amount: amt, date: newDepositDate }] }))
+                                    setAddingDeposit(null)
+                                  }}
+                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
+                                    Add
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           )}
 
