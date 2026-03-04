@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import { useSearchParams } from "next/navigation"
+import { runSequencer, SequencedBonus } from "@/lib/sequencer"
 
 type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -12,53 +13,17 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "monthly",     label: "Once a month",   desc: "12 paychecks/year" },
 ]
 
-const DAYS_PER_PAY: Record<PayFrequency, number> = {
-  weekly: 7, biweekly: 14, semimonthly: 15.2, monthly: 30.4,
-}
-
-// Simplified projection — mirrors the logic in RoadmapClient / sequencer
-// Uses a static bonus pool to estimate yearly earnings
-const BONUS_POOL = [
-  { bank: "SoFi",         amount: 300,  ddMin: 1000, window: 30,  posting: 30  },
-  { bank: "Axos",         amount: 500,  ddMin: 1500, window: 60,  posting: 60  },
-  { bank: "Chime",        amount: 100,  ddMin: 200,  window: 30,  posting: 30  },
-  { bank: "Discover",     amount: 360,  ddMin: 1500, window: 90,  posting: 90  },
-  { bank: "Citi",         amount: 700,  ddMin: 1500, window: 60,  posting: 90  },
-  { bank: "Chase",        amount: 300,  ddMin: 500,  window: 90,  posting: 90  },
-  { bank: "US Bank",      amount: 400,  ddMin: 3000, window: 60,  posting: 60  },
-  { bank: "BMO",          amount: 300,  ddMin: 1000, window: 90,  posting: 60  },
-  { bank: "KeyBank",      amount: 300,  ddMin: 1000, window: 60,  posting: 60  },
-  { bank: "Flagstar",     amount: 400,  ddMin: 2500, window: 90,  posting: 90  },
-]
-
-type ProjectedBonus = { bank: string; amount: number; payoutWeek: number }
-
-function buildProjection(frequency: PayFrequency, paycheck: number): ProjectedBonus[] {
-  const weeklyIncome = (paycheck / DAYS_PER_PAY[frequency]) * 7
-  const result: ProjectedBonus[] = []
-  let currentWeek = 1
-
-  for (const bonus of BONUS_POOL) {
-    if (currentWeek > 52) break
-    // Check feasibility
-    if (paycheck < bonus.ddMin) continue
-    const weeksToMeetDD = Math.ceil(bonus.ddMin / weeklyIncome)
-    const windowWeeks = Math.ceil(bonus.window / 7)
-    if (weeksToMeetDD > windowWeeks) continue
-
-    const postingWeeks = Math.ceil(bonus.posting / 7)
-    const payoutWeek = currentWeek + weeksToMeetDD + postingWeeks
-    if (payoutWeek > 56) break
-
-    result.push({ bank: bonus.bank, amount: bonus.amount, payoutWeek })
-    // Next bonus starts after this one posts (simplified: overlap allowed after DD met)
-    currentWeek += weeksToMeetDD + 2
-  }
-
-  return result
-}
-
 type Step = "frequency" | "paycheck" | "projection"
+
+function addDays(days: number): Date {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  return d
+}
+
+function fmtDate(d: Date) {
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+}
 
 export default function OnboardingPage() {
   const searchParams = useSearchParams()
@@ -67,9 +32,10 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<Step>("frequency")
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
   const [paycheck, setPaycheck] = useState<string>("1500")
-  const [projection, setProjection] = useState<ProjectedBonus[]>([])
+  const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
+  const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
-  const [showAllBonuses, setShowAllBonuses] = useState(false)
+  const [showAll, setShowAll] = useState(false)
 
   function handleFrequencySelect(f: PayFrequency) {
     setFrequency(f)
@@ -79,8 +45,23 @@ export default function OnboardingPage() {
   function handleBuildPlan() {
     const amt = parseInt(paycheck.replace(/\D/g, "")) || 0
     if (amt <= 0) return
-    const proj = buildProjection(frequency, amt)
-    setProjection(proj)
+
+    const result = runSequencer({
+      slots: 1,
+      payFrequency: frequency,
+      paycheckAmount: amt,
+      completedRecords: [],
+      incomeSources: [{ pay_frequency: frequency, paycheck_amount: amt }],
+    })
+
+    // Pull all bonus entries from slot 0, filter to first 52 weeks (~1 year)
+    const allBonusEntries = result.slots.flat().filter(
+      (e): e is SequencedBonus => e.type === "bonus" && e.payout_week <= 52
+    )
+
+    const total = allBonusEntries.reduce((s, b) => s + b.bonus_amount, 0)
+    setBonuses(allBonusEntries)
+    setYearTotal(total)
     setStep("projection")
   }
 
@@ -100,10 +81,9 @@ export default function OnboardingPage() {
     }
   }
 
-  const yearTotal = projection.reduce((s, p) => s + p.amount, 0)
-  const firstBonus = projection[0]
   const paycheckAmt = parseInt(paycheck.replace(/\D/g, "")) || 0
-  const visibleBonuses = showAllBonuses ? projection : projection.slice(0, 4)
+  const firstBonus = bonuses[0] ?? null
+  const visibleBonuses = showAll ? bonuses : bonuses.slice(0, 5)
 
   return (
     <div style={{
@@ -114,15 +94,18 @@ export default function OnboardingPage() {
     }}>
       {/* Progress dots */}
       <div style={{ display: "flex", gap: 6, marginBottom: 40 }}>
-        {(["frequency", "paycheck", "projection"] as Step[]).map((s, i) => (
-          <div key={s} style={{
-            width: step === s ? 20 : 6, height: 6, borderRadius: 3,
-            background: step === s ? "#0d7c5f" : (
-              ["frequency", "paycheck", "projection"].indexOf(step) > i ? "#0d7c5f" : "#e0e0e0"
-            ),
-            transition: "all 0.2s ease",
-          }} />
-        ))}
+        {(["frequency", "paycheck", "projection"] as Step[]).map((s, i) => {
+          const steps = ["frequency", "paycheck", "projection"]
+          const currentIdx = steps.indexOf(step)
+          const thisIdx = steps.indexOf(s)
+          return (
+            <div key={s} style={{
+              width: step === s ? 20 : 6, height: 6, borderRadius: 3,
+              background: step === s ? "#0d7c5f" : thisIdx < currentIdx ? "#0d7c5f" : "#e0e0e0",
+              transition: "all 0.2s ease",
+            }} />
+          )
+        })}
       </div>
 
       <div style={{ width: "100%", maxWidth: 480 }}>
@@ -142,7 +125,8 @@ export default function OnboardingPage() {
                 <button key={f.value} onClick={() => handleFrequencySelect(f.value)}
                   style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    padding: "18px 20px", background: "#fff", border: frequency === f.value ? "2px solid #0d7c5f" : "1px solid #e8e8e8",
+                    padding: "18px 20px", background: "#fff",
+                    border: frequency === f.value ? "2px solid #0d7c5f" : "1px solid #e8e8e8",
                     borderRadius: 12, cursor: "pointer", textAlign: "left" as const,
                     transition: "border-color 0.15s",
                   }}>
@@ -203,7 +187,7 @@ export default function OnboardingPage() {
           <div>
             {yearTotal > 0 ? (
               <>
-                <div style={{ textAlign: "center", marginBottom: 32 }}>
+                <div style={{ textAlign: "center", marginBottom: 28 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
                     Your personalized plan
                   </div>
@@ -221,41 +205,44 @@ export default function OnboardingPage() {
                 {firstBonus && (
                   <div style={{
                     background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12,
-                    padding: "16px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center",
+                    padding: "16px 20px", marginBottom: 10,
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
                   }}>
                     <div>
                       <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600, marginBottom: 2 }}>First bonus</div>
-                      <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank}</div>
-                      <div style={{ fontSize: 12, color: "#666" }}>~week {firstBonus.payoutWeek}</div>
+                      <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
+                      <div style={{ fontSize: 12, color: "#666" }}>
+                        ~{fmtDate(addDays(firstBonus.payout_week * 7))}
+                      </div>
                     </div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.amount}</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
                   </div>
                 )}
 
-                {/* Bonus list */}
+                {/* Remaining bonuses */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
-                  {visibleBonuses.slice(1).map((p, i) => (
+                  {visibleBonuses.slice(1).map((b, i) => (
                     <div key={i} style={{
                       background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10,
                       padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
                     }}>
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{p.bank}</div>
-                        <div style={{ fontSize: 11, color: "#bbb" }}>~week {p.payoutWeek}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 11, color: "#bbb" }}>~{fmtDate(addDays(b.payout_week * 7))}</div>
                       </div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>${p.amount}</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>${b.bonus_amount}</div>
                     </div>
                   ))}
                 </div>
 
-                {projection.length > 4 && (
-                  <button onClick={() => setShowAllBonuses(s => !s)}
+                {bonuses.length > 5 && (
+                  <button onClick={() => setShowAll(s => !s)}
                     style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 16 }}>
-                    {showAllBonuses ? "Show less" : `+ ${projection.length - 4} more bonuses`}
+                    {showAll ? "Show less" : `+ ${bonuses.length - 5} more bonuses`}
                   </button>
                 )}
 
-                {/* CTA */}
+                {/* Paywall CTA */}
                 <div style={{
                   background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14,
                   padding: "24px", marginTop: 8,
@@ -264,12 +251,13 @@ export default function OnboardingPage() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>Stacks OS</div>
                     <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>
-                      ${plan === "annual" ? "50/yr" : "5/mo"}
+                      ${plan === "annual" ? "50" : "5"}
+                      <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>/{plan === "annual" ? "yr" : "mo"}</span>
                       {plan === "annual" && <span style={{ fontSize: 12, color: "#999", fontWeight: 400, marginLeft: 6 }}>· $4.17/mo</span>}
                     </div>
                   </div>
                   <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                    Your first bonus alone covers {Math.round((firstBonus?.amount ?? 300) / (plan === "annual" ? 50 : 5))}x the cost.
+                    Your first bonus alone is {firstBonus ? `${Math.round(firstBonus.bonus_amount / (plan === "annual" ? 50 : 5))}x` : "many times"} the cost of a subscription.
                   </div>
                   <button onClick={handleCheckout} disabled={checkoutLoading}
                     style={{
@@ -286,13 +274,12 @@ export default function OnboardingPage() {
                 </div>
               </>
             ) : (
-              // Edge case: paycheck too low for any bonus
               <div style={{ textAlign: "center" }}>
                 <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111", marginBottom: 12 }}>
-                  We couldn't find matching bonuses
+                  No matching bonuses found
                 </h1>
                 <p style={{ fontSize: 15, color: "#888", marginBottom: 24 }}>
-                  Most bonuses require a paycheck of at least $500. Try adjusting your amount.
+                  Most bonuses require a paycheck of at least $500. Try a different amount.
                 </p>
                 <button onClick={() => setStep("paycheck")}
                   style={{ fontSize: 15, fontWeight: 600, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer" }}>
