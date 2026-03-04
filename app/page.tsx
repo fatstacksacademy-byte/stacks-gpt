@@ -69,9 +69,9 @@ export default function LandingPage() {
         display: "flex", justifyContent: "center", gap: 48,
       }}>
         {[
-          { value: "$3,200+", label: "avg projected first year" },
+          { value: "$3,000+", label: "potential first year" },
           { value: "15 min", label: "setup time" },
-          { value: "$0 risk", label: "your money stays yours" },
+          { value: "Low effort", label: "uses your existing paycheck" },
         ].map((s, i) => (
           <div key={i} style={{ textAlign: "center" }}>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#111" }}>{s.value}</div>
@@ -108,7 +108,7 @@ export default function LandingPage() {
             {
               step: "03",
               title: "Collect and repeat",
-              desc: "Bonus posts to your account. Close it, start the next one. We track cooldowns so you can earn the same bonus again later.",
+              desc: "Once a bonus posts, move on to the next opportunity. You can also run multiple bonuses at once if you want to accelerate your earnings.",
             },
           ].map((item, i) => (
             <div key={i} style={{
@@ -140,7 +140,7 @@ export default function LandingPage() {
             { title: "Deposit tracking", desc: "Log your deposits and see exactly how much you've contributed toward each requirement." },
             { title: "12-month projection", desc: "See how much you'll earn this year if you follow the plan. Updated as you complete bonuses." },
             { title: "Cooldown tracking", desc: "We remember when you earned each bonus so you know exactly when you're eligible again." },
-            { title: "Fee alerts", desc: "Know which accounts have monthly fees and how to avoid them before you open." },
+            { title: "Step-by-step bonus checklist", desc: "Follow a simple checklist so you always know what to do next to unlock each bonus." },
           ].map((f, i) => (
             <div key={i} style={{
               background: "#fff", borderRadius: 12, padding: "24px 24px",
@@ -161,10 +161,10 @@ export default function LandingPage() {
           fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center",
           letterSpacing: "-0.02em", margin: "0 0 8px",
         }}>
-          Pays for itself with your first bonus
+          Your first bonus covers the cost
         </h2>
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 32px" }}>
-          Most bonuses are $200–$500. The subscription costs less than a coffee.
+          Your first bonus often earns $300–$400, easily covering the subscription.
         </p>
 
         {/* Toggle */}
@@ -229,7 +229,7 @@ export default function LandingPage() {
               "Deposit tracking",
               "12-month earnings projection",
               "Cooldown + eligibility tracking",
-              "Fee avoidance alerts",
+              "Bonus details + requirements",
             ].map((f, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#555" }}>
                 <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>
@@ -257,11 +257,15 @@ export default function LandingPage() {
           },
           {
             q: "Do I need extra money?",
-            a: "No. You use your existing paycheck. You're just temporarily routing your direct deposit to a new account, then moving it when the bonus posts.",
+            a: "Not usually. Most bonuses only require that a deposit pass through the account. In many cases you can transfer the money back to your main bank after it arrives, as long as the bank's requirements are met.",
           },
           {
             q: "Will this affect my credit score?",
             a: "Most checking account bonuses don't require a hard credit pull. We flag the ones that do so you can decide.",
+          },
+          {
+            q: "Will opening these accounts hurt my credit?",
+            a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead.",
           },
           {
             q: "How much time does this take?",
@@ -304,6 +308,15 @@ export default function LandingPage() {
           Get started — ${billingCycle === "monthly" ? "5" : "50"}/{billingCycle === "monthly" ? "mo" : "yr"}
         </Link>
       </section>
+
+      {/* ── DISCLAIMER ── */}
+      <div style={{
+        maxWidth: 1100, margin: "0 auto", padding: "0 40px 24px",
+      }}>
+        <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0, textAlign: "center" }}>
+          Bonus offers, requirements, and fees are determined by each financial institution and may change at any time. Always verify the current terms directly with the bank before applying.
+        </p>
+      </div>
 
       {/* ── FOOTER ── */}
       <footer style={{
