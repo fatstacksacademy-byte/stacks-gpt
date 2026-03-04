@@ -1,34 +1,64 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "../../../../lib/supabase/server"
-import { stripe, PRICES, getOrCreateCustomer } from "../../../../lib/stripe"
+import { stripe, updateSubscriptionStatus } from "../../../../lib/stripe"
 
 export async function POST(req: NextRequest) {
+  const body = await req.text()
+  const sig = req.headers.get("stripe-signature")
+
+  if (!sig) return NextResponse.json({ error: "No signature" }, { status: 401 })
+
+  let event
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
-
-    const { plan } = await req.json() as { plan: "monthly" | "annual" }
-    const priceId = plan === "annual" ? PRICES.annual : PRICES.monthly
-
-    if (!priceId) return NextResponse.json({ error: "Invalid plan" }, { status: 400 })
-
-    const customerId = await getOrCreateCustomer(user.id, user.email!)
-
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${req.nextUrl.origin}/roadmap?checkout=success`,
-      cancel_url: `${req.nextUrl.origin}/roadmap?checkout=cancelled`,
-      subscription_data: {
-        metadata: { supabase_user_id: user.id },
-      },
-    })
-
-    return NextResponse.json({ url: session.url })
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err: any) {
-    console.error("Checkout error:", err)
+    console.error("Webhook signature verification failed:", err.message)
+    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 401 })
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as any
+        if (session.mode === "subscription") {
+          const subscription = await stripe.subscriptions.retrieve(session.subscription)
+          const periodEnd = (subscription as any).current_period_end
+          await updateSubscriptionStatus(
+            session.customer,
+            subscription.status,
+            subscription.id,
+            periodEnd ? new Date(periodEnd * 1000).toISOString() : undefined,
+          )
+        }
+        break
+      }
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as any
+        const periodEnd = subscription.current_period_end
+        await updateSubscriptionStatus(
+          subscription.customer,
+          subscription.status,
+          subscription.id,
+          periodEnd ? new Date(periodEnd * 1000).toISOString() : undefined,
+        )
+        break
+      }
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as any
+        if (invoice.subscription) {
+          await updateSubscriptionStatus(
+            invoice.customer,
+            "past_due",
+            invoice.subscription,
+          )
+        }
+        break
+      }
+    }
+  } catch (err: any) {
+    console.error("Webhook handler error:", err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
+
+  return NextResponse.json({ received: true })
 }
