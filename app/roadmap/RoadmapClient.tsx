@@ -99,6 +99,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showSettings, setShowSettings] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [deposits, setDeposits] = useState<Record<string, { amount: number; date: string }[]>>({})
   const [addingDeposit, setAddingDeposit] = useState<string | null>(null)
   const [newDepositAmt, setNewDepositAmt] = useState("")
@@ -583,6 +584,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
                     I already opened it
                   </button>
+                </div>
+                <div style={{ marginTop: 16 }}>
+                  <button onClick={() => setShowDisclaimer(d => !d)}
+                    style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                    {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
+                  </button>
+                  {showDisclaimer && (
+                    <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
+                      Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -1170,6 +1182,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
           </>
+        )}
+
+        {/* ── Page disclaimer ── */}
+        {onboardingStep === "done" && (
+          <div style={{ marginTop: 32, padding: "16px 0", borderTop: "1px solid #f0f0f0" }}>
+            <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0 }}>
+              Bonus offers, requirements, and fees are determined by the financial institution and may change at any time. Stacks OS aggregates publicly available information but cannot guarantee accuracy. Always verify the current terms directly with the bank before applying.
+            </p>
+          </div>
         )}
       </div>
 
