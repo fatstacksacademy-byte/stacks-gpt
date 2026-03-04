@@ -8,17 +8,19 @@ export default function LoginPage() {
   const supabase = createClient()
   const router = useRouter()
   const searchParams = useSearchParams()
-  // Carry the plan param through the entire auth flow
   const plan = searchParams.get("plan") ?? "annual"
+  const comingFromLanding = searchParams.has("plan")
 
+  // Default to signup if coming from landing page CTA, signin otherwise
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">(
+    comingFromLanding ? "signup" : "signin"
+  )
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [isError, setIsError] = useState(false)
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin")
 
-  // After successful auth, go to /roadmap with plan param so SubscriptionGate can pick it up
   function redirectToRoadmap() {
     router.push(`/roadmap?plan=${plan}`)
     router.refresh()
@@ -48,7 +50,6 @@ export default function LoginPage() {
       return
     }
 
-    // SIGNUP: create account then immediately sign in
     if (mode === "signup") {
       const { error: signUpError } = await supabase.auth.signUp({ email, password })
       if (signUpError) {
