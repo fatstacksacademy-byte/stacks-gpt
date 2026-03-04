@@ -117,9 +117,9 @@ export default function OnboardingPage() {
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 1 of 2</div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                How often do you get paid?
+                How often do you get your direct deposit?
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>We'll use this to match you with the right bonuses.</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>How frequently your employer deposits your paycheck via direct deposit.</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {FREQ_OPTIONS.map(f => (
