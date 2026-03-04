@@ -35,22 +35,40 @@ export default function LoginPage() {
       setLoading(false)
       if (error) { setIsError(true); setMessage(error.message) }
       else { router.push("/roadmap"); router.refresh() }
-    } else {
-      const { error } = await supabase.auth.signUp({ email, password })
+      return
+    }
+
+    // SIGNUP: create account then immediately sign in — no manual second step
+    if (mode === "signup") {
+      const { error: signUpError } = await supabase.auth.signUp({ email, password })
+      if (signUpError) {
+        setLoading(false)
+        setIsError(true)
+        setMessage(signUpError.message)
+        return
+      }
+      // Auto sign in right after
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
-      if (error) { setIsError(true); setMessage(error.message) }
-      else setMessage("Account created! Sign in below.")
+      if (signInError) {
+        // Account created but auto-login failed — tell them to sign in manually
+        setIsError(false)
+        setMessage("Account created! Please sign in.")
+        setMode("signin")
+      } else {
+        router.push("/roadmap")
+        router.refresh()
+      }
     }
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       {/* Left side — value prop */}
       <div style={{
         flex: 1, background: "linear-gradient(135deg, #0d7c5f 0%, #065f46 100%)",
         display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "60px 48px", color: "#fff",
-        minHeight: "100vh",
+        padding: "60px 48px", color: "#fff", minHeight: "100vh",
       }}>
         <div style={{ maxWidth: 440 }}>
           <div style={{ fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.7, marginBottom: 16 }}>Stacks OS</div>
@@ -76,20 +94,15 @@ export default function LoginPage() {
       {/* Right side — auth form */}
       <div style={{
         width: 480, display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "40px 48px", background: "#fff",
-        borderLeft: "1px solid #e8e8e8",
+        padding: "40px 48px", background: "#fff", borderLeft: "1px solid #e8e8e8",
       }}>
         <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 360 }}>
           <div style={{ marginBottom: 28 }}>
             <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: "0 0 6px" }}>
-              {mode === "signin" && "Welcome back"}
-              {mode === "signup" && "Create your account"}
-              {mode === "forgot" && "Reset your password"}
+              {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password"}
             </h2>
             <p style={{ fontSize: 14, color: "#999", margin: 0 }}>
-              {mode === "signin" && "Sign in to continue to your dashboard"}
-              {mode === "signup" && "Start earning bank bonuses today"}
-              {mode === "forgot" && "We'll send you a reset link"}
+              {mode === "signin" ? "Sign in to continue to your dashboard" : mode === "signup" ? "Start earning bank bonuses today" : "We'll send you a reset link"}
             </p>
           </div>
 
@@ -122,7 +135,11 @@ export default function LoginPage() {
               cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1,
               marginTop: 4,
             }}>
-              {loading ? "..." : mode === "signin" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
+              {loading
+                ? (mode === "signup" ? "Creating account…" : "…")
+                : mode === "signin" ? "Sign In"
+                : mode === "signup" ? "Create Account & Continue"
+                : "Send Reset Link"}
             </button>
           </div>
 
