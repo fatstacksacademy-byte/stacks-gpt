@@ -99,7 +99,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showSettings, setShowSettings] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
-  const [allowMultiple, setAllowMultiple] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState<"welcome" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
@@ -304,15 +303,19 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const yearBonuses365 = projected365.filter(p => new Date(p.payout_date) <= today365End)
   const expectedThisYear = yearBonuses365.reduce((sum, p) => sum + p.bonus_amount, 0)
 
-  const currentBonus = inProgress[0] ?? available[0] ?? null
+  // Active bonuses that are actually being worked on (not kept open)
+  const workingBonuses = inProgress.filter(({ bonus: b }) => !keptOpen.includes(b.id))
+  // The hero card bonus: show next available if no bonuses are actively being worked on
+  const heroBonus = workingBonuses.length === 0 ? (available[0] ?? null) : null
+  const currentBonus = workingBonuses[0] ?? available[0] ?? null
   const upNextBonuses = currentBonus
-    ? (inProgress.length > 0
-      ? [...inProgress.slice(1), ...available.slice(0, Math.max(0, 2 - inProgress.length + 1))].slice(0, 2)
+    ? (workingBonuses.length > 0
+      ? [...workingBonuses.slice(1), ...available.slice(0, Math.max(0, 2 - workingBonuses.length + 1))].slice(0, 2)
       : available.slice(1, 3))
     : []
 
   const currentWeeks = currentBonus?.weeksToComplete ?? 0
-  const nextBonus = inProgress.length > 0 ? available[0] : available[1]
+  const nextBonus = workingBonuses.length > 0 ? available[0] : available[1]
 
   if (!mounted || loadingRecords) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
@@ -359,13 +362,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
-            <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input type="checkbox" id="allowMultiple" checked={allowMultiple} onChange={e => setAllowMultiple(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                <label htmlFor="allowMultiple" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Allow multiple bonuses at once</label>
-              </div>
-              <div style={{ fontSize: 11, color: "#bbb", marginTop: 4, marginLeft: 26 }}>Show all active bonuses on the dashboard instead of just one</div>
-            </div>
           </div>
         )}
 
@@ -538,55 +534,55 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               )
             })()}
 
-            {/* ── HERO: Primary Action Card (not yet started) ── */}
-            {currentBonus && currentBonus.churnStatus.status !== "in_progress" && (
+            {/* ── HERO: Primary Action Card (next bonus to start) ── */}
+            {heroBonus && (
               <div style={{
                 background: "#fff", border: "2px solid #0d7c5f", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
                 boxShadow: "0 4px 24px rgba(13,124,95,0.08)",
               }}>
                 <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                  Your First {money(currentBonus.bonus.bonus_amount)} Is Ready
+                  {totalEarned > 0 ? `Your Next ${money(heroBonus.bonus.bonus_amount)} Is Ready` : `Your First ${money(heroBonus.bonus.bonus_amount)} Is Ready`}
                 </div>
                 <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
 
                 <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
                   <div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{currentBonus.bonus.bank_name}</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{heroBonus.bonus.bank_name}</div>
                   </div>
                   <div style={{ fontSize: 14, color: "#666" }}>
-                    Complete in {currentBonus.weeksToComplete ? `${Math.ceil(currentBonus.weeksToComplete / 2)} pay cycle${Math.ceil(currentBonus.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
+                    Complete in {heroBonus.weeksToComplete ? `${Math.ceil(heroBonus.weeksToComplete / 2)} pay cycle${Math.ceil(heroBonus.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
                   </div>
                 </div>
 
                 <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                  {currentBonus.bonus.requirements?.min_direct_deposit_total && (
+                  {heroBonus.bonus.requirements?.min_direct_deposit_total && (
                     <div style={{ fontSize: 14, color: "#555" }}>
-                      Deposit ${currentBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {currentBonus.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
+                      Deposit ${heroBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {heroBonus.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
                     </div>
                   )}
-                  {!currentBonus.bonus.requirements?.min_direct_deposit_total && currentBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                  {!heroBonus.bonus.requirements?.min_direct_deposit_total && heroBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
                     <div style={{ fontSize: 14, color: "#555" }}>
-                      Make {currentBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit{(currentBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${currentBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
+                      Make {heroBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit{(heroBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${heroBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
                     </div>
                   )}
-                  {!currentBonus.bonus.requirements?.min_direct_deposit_total && !currentBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                  {!heroBonus.bonus.requirements?.min_direct_deposit_total && !heroBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
                     <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
                   )}
-                  {currentBonus.bonus.fees?.monthly_fee && currentBonus.bonus.fees.monthly_fee > 0 ? (
-                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${currentBonus.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
+                  {heroBonus.bonus.fees?.monthly_fee && heroBonus.bonus.fees.monthly_fee > 0 ? (
+                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${heroBonus.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
                   ) : (
                     <div style={{ fontSize: 13, color: "#0d7c5f" }}>No monthly fee</div>
                   )}
                 </div>
 
                 <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-                  {bestLink(currentBonus.bonus.source_links) && (
-                    <a href={bestLink(currentBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
+                  {bestLink(heroBonus.bonus.source_links) && (
+                    <a href={bestLink(heroBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
                       style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
                       Open your account
                     </a>
                   )}
-                  <button onClick={() => { setActionBonus({ bonus: currentBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                  <button onClick={() => { setActionBonus({ bonus: heroBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
                     style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
                     I already opened it
                   </button>
@@ -599,7 +595,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                  Supports single or multiple active bonuses
                  ══════════════════════════════════════════════════════════════════ */}
             {(() => {
-              const rawActive = allowMultiple ? inProgress : inProgress.slice(0, 1)
+              const rawActive = inProgress
               // Filter out kept-open bonuses, sort posted ones to bottom
               const activeBonuses = [...rawActive]
                 .filter(({ bonus: b }) => !keptOpen.includes(b.id))
