@@ -11,7 +11,7 @@ export default function LoginPage() {
   const plan = searchParams.get("plan") ?? "annual"
   const comingFromLanding = searchParams.has("plan")
 
-  // Default to signup if coming from landing page CTA, signin otherwise
+  // Default to signup if coming from landing page CTA
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">(
     comingFromLanding ? "signup" : "signin"
   )
@@ -20,11 +20,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [isError, setIsError] = useState(false)
-
-  function redirectToRoadmap() {
-    router.push(`/roadmap?plan=${plan}`)
-    router.refresh()
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,7 +41,11 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (error) { setIsError(true); setMessage(error.message) }
-      else redirectToRoadmap()
+      else {
+        // Returning users go straight to dashboard
+        router.push("/roadmap")
+        router.refresh()
+      }
       return
     }
 
@@ -65,7 +64,9 @@ export default function LoginPage() {
         setMessage("Account created! Please sign in.")
         setMode("signin")
       } else {
-        redirectToRoadmap()
+        // New users go to onboarding with plan param
+        router.push(`/onboarding?plan=${plan}`)
+        router.refresh()
       }
     }
   }
@@ -120,7 +121,6 @@ export default function LoginPage() {
               <input type="email" placeholder="you@email.com" required value={email}
                 onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
             </div>
-
             {mode !== "forgot" && (
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -136,12 +136,10 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
               </div>
             )}
-
             <button type="submit" disabled={loading} style={{
               width: "100%", padding: "12px", fontSize: 15, fontWeight: 700,
               background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
-              cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1,
-              marginTop: 4,
+              cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 4,
             }}>
               {loading
                 ? (mode === "signup" ? "Creating account…" : "…")
@@ -189,7 +187,6 @@ const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "10px 14px", fontSize: 14,
   border: "1px solid #e0e0e0", borderRadius: 8,
-  background: "#fff", color: "#111", boxSizing: "border-box" as const,
-  outline: "none",
+  background: "#fff", color: "#111", boxSizing: "border-box" as const, outline: "none",
 }
 const linkBtn: React.CSSProperties = { background: "none", border: "none", color: "#0d7c5f", fontWeight: 600, cursor: "pointer", textDecoration: "underline", fontSize: 13 }
