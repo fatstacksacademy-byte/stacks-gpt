@@ -265,7 +265,7 @@ export default function LandingPage() {
           },
           {
             q: "Will opening these accounts hurt my credit?",
-            a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead.",
+            a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Most banks check your banking history through ChexSystems or EWS instead.",
           },
           {
             q: "How much time does this take?",
@@ -273,7 +273,7 @@ export default function LandingPage() {
           },
           {
             q: "What if a bonus offer changes?",
-            a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time.",
+            a: "Stacks OS aggregates publicly available information regularly. We recommend verifying terms with the bank before applying. Offers can change at any time.",
           },
         ].map((faq, i) => (
           <div key={i} style={{
