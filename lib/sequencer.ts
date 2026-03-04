@@ -1,5 +1,6 @@
 import { bonuses as allBonuses } from "./data/bonuses"
 import type { CompletedBonus } from "./churn"
+import type { IncomeSource } from "./profileServer"
 
 export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -53,32 +54,96 @@ const DAYS_PER_PAY: Record<string, number> = {
 const MAX_WEEKS = 520
 const MAX_PLACEMENTS = 200
 
+/**
+ * Evaluate a bonus using combined income from all sources.
+ * Multiple income sources mean more deposits per window,
+ * so we sum total deposits possible across all sources.
+ */
 function evaluate(
   bonus: (typeof allBonuses)[number],
-  payFrequency: string,
-  paycheckAmount: number
+  incomeSources: IncomeSource[]
 ): { feasible: false; reason: string } | { feasible: true; weeksToComplete: number } {
   const req = bonus.requirements
   if (!req?.direct_deposit_required) return { feasible: false, reason: "No DD required" }
-  const daysPerPay = DAYS_PER_PAY[payFrequency] ?? 14
+
   const perDepositMin = req.min_direct_deposit_per_deposit ?? null
   const totalMin = req.min_direct_deposit_total ?? null
   const windowDays = req.deposit_window_days ?? null
   const ddCountRequired = req.dd_count_required ?? null
 
-  if (perDepositMin && paycheckAmount < perDepositMin) {
-    return { feasible: false, reason: `Paycheck $${paycheckAmount} below $${perDepositMin}/deposit minimum` }
-  }
-  if (totalMin && windowDays) {
-    const maxDeposits = Math.max(1, Math.ceil(windowDays / daysPerPay))
-    if (maxDeposits * paycheckAmount < totalMin) {
-      return { feasible: false, reason: `Can only deposit ~$${(maxDeposits * paycheckAmount).toLocaleString()} in ${windowDays}-day window, need $${totalMin.toLocaleString()}` }
+  // Check if ANY source meets per-deposit minimum
+  if (perDepositMin) {
+    const hasViableSource = incomeSources.some(s => s.paycheck_amount >= perDepositMin)
+    if (!hasViableSource) {
+      const maxPaycheck = Math.max(...incomeSources.map(s => s.paycheck_amount))
+      return { feasible: false, reason: `Largest paycheck $${maxPaycheck} below $${perDepositMin}/deposit minimum` }
     }
   }
-  let ddCount = ddCountRequired
-  if (!ddCount && totalMin) ddCount = Math.ceil(totalMin / paycheckAmount)
-  if (!ddCount) ddCount = 1
-  return { feasible: true, weeksToComplete: Math.ceil((ddCount * daysPerPay) / 7) }
+
+  // Calculate total deposit capacity across all sources within the window
+  if (totalMin && windowDays) {
+    let totalCapacity = 0
+    for (const src of incomeSources) {
+      const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+      const depositsInWindow = Math.max(1, Math.ceil(windowDays / daysPerPay))
+      totalCapacity += depositsInWindow * src.paycheck_amount
+    }
+    if (totalCapacity < totalMin) {
+      return { feasible: false, reason: `Can deposit ~$${totalCapacity.toLocaleString()} in ${windowDays}-day window, need $${totalMin.toLocaleString()}` }
+    }
+  }
+
+  // Calculate weeks to complete using combined deposit rate
+  // Sum weekly deposit rate across all income sources
+  let weeklyDepositRate = 0
+  for (const src of incomeSources) {
+    const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+    weeklyDepositRate += (src.paycheck_amount / daysPerPay) * 7
+  }
+
+  let weeksToComplete: number
+
+  if (ddCountRequired) {
+    // If specific number of deposits required, use the fastest single source
+    // (each deposit must come from one paycheck)
+    if (perDepositMin) {
+      // Use viable sources only
+      const viableSources = incomeSources.filter(s => s.paycheck_amount >= perDepositMin)
+      let totalDepositsPerWeek = 0
+      for (const src of viableSources) {
+        const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+        totalDepositsPerWeek += 7 / daysPerPay
+      }
+      weeksToComplete = Math.ceil(ddCountRequired / totalDepositsPerWeek)
+    } else {
+      // Any deposit counts — use combined deposit frequency
+      let totalDepositsPerWeek = 0
+      for (const src of incomeSources) {
+        const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+        totalDepositsPerWeek += 7 / daysPerPay
+      }
+      weeksToComplete = Math.ceil(ddCountRequired / totalDepositsPerWeek)
+    }
+  } else if (totalMin) {
+    // Total amount required — use combined weekly rate
+    weeksToComplete = Math.ceil(totalMin / weeklyDepositRate)
+  } else {
+    // Just need any deposit
+    weeksToComplete = 1
+  }
+
+  return { feasible: true, weeksToComplete: Math.max(1, weeksToComplete) }
+}
+
+/**
+ * Legacy evaluate for single income source (backward compatible)
+ */
+function evaluateSingle(
+  bonus: (typeof allBonuses)[number],
+  payFrequency: string,
+  paycheckAmount: number
+): { feasible: false; reason: string } | { feasible: true; weeksToComplete: number } {
+  return evaluate(bonus, [{ pay_frequency: payFrequency as PayFrequency, paycheck_amount: paycheckAmount }])
 }
 
 export function runSequencer({
@@ -86,12 +151,19 @@ export function runSequencer({
   payFrequency,
   paycheckAmount,
   completedRecords = [],
+  incomeSources,
 }: {
   slots: number
   payFrequency: string
   paycheckAmount: number
   completedRecords?: CompletedBonus[]
+  incomeSources?: IncomeSource[]
 }): SequencerResult {
+  // Use multi-source if provided, otherwise fall back to single
+  const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
+    ? incomeSources
+    : [{ pay_frequency: payFrequency as PayFrequency, paycheck_amount: paycheckAmount }]
+
   const skipped: { bank_name: string; reason: string }[] = []
 
   type EvalBonus = {
@@ -106,7 +178,7 @@ export function runSequencer({
   const pool: EvalBonus[] = []
 
   for (const b of allBonuses) {
-    const result = evaluate(b, payFrequency, paycheckAmount)
+    const result = evaluate(b, sources)
     if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
     const cooldownMonths = (b as any).cooldown_months ?? null
     const isLifetime = cooldownMonths === null
@@ -118,8 +190,6 @@ export function runSequencer({
 
   const bonusNextAvailableWeek: Record<string, number> = {}
   const bonusCycle: Record<string, number> = {}
-  // Track which bank a slot is waiting on (for placeholder labels)
-  const slotWaitingFor: Record<number, { bank_name: string; available_week: number }> = {}
 
   const today = new Date(); today.setHours(0, 0, 0, 0)
   for (const eb of pool) {
@@ -148,7 +218,6 @@ export function runSequencer({
   let totalPlacements = 0
 
   while (totalPlacements < MAX_PLACEMENTS) {
-    // Find slot that opens soonest
     let bestSlot = 0
     for (let i = 1; i < slots; i++) {
       if (slotNextAvailable[i] < slotNextAvailable[bestSlot]) bestSlot = i
@@ -156,7 +225,6 @@ export function runSequencer({
     const slotAvail = slotNextAvailable[bestSlot]
     if (slotAvail > MAX_WEEKS) break
 
-    // Find best bonus available now
     let bestIdx = -1
     let bestVelocity = -1
     for (let i = 0; i < pool.length; i++) {
@@ -167,7 +235,6 @@ export function runSequencer({
     }
 
     if (bestIdx === -1) {
-      // Nothing available yet — find next bonus availability and insert placeholder
       let nextAvailWeek = MAX_WEEKS + 1
       let nextBankName = ""
       for (const eb of pool) {
@@ -179,7 +246,6 @@ export function runSequencer({
       }
       if (nextAvailWeek > MAX_WEEKS) break
 
-      // Insert placeholder for this gap
       slotBonuses[bestSlot].push({
         type: "placeholder",
         slot: bestSlot,
@@ -223,7 +289,6 @@ export function runSequencer({
 
     slotNextAvailable[bestSlot] = startWeek + eb.weeksToComplete
 
-    // Cooldown starts from bonus posting date
     if (eb.isLifetime) {
       bonusNextAvailableWeek[b.id] = MAX_WEEKS + 1
     } else {

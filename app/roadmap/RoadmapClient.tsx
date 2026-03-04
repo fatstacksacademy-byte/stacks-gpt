@@ -4,11 +4,17 @@ import React, { useEffect, useState, useCallback } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
+import { getIncomeSources } from "../../lib/profileServer"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, CustomBonus } from "../../lib/customBonuses"
+import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
+import { getNotes, upsertNote } from "../../lib/notes"
+import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
+import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
+import { markKeptOpen } from "../../lib/keptOpen"
 import { createClient } from "../../lib/supabase/client"
 
 type Bonus = (typeof allBonuses)[number]
@@ -17,23 +23,59 @@ const DAYS_PER_PAY: Record<string, number> = {
   weekly: 7, biweekly: 14, semimonthly: 15.2, monthly: 30.4,
 }
 
-function computeVelocity(bonus: Bonus, payFrequency: string, paycheckAmount: number) {
+type IncomeSourceLocal = { pay_frequency: PayFrequency; paycheck_amount: number }
+
+function computeVelocity(bonus: Bonus, payFrequency: string, paycheckAmount: number, extraSources?: IncomeSourceLocal[]) {
+  const sources: IncomeSourceLocal[] = [{ pay_frequency: payFrequency as PayFrequency, paycheck_amount: paycheckAmount }]
+  if (extraSources) sources.push(...extraSources)
+
   const req = bonus.requirements
   if (!req?.direct_deposit_required) return { velocity: null, weeksToComplete: null, feasible: false, reason: "No DD required" }
-  const daysPerPay = DAYS_PER_PAY[payFrequency] ?? 14
-  const windowDays = req.deposit_window_days ?? null
+
   const perDepositMin = req.min_direct_deposit_per_deposit ?? null
   const totalMin = req.min_direct_deposit_total ?? null
+  const windowDays = req.deposit_window_days ?? null
   const ddCountRequired = req.dd_count_required ?? null
-  if (perDepositMin && paycheckAmount < perDepositMin) return { velocity: null, weeksToComplete: null, feasible: false, reason: `Paycheck $${paycheckAmount} below $${perDepositMin}/deposit minimum` }
-  if (totalMin && windowDays) {
-    const maxDeposits = Math.max(1, Math.ceil(windowDays / daysPerPay))
-    if (maxDeposits * paycheckAmount < totalMin) return { velocity: null, weeksToComplete: null, feasible: false, reason: `Can only deposit ~$${(maxDeposits * paycheckAmount).toLocaleString()} in ${windowDays}-day window, need $${totalMin.toLocaleString()}` }
+
+  // Check per-deposit minimum against best source
+  if (perDepositMin) {
+    const maxPaycheck = Math.max(...sources.map(s => s.paycheck_amount))
+    if (maxPaycheck < perDepositMin) return { velocity: null, weeksToComplete: null, feasible: false, reason: `Largest paycheck $${maxPaycheck} below $${perDepositMin}/deposit minimum` }
   }
-  let ddCount = ddCountRequired
-  if (!ddCount && totalMin) ddCount = Math.ceil(totalMin / paycheckAmount)
-  if (!ddCount) ddCount = 1
-  const weeksToComplete = Math.ceil((ddCount * daysPerPay) / 7)
+
+  // Check total capacity within window using all sources
+  if (totalMin && windowDays) {
+    let totalCapacity = 0
+    for (const src of sources) {
+      const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+      const depositsInWindow = Math.max(1, Math.ceil(windowDays / daysPerPay))
+      totalCapacity += depositsInWindow * src.paycheck_amount
+    }
+    if (totalCapacity < totalMin) return { velocity: null, weeksToComplete: null, feasible: false, reason: `Can deposit ~$${totalCapacity.toLocaleString()} in ${windowDays}-day window, need $${totalMin.toLocaleString()}` }
+  }
+
+  // Calculate weeks using combined deposit rate
+  let weeklyRate = 0
+  for (const src of sources) {
+    const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+    weeklyRate += (src.paycheck_amount / daysPerPay) * 7
+  }
+
+  let weeksToComplete: number
+  if (ddCountRequired) {
+    let depositsPerWeek = 0
+    const viableSources = perDepositMin ? sources.filter(s => s.paycheck_amount >= perDepositMin) : sources
+    for (const src of viableSources) {
+      const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+      depositsPerWeek += 7 / daysPerPay
+    }
+    weeksToComplete = Math.ceil(ddCountRequired / depositsPerWeek)
+  } else if (totalMin) {
+    weeksToComplete = Math.ceil(totalMin / weeklyRate)
+  } else {
+    weeksToComplete = 1
+  }
+  weeksToComplete = Math.max(1, weeksToComplete)
   return { velocity: bonus.bonus_amount / weeksToComplete, weeksToComplete, feasible: true, reason: undefined }
 }
 
@@ -100,10 +142,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  const [deposits, setDeposits] = useState<Record<string, { amount: number; date: string }[]>>({})
+  const [deposits, setDeposits] = useState<BonusDeposit[]>([])
   const [addingDeposit, setAddingDeposit] = useState<string | null>(null)
   const [newDepositAmt, setNewDepositAmt] = useState("")
   const [newDepositDate, setNewDepositDate] = useState(todayStr())
+  const [bonusNotes, setBonusNotes] = useState<Record<string, string>>({})
+  const [editingNote, setEditingNote] = useState<string | null>(null)
+  const [noteText, setNoteText] = useState("")
+  const [skippedIds, setSkippedIds] = useState<string[]>([])
   const [onboardingStep, setOnboardingStep] = useState<"welcome" | "frequency" | "paycheck" | "sequencer" | "done">("done")
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
@@ -121,14 +167,42 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => { setMounted(true) }, [])
 
+  // Helper to build income sources from current profile
+  function buildIncomeSources(): IncomeSourceLocal[] {
+    const sources: IncomeSourceLocal[] = [
+      { pay_frequency: profile.pay_frequency, paycheck_amount: profile.paycheck_amount },
+    ]
+    const f2 = (profile as any).income_2_frequency as PayFrequency | null
+    const a2 = Number((profile as any).income_2_amount) || 0
+    if (f2 && a2 > 0) {
+      sources.push({ pay_frequency: f2, paycheck_amount: a2 })
+    }
+    const f3 = (profile as any).income_3_frequency as PayFrequency | null
+    const a3 = Number((profile as any).income_3_amount) || 0
+    if (f3 && a3 > 0) {
+      sources.push({ pay_frequency: f3, paycheck_amount: a3 })
+    }
+    return sources
+  }
+
   const loadRecords = useCallback(async () => {
     setLoadingRecords(true)
-    const [records, custom] = await Promise.all([
+    const [records, custom, deps, notes, skips, openAccts] = await Promise.all([
       getCompletedBonuses(userId),
       getCustomBonuses(userId),
+      getDeposits(userId),
+      getNotes(userId),
+      getSkippedBonuses(userId),
+      getOpenAccounts(userId),
     ])
     setCompletedRecords(records)
     setCustomBonuses(custom)
+    setDeposits(deps)
+    setBonusNotes(notes)
+    setSkippedIds(skips)
+    setOpenAccounts(openAccts)
+    // Derive keptOpen from records that have kept_open flag
+    setKeptOpen(records.filter((r: any) => r.kept_open && !r.closed_date).map((r: any) => r.bonus_id))
     setLoadingRecords(false)
   }, [userId])
 
@@ -142,7 +216,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency])
 
   function handleRunSequencer() {
-    const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+    const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
     setSequencerResult(result)
     setOnboardingStep("sequencer")
   }
@@ -161,7 +235,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       return
     }
     if (!projectionResult) {
-      const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -214,6 +288,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   // "Keep open" — mark bonus received but don't close
   const [keptOpen, setKeptOpen] = useState<string[]>([])
+  const [openAccounts, setOpenAccounts] = useState<OpenAccount[]>([])
+  const [showAddOpenAccount, setShowAddOpenAccount] = useState(false)
+  const [openAcctBank, setOpenAcctBank] = useState("")
+  const [openAcctDate, setOpenAcctDate] = useState("")
+  const [openAcctNotes, setOpenAcctNotes] = useState("")
+
+  async function handleSkip(bonusId: string) {
+    await skipBonus(userId, bonusId)
+    setSkippedIds(prev => [...prev, bonusId])
+  }
+
+  async function handleUnskip(bonusId: string) {
+    await unskipBonus(userId, bonusId)
+    setSkippedIds(prev => prev.filter(id => id !== bonusId))
+  }
+
+  async function handleAddDeposit(bonusId: string) {
+    const amt = parseInt(newDepositAmt.replace(/\D/g, ""))
+    if (!amt || amt <= 0) return
+    const dep = await addDeposit(userId, bonusId, amt, newDepositDate)
+    if (dep) setDeposits(prev => [...prev, dep])
+    setAddingDeposit(null)
+  }
+
+  async function handleDeleteDeposit(depositId: string) {
+    await deleteDeposit(depositId)
+    setDeposits(prev => prev.filter(d => d.id !== depositId))
+  }
+
+  async function handleSaveNote(bonusId: string) {
+    await upsertNote(userId, bonusId, noteText)
+    setBonusNotes(prev => ({ ...prev, [bonusId]: noteText }))
+    setEditingNote(null)
+  }
 
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
@@ -259,10 +367,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     return { ...c, days_remaining: daysLeft, available_date: cooldownEnd.toISOString().split("T")[0] }
   })
 
+  const allIncomeSources = buildIncomeSources()
+  const extraSources = allIncomeSources.slice(1)
+
   const bonusesWithMeta = mounted
     ? allBonuses.map((b) => ({
         bonus: b,
-        ...computeVelocity(b, profile.pay_frequency, profile.paycheck_amount),
+        ...computeVelocity(b, profile.pay_frequency, profile.paycheck_amount, extraSources),
         churnStatus: getChurnStatus(b.id, (b as any).cooldown_months ?? null, completedRecords),
       }))
     : allBonuses.map((b) => ({
@@ -272,12 +383,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const inProgress = bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress")
   const available = bonusesWithMeta
-    .filter(b => b.churnStatus.status === "available")
+    .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id))
     .sort((a, b) => {
       if (a.feasible && !b.feasible) return -1
       if (!a.feasible && b.feasible) return 1
       return (b.velocity ?? 0) - (a.velocity ?? 0)
     })
+  const skippedBonuses = bonusesWithMeta.filter(b => b.churnStatus.status === "available" && skippedIds.includes(b.bonus.id))
   const inCooldown = bonusesWithMeta.filter(b => b.churnStatus.status === "in_cooldown")
     .sort((a, b) => {
       const ad = a.churnStatus.status === "in_cooldown" ? a.churnStatus.days_remaining : 0
@@ -290,12 +402,22 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const earnedAmt = (r: CompletedBonus) => { const b = allBonuses.find(x => x.id === r.bonus_id); return r.actual_amount ?? b?.bonus_amount ?? 0 }
   const totalEarned = allEarned.reduce((sum, r) => sum + earnedAmt(r), 0)
 
+  // Reset projection when income changes
+  const income2Freq = (profile as any).income_2_frequency ?? null
+  const income2Amt = (profile as any).income_2_amount ?? 0
+  const income3Freq = (profile as any).income_3_frequency ?? null
+  const income3Amt = (profile as any).income_3_amount ?? 0
+
+  useEffect(() => {
+    setProjectionResult(null)
+  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt])
+
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
-      const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult])
+  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
@@ -304,14 +426,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   // Active bonuses that are actually being worked on (not kept open)
   const workingBonuses = inProgress.filter(({ bonus: b }) => !keptOpen.includes(b.id))
-  // The hero card bonus: show next available if no bonuses are actively being worked on
-  const heroBonus = workingBonuses.length === 0 ? (available[0] ?? null) : null
+  // Number of parallel slots = number of income sources
+  const totalSlots = allIncomeSources.length
+  // How many open slots are available for new bonuses
+  const openSlots = Math.max(0, totalSlots - workingBonuses.length)
+  // Hero cards: show one per open slot
+  const heroBonuses = available.slice(0, openSlots)
+  // Legacy single heroBonus for backward compat in code that checks it
+  const heroBonus = heroBonuses[0] ?? null
   const currentBonus = workingBonuses[0] ?? available[0] ?? null
-  const upNextBonuses = currentBonus
-    ? (workingBonuses.length > 0
-      ? [...workingBonuses.slice(1), ...available.slice(0, Math.max(0, 2 - workingBonuses.length + 1))].slice(0, 2)
-      : available.slice(1, 3))
-    : []
+  // Available Next: show bonuses after the hero cards
+  const upNextBonuses = available.slice(openSlots, openSlots + 2)
 
   const currentWeeks = currentBonus?.weeksToComplete ?? 0
   const nextBonus = workingBonuses.length > 0 ? available[0] : available[1]
@@ -360,6 +485,82 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+
+            {/* Additional income sources */}
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Additional income sources</div>
+              <div style={{ fontSize: 11, color: "#bbb", marginBottom: 12 }}>Add other jobs or side income with separate direct deposits. This speeds up your projected timelines and may unlock bonuses with higher deposit requirements.</div>
+
+              {/* Income source 2 */}
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 10 }}>
+                <div>
+                  <div style={settingsLabel}>Income 2 — Frequency</div>
+                  <select
+                    value={(profile as any).income_2_frequency ?? ""}
+                    onChange={e => {
+                      const val = e.target.value || null
+                      if (!val) {
+                        setProfile({ income_2_frequency: null, income_2_amount: null, income_3_frequency: null, income_3_amount: null } as any)
+                      } else {
+                        setProfile({ income_2_frequency: val } as any)
+                      }
+                    }}
+                    style={settingsSelectLight}>
+                    <option value="">None</option>
+                    {FREQ_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                  </select>
+                </div>
+                {(profile as any).income_2_frequency && (
+                  <div>
+                    <div style={settingsLabel}>Amount</div>
+                    <div style={{ position: "relative" }}>
+                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                      <input type="number"
+                        value={(profile as any).income_2_amount ?? ""}
+                        onChange={e => setProfile({ income_2_amount: Number(e.target.value) || null } as any)}
+                        style={settingsInputLight} min={0} step={100}
+                        placeholder="0" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Income source 3 — only show if source 2 is set */}
+              {(profile as any).income_2_frequency && (
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+                  <div>
+                    <div style={settingsLabel}>Income 3 — Frequency</div>
+                    <select
+                      value={(profile as any).income_3_frequency ?? ""}
+                      onChange={e => {
+                        const val = e.target.value || null
+                        if (!val) {
+                          setProfile({ income_3_frequency: null, income_3_amount: null } as any)
+                        } else {
+                          setProfile({ income_3_frequency: val } as any)
+                        }
+                      }}
+                      style={settingsSelectLight}>
+                      <option value="">None</option>
+                      {FREQ_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                    </select>
+                  </div>
+                  {(profile as any).income_3_frequency && (
+                    <div>
+                      <div style={settingsLabel}>Amount</div>
+                      <div style={{ position: "relative" }}>
+                        <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                        <input type="number"
+                          value={(profile as any).income_3_amount ?? ""}
+                          onChange={e => setProfile({ income_3_amount: Number(e.target.value) || null } as any)}
+                          style={settingsInputLight} min={0} step={100}
+                          placeholder="0" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -532,72 +733,83 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               )
             })()}
 
-            {/* ── HERO: Primary Action Card (next bonus to start) ── */}
-            {heroBonus && (
-              <div style={{
-                background: "#fff", border: "2px solid #0d7c5f", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
-                boxShadow: "0 4px 24px rgba(13,124,95,0.08)",
+            {/* ── HERO: Action Cards (one per open income slot) ── */}
+            {heroBonuses.map((hb, heroIdx) => (
+              <div key={hb.bonus.id} style={{
+                background: "#fff", border: heroIdx === 0 ? "2px solid #0d7c5f" : "2px solid #2563eb", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                boxShadow: heroIdx === 0 ? "0 4px 24px rgba(13,124,95,0.08)" : "0 4px 24px rgba(37,99,235,0.06)",
               }}>
+                {heroBonuses.length > 1 && (
+                  <div style={{ fontSize: 11, color: heroIdx === 0 ? "#0d7c5f" : "#2563eb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
+                    Income source {workingBonuses.length + heroIdx + 1} — open slot
+                  </div>
+                )}
                 <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                  {totalEarned > 0 ? `Your Next ${money(heroBonus.bonus.bonus_amount)} Is Ready` : `Your First ${money(heroBonus.bonus.bonus_amount)} Is Ready`}
+                  {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
                 </div>
                 <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
 
                 <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
                   <div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{heroBonus.bonus.bank_name}</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
                   </div>
                   <div style={{ fontSize: 14, color: "#666" }}>
-                    Complete in {heroBonus.weeksToComplete ? `${Math.ceil(heroBonus.weeksToComplete / 2)} pay cycle${Math.ceil(heroBonus.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
+                    Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
                   </div>
                 </div>
 
                 <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                  {heroBonus.bonus.requirements?.min_direct_deposit_total && (
+                  {hb.bonus.requirements?.min_direct_deposit_total && (
                     <div style={{ fontSize: 14, color: "#555" }}>
-                      Deposit ${heroBonus.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {heroBonus.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
+                      Deposit ${hb.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {hb.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
                     </div>
                   )}
-                  {!heroBonus.bonus.requirements?.min_direct_deposit_total && heroBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                  {!hb.bonus.requirements?.min_direct_deposit_total && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
                     <div style={{ fontSize: 14, color: "#555" }}>
-                      Make {heroBonus.bonus.requirements.dd_count_required ?? "a"} direct deposit{(heroBonus.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${heroBonus.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
+                      Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
                     </div>
                   )}
-                  {!heroBonus.bonus.requirements?.min_direct_deposit_total && !heroBonus.bonus.requirements?.min_direct_deposit_per_deposit && (
+                  {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
                     <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
                   )}
-                  {heroBonus.bonus.fees?.monthly_fee && heroBonus.bonus.fees.monthly_fee > 0 ? (
-                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${heroBonus.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
+                  {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
+                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${hb.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
                   ) : (
                     <div style={{ fontSize: 13, color: "#0d7c5f" }}>No monthly fee</div>
                   )}
                 </div>
 
                 <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-                  {bestLink(heroBonus.bonus.source_links) && (
-                    <a href={bestLink(heroBonus.bonus.source_links)!} target="_blank" rel="noreferrer"
-                      style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                  {bestLink(hb.bonus.source_links) && (
+                    <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
+                      style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: heroIdx === 0 ? "#0d7c5f" : "#2563eb", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
                       Open your account
                     </a>
                   )}
-                  <button onClick={() => { setActionBonus({ bonus: heroBonus.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                  <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
                     style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
                     I already opened it
                   </button>
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <button onClick={() => setShowDisclaimer(d => !d)}
-                    style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                    {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
+                  <button onClick={() => handleSkip(hb.bonus.id)}
+                    style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                    Skip
                   </button>
-                  {showDisclaimer && (
-                    <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
-                      Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
-                    </p>
-                  )}
                 </div>
+                {heroIdx === 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    <button onClick={() => setShowDisclaimer(d => !d)}
+                      style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                      {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
+                    </button>
+                    {showDisclaimer && (
+                      <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
+                        Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            ))}
 
             {/* ══════════════════════════════════════════════════════════════════
                  CURRENTLY WORKING ON — Checklist cards
@@ -639,7 +851,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
                       const windowDays = req?.deposit_window_days ?? 90
                       const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
-                      const bonusDeposits = deposits[b.id] ?? []
+                      const bonusDeposits = deposits.filter(d => d.bonus_id === b.id)
                       const depositedSoFar = bonusDeposits.reduce((s, d) => s + d.amount, 0)
 
                       const isDetailsExpanded = expandedDetails === b.id
@@ -765,12 +977,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               {/* Deposit entries */}
                               {bonusDeposits.length > 0 && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                  {bonusDeposits.map((d, i) => (
-                                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
-                                      <span style={{ color: "#888" }}>{fmtShortDate(d.date)}</span>
+                                  {bonusDeposits.map((d) => (
+                                    <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                         <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
-                                        <button onClick={() => setDeposits(prev => ({ ...prev, [b.id]: (prev[b.id] ?? []).filter((_, idx) => idx !== i) }))}
+                                        <button onClick={() => handleDeleteDeposit(d.id)}
                                           style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
                                       </div>
                                     </div>
@@ -788,12 +1000,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                   </div>
                                   <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
                                     style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
-                                  <button onClick={() => {
-                                    const amt = parseInt(newDepositAmt.replace(/\D/g, ""))
-                                    if (!amt || amt <= 0) return
-                                    setDeposits(prev => ({ ...prev, [b.id]: [...(prev[b.id] ?? []), { amount: amt, date: newDepositDate }] }))
-                                    setAddingDeposit(null)
-                                  }}
+                                  <button onClick={() => handleAddDeposit(b.id)}
                                     style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
                                     Add
                                   </button>
@@ -822,7 +1029,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                   style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
                                   Close account
                                 </button>
-                                <button onClick={() => setKeptOpen(prev => [...prev, b.id])}
+                                <button onClick={async () => {
+                                  const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+                                  if (record) await markKeptOpen(record.id, true)
+                                  setKeptOpen(prev => [...prev, b.id])
+                                }}
                                   style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
                                   Keep open
                                 </button>
@@ -900,6 +1111,36 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               </div>
 
                               <div style={{ fontSize: 11, color: "#bbb", marginTop: 8 }}>Requirements are set by the bank and may change.</div>
+
+                              {/* Notes */}
+                              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Your notes</div>
+                                  {editingNote !== b.id && (
+                                    <button onClick={() => { setEditingNote(b.id); setNoteText(bonusNotes[b.id] ?? "") }}
+                                      style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                                      {bonusNotes[b.id] ? "Edit" : "Add note"}
+                                    </button>
+                                  )}
+                                </div>
+                                {editingNote === b.id ? (
+                                  <div>
+                                    <textarea value={noteText} onChange={e => setNoteText(e.target.value)}
+                                      placeholder="Add a reminder, tracking info, or anything useful..."
+                                      style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, resize: "vertical", minHeight: 50, boxSizing: "border-box" as const, fontFamily: "inherit", color: "#333" }} />
+                                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                                      <button onClick={() => handleSaveNote(b.id)}
+                                        style={{ fontSize: 11, padding: "4px 12px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>Save</button>
+                                      <button onClick={() => setEditingNote(null)}
+                                        style={{ fontSize: 11, padding: "4px 12px", background: "none", color: "#999", border: "1px solid #e0e0e0", borderRadius: 4, cursor: "pointer" }}>Cancel</button>
+                                    </div>
+                                  </div>
+                                ) : bonusNotes[b.id] ? (
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{bonusNotes[b.id]}</div>
+                                ) : (
+                                  <div style={{ fontSize: 11, color: "#ccc" }}>No notes yet</div>
+                                )}
+                              </div>
                             </div>
                           )}
 
@@ -943,7 +1184,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           </div>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                         </div>
-                        {isActive && (
+                        {isActive ? (
                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                             {mDetail?.safeToClose && mDetail?.bonusPosted && (
                               <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
@@ -951,6 +1192,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             )}
                             <button onClick={() => handleDelete(b.id)}
                               style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#bbb", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                            <button onClick={() => handleSkip(b.id)}
+                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Skip</button>
                           </div>
                         )}
                       </div>
@@ -960,7 +1206,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
 
-            {/* ── Accounts open (kept open after bonus received) ── */}
+            {/* ── Accounts open (kept open + standalone accounts) ── */}
             {(() => {
               const keptOpenRecords = inProgress.filter(({ bonus: b }) => keptOpen.includes(b.id) && (() => {
                 const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
@@ -968,10 +1214,16 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 const md = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
                 return md.bonusPosted
               })())
-              if (keptOpenRecords.length === 0) return null
+              if (keptOpenRecords.length === 0 && openAccounts.length === 0) return null
               return (
                 <div style={{ marginBottom: 24 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Accounts open</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>Accounts open</div>
+                    <button onClick={() => setShowAddOpenAccount(true)}
+                      style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                      + Add account
+                    </button>
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {keptOpenRecords.map(({ bonus: b }) => (
                       <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
@@ -986,6 +1238,23 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
                             style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
                             Close account
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {openAccounts.map(acct => (
+                      <div key={acct.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{acct.bank_name}</div>
+                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                              {acct.opened_date ? `Opened ${fmtShortDate(acct.opened_date)}` : "Account open"}
+                              {acct.notes ? ` · ${acct.notes}` : ""}
+                            </div>
+                          </div>
+                          <button onClick={async () => { await deleteOpenAccount(acct.id); await loadRecords() }}
+                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#bbb", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                            Remove
                           </button>
                         </div>
                       </div>
@@ -1016,6 +1285,27 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         <span style={{ fontSize: 9, color: "#999", background: "#f0f0f0", padding: "1px 6px", borderRadius: 99 }}>Custom</span>
                       </div>
                       <div style={{ fontSize: 12, color: "#d97706", marginTop: 3 }}>{c.days_remaining} days left</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Skipped bonuses ── */}
+            {skippedBonuses.length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Skipped</div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {skippedBonuses.map(({ bonus: b }) => (
+                    <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{money(b.bonus_amount)}</div>
+                      </div>
+                      <button onClick={() => handleUnskip(b.id)}
+                        style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                        Restore
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1102,6 +1392,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               <button onClick={() => setShowAddCustom(true)}
                 style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add custom bonus
+              </button>
+              <span style={{ color: "#e0e0e0" }}>|</span>
+              <button onClick={() => setShowAddOpenAccount(true)}
+                style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                + Add open account
               </button>
               <span style={{ color: "#e0e0e0" }}>|</span>
               <button onClick={() => setShowAdvanced(a => !a)}
@@ -1313,6 +1608,38 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={modalActions}>
               <button onClick={() => setActionCustom(null)} style={cancelBtnLight}>Cancel</button>
               <button onClick={handleCloseCustom} style={confirmBtnLight}>Close Account</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Open Account Modal */}
+      {showAddOpenAccount && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Open Account</div>
+            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bank account you have open (no bonus needed).</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={modalLabel}>Bank name</label>
+                <input type="text" value={openAcctBank} onChange={e => setOpenAcctBank(e.target.value)} placeholder="e.g. Chase" style={modalInput} />
+              </div>
+              <div>
+                <label style={modalLabel}>When did you open it? (optional)</label>
+                <input type="date" value={openAcctDate} onChange={e => setOpenAcctDate(e.target.value)} style={modalInput} />
+              </div>
+              <div>
+                <label style={modalLabel}>Notes (optional)</label>
+                <input type="text" value={openAcctNotes} onChange={e => setOpenAcctNotes(e.target.value)} placeholder="Primary checking, etc." style={modalInput} />
+              </div>
+            </div>
+            <div style={modalActions}>
+              <button onClick={() => { setShowAddOpenAccount(false); setOpenAcctBank(""); setOpenAcctDate(""); setOpenAcctNotes("") }} style={cancelBtnLight}>Cancel</button>
+              <button disabled={!openAcctBank} onClick={async () => {
+                await addOpenAccount(userId, openAcctBank, openAcctDate || undefined, openAcctNotes || undefined)
+                await loadRecords()
+                setShowAddOpenAccount(false); setOpenAcctBank(""); setOpenAcctDate(""); setOpenAcctNotes("")
+              }} style={{ ...confirmBtnLight, opacity: !openAcctBank ? 0.5 : 1 }}>Add Account</button>
             </div>
           </div>
         </div>
