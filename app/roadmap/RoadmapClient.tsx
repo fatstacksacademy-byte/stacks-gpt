@@ -148,12 +148,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   function handleSequencerDone() { setOnboardingStep("done"); setSequencerResult(null) }
 
-  function handleRefreshSequencer() {
-    const result = runSequencer({ slots: 1, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords })
-    setSequencerResult(result)
-    setShowAdvanced(false)
-  }
-
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -335,8 +329,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
           {onboardingStep === "done" && (
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Settings"}</button>
-              <button onClick={handleRefreshSequencer} style={{ ...topBtn, color: "#0d7c5f", borderColor: "#c8ede1" }}>Refresh bonuses</button>
+              <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
               <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
               <button onClick={handleLogout} style={topBtn}>Log out</button>
             </div>
@@ -989,33 +982,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 </div>
               )
             })()}
-
-            {/* Sequencer Results (from refresh) */}
-            {sequencerResult && (
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", marginBottom: 24 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Your Optimized Stack</div>
-                    <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{sequencerResult.slots.flat().filter(e => e.type === "bonus").length} bonuses · ${sequencerResult.total_bonus.toLocaleString()} total</div>
-                  </div>
-                  <button onClick={() => setSequencerResult(null)} style={topBtn}>Hide</button>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {sequencerResult.slots.flat().filter(e => e.type === "bonus").slice(0, 5).map((entry, i) => {
-                    const b = entry as SequencedBonus
-                    return (
-                      <div key={`${b.id}-${b.cycle}-seq`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f8f8f8", borderRadius: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 18 }}>{i + 1}</span>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</span>
-                        </div>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(b.bonus_amount)}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
 
             {/* ── Cooldown ── */}
             {(inCooldown.length > 0 || customInCooldown.length > 0) && (
