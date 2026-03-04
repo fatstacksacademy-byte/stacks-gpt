@@ -4,7 +4,7 @@ import { createClient } from "./supabase/server"
 if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is required")
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2026-02-25.clover",
 })
 
 // Price IDs — set these in your .env after creating products in Stripe Dashboard
