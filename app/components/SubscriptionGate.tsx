@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 type Props = {
   children: React.ReactNode
@@ -9,18 +10,18 @@ type Props = {
 }
 
 export default function SubscriptionGate({ children, isSubscribed }: Props) {
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState<"monthly" | "annual" | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // If user came from landing page with a plan selected, auto-trigger checkout
+  // Auto-trigger checkout if ?plan= param is present (user came from landing page)
   useEffect(() => {
     if (isSubscribed) return
-    const preferred = sessionStorage.getItem("preferred_plan") as "monthly" | "annual" | null
-    if (preferred) {
-      sessionStorage.removeItem("preferred_plan")
-      handleCheckout(preferred)
+    const plan = searchParams.get("plan") as "monthly" | "annual" | null
+    if (plan === "monthly" || plan === "annual") {
+      handleCheckout(plan)
     }
-  }, [isSubscribed])
+  }, [isSubscribed, searchParams])
 
   if (isSubscribed) return <>{children}</>
 
@@ -56,7 +57,6 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
         <div style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em", marginBottom: 32 }}>Stacks OS</div>
 
         {loading ? (
-          // Auto-redirecting state — shown when coming from landing page
           <div>
             <div style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8 }}>Taking you to checkout…</div>
             <div style={{ fontSize: 14, color: "#999" }}>You'll be redirected to Stripe in a moment.</div>
@@ -71,12 +71,10 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-              {/* Annual */}
-              <button onClick={() => handleCheckout("annual")} disabled={loading !== null}
-                style={{
-                  padding: "18px 24px", borderRadius: 12, border: "2px solid #0d7c5f", background: "#fff",
-                  cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center",
-                }}>
+              <button onClick={() => handleCheckout("annual")} disabled={loading !== null} style={{
+                padding: "18px 24px", borderRadius: 12, border: "2px solid #0d7c5f", background: "#fff",
+                cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>Annual</div>
                   <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>$4.17/mo · billed $50/year</div>
@@ -87,12 +85,10 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
                 </div>
               </button>
 
-              {/* Monthly */}
-              <button onClick={() => handleCheckout("monthly")} disabled={loading !== null}
-                style={{
-                  padding: "18px 24px", borderRadius: 12, border: "1px solid #e0e0e0", background: "#fff",
-                  cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center",
-                }}>
+              <button onClick={() => handleCheckout("monthly")} disabled={loading !== null} style={{
+                padding: "18px 24px", borderRadius: 12, border: "1px solid #e0e0e0", background: "#fff",
+                cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>Monthly</div>
                   <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>Cancel anytime</div>
@@ -116,10 +112,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
             <p style={{ fontSize: 12, color: "#bbb", lineHeight: 1.5, margin: "0 0 16px" }}>
               Most bonuses are $200–$500. The subscription pays for itself with your first bonus.
             </p>
-
-            <Link href="/" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-              ← Back to home
-            </Link>
+            <Link href="/" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>← Back to home</Link>
           </>
         )}
       </div>

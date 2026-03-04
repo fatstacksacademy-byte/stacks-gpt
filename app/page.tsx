@@ -9,11 +9,8 @@ export default function LandingPage() {
   const router = useRouter()
 
   function handleCTA() {
-    // Store selected plan so SubscriptionGate picks it up after login
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("preferred_plan", billingCycle)
-    }
-    router.push("/login")
+    // Pass plan through URL so it survives the full auth redirect chain
+    router.push(`/login?plan=${billingCycle}`)
   }
 
   return (
@@ -47,9 +44,7 @@ export default function LandingPage() {
           <br />
           <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
         </h1>
-        <p style={{
-          fontSize: 19, color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520,
-        }}>
+        <p style={{ fontSize: 19, color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520 }}>
           Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
         </p>
         <div style={{ display: "flex", gap: 14 }}>
@@ -164,8 +159,7 @@ export default function LandingPage() {
           </div>
           {billingCycle === "annual"
             ? <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>$4.17/mo billed annually</div>
-            : <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Cancel anytime</div>
-          }
+            : <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Cancel anytime</div>}
           <button onClick={handleCTA} style={{
             display: "block", width: "100%", fontSize: 16, fontWeight: 700, color: "#fff",
             background: "#0d7c5f", padding: "16px 0", borderRadius: 10,
@@ -174,8 +168,7 @@ export default function LandingPage() {
           <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 10 }}>
             {["Personalized bonus queue", "Step-by-step checklists", "Deposit tracking", "12-month earnings projection", "Cooldown + eligibility tracking", "Bonus details + requirements"].map((f, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#555" }}>
-                <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>
-                {f}
+                <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>{f}
               </div>
             ))}
           </div>
@@ -202,9 +195,7 @@ export default function LandingPage() {
 
       {/* ── FINAL CTA ── */}
       <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px 40px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
-          Your first bonus is waiting
-        </h2>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>Your first bonus is waiting</h2>
         <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>Set up in minutes. Start earning this week.</p>
         <button onClick={handleCTA} style={{
           fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
@@ -225,8 +216,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer style={{
         maxWidth: 1100, margin: "0 auto", padding: "40px 40px 32px",
-        borderTop: "1px solid #f0f0f0",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
+        borderTop: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Stacks OS</span>
         <div style={{ display: "flex", gap: 20 }}>

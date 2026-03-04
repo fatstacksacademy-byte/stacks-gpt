@@ -1,18 +1,28 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 
 export default function LoginPage() {
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // Carry the plan param through the entire auth flow
+  const plan = searchParams.get("plan") ?? "annual"
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [isError, setIsError] = useState(false)
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin")
+
+  // After successful auth, go to /roadmap with plan param so SubscriptionGate can pick it up
+  function redirectToRoadmap() {
+    router.push(`/roadmap?plan=${plan}`)
+    router.refresh()
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,11 +44,11 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (error) { setIsError(true); setMessage(error.message) }
-      else { router.push("/roadmap"); router.refresh() }
+      else redirectToRoadmap()
       return
     }
 
-    // SIGNUP: create account then immediately sign in — no manual second step
+    // SIGNUP: create account then immediately sign in
     if (mode === "signup") {
       const { error: signUpError } = await supabase.auth.signUp({ email, password })
       if (signUpError) {
@@ -47,17 +57,14 @@ export default function LoginPage() {
         setMessage(signUpError.message)
         return
       }
-      // Auto sign in right after
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (signInError) {
-        // Account created but auto-login failed — tell them to sign in manually
         setIsError(false)
         setMessage("Account created! Please sign in.")
         setMode("signin")
       } else {
-        router.push("/roadmap")
-        router.refresh()
+        redirectToRoadmap()
       }
     }
   }
