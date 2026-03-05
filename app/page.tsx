@@ -172,108 +172,50 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING + SIGNUP ── */}
-      <section id="signup" className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
-          Your first bonus covers the cost
-        </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>
-          Your first bonus often earns $300–$400, easily covering the subscription.
-        </p>
+      {/* ── SIGNUP ── */}
+      <section id="signup" className="lp-section" style={{ maxWidth: 480, margin: "0 auto" }}>
+        <div style={{
+          background: "#fff", borderRadius: 16, padding: "40px 36px",
+          border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
+        }}>
+          <h3 style={{ fontSize: 26, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+            See your projected bonus earnings for the next 12 months.
+          </h3>
+          <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px", lineHeight: 1.5 }}>
+            Free preview. Unlock the full bonus plan anytime.
+          </p>
 
-        <div className="lp-pricing-row">
-          {/* Signup form */}
-          <div className="lp-signup-card" style={{
-            background: "#fff", borderRadius: 16, padding: "32px",
-            border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.04)",
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
-              Create your account
-            </p>
-            <h3 style={{ fontSize: 26, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-              See exactly how much you can earn this year.
-            </h3>
-            <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px" }}>
-              Before you pay a cent.
-            </p>
-
-            <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input type="email" placeholder="you@email.com" required value={email}
-                  onChange={e => setEmail(e.target.value)} style={inputStyle} />
+          <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <label style={labelStyle}>Email</label>
+              <input type="email" placeholder="you@email.com" required value={email}
+                onChange={e => setEmail(e.target.value)} style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Password</label>
+              <input type="password" placeholder="••••••••" required minLength={6} value={password}
+                onChange={e => setPassword(e.target.value)} style={inputStyle} />
+            </div>
+            {error && (
+              <div style={{ fontSize: 12, color: "#dc2626", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 12px" }}>
+                {error}
               </div>
-              <div>
-                <label style={labelStyle}>Password</label>
-                <input type="password" placeholder="••••••••" required minLength={6} value={password}
-                  onChange={e => setPassword(e.target.value)} style={inputStyle} />
-              </div>
-              {error && (
-                <div style={{ fontSize: 12, color: "#dc2626", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 12px" }}>
-                  {error}
-                </div>
-              )}
-              <button type="submit" disabled={loading} style={{
-                width: "100%", padding: "14px", fontSize: 15, fontWeight: 700,
-                background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
-                cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
-              }}>
-                {loading ? "Creating account…" : "Get my earnings plan →"}
-              </button>
-            </form>
+            )}
+            <button type="submit" disabled={loading} style={{
+              width: "100%", padding: "14px", fontSize: 15, fontWeight: 700,
+              background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
+              cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
+            }}>
+              {loading ? "Creating account…" : "Show my projection →"}
+            </button>
+          </form>
 
-            <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, margin: "12px 0 0" }}>
-              Free to see your plan. No credit card until you subscribe.
-            </div>
-            <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
-              <span style={{ fontSize: 13, color: "#999" }}>
-                Already have an account?{" "}
-                <Link href="/login" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
-              </span>
-            </div>
+          <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
+            <span style={{ fontSize: 13, color: "#999" }}>
+              Already have an account?{" "}
+              <Link href="/login" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
+            </span>
           </div>
-
-          {/* Pricing card */}
-          <div className="lp-pricing-card" style={{
-            background: "#fff", border: "2px solid #0d7c5f",
-            borderRadius: 16, padding: "32px", textAlign: "center",
-            boxShadow: "0 8px 32px rgba(13,124,95,0.08)",
-          }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS</div>
-
-            {/* Toggle */}
-            <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 20 }}>
-              <button onClick={() => setBillingCycle("monthly")} style={{
-                flex: 1, padding: "8px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
-                background: billingCycle === "monthly" ? "#fff" : "transparent",
-                color: billingCycle === "monthly" ? "#111" : "#999",
-                boxShadow: billingCycle === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-              }}>Monthly</button>
-              <button onClick={() => setBillingCycle("annual")} style={{
-                flex: 1, padding: "8px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
-                background: billingCycle === "annual" ? "#fff" : "transparent",
-                color: billingCycle === "annual" ? "#111" : "#999",
-                boxShadow: billingCycle === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-              }}>Annual <span style={{ fontSize: 10, color: "#0d7c5f", fontWeight: 700 }}>Save 17%</span></button>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "5" : "50"}</span>
-              <span style={{ fontSize: 16, color: "#999" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
-            </div>
-            {billingCycle === "annual"
-              ? <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>$4.17/mo billed annually</div>
-              : <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>Cancel anytime</div>}
-
-            <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Personalized bonus queue", "Step-by-step checklists", "Deposit tracking", "12-month earnings projection", "Cooldown + eligibility tracking", "Bonus details + requirements"].map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#555" }}>
-                  <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>{f}
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       </section>
 
@@ -295,6 +237,51 @@ export default function LandingPage() {
         ))}
       </section>
 
+      {/* ── PRICING ── */}
+      <section id="pricing" className="lp-section" style={{ maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Pricing</h2>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Your first bonus easily covers the cost.</p>
+
+        <div style={{
+          background: "#fff", border: "2px solid #0d7c5f",
+          borderRadius: 16, padding: "32px",
+          boxShadow: "0 8px 32px rgba(13,124,95,0.08)",
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS</div>
+
+          <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 20 }}>
+            <button onClick={() => setBillingCycle("monthly")} style={{
+              flex: 1, padding: "8px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
+              background: billingCycle === "monthly" ? "#fff" : "transparent",
+              color: billingCycle === "monthly" ? "#111" : "#999",
+              boxShadow: billingCycle === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+            }}>Monthly</button>
+            <button onClick={() => setBillingCycle("annual")} style={{
+              flex: 1, padding: "8px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
+              background: billingCycle === "annual" ? "#fff" : "transparent",
+              color: billingCycle === "annual" ? "#111" : "#999",
+              boxShadow: billingCycle === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+            }}>Annual <span style={{ fontSize: 10, color: "#0d7c5f", fontWeight: 700 }}>Save 17%</span></button>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4, marginBottom: 4 }}>
+            <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "5" : "50"}</span>
+            <span style={{ fontSize: 16, color: "#999" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
+          </div>
+          {billingCycle === "annual"
+            ? <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>$4.17/mo billed annually</div>
+            : <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>Cancel anytime</div>}
+
+          <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 10 }}>
+            {["Personalized bonus queue", "Step-by-step checklists", "Deposit tracking", "12-month earnings projection", "Cooldown + eligibility tracking", "Bonus details + requirements"].map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#555" }}>
+                <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13 }}>&#10003;</span>{f}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ── */}
       <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>Your first bonus is waiting</h2>
@@ -304,7 +291,7 @@ export default function LandingPage() {
           padding: "16px 40px", borderRadius: 10, textDecoration: "none", display: "inline-block",
           boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
         }}>
-          Get started — ${billingCycle === "monthly" ? "5/mo" : "50/yr"}
+          Show my projection →
         </a>
       </section>
 
