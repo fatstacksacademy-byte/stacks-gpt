@@ -825,7 +825,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>${activeBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
                   </div>
                   <div style={{ fontSize: 11, color: "#bbb", marginTop: 10, textAlign: "center", lineHeight: 1.5 }}>
-                    Your bonus roadmap updates automatically as new offers become available or are removed.
+                    Your bonus plan updates automatically as offers change and you complete bonuses.
                   </div>
                 </div>
               )
