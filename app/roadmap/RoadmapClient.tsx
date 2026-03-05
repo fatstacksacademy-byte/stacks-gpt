@@ -165,6 +165,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customCooldown, setCustomCooldown] = useState("12")
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
   const [showThreeYear, setShowThreeYear] = useState(false)
+  const [expandedFees, setExpandedFees] = useState<string | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -482,12 +483,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
       {/* System status strip */}
       {!isOnboarding && onboardingStep === "done" && (
-        <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0" }}>
+        <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>● Live</span>
-            <span style={{ fontSize: 12, color: "#555" }}>Tracking {allBonuses.length} nationwide bonus offers</span>
+            <span style={{ fontSize: 12, color: "#555" }}>Tracking nationwide bonus offers</span>
             <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
             <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
+            <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+            <span style={{ fontSize: 12, color: "#aaa" }}>Last updated March 4, 2026</span>
           </div>
         </div>
       )}
@@ -737,8 +739,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               const projected = getProjectedBonuses(projectionResult)
               const year1End = addDays(todayStr(), 365)
               const year2End = addDays(todayStr(), 730)
-              const year1Bonuses = projected.filter(p => new Date(p.payout_date) <= year1End)
-              const year2Bonuses = projected.filter(p => new Date(p.payout_date) > year1End && new Date(p.payout_date) <= year2End)
+              const year1Bonuses = projected.filter(p => new Date(p.start_date) <= year1End)
+              const year2Bonuses = projected.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End)
               const activeBonuses = projectionTab === "year1" ? year1Bonuses : year2Bonuses
               return (
                 <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
@@ -825,14 +827,35 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
                     <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
                   )}
-                  {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
-                    <div style={{ fontSize: 13, color: "#999" }}>Avoid ${hb.bonus.fees.monthly_fee}/mo fee by setting up direct deposit</div>
-                  ) : (
-                    <div style={{ fontSize: 13, color: "#0d7c5f" }}>No monthly fee</div>
+                </div>
+
+                {/* Fees dropdown */}
+                <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                  <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
+                    style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ fontSize: 10, color: "#999" }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
+                    Fees &amp; how to avoid
+                  </button>
+                  {expandedFees === hb.bonus.id && (
+                    <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                      {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
+                          {hb.bonus.fees.monthly_fee_waiver_text && (
+                            <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
+                          )}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                      )}
+                      {hb.bonus.fees?.early_closure_fee > 0 && (
+                        <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                      )}
+                    </div>
                   )}
                 </div>
 
-                <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
+                <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
                   {bestLink(hb.bonus.source_links) && (
                     <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
                       style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: heroIdx === 0 ? "#0d7c5f" : "#2563eb", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
@@ -1105,8 +1128,34 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
 
+                          {/* ── Fees & how to avoid (expandable) ── */}
+                          <div style={{ padding: "10px 24px 0" }}>
+                            <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
+                              style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
+                              Fees &amp; how to avoid
+                            </button>
+                            {expandedFees === b.id && (
+                              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
+                                {hasFee ? (
+                                  <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${fees.monthly_fee}/month</div>
+                                    {feeWaiverText && (
+                                      <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                                )}
+                                {fees?.early_closure_fee > 0 && (
+                                  <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
                           {/* ── Bonus details (expandable) ── */}
-                          <div style={{ padding: "14px 24px 4px" }}>
+                          <div style={{ padding: "10px 24px 4px" }}>
                             <button
                               onClick={() => setExpandedDetails(isDetailsExpanded ? null : b.id)}
                               style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
@@ -1252,6 +1301,31 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           </div>
                         )}
+                        {/* Fees dropdown */}
+                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
+                          <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
+                            style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
+                            Fees &amp; how to avoid
+                          </button>
+                          {expandedFees === b.id && (
+                            <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
+                              {b.fees?.monthly_fee && b.fees.monthly_fee > 0 ? (
+                                <div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${b.fees.monthly_fee}/month</div>
+                                  {b.fees.monthly_fee_waiver_text && (
+                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.fees.monthly_fee_waiver_text}</div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                              )}
+                              {b.fees?.early_closure_fee > 0 && (
+                                <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${b.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
