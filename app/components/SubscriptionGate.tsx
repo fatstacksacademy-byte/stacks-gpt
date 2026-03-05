@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 
 type Props = {
   children: React.ReactNode
@@ -11,10 +11,38 @@ type Props = {
 
 export default function SubscriptionGate({ children, isSubscribed }: Props) {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [loading, setLoading] = useState<"monthly" | "annual" | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [polling, setPolling] = useState(false)
 
-  // Auto-trigger checkout if ?plan= param is present (user came from landing page)
+  const checkoutSuccess = searchParams.get("checkout") === "success"
+
+  // If coming back from Stripe with success, poll until subscription is active
+  useEffect(() => {
+    if (!checkoutSuccess || isSubscribed) return
+    setPolling(true)
+    let attempts = 0
+    const interval = setInterval(async () => {
+      attempts++
+      router.refresh()
+      if (attempts >= 10) {
+        clearInterval(interval)
+        setPolling(false)
+      }
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [checkoutSuccess])
+
+  // Stop polling once subscribed
+  useEffect(() => {
+    if (isSubscribed && checkoutSuccess) {
+      setPolling(false)
+      router.replace("/roadmap")
+    }
+  }, [isSubscribed, checkoutSuccess])
+
+  // Auto-trigger checkout if ?plan= param is present
   useEffect(() => {
     if (isSubscribed) return
     const plan = searchParams.get("plan") as "monthly" | "annual" | null
@@ -24,6 +52,23 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
   }, [isSubscribed, searchParams])
 
   if (isSubscribed) return <>{children}</>
+
+  // Show loading spinner while waiting for webhook after payment
+  if (checkoutSuccess || polling) {
+    return (
+      <div style={{
+        minHeight: "100vh", background: "#fafafa",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 32, fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+      }}>
+        <div style={{ maxWidth: 440, width: "100%", textAlign: "center" }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em", marginBottom: 32 }}>Stacks OS</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8 }}>Setting up your account…</div>
+          <div style={{ fontSize: 14, color: "#999" }}>This only takes a moment.</div>
+        </div>
+      </div>
+    )
+  }
 
   async function handleCheckout(plan: "monthly" | "annual") {
     setLoading(plan)
