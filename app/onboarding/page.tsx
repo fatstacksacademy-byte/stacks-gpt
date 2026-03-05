@@ -242,7 +242,7 @@ export default function OnboardingPage() {
                     <div>
                       <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600, marginBottom: 2 }}>First bonus</div>
                       <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
-                      <div style={{ fontSize: 12, color: "#666" }}>~{fmtDate(addDays(firstBonus.payout_week * 7))}</div>
+                      <div style={{ fontSize: 12, color: "#666" }}>Start ~{fmtDate(addDays(firstBonus.start_week * 7))}</div>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
                   </div>
@@ -257,7 +257,7 @@ export default function OnboardingPage() {
                     }}>
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 11, color: "#bbb" }}>~{fmtDate(addDays(b.payout_week * 7))}</div>
+                        <div style={{ fontSize: 11, color: "#bbb" }}>Start ~{fmtDate(addDays(b.start_week * 7))}</div>
                       </div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>${b.bonus_amount}</div>
                     </div>

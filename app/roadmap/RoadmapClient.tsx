@@ -154,6 +154,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
+  const [projectionTab, setProjectionTab] = useState<"year1" | "year2">("year1")
   const [customBonuses, setCustomBonuses] = useState<CustomBonus[]>([])
   const [showAddCustom, setShowAddCustom] = useState(false)
   const [customBank, setCustomBank] = useState("")
@@ -734,18 +735,34 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* Projection breakdown (expandable) */}
             {showProjection && projectionResult && (() => {
               const projected = getProjectedBonuses(projectionResult)
-              const endDate = addDays(todayStr(), 365)
-              const yearBonuses = projected.filter(p => new Date(p.payout_date) <= endDate)
+              const year1End = addDays(todayStr(), 365)
+              const year2End = addDays(todayStr(), 730)
+              const year1Bonuses = projected.filter(p => new Date(p.payout_date) <= year1End)
+              const year2Bonuses = projected.filter(p => new Date(p.payout_date) > year1End && new Date(p.payout_date) <= year2End)
+              const activeBonuses = projectionTab === "year1" ? year1Bonuses : year2Bonuses
               return (
                 <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4 }}>
-                    Recommended order to maximize bonuses this year
+                  {/* Tabs */}
+                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 14 }}>
+                    {(["year1", "year2"] as const).map(tab => (
+                      <button key={tab} onClick={() => setProjectionTab(tab)} style={{
+                        flex: 1, padding: "7px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6,
+                        border: "none", cursor: "pointer",
+                        background: projectionTab === tab ? "#fff" : "transparent",
+                        color: projectionTab === tab ? "#111" : "#999",
+                        boxShadow: projectionTab === tab ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                      }}>
+                        {tab === "year1" ? `This year · ${money(year1Bonuses.reduce((s, p) => s + p.bonus_amount, 0))}` : `Next year · ${money(year2Bonuses.reduce((s, p) => s + p.bonus_amount, 0))}`}
+                      </button>
+                    ))}
                   </div>
                   <div style={{ fontSize: 12, color: "#bbb", marginBottom: 10 }}>
-                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck · {yearBonuses.length} opportunities
+                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck · {activeBonuses.length} opportunities
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {yearBonuses.map((p, i) => (
+                    {activeBonuses.length === 0 ? (
+                      <div style={{ fontSize: 13, color: "#bbb", textAlign: "center", padding: "16px 0" }}>No bonuses projected for this period.</div>
+                    ) : activeBonuses.map((p, i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{i + 1}</span>
@@ -760,7 +777,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>${yearBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>${activeBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 10, textAlign: "center", lineHeight: 1.5 }}>
+                    Your bonus roadmap updates automatically as new offers become available or are removed.
                   </div>
                 </div>
               )
