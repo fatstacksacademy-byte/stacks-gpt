@@ -164,7 +164,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customChurnable, setCustomChurnable] = useState(false)
   const [customCooldown, setCustomCooldown] = useState("12")
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
-  const [showThreeYear, setShowThreeYear] = useState(false)
+
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
@@ -665,8 +665,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         {onboardingStep === "sequencer" && sequencerResult && (() => {
           const projected = getProjectedBonuses(sequencerResult)
           const endDate = addDays(todayStr(), 365)
-          const yearTotal = projected.filter(p => new Date(p.payout_date) <= endDate).reduce((s, p) => s + p.bonus_amount, 0)
-          const multiYearTotal = yearTotal * 3
+          const yearTotal = projected.filter(p => new Date(p.start_date) <= endDate).reduce((s, p) => s + p.bonus_amount, 0)
           const firstBonus = projected[0]
           const firstAmount = firstBonus ? firstBonus.bonus_amount : yearTotal
           return (
@@ -679,29 +678,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <p style={{ fontSize: 15, color: "#888", marginTop: 0, lineHeight: 1.6 }}>
                   You qualify based on your paycheck.
                 </p>
-                <div style={{ margin: "28px 0 8px" }}>
+                <div style={{ margin: "28px 0 24px" }}>
                   <div style={{ fontSize: 14, color: "#999" }}>Projected this year</div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${yearTotal.toLocaleString()}</div>
                 </div>
-                <button onClick={() => setShowThreeYear(s => !s)} style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 24 }}>
-                  {showThreeYear ? "Hide 3-year projection" : "See 3-year projection"}
-                </button>
-                {showThreeYear && (
-                  <div style={{ display: "flex", justifyContent: "center", gap: 32, marginBottom: 24 }}>
-                    <div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${yearTotal.toLocaleString()}</div>
-                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 1</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${(yearTotal * 2).toLocaleString()}</div>
-                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 2</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#666" }}>${multiYearTotal.toLocaleString()}</div>
-                      <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Year 3</div>
-                    </div>
-                  </div>
-                )}
                 <button onClick={handleSequencerDone} style={{ ...primaryBtn, width: "100%", padding: "16px 28px", fontSize: 16 }}>
                   Go to dashboard
                 </button>
