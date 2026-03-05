@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 
@@ -44,6 +45,11 @@ export default function LandingPage() {
         .lp-hero p { font-size: 19px; }
         .lp-cta-buttons { display: flex; gap: 14px; margin-bottom: 48px; flex-wrap: wrap; justify-content: center; }
         .lp-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+        .lp-hero-inner { display: flex; align-items: center; gap: 64px; }
+        .lp-hero-text { flex: 1; text-align: left; }
+        .lp-hero-text .lp-cta-buttons { justify-content: flex-start; }
+        .lp-hero-text .lp-stats { justify-content: flex-start; }
+        .lp-hero-photo { flex-shrink: 0; width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
         .lp-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
         .lp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         .lp-pricing-row { display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
@@ -63,6 +69,11 @@ export default function LandingPage() {
           .lp-cta-buttons { flex-direction: column; gap: 10px; width: 100%; }
           .lp-cta-buttons a { text-align: center; }
           .lp-stats { gap: 28px; }
+          .lp-hero-inner { flex-direction: column; gap: 32px; }
+          .lp-hero-text { text-align: center; }
+          .lp-hero-text .lp-cta-buttons { justify-content: center; }
+          .lp-hero-text .lp-stats { justify-content: center; }
+          .lp-hero-photo { width: 100%; max-width: 420px; }
           .lp-grid-3 { grid-template-columns: 1fr; }
           .lp-grid-2 { grid-template-columns: 1fr; }
           .lp-pricing-row { flex-direction: column; align-items: center; gap: 20px; }
@@ -87,45 +98,59 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="lp-hero" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-        <div style={{
-          display: "inline-block", fontSize: 12, fontWeight: 600, color: "#0d7c5f",
-          background: "#e6f5f0", padding: "6px 14px", borderRadius: 99, marginBottom: 24,
-          letterSpacing: "0.04em", textTransform: "uppercase",
-        }}>
-          The bank bonus system
-        </div>
-        <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px", maxWidth: 700 }}>
-          Turn your paycheck into
-          <br />
-          <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
-        </h1>
-        <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520 }}>
-          Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
-        </p>
-        <div className="lp-cta-buttons">
-          <a href="#signup" style={{
-            fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-            padding: "16px 36px", borderRadius: 10, textDecoration: "none",
-            boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-          }}>See how much you can earn</a>
-          <a href="#how-it-works" style={{
-            fontSize: 16, fontWeight: 500, color: "#666",
-            padding: "16px 28px", borderRadius: 10, textDecoration: "none",
-            border: "1px solid #ddd",
-          }}>See how it works</a>
-        </div>
-        <div className="lp-stats">
-          {[
-            { value: "$3,000+", label: "potential first year" },
-            { value: "15 min", label: "setup time" },
-            { value: "Low effort", label: "uses your existing paycheck" },
-          ].map((s, i) => (
-            <div key={i} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#111" }}>{s.value}</div>
-              <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>{s.label}</div>
+      <section className="lp-hero" style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div className="lp-hero-inner">
+          <div className="lp-hero-text">
+            <div style={{
+              display: "inline-block", fontSize: 12, fontWeight: 600, color: "#0d7c5f",
+              background: "#e6f5f0", padding: "6px 14px", borderRadius: 99, marginBottom: 24,
+              letterSpacing: "0.04em", textTransform: "uppercase",
+            }}>
+              The bank bonus system
             </div>
-          ))}
+            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
+              Turn your paycheck into
+              <br />
+              <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
+            </h1>
+            <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 480 }}>
+              Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
+            </p>
+            <div className="lp-cta-buttons">
+              <a href="#signup" style={{
+                fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                padding: "16px 36px", borderRadius: 10, textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
+              }}>See how much you can earn</a>
+              <a href="#how-it-works" style={{
+                fontSize: 16, fontWeight: 500, color: "#666",
+                padding: "16px 28px", borderRadius: 10, textDecoration: "none",
+                border: "1px solid #ddd",
+              }}>See how it works</a>
+            </div>
+            <div className="lp-stats">
+              {[
+                { value: "$3,000+", label: "potential first year" },
+                { value: "15 min", label: "setup time" },
+                { value: "Low effort", label: "uses your existing paycheck" },
+              ].map((s, i) => (
+                <div key={i}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111" }}>{s.value}</div>
+                  <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="lp-hero-photo">
+            <Image
+              src="/hero-photo.jpg"
+              alt="Stacks OS founder holding bank bonus statement"
+              width={840}
+              height={473}
+              style={{ width: "100%", height: "auto", display: "block" }}
+              priority
+            />
+          </div>
         </div>
       </section>
 
