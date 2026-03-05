@@ -310,15 +310,31 @@ export default function OnboardingPage() {
                     </button>
                   </div>
 
-                  <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
-                    Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
-                  </div>
-                  <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
-                    That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return.</strong>
-                  </div>
-                  <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                    $50 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
-                  </div>
+                  {selectedPlan === "annual" ? (
+                    <>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
+                        $50 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
+                      </div>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
+                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return.</strong>
+                      </div>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
+                        Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
+                        $5/mo unlocks ~<strong style={{ color: "#111" }}>${Math.round(yearTotal / 12).toLocaleString()}/month</strong> in bonuses.
+                      </div>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
+                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 60)}x return.</strong>
+                      </div>
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
+                        Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
+                      </div>
+                    </>
+                  )}
 
                   <button onClick={handleCheckout} disabled={checkoutLoading}
                     style={{
