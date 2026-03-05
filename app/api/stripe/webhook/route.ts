@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
         }
         break
       }
+      case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
         const subscription = event.data.object as any
