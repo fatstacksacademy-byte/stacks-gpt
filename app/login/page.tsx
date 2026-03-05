@@ -42,10 +42,18 @@ export default function LoginPage() {
       minHeight: "100vh", background: "#fafafa", display: "flex",
       fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif",
     }}>
+      <style>{`
+        .login-left { display: flex; }
+        .login-right { width: 480px; padding: 40px 56px; }
+        @media (max-width: 768px) {
+          .login-left { display: none; }
+          .login-right { width: 100%; padding: 40px 24px; border-left: none !important; }
+        }
+      `}</style>
       {/* Left — value prop */}
-      <div style={{
+      <div className="login-left" style={{
         flex: 1, background: "linear-gradient(135deg, #0d7c5f 0%, #065f46 100%)",
-        display: "flex", flexDirection: "column", justifyContent: "center",
+        flexDirection: "column", justifyContent: "center",
         padding: "60px 56px", color: "#fff", minHeight: "100vh",
       }}>
         <div style={{ maxWidth: 480 }}>
@@ -65,9 +73,9 @@ export default function LoginPage() {
       </div>
 
       {/* Right — sign in form */}
-      <div style={{
-        width: 480, display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "40px 56px", background: "#fff", borderLeft: "1px solid #e8e8e8",
+      <div className="login-right" style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "#fff", borderLeft: "1px solid #e8e8e8",
       }}>
         <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 360 }}>
           <div style={{ marginBottom: 28 }}>

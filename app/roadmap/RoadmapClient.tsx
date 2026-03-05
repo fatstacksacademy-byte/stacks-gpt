@@ -449,27 +449,37 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   return (
     <div style={{ minHeight: "100vh", background: "#fafafa", color: "#1a1a1a", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+      <style>{`
+        .rm-topbar { padding: 14px 32px; }
+        .rm-topbar-email { font-size: 12px; color: #bbb; }
+        .rm-content { padding: 28px 32px 80px; }
+        @media (max-width: 768px) {
+          .rm-topbar { padding: 12px 16px; }
+          .rm-topbar-email { display: none; }
+          .rm-content { padding: 16px 16px 80px; }
+        }
+      `}</style>
       {/* Top Bar */}
       {!isOnboarding && (
-        <div style={{ borderBottom: "1px solid #e8e8e8", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
+        <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
           <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
           {onboardingStep === "done" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 12, color: "#bbb" }}>{userEmail}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <span className="rm-topbar-email">{userEmail}</span>
               <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
               <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
               <button onClick={async () => {
                 const res = await fetch("/api/stripe/portal", { method: "POST" })
                 const data = await res.json()
                 if (data.url) window.location.href = data.url
-              }} style={topBtn}>Manage subscription</button>
+              }} style={topBtn}>Subscription</button>
               <button onClick={handleLogout} style={topBtn}>Log out</button>
             </div>
           )}
         </div>
       )}
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isOnboarding ? "0" : "28px 32px 80px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }} className={isOnboarding ? "" : "rm-content"}>
 
         {/* Settings Panel */}
         {showSettings && onboardingStep === "done" && (
