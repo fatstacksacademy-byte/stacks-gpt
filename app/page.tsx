@@ -219,7 +219,7 @@ export default function LandingPage() {
           {[
             { label: "Profitability", desc: "Bonuses are ranked by net payout after deposit requirements, holding periods, and fees. The highest-value opportunities come first." },
             { label: "Eligibility", desc: "Each bonus is matched to your paycheck amount and frequency. Offers you can't qualify for don't show up in your plan." },
-            { label: "Sequencing", desc: "Cooldown periods and ChexSystems considerations are factored in so your next bonus is always ready to start when the current one finishes." },
+            { label: "Sequencing", desc: "Cooldown periods are factored in so your next bonus is always ready to start when the current one finishes." },
           ].map((item, i) => (
             <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div style={{ width: 28, height: 28, borderRadius: 8, background: "#e6f5f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
