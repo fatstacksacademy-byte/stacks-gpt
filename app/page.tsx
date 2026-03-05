@@ -52,6 +52,8 @@ export default function LandingPage() {
         .lp-hero-photo { flex-shrink: 0; width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
         .lp-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
         .lp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .lp-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .lp-roadmap-list { display: flex; flex-direction: column; gap: 0; max-width: 360px; margin: 0 auto; }
         .lp-pricing-row { display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
         .lp-pricing-card { width: 340px; flex-shrink: 0; }
         .lp-signup-card { width: 380px; flex-shrink: 0; }
@@ -76,6 +78,7 @@ export default function LandingPage() {
           .lp-hero-photo { width: 100%; max-width: 420px; }
           .lp-grid-3 { grid-template-columns: 1fr; }
           .lp-grid-2 { grid-template-columns: 1fr; }
+          .lp-compare { grid-template-columns: 1fr; }
           .lp-pricing-row { flex-direction: column; align-items: center; gap: 20px; }
           .lp-pricing-card { width: 100%; max-width: 420px; }
           .lp-signup-card { width: 100%; max-width: 420px; }
@@ -108,16 +111,17 @@ export default function LandingPage() {
             }}>
               The bank bonus system
             </div>
-            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 12px" }}>
+            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
               Turn your paycheck into
               <br />
               <span style={{ color: "#0d7c5f" }}>$3,000+ per year</span>
+              <br />
+              <span style={{ fontSize: "0.6em", color: "#aaa", fontWeight: 600, letterSpacing: "-0.01em" }}>with bank bonus routing</span>
             </h1>
-            <p style={{ color: "#aaa", fontSize: 15, lineHeight: 1.4, margin: "0 0 16px" }}>
-              by routing your direct deposit through bank bonuses
-            </p>
             <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 480 }}>
-              Banks pay cash bonuses when you switch direct deposit. Stacks OS tells you which bank bonus to do next and tracks your progress.
+              Banks pay cash bonuses when you switch your direct deposit.
+              <br />
+              Stacks OS shows you which bonuses to do next and tracks your progress.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
@@ -165,9 +169,9 @@ export default function LandingPage() {
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No gimmicks. Just a system.</p>
         <div className="lp-grid-3">
           {[
-            { step: "01", title: "Open the account", desc: "We match you with the highest-value bonus based on your paycheck. Click the link, open the account in minutes." },
-            { step: "02", title: "Route your deposit", desc: "Point your direct deposit to the new account. Meet the deposit requirement with your regular paycheck — no extra money needed." },
-            { step: "03", title: "Collect bonuses and repeat", desc: "Once a bonus posts, move to the next opportunity. Advanced users can run multiple bonuses at once." },
+            { step: "01", title: "Open the account", desc: "Stacks shows you the best bonus for your paycheck. Click the link and open the account — takes about 10 minutes." },
+            { step: "02", title: "Route your direct deposit", desc: "Update your direct deposit to the new account. Your regular paycheck handles the requirement — no extra money needed." },
+            { step: "03", title: "Collect your bonus. Repeat.", desc: "Once a bonus posts, move to the next bank. Stacks tracks your progress and keeps the queue updated." },
           ].map((item, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "32px 28px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 32, fontWeight: 800, color: "#e0e0e0", marginBottom: 16 }}>{item.step}</div>
@@ -180,17 +184,18 @@ export default function LandingPage() {
 
       {/* ── WHAT YOU GET ── */}
       <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 48px" }}>
-          Everything you need to stack bonuses
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
+          Everything handled in one place
         </h2>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
         <div className="lp-grid-2">
           {[
-            { title: "Personalized bonus queue", desc: "Ranked by your paycheck amount, pay frequency, and eligibility. Always know what's next." },
-            { title: "Step-by-step checklists", desc: "Each bonus is a simple checklist. Check off steps as you go. No guesswork." },
-            { title: "Deposit tracking", desc: "Log your deposits and see exactly how much you've contributed toward each requirement." },
-            { title: "12-month projection", desc: "See how much you'll earn this year if you follow the plan. Updated as you complete bonuses." },
-            { title: "Cooldown tracking", desc: "We remember when you earned each bonus so you know exactly when you're eligible again." },
-            { title: "Open accounts tracker", desc: "See every account you currently have open, what's pending, and when you can close safely." },
+            { title: "Bonus research done for you", desc: "Bank promotions change constantly. Stacks keeps track of current offers so you don't have to check blogs and forums." },
+            { title: "Never miss a requirement", desc: "Track deposit amounts and deadlines so bonuses don't slip through the cracks." },
+            { title: "Step-by-step checklist for every bonus", desc: "Each bonus is broken into simple steps. Check them off as you go. Always know what to do next." },
+            { title: "Know which bonus to do next", desc: "Stacks builds a personalized sequence based on your paycheck. No guessing which bank to try." },
+            { title: "One dashboard for everything", desc: "See what's in progress, what's next, and what's cooling down — all in one place." },
+            { title: "12-month earnings projection", desc: "See your projected bonus earnings before you even start. Updated as you complete bonuses." },
           ].map((f, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 12, padding: "24px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{f.title}</div>
@@ -263,6 +268,80 @@ export default function LandingPage() {
             <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>{faq.a}</div>
           </div>
         ))}
+      </section>
+
+      {/* ── WHY PEOPLE STOP ── */}
+      <section className="lp-section" style={{ maxWidth: 900, margin: "0 auto" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+          Why most people stop after 1–2 bank bonuses
+        </h2>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 40px" }}>The bonuses are real. The tracking becomes the problem.</p>
+        <div className="lp-compare" style={{ gap: 20 }}>
+          <div style={{ background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 14, padding: "28px 24px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Doing it manually</div>
+            {[
+              "Checking blogs and Reddit for new bonuses",
+              "Trying to remember deposit requirements and deadlines",
+              "Losing track of which account is next",
+              "Forgetting when bonuses post",
+              "Running out of bonuses to do",
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
+                <span style={{ color: "#dc2626", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✕</span>
+                <span style={{ fontSize: 14, color: "#555", lineHeight: 1.5 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 14, padding: "28px 24px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Using Stacks OS</div>
+            {[
+              "Current bonuses organized in one place",
+              "Clear checklist for every bonus",
+              "Dashboard shows what's in progress and what's next",
+              "Track deposits and deadlines automatically",
+              "A personalized roadmap that keeps bonuses going",
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
+                <span style={{ color: "#0d7c5f", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
+                <span style={{ fontSize: 14, color: "#555", lineHeight: 1.5 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── EXAMPLE ROADMAP ── */}
+      <section className="lp-section" style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+          Example bonus roadmap
+        </h2>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 36px" }}>A typical sequence for someone with a $1,500 biweekly paycheck.</p>
+        <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, overflow: "hidden" }}>
+          {[
+            { bank: "Chase", amount: "$400" },
+            { bank: "Wells Fargo", amount: "$400" },
+            { bank: "U.S. Bank", amount: "$450" },
+            { bank: "Varo", amount: "$100" },
+            { bank: "Affinity Federal Credit Union", amount: "$100" },
+          ].map((item, i, arr) => (
+            <div key={i} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "16px 24px",
+              borderBottom: i < arr.length - 1 ? "1px solid #f0f0f0" : "none",
+              background: i === 0 ? "#f0faf5" : "#fff",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "#bbb", fontWeight: 700, width: 18 }}>{i + 1}</span>
+                <span style={{ fontSize: 15, fontWeight: i === 0 ? 700 : 500, color: "#111" }}>{item.bank}</span>
+                {i === 0 && <span style={{ fontSize: 11, fontWeight: 600, color: "#0d7c5f", background: "#e6f5f0", padding: "2px 8px", borderRadius: 99 }}>Start here</span>}
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{item.amount}</span>
+            </div>
+          ))}
+          <div style={{ padding: "16px 24px", background: "#fafafa", borderTop: "1px solid #f0f0f0" }}>
+            <span style={{ fontSize: 13, color: "#999" }}>12 bonuses available in a typical yearly plan</span>
+          </div>
+        </div>
       </section>
 
       {/* ── PRICING ── */}

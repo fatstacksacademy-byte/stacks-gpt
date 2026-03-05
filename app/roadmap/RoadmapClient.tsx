@@ -479,6 +479,18 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         </div>
       )}
 
+      {/* System status strip */}
+      {!isOnboarding && onboardingStep === "done" && (
+        <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>● Live</span>
+            <span style={{ fontSize: 12, color: "#555" }}>Tracking {allBonuses.length} nationwide bonus offers</span>
+            <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+            <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
+          </div>
+        </div>
+      )}
+
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className={isOnboarding ? "" : "rm-content"}>
 
         {/* Settings Panel */}
@@ -703,6 +715,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
+                <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{allClosed.length + closedCustom.length} bonus{allClosed.length + closedCustom.length !== 1 ? "es" : ""} completed</div>
               </div>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
@@ -712,9 +725,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Projected 12 months</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${expectedThisYear.toLocaleString()}</div>
                 <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
-                  {showProjection ? "Hide roadmap" : "View bonus roadmap"}
+                  {showProjection ? "Hide plan" : "View full bonus plan"}
                 </button>
-                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Plan updates as offers change</div>
+                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Based on {available.length + inProgress.length} available bonuses · Plan updates as offers change</div>
               </div>
             </div>
 
@@ -1047,7 +1060,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
                                   style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                  Close account
+                                  Mark account closed
                                 </button>
                                 <button onClick={async () => {
                                   const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
@@ -1058,7 +1071,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                   Keep open
                                 </button>
                                 <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
-                                  Closing the account now allows you to earn this bonus again in the future.
+                                  Closing the account starts your cooldown period for this bonus.
                                 </div>
                               </div>
                             </div>
@@ -1067,7 +1080,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <div style={{ padding: "14px 24px 0" }}>
                               <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
                                 style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
-                                Close account
+                                Mark as closed
                               </button>
                             </div>
                           )}
@@ -1198,7 +1211,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
                               {isActive
                                 ? (mDetail ? `Next: ${mDetail.nextStep}` : "In progress")
-                                : `Available in ~${weeksUntil} weeks`
+                                : `Eligible in ~${weeksUntil} weeks`
                               }
                             </div>
                           </div>

@@ -42,7 +42,6 @@ export default function OnboardingPage() {
   const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
-  const [showAll, setShowAll] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">(initialPlan)
 
   function handleFrequencySelect(f: PayFrequency) {
@@ -90,7 +89,7 @@ export default function OnboardingPage() {
 
   const paycheckAmt = parseInt(paycheck.replace(/\D/g, "")) || 0
   const firstBonus = bonuses[0] ?? null
-  const visibleBonuses = showAll ? bonuses : bonuses.slice(0, 5)
+
 
   return (
     <div style={{
@@ -195,12 +194,12 @@ export default function OnboardingPage() {
               <>
                 <div style={{ textAlign: "center", marginBottom: 28 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
-                    Your projected bank bonus earnings
+                    Projected bank bonus earnings
                   </div>
                   <h1 style={{ fontSize: 40, fontWeight: 800, color: "#0d7c5f", margin: "0 0 4px", letterSpacing: "-0.02em", lineHeight: 1 }}>
                     ${yearTotal.toLocaleString()}
                   </h1>
-                  <p style={{ fontSize: 16, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>this year</p>
+                  <p style={{ fontSize: 16, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>in the next 12 months</p>
                   <p style={{ fontSize: 14, color: "#999", margin: "0 0 4px" }}>
                     Based on a ${paycheckAmt.toLocaleString()} {FREQ_LABEL[frequency]} paycheck
                   </p>
@@ -225,9 +224,9 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                {/* Remaining bonuses */}
+                {/* Next 2 bonuses */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
-                  {visibleBonuses.slice(1).map((b, i) => (
+                  {bonuses.slice(1, 3).map((b, i) => (
                     <div key={i} style={{
                       background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10,
                       padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -241,11 +240,39 @@ export default function OnboardingPage() {
                   ))}
                 </div>
 
-                {bonuses.length > 5 && (
-                  <button onClick={() => setShowAll(s => !s)}
-                    style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 16 }}>
-                    {showAll ? "Show less" : `+ ${bonuses.length - 5} more bonuses available`}
-                  </button>
+                {/* Total count teaser */}
+                {bonuses.length > 3 && (
+                  <div style={{
+                    background: "#f8f8f8", border: "1px solid #e8e8e8", borderRadius: 10,
+                    padding: "14px 16px", marginBottom: 16, textAlign: "center",
+                  }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 2 }}>
+                      {bonuses.length} bonuses available in your plan
+                    </div>
+                    <div style={{ fontSize: 12, color: "#999", marginBottom: 4 }}>
+                      Unlock the full roadmap to see the complete sequence.
+                    </div>
+                    <div style={{ fontSize: 11, color: "#bbb" }}>Tracking active nationwide bonus offers</div>
+                  </div>
+                )}
+
+                {/* ── First bonus anchor ── */}
+                {firstBonus && (
+                  <div style={{
+                    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12,
+                    padding: "16px 20px", marginBottom: 16,
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Your first bonus</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
+                        <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>
+                          Estimated completion: ~{Math.ceil(firstBonus.payout_week * 7 / 30)} weeks
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
+                    </div>
+                  </div>
                 )}
 
                 {/* ── Paywall CTA ── */}
@@ -279,6 +306,9 @@ export default function OnboardingPage() {
                     </button>
                   </div>
 
+                  <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
+                    Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
+                  </div>
                   <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
                     That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return.</strong>
                   </div>
