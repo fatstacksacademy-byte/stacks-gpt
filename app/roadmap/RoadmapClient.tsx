@@ -9,7 +9,7 @@ import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../lib/sequencer"
-import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, CustomBonus } from "../../lib/customBonuses"
+import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
@@ -352,6 +352,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await loadRecords()
   }
 
+  async function handleCustomStepToggle(id: string, currentStep: string | null) {
+    const newStep = currentStep === "requirements_met" ? null : "requirements_met"
+    await updateCustomBonus(id, { current_step: newStep })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: newStep } : c))
+  }
+
   const activeCustom = customBonuses.filter(c => !c.closed_date)
   const closedCustom = customBonuses.filter(c => c.closed_date)
   const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
@@ -423,8 +429,35 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
+  const today730End = addDays(todayStr(), 730)
   const yearBonuses365 = projected365.filter(p => new Date(p.start_date) <= today365End)
+
+  // Project churnable closed custom bonuses into the future (up to 2 years)
+  const customProjectedBonuses: ProjectedBonus[] = []
+  for (const c of closedCustom) {
+    if (!c.cooldown_months || !c.closed_date) continue
+    const durationDays = Math.max(30, Math.round(
+      (new Date(c.closed_date + "T00:00:00").getTime() - new Date(c.opened_date + "T00:00:00").getTime()) / 86400000
+    ))
+    let nextStart = new Date(c.closed_date + "T00:00:00")
+    nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
+    while (nextStart <= today730End) {
+      const nextPayout = new Date(nextStart.getTime() + (durationDays + 30) * 86400000)
+      customProjectedBonuses.push({
+        bank_name: c.bank_name,
+        bonus_amount: c.bonus_amount,
+        start_date: fmtDate(nextStart),
+        payout_date: fmtDate(nextPayout),
+        weeks: Math.ceil(durationDays / 7),
+      })
+      nextStart = new Date(nextStart.getTime())
+      nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
+    }
+  }
+
+  const customYear1Projected = customProjectedBonuses.filter(p => new Date(p.start_date) <= today365End)
   const expectedThisYear = yearBonuses365.reduce((sum, p) => sum + p.bonus_amount, 0)
+    + customYear1Projected.reduce((sum, p) => sum + p.bonus_amount, 0)
 
   // Active bonuses that are actually being worked on (not kept open)
   const workingBonuses = inProgress.filter(({ bonus: b }) => !keptOpen.includes(b.id))
@@ -719,8 +752,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               const projected = getProjectedBonuses(projectionResult)
               const year1End = addDays(todayStr(), 365)
               const year2End = addDays(todayStr(), 730)
-              const year1Bonuses = projected.filter(p => new Date(p.start_date) <= year1End)
-              const year2Bonuses = projected.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End)
+              const year1Bonuses = [
+                ...projected.filter(p => new Date(p.start_date) <= year1End),
+                ...customProjectedBonuses.filter(p => new Date(p.start_date) <= year1End),
+              ].sort((a, b) => b.bonus_amount / b.weeks - a.bonus_amount / a.weeks)
+              const year2Bonuses = [
+                ...projected.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End),
+                ...customProjectedBonuses.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End),
+              ].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
               const activeBonuses = projectionTab === "year1" ? year1Bonuses : year2Bonuses
               return (
                 <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
@@ -928,13 +967,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 if (!aPosted && bPosted) return -1
                 return 0
               })
-              if (activeBonuses.length === 0) return null
+              if (activeBonuses.length === 0 && activeCustom.length === 0) return null
 
               return (
                 <div style={{ marginBottom: 20 }}>
-                  {activeBonuses.length > 0 && (
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
-                  )}
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {activeBonuses.map(({ bonus: b, churnStatus }) => {
                       const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
@@ -1279,6 +1316,77 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         </div>
                       )
                     })}
+
+                    {/* ── Active custom bonuses ── */}
+                    {activeCustom.map(c => {
+                      const isDone = c.current_step === "requirements_met"
+                      return (
+                        <div key={c.id} style={{
+                          background: "#fff",
+                          border: isDone ? "1px solid #e0e0e0" : "2px solid #2563eb",
+                          borderRadius: 14, overflow: "hidden",
+                          boxShadow: isDone ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
+                        }}>
+                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{c.bank_name}</div>
+                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                            </div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                          </div>
+
+                          {/* Checklist */}
+                          <div style={{ padding: "16px 24px 0" }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(c.bonus_amount)}</div>
+                            <div
+                              style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: isDone ? "default" : "pointer", borderRadius: 6 }}
+                              onClick={() => !isDone && handleCustomStepToggle(c.id, c.current_step)}>
+                              <div style={{
+                                width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                border: isDone ? "none" : "2px solid #2563eb",
+                                background: isDone ? "#0d7c5f" : "transparent",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                              }}>
+                                {isDone && (
+                                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                    <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span style={{ fontSize: 14, color: isDone ? "#888" : "#111", fontWeight: isDone ? 400 : 600, textDecoration: isDone ? "line-through" : "none" }}>
+                                Requirements met
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Info */}
+                          <div style={{ padding: "10px 24px 0", fontSize: 12, color: "#999" }}>
+                            Opened {fmtShortDate(c.opened_date)}
+                            {c.cooldown_months ? ` · Churnable every ${c.cooldown_months}mo` : " · One-time"}
+                            {c.notes ? ` · ${c.notes}` : ""}
+                          </div>
+
+                          {/* Actions */}
+                          {isDone && (
+                            <div style={{ padding: "16px 24px 0" }}>
+                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                                <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                  Mark account closed
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end" }}>
+                            <button onClick={() => handleDeleteCustom(c.id)}
+                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )
@@ -1481,36 +1589,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </details>
             )}
 
-            {/* ── Custom Bonuses ── */}
-            {(activeCustom.length > 0 || closedCustom.length > 0) && (
+            {/* ── Custom Bonuses (closed history only) ── */}
+            {closedCustom.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Your custom bonuses</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Custom bonus history</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {activeCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
-                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
-                          </div>
-                          <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Opened {fmtShortDate(c.opened_date)}{c.notes ? ` · ${c.notes}` : ""}</div>
-                          <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 2 }}>
-                            <span style={{ fontSize: 11, color: "#2563eb" }}>In progress</span>
-                            {c.cooldown_months && <span style={{ fontSize: 10, color: "#d97706" }}>· Churnable every {c.cooldown_months}mo</span>}
-                            {!c.cooldown_months && <span style={{ fontSize: 10, color: "#bbb" }}>· One-time</span>}
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
-                      </div>
-                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                        <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                          style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close account</button>
-                        <button onClick={() => handleDeleteCustom(c.id)}
-                          style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
-                      </div>
-                    </div>
-                  ))}
                   {closedCustom.map(c => (
                     <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: 0.7 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
