@@ -152,12 +152,14 @@ export function runSequencer({
   paycheckAmount,
   completedRecords = [],
   incomeSources,
+  skippedBonusIds = [],
 }: {
   slots: number
   payFrequency: string
   paycheckAmount: number
   completedRecords?: CompletedBonus[]
   incomeSources?: IncomeSource[]
+  skippedBonusIds?: string[]
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -178,6 +180,7 @@ export function runSequencer({
   const pool: EvalBonus[] = []
 
   for (const b of allBonuses) {
+    if (skippedBonusIds.includes(b.id)) { skipped.push({ bank_name: b.bank_name, reason: "Skipped by user" }); continue }
     const result = evaluate(b, sources)
     if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
     const cooldownMonths = (b as any).cooldown_months ?? null

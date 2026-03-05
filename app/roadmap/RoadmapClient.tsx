@@ -412,14 +412,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt])
+  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt])
+  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
