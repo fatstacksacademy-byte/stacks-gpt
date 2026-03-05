@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { runSequencer, SequencedBonus } from "@/lib/sequencer"
+import { createClient } from "@/lib/supabase/client"
 
 type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -35,6 +36,7 @@ function fmtDate(d: Date) {
 export default function OnboardingPage() {
   const searchParams = useSearchParams()
   const initialPlan = (searchParams.get("plan") ?? "annual") as "monthly" | "annual"
+  const supabase = createClient()
 
   const [step, setStep] = useState<Step>("frequency")
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
@@ -43,6 +45,18 @@ export default function OnboardingPage() {
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">(initialPlan)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setIsLoggedIn(true)
+    })
+  }, [])
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    window.location.href = "/"
+  }
 
   function handleFrequencySelect(f: PayFrequency) {
     setFrequency(f)
@@ -98,6 +112,16 @@ export default function OnboardingPage() {
       display: "flex", flexDirection: "column", alignItems: "center",
       justifyContent: "center", padding: "40px 24px",
     }}>
+      {/* Top bar */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px" }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: "#111", letterSpacing: "-0.01em" }}>Stacks OS</span>
+        {isLoggedIn && (
+          <button onClick={handleLogout} style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer" }}>
+            Log out
+          </button>
+        )}
+      </div>
+
       {/* Progress dots */}
       <div style={{ display: "flex", gap: 6, marginBottom: 40 }}>
         {(["frequency", "paycheck", "projection"] as Step[]).map((s) => {
