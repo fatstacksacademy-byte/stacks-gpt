@@ -61,8 +61,9 @@ export async function updateSubscriptionStatus(
   subscriptionId?: string,
   currentPeriodEnd?: string,
 ) {
+  console.log("updateSubscriptionStatus called:", { stripeCustomerId, status, subscriptionId })
   const supabase = createServiceClient()
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from("subscriptions")
     .update({
       status,
@@ -71,6 +72,8 @@ export async function updateSubscriptionStatus(
       updated_at: new Date().toISOString(),
     })
     .eq("stripe_customer_id", stripeCustomerId)
+    .select()
 
+  console.log("updateSubscriptionStatus result:", JSON.stringify({ error, data }))
   if (error) console.error("updateSubscriptionStatus error:", error)
 }
