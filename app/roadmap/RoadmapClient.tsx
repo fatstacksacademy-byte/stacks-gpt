@@ -423,7 +423,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
-  const yearBonuses365 = projected365.filter(p => new Date(p.payout_date) <= today365End)
+  const yearBonuses365 = projected365.filter(p => new Date(p.start_date) <= today365End)
   const expectedThisYear = yearBonuses365.reduce((sum, p) => sum + p.bonus_amount, 0)
 
   // Active bonuses that are actually being worked on (not kept open)
@@ -764,18 +764,61 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {activeBonuses.length === 0 ? (
                       <div style={{ fontSize: 13, color: "#bbb", textAlign: "center", padding: "16px 0" }}>No bonuses projected for this period.</div>
-                    ) : activeBonuses.map((p, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{i + 1}</span>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{p.bank_name}</div>
-                            <div style={{ fontSize: 11, color: "#999" }}>Start {p.start_date} → Payout ~{p.payout_date}</div>
+                    ) : (() => {
+                      // Build display list with gap cards injected between bonuses
+                      type DisplayItem =
+                        | { type: "bonus"; bonus: typeof activeBonuses[0]; idx: number }
+                        | { type: "gap"; from: string; to: string }
+                      const items: DisplayItem[] = []
+                      const sorted = [...activeBonuses].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+                      let bonusIdx = 0
+
+                      if (projectionTab === "year2") {
+                        // Check gap from year1End to first year2 bonus
+                        if (sorted.length > 0) {
+                          const firstStart = new Date(sorted[0].start_date)
+                          const gapDays = Math.round((firstStart.getTime() - year1End.getTime()) / 86400000)
+                          if (gapDays > 14) {
+                            items.push({ type: "gap", from: fmtDate(year1End), to: sorted[0].start_date })
+                          }
+                        }
+                      }
+
+                      for (let i = 0; i < sorted.length; i++) {
+                        if (i > 0) {
+                          const prevPayout = new Date(sorted[i - 1].payout_date)
+                          const nextStart = new Date(sorted[i].start_date)
+                          const gapDays = Math.round((nextStart.getTime() - prevPayout.getTime()) / 86400000)
+                          if (gapDays > 14) {
+                            items.push({ type: "gap", from: sorted[i - 1].payout_date, to: sorted[i].start_date })
+                          }
+                        }
+                        items.push({ type: "bonus", bonus: sorted[i], idx: bonusIdx++ })
+                      }
+
+                      return items.map((item, i) =>
+                        item.type === "gap" ? (
+                          <div key={`gap-${i}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fafafa", border: "1px dashed #e0e0e0", borderRadius: 8 }}>
+                            <span style={{ fontSize: 11, color: "#ccc", fontWeight: 700, width: 20 }}>—</span>
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: "#bbb" }}>No bonus available yet</div>
+                              <div style={{ fontSize: 11, color: "#ccc" }}>{item.from} → {item.to}</div>
+                            </div>
                           </div>
-                        </div>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
-                      </div>
-                    ))}
+                        ) : (
+                          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{item.idx + 1}</span>
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{item.bonus.bank_name}</div>
+                                <div style={{ fontSize: 11, color: "#999" }}>Start {item.bonus.start_date} → Payout ~{item.bonus.payout_date}</div>
+                              </div>
+                            </div>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(item.bonus.bonus_amount)}</span>
+                          </div>
+                        )
+                      )
+                    })()}
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
