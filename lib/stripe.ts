@@ -1,5 +1,6 @@
 import Stripe from "stripe"
 import { createClient } from "./supabase/server"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
 if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is required")
 
@@ -7,16 +8,18 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2026-02-25.clover",
 })
 
-// Price IDs — set these in your .env after creating products in Stripe Dashboard
 export const PRICES = {
-  monthly: process.env.STRIPE_PRICE_MONTHLY!,  // $5/mo
-  annual: process.env.STRIPE_PRICE_ANNUAL!,     // $50/yr
+  monthly: process.env.STRIPE_PRICE_MONTHLY!,
+  annual: process.env.STRIPE_PRICE_ANNUAL!,
 }
 
-/**
- * Get or create a Stripe customer for a Supabase user.
- * Stores the stripe_customer_id in a `subscriptions` table.
- */
+function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
 export async function getOrCreateCustomer(userId: string, email: string): Promise<string> {
   const supabase = await createClient()
   const { data } = await supabase
@@ -27,13 +30,11 @@ export async function getOrCreateCustomer(userId: string, email: string): Promis
 
   if (data?.stripe_customer_id) return data.stripe_customer_id
 
-  // Create Stripe customer
   const customer = await stripe.customers.create({
     email,
     metadata: { supabase_user_id: userId },
   })
 
-  // Upsert into subscriptions table
   await supabase.from("subscriptions").upsert({
     user_id: userId,
     stripe_customer_id: customer.id,
@@ -43,9 +44,6 @@ export async function getOrCreateCustomer(userId: string, email: string): Promis
   return customer.id
 }
 
-/**
- * Check if a user has an active subscription.
- */
 export async function hasActiveSubscription(userId: string): Promise<boolean> {
   const supabase = await createClient()
   const { data } = await supabase
@@ -57,17 +55,14 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
   return data?.status === "active" || data?.status === "trialing"
 }
 
-/**
- * Update subscription status from Stripe webhook event.
- */
 export async function updateSubscriptionStatus(
   stripeCustomerId: string,
   status: string,
   subscriptionId?: string,
   currentPeriodEnd?: string,
 ) {
-  const supabase = await createClient()
-  await supabase
+  const supabase = createServiceClient()
+  const { error } = await supabase
     .from("subscriptions")
     .update({
       status,
@@ -76,4 +71,6 @@ export async function updateSubscriptionStatus(
       updated_at: new Date().toISOString(),
     })
     .eq("stripe_customer_id", stripeCustomerId)
+
+  if (error) console.error("updateSubscriptionStatus error:", error)
 }
