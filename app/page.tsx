@@ -291,6 +291,7 @@ export default function LandingPage() {
           { q: "Will opening these accounts hurt my credit?", a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead." },
           { q: "How much time does this take?", a: "Opening an account takes 10–15 minutes. After that, you're just checking off steps as they happen. The system tells you when to act." },
           { q: "What if a bonus offer changes?", a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time." },
+          { q: "Do taxes or fees reduce these bonuses?", a: "Most bank bonuses are treated as taxable income and may be reported on a 1099-INT or 1099-MISC by the bank. Some accounts may also have monthly fees if requirements are not met. Stacks OS highlights common fee-avoidance options for each bonus and helps you track the requirements needed to earn the reward. Always verify the terms directly with the bank before opening an account." },
         ].map((faq, i) => (
           <div key={i} style={{ borderBottom: "1px solid #eee", padding: "20px 0" }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{faq.q}</div>
@@ -368,7 +369,7 @@ export default function LandingPage() {
             </div>
           ))}
           <div style={{ padding: "16px 24px", background: "#fafafa", borderTop: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 2 }}>12 bonuses available in a typical yearly plan</div>
+            <div style={{ fontSize: 13, color: "#999", marginBottom: 2 }}>12+ bonuses available in a typical yearly plan</div>
             <div style={{ fontSize: 12, color: "#bbb" }}>Stacks OS tracks nationwide bonuses worth your time.</div>
           </div>
         </div>
