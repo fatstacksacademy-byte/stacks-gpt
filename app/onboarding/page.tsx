@@ -6,12 +6,19 @@ import { runSequencer, SequencedBonus } from "@/lib/sequencer"
 
 type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
-const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
-  { value: "weekly",      label: "Every week",     desc: "52 paychecks/year" },
-  { value: "biweekly",    label: "Every 2 weeks",  desc: "26 paychecks/year" },
-  { value: "semimonthly", label: "Twice a month",  desc: "24 paychecks/year" },
-  { value: "monthly",     label: "Once a month",   desc: "12 paychecks/year" },
+const FREQ_OPTIONS: { value: PayFrequency; label: string }[] = [
+  { value: "weekly",      label: "Every week" },
+  { value: "biweekly",    label: "Every 2 weeks" },
+  { value: "semimonthly", label: "Twice a month" },
+  { value: "monthly",     label: "Once a month" },
 ]
+
+const FREQ_LABEL: Record<PayFrequency, string> = {
+  weekly: "weekly",
+  biweekly: "biweekly",
+  semimonthly: "twice-monthly",
+  monthly: "monthly",
+}
 
 type Step = "frequency" | "paycheck" | "projection"
 
@@ -36,7 +43,6 @@ export default function OnboardingPage() {
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showAll, setShowAll] = useState(false)
-  // User can change plan on the paywall card
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">(initialPlan)
 
   function handleFrequencySelect(f: PayFrequency) {
@@ -117,9 +123,9 @@ export default function OnboardingPage() {
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 1 of 2</div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                Let's see how much you can earn this year.
+                Let's estimate your bonus earnings.
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>How often do you get your direct deposit?</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>How often do you get paid?</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {FREQ_OPTIONS.map(f => (
@@ -132,7 +138,6 @@ export default function OnboardingPage() {
                     transition: "border-color 0.15s",
                   }}>
                   <span style={{ fontSize: 16, fontWeight: 600, color: "#111" }}>{f.label}</span>
-                  <span style={{ fontSize: 13, color: "#bbb" }}>{f.desc}</span>
                 </button>
               ))}
             </div>
@@ -147,7 +152,7 @@ export default function OnboardingPage() {
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                 What's your take-home pay?
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Per paycheck, after taxes. A rough estimate is fine.</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Per paycheck after taxes. An estimate is fine.</p>
             </div>
             <div style={{ position: "relative", marginBottom: 24 }}>
               <span style={{
@@ -174,7 +179,7 @@ export default function OnboardingPage() {
                 cursor: paycheckAmt > 0 ? "pointer" : "not-allowed",
                 transition: "background 0.15s",
               }}>
-              Build my plan →
+              Show my projection →
             </button>
             <button onClick={() => setStep("frequency")}
               style={{ display: "block", margin: "14px auto 0", fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer" }}>
@@ -190,15 +195,17 @@ export default function OnboardingPage() {
               <>
                 <div style={{ textAlign: "center", marginBottom: 28 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
-                    Your personalized plan
+                    Your projected bank bonus earnings
                   </div>
-                  <h1 style={{ fontSize: 32, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                    You could earn{" "}
-                    <span style={{ color: "#0d7c5f" }}>${yearTotal.toLocaleString()}</span>
-                    {" "}this year
+                  <h1 style={{ fontSize: 40, fontWeight: 800, color: "#0d7c5f", margin: "0 0 4px", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                    ${yearTotal.toLocaleString()}
                   </h1>
-                  <p style={{ fontSize: 15, color: "#999", margin: 0 }}>
-                    Based on your ${paycheckAmt.toLocaleString()} {FREQ_OPTIONS.find(f => f.value === frequency)?.label.toLowerCase()} paycheck
+                  <p style={{ fontSize: 16, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>this year</p>
+                  <p style={{ fontSize: 14, color: "#999", margin: "0 0 4px" }}>
+                    Based on a ${paycheckAmt.toLocaleString()} {FREQ_LABEL[frequency]} paycheck
+                  </p>
+                  <p style={{ fontSize: 13, color: "#aaa", margin: 0 }}>
+                    Most first bonuses pay $300–$400.
                   </p>
                 </div>
 
@@ -237,7 +244,7 @@ export default function OnboardingPage() {
                 {bonuses.length > 5 && (
                   <button onClick={() => setShowAll(s => !s)}
                     style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 16 }}>
-                    {showAll ? "Show less" : `+ ${bonuses.length - 5} more bonuses`}
+                    {showAll ? "Show less" : `+ ${bonuses.length - 5} more bonuses available`}
                   </button>
                 )}
 
@@ -248,7 +255,7 @@ export default function OnboardingPage() {
                   boxShadow: "0 4px 20px rgba(13,124,95,0.08)",
                 }}>
                   {/* Plan toggle */}
-                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 20 }}>
+                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 16 }}>
                     <button onClick={() => setSelectedPlan("annual")} style={{
                       flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: 600, borderRadius: 6,
                       border: "none", cursor: "pointer",
@@ -272,8 +279,11 @@ export default function OnboardingPage() {
                     </button>
                   </div>
 
+                  <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
+                    That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return.</strong>
+                  </div>
                   <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                    That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return</strong> on the $50/yr plan — you earn ${yearTotal.toLocaleString()} for every $50 you spend.
+                    $50 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
                   </div>
 
                   <button onClick={handleCheckout} disabled={checkoutLoading}
@@ -283,7 +293,7 @@ export default function OnboardingPage() {
                       color: "#fff", border: "none", borderRadius: 10,
                       cursor: checkoutLoading ? "wait" : "pointer",
                     }}>
-                    {checkoutLoading ? "Loading…" : `Start earning — $${selectedPlan === "annual" ? "50/yr" : "5/mo"}`}
+                    {checkoutLoading ? "Loading…" : `Unlock my bonus plan — $${selectedPlan === "annual" ? "50/yr" : "5/mo"}`}
                   </button>
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}

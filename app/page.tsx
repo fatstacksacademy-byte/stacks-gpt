@@ -108,20 +108,23 @@ export default function LandingPage() {
             }}>
               The bank bonus system
             </div>
-            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
+            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 12px" }}>
               Turn your paycheck into
               <br />
-              <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
+              <span style={{ color: "#0d7c5f" }}>$3,000+ per year</span>
             </h1>
+            <p style={{ color: "#aaa", fontSize: 15, lineHeight: 1.4, margin: "0 0 16px" }}>
+              by routing your direct deposit through bank bonuses
+            </p>
             <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 480 }}>
-              Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
+              Banks pay cash bonuses when you switch direct deposit. Stacks OS tells you which bank bonus to do next and tracks your progress.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
                 fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
                 padding: "16px 36px", borderRadius: 10, textDecoration: "none",
                 boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
-              }}>See how much you can earn</a>
+              }}>Show my projection →</a>
               <a href="#how-it-works" style={{
                 fontSize: 16, fontWeight: 500, color: "#666",
                 padding: "16px 28px", borderRadius: 10, textDecoration: "none",
@@ -131,7 +134,7 @@ export default function LandingPage() {
             <div className="lp-stats">
               {[
                 { value: "$3,000+", label: "potential first year" },
-                { value: "15 min", label: "setup time" },
+                { value: "15 min", label: "to get started" },
                 { value: "Low effort", label: "uses your existing paycheck" },
               ].map((s, i) => (
                 <div key={i}>
@@ -164,7 +167,7 @@ export default function LandingPage() {
           {[
             { step: "01", title: "Open the account", desc: "We match you with the highest-value bonus based on your paycheck. Click the link, open the account in minutes." },
             { step: "02", title: "Route your deposit", desc: "Point your direct deposit to the new account. Meet the deposit requirement with your regular paycheck — no extra money needed." },
-            { step: "03", title: "Collect and repeat", desc: "Once a bonus posts, move on to the next opportunity. You can also run multiple bonuses at once if you want to accelerate your earnings." },
+            { step: "03", title: "Collect bonuses and repeat", desc: "Once a bonus posts, move to the next opportunity. Advanced users can run multiple bonuses at once." },
           ].map((item, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "32px 28px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 32, fontWeight: 800, color: "#e0e0e0", marginBottom: 16 }}>{item.step}</div>
@@ -249,7 +252,7 @@ export default function LandingPage() {
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
         {[
           { q: "Is this legal?", a: "Yes. Bank bonuses are promotional offers banks use to attract new customers. They want you to sign up." },
-          { q: "Do I need extra money?", a: "Not usually. Most bonuses only require that a deposit pass through the account. In many cases you can transfer the money back to your main bank after it arrives, as long as the bank's requirements are met." },
+          { q: "Do I need extra money?", a: "Not usually. In many cases, your deposit only needs to pass through the account. You can often transfer the money back to your main bank after it arrives, as long as the bank requirements are met." },
           { q: "Will this affect my credit score?", a: "Most checking account bonuses don't require a hard credit pull. We flag the ones that do so you can decide." },
           { q: "Will opening these accounts hurt my credit?", a: "Most bank bonuses involve opening checking or savings accounts and do not affect your credit score. Some banks may check your banking history through ChexSystems instead." },
           { q: "How much time does this take?", a: "Opening an account takes 10–15 minutes. After that, you're just checking off steps as they happen. The system tells you when to act." },
@@ -265,7 +268,7 @@ export default function LandingPage() {
       {/* ── PRICING ── */}
       <section id="pricing" className="lp-section" style={{ maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Pricing</h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Your first bonus easily covers the cost.</p>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Most first bonuses are $300–$400.</p>
 
         <div style={{
           background: "#fff", border: "2px solid #0d7c5f",
@@ -316,7 +319,7 @@ export default function LandingPage() {
           padding: "16px 40px", borderRadius: 10, textDecoration: "none", display: "inline-block",
           boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
         }}>
-          Show my projection →
+          See my projected earnings →
         </a>
       </section>
 

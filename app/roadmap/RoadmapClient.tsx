@@ -586,7 +586,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={{ textAlign: "center", maxWidth: 520 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Stacks OS</div>
               <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111", margin: "0 0 16px", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                Let's find you an extra $2,000+ this year
+                Let's find you an extra $3,000+ this year
               </h1>
               <p style={{ fontSize: 16, color: "#777", lineHeight: 1.6, margin: "0 0 12px" }}>
                 Banks pay you for moving your direct deposit. We'll tell you exactly where to send it next.
@@ -626,7 +626,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={onboardingCard}>
               <div style={stepIndicator}>Step 2 of 2</div>
               <h2 style={onboardingQ}>What's your take-home pay per paycheck?</h2>
-              <p style={onboardingHint}>After taxes. A rough estimate is fine.</p>
+              <p style={onboardingHint}>Per paycheck after taxes. An estimate is fine.</p>
               <div style={{ position: "relative", marginTop: 24, maxWidth: 240 }}>
                 <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 22, fontWeight: 600 }}>$</span>
                 <input
@@ -701,7 +701,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
+                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
               </div>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
@@ -712,8 +712,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Projected 12 months</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${expectedThisYear.toLocaleString()}</div>
                 <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
-                  {showProjection ? "Hide breakdown" : "View breakdown"}
+                  {showProjection ? "Hide roadmap" : "View bonus roadmap"}
                 </button>
+                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Plan updates as offers change</div>
               </div>
             </div>
 
@@ -724,8 +725,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               const yearBonuses = projected.filter(p => new Date(p.payout_date) <= endDate)
               return (
                 <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4 }}>
+                    Recommended order to maximize bonuses this year
+                  </div>
                   <div style={{ fontSize: 12, color: "#bbb", marginBottom: 10 }}>
-                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck
+                    Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck · {yearBonuses.length} opportunities
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {yearBonuses.map((p, i) => (
@@ -808,7 +812,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   </button>
                   <button onClick={() => handleSkip(hb.bonus.id)}
                     style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
-                    Skip
+                    Not now
                   </button>
                 </div>
                 {heroIdx === 0 && (
@@ -890,7 +894,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               {bestLink(b.source_links) && (
                                 <a href={bestLink(b.source_links)!} target="_blank" rel="noreferrer"
                                   style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
-                                  Offer link
+                                  View offer
                                 </a>
                               )}
                             </div>
@@ -1212,7 +1216,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         ) : (
                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                             <button onClick={() => handleSkip(b.id)}
-                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Skip</button>
+                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           </div>
                         )}
                       </div>
@@ -1237,7 +1241,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>Accounts open</div>
                     <button onClick={() => setShowAddOpenAccount(true)}
                       style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
-                      + Add account
+                      + Add existing account
                     </button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

@@ -109,10 +109,13 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
         ) : (
           <>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-              Subscribe to start earning
+              Unlock your bonus plan
             </h1>
-            <p style={{ fontSize: 15, color: "#888", lineHeight: 1.5, margin: "0 0 32px" }}>
-              Get access to your personalized bonus queue, step-by-step checklists, and earnings projections.
+            <p style={{ fontSize: 15, color: "#888", lineHeight: 1.5, margin: "0 0 8px" }}>
+              Your first bonus typically earns $300–$400. Stacks costs $50/year.
+            </p>
+            <p style={{ fontSize: 13, color: "#bbb", lineHeight: 1.5, margin: "0 0 28px" }}>
+              Your plan updates as banks change their promotions.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
@@ -155,7 +158,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
             )}
 
             <p style={{ fontSize: 12, color: "#bbb", lineHeight: 1.5, margin: "0 0 16px" }}>
-              Most bonuses are $200–$500. The subscription pays for itself with your first bonus.
+              Cancel anytime.
             </p>
             <Link href="/" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>← Back to home</Link>
           </>
