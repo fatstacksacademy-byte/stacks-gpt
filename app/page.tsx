@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
@@ -13,6 +13,13 @@ export default function LandingPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loggedInEmail, setLoggedInEmail] = useState<string | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setLoggedInEmail(data.user.email)
+    })
+  }, [])
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -36,7 +43,14 @@ export default function LandingPage() {
         padding: "20px 40px", maxWidth: 1100, margin: "0 auto",
       }}>
         <span style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em" }}>Stacks OS</span>
-        <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
+        {loggedInEmail ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <span style={{ fontSize: 13, color: "#999" }}>{loggedInEmail}</span>
+            <Link href="/roadmap" style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textDecoration: "none" }}>Go to app →</Link>
+          </div>
+        ) : (
+          <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
+        )}
       </nav>
 
       {/* ── HERO ── */}
