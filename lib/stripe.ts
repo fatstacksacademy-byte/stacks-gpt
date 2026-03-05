@@ -2,11 +2,25 @@ import Stripe from "stripe"
 import { createClient } from "./supabase/server"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
-if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is required")
+// Lazy init to avoid throwing during Next.js build (env vars not available then)
+let _stripe: Stripe | undefined
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2026-02-25.clover",
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is required")
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2026-02-25.clover" })
+  }
+  return _stripe
+}
+
+// Keep backward-compat export used within this file
+const stripe = new Proxy({} as Stripe, {
+  get(_, prop: string | symbol) {
+    return (getStripe() as any)[prop]
+  }
 })
+
+export { stripe }
 
 export const PRICES = {
   monthly: process.env.STRIPE_PRICE_MONTHLY!,
