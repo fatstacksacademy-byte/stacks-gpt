@@ -4,11 +4,10 @@ import React, { useEffect, useState, useCallback } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
-import { getIncomeSources } from "../../lib/profileServer"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
-import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../lib/sequencer"
+import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
 import { getNotes, upsertNote } from "../../lib/notes"
@@ -150,8 +149,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [editingNote, setEditingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
   const [skippedIds, setSkippedIds] = useState<string[]>([])
-  const [onboardingStep, setOnboardingStep] = useState<"welcome" | "frequency" | "paycheck" | "sequencer" | "done">("done")
-  const [sequencerResult, setSequencerResult] = useState<SequencerResult | null>(null)
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
   const [projectionTab, setProjectionTab] = useState<"year1" | "year2">("year1")
@@ -215,21 +212,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }, [userId])
 
   useEffect(() => { loadRecords() }, [loadRecords])
-
-  useEffect(() => {
-    if (!loadingRecords && completedRecords.length === 0 && loaded && onboardingStep === "done") {
-      const isDefault = profile.paycheck_amount === 1500 && profile.pay_frequency === "biweekly"
-      if (isDefault) setOnboardingStep("welcome")
-    }
-  }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency, onboardingStep])
-
-  function handleRunSequencer() {
-    const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
-    setSequencerResult(result)
-    setOnboardingStep("sequencer")
-  }
-
-  function handleSequencerDone() { setOnboardingStep("done"); setSequencerResult(null) }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -369,7 +351,24 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: newStep } : c))
   }
 
-  const activeCustom = customBonuses.filter(c => !c.closed_date)
+  async function handleCustomKeptOpen(id: string) {
+    await updateCustomBonus(id, { current_step: "kept_open" })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "kept_open" } : c))
+  }
+
+  async function handleCustomSkip(id: string) {
+    await updateCustomBonus(id, { current_step: "skipped" })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "skipped" } : c))
+  }
+
+  async function handleCustomUnskip(id: string) {
+    await updateCustomBonus(id, { current_step: null })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: null } : c))
+  }
+
+  const activeCustom = customBonuses.filter(c => !c.closed_date && c.current_step !== "kept_open" && c.current_step !== "skipped")
+  const customKeptOpen = customBonuses.filter(c => !c.closed_date && c.current_step === "kept_open")
+  const customSkipped = customBonuses.filter(c => !c.closed_date && c.current_step === "skipped")
   const closedCustom = customBonuses.filter(c => c.closed_date)
   const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
   const customInProgress = activeCustom.reduce((s, c) => s + c.bonus_amount, 0)
@@ -432,11 +431,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
 
   useEffect(() => {
-    if (mounted && !loadingRecords && loaded && !projectionResult && onboardingStep === "done") {
+    if (mounted && !loadingRecords && loaded && !projectionResult) {
       const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, onboardingStep, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
+  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
@@ -478,20 +477,28 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const openSlots = Math.max(0, totalSlots - workingBonuses.length)
   // Hero cards: show one per open slot
   const heroBonuses = available.slice(0, openSlots)
-  // Legacy single heroBonus for backward compat in code that checks it
-  const heroBonus = heroBonuses[0] ?? null
   const currentBonus = workingBonuses[0] ?? available[0] ?? null
   // Available Next: show bonuses after the hero cards
   const upNextBonuses = available.slice(openSlots, openSlots + 2)
 
-  const currentWeeks = currentBonus?.weeksToComplete ?? 0
-  const nextBonus = workingBonuses.length > 0 ? available[0] : available[1]
+  // Merge standard and custom queue bonuses, sorted by profitability
+  type QueueItem =
+    | { kind: "standard"; item: typeof upNextBonuses[number]; idx: number; velocity: number }
+    | { kind: "custom"; item: typeof activeCustom[number]; velocity: number }
+  const queueItems: QueueItem[] = [
+    ...upNextBonuses.map((item, idx): QueueItem => ({
+      kind: "standard", item, idx,
+      velocity: item.velocity ?? (item.bonus.bonus_amount / (item.weeksToComplete ?? 8)),
+    })),
+    ...activeCustom.map((c): QueueItem => ({
+      kind: "custom", item: c,
+      velocity: c.bonus_amount / Math.ceil((c.deposit_window_days ?? c.holding_period_days ?? 56) / 7),
+    })),
+  ].sort((a, b) => b.velocity - a.velocity)
 
   if (!mounted || loadingRecords) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
   }
-
-  const isOnboarding = onboardingStep !== "done" && onboardingStep !== "sequencer"
 
   return (
     <div style={{ minHeight: "100vh", background: "#fafafa", color: "#1a1a1a", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
@@ -506,42 +513,36 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         }
       `}</style>
       {/* Top Bar */}
-      {!isOnboarding && (
-        <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
-          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
-          {onboardingStep === "done" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <span className="rm-topbar-email">{userEmail}</span>
-              <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
-              <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
-              <button onClick={async () => {
-                const res = await fetch("/api/stripe/portal", { method: "POST" })
-                const data = await res.json()
-                if (data.url) window.location.href = data.url
-              }} style={topBtn}>Subscription</button>
-              <button onClick={handleLogout} style={topBtn}>Log out</button>
-            </div>
-          )}
+      <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
+        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <span className="rm-topbar-email">{userEmail}</span>
+          <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
+          <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
+          <button onClick={async () => {
+            const res = await fetch("/api/stripe/portal", { method: "POST" })
+            const data = await res.json()
+            if (data.url) window.location.href = data.url
+          }} style={topBtn}>Subscription</button>
+          <button onClick={handleLogout} style={topBtn}>Log out</button>
         </div>
-      )}
+      </div>
 
       {/* System status strip */}
-      {!isOnboarding && onboardingStep === "done" && (
-        <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 12, color: "#555" }}>Tracking nationwide bonus offers</span>
-            <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-            <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
-            <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-            <span style={{ fontSize: 12, color: "#aaa" }}>Last updated March 4, 2026</span>
-          </div>
+      <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12, color: "#555" }}>Tracking nationwide bonus offers</span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+          <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>Last updated March 4, 2026</span>
         </div>
-      )}
+      </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto" }} className={isOnboarding ? "" : "rm-content"}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
 
         {/* Settings Panel */}
-        {showSettings && onboardingStep === "done" && (
+        {showSettings && (
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Pay Profile</div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -639,105 +640,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           </div>
         )}
 
-        {/* ═══════ ONBOARDING: WELCOME ═══════ */}
-        {onboardingStep === "welcome" && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: "32px" }}>
-            <div style={{ textAlign: "center", maxWidth: 520 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Stacks OS</div>
-              <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111", margin: "0 0 16px", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                Let's find you an extra $3,000+ this year
-              </h1>
-              <p style={{ fontSize: 16, color: "#777", lineHeight: 1.6, margin: "0 0 12px" }}>
-                Banks pay you for moving your direct deposit. We'll tell you exactly where to send it next.
-              </p>
-              <p style={{ fontSize: 14, color: "#aaa", margin: "0 0 36px" }}>
-                2 quick questions. Takes 20 seconds.
-              </p>
-              <button onClick={() => setOnboardingStep("frequency")} style={primaryBtn}>
-                Let's go
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════ ONBOARDING: FREQUENCY ═══════ */}
-        {onboardingStep === "frequency" && (
-          <div style={onboardingScreen}>
-            <div style={onboardingCard}>
-              <div style={stepIndicator}>Step 1 of 2</div>
-              <h2 style={onboardingQ}>How often do you get paid?</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
-                {FREQ_OPTIONS.map(f => (
-                  <button key={f.value} onClick={() => { setProfile({ pay_frequency: f.value }); setOnboardingStep("paycheck") }}
-                    style={profile.pay_frequency === f.value ? obRowActive : obRow}>
-                    <span style={{ fontSize: 15, fontWeight: 600 }}>{f.label}</span>
-                  </button>
-                ))}
-              </div>
-              <button onClick={() => setOnboardingStep("welcome")} style={backLink}>Back</button>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════ ONBOARDING: PAYCHECK ═══════ */}
-        {onboardingStep === "paycheck" && (
-          <div style={onboardingScreen}>
-            <div style={onboardingCard}>
-              <div style={stepIndicator}>Step 2 of 2</div>
-              <h2 style={onboardingQ}>What's your take-home pay per paycheck?</h2>
-              <p style={onboardingHint}>Per paycheck after taxes. An estimate is fine.</p>
-              <div style={{ position: "relative", marginTop: 24, maxWidth: 240 }}>
-                <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 22, fontWeight: 600 }}>$</span>
-                <input
-                  type="number"
-                  value={profile.paycheck_amount}
-                  onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })}
-                  style={paycheckInput}
-                  min={0} step={100}
-                  autoFocus
-                />
-              </div>
-              <button onClick={handleRunSequencer} style={{ ...primaryBtn, marginTop: 28, width: "100%" }}>
-                Build my plan
-              </button>
-              <button onClick={() => setOnboardingStep("frequency")} style={backLink}>Back</button>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════ ONBOARDING: SEQUENCER RESULTS ═══════ */}
-        {onboardingStep === "sequencer" && sequencerResult && (() => {
-          const projected = getProjectedBonuses(sequencerResult)
-          const endDate = addDays(todayStr(), 365)
-          const yearTotal = projected.filter(p => new Date(p.start_date) <= endDate).reduce((s, p) => s + p.bonus_amount, 0)
-          const firstBonus = projected[0]
-          const firstAmount = firstBonus ? firstBonus.bonus_amount : yearTotal
-          return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "75vh", padding: "32px" }}>
-              <div style={{ textAlign: "center", maxWidth: 520 }}>
-                <div style={{ fontSize: 14, color: "#0d7c5f", fontWeight: 600, marginBottom: 8 }}>Your personalized plan is ready</div>
-                <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
-                  Your First {money(firstAmount)} Is Ready
-                </h2>
-                <p style={{ fontSize: 15, color: "#888", marginTop: 0, lineHeight: 1.6 }}>
-                  You qualify based on your paycheck.
-                </p>
-                <div style={{ margin: "28px 0 24px" }}>
-                  <div style={{ fontSize: 14, color: "#999" }}>Projected this year</div>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${yearTotal.toLocaleString()}</div>
-                </div>
-                <button onClick={handleSequencerDone} style={{ ...primaryBtn, width: "100%", padding: "16px 28px", fontSize: 16 }}>
-                  Go to dashboard
-                </button>
-              </div>
-            </div>
-          )
-        })()}
-
-        {/* ═══════ MAIN DASHBOARD ═══════ */}
-        {onboardingStep === "done" && (
-          <>
-            {/* ── Stats Bar — always first ── */}
+        {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
@@ -978,7 +881,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 if (!aPosted && bPosted) return -1
                 return 0
               })
-              if (activeBonuses.length === 0 && activeCustom.length === 0) return null
+              if (activeBonuses.length === 0) return null
 
               return (
                 <div style={{ marginBottom: 20 }}>
@@ -1328,149 +1231,69 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       )
                     })}
 
-                    {/* ── Active custom bonuses ── */}
-                    {activeCustom.map(c => {
-                      const isDone = c.current_step === "requirements_met"
-                      return (
-                        <div key={c.id} style={{
-                          background: "#fff",
-                          border: isDone ? "1px solid #e0e0e0" : "2px solid #2563eb",
-                          borderRadius: 14, overflow: "hidden",
-                          boxShadow: isDone ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
-                        }}>
-                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{c.bank_name}</div>
-                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
-                            </div>
-                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
-                          </div>
-
-                          {/* Checklist */}
-                          <div style={{ padding: "16px 24px 0" }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(c.bonus_amount)}</div>
-                            <div
-                              style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: isDone ? "default" : "pointer", borderRadius: 6 }}
-                              onClick={() => !isDone && handleCustomStepToggle(c.id, c.current_step)}>
-                              <div style={{
-                                width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                                border: isDone ? "none" : "2px solid #2563eb",
-                                background: isDone ? "#0d7c5f" : "transparent",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                              }}>
-                                {isDone && (
-                                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                    <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                )}
-                              </div>
-                              <span style={{ fontSize: 14, color: isDone ? "#888" : "#111", fontWeight: isDone ? 400 : 600, textDecoration: isDone ? "line-through" : "none" }}>
-                                Requirements met
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Info */}
-                          <div style={{ padding: "10px 24px 0", fontSize: 12, color: "#999" }}>
-                            Opened {fmtShortDate(c.opened_date)}
-                            {c.cooldown_months ? ` · Churnable every ${c.cooldown_months}mo` : " · One-time"}
-                            {c.notes ? ` · ${c.notes}` : ""}
-                          </div>
-
-                          {/* Deposit tracker (when DD requirements are set) */}
-                          {c.dd_required && c.min_dd_total && (() => {
-                            const customDeposits = deposits.filter(d => d.bonus_id === c.id)
-                            const depositedSoFar = customDeposits.reduce((s, d) => s + d.amount, 0)
-                            const openedDate = new Date(c.opened_date + "T00:00:00")
-                            const today = new Date(); today.setHours(0, 0, 0, 0)
-                            const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
-                            const windowDays = c.deposit_window_days ?? 90
-                            const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
-                            return (
-                              <div style={{ padding: "12px 24px 0" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
-                                    Deposits — ${depositedSoFar.toLocaleString()} of ${c.min_dd_total.toLocaleString()}
-                                  </span>
-                                  <button onClick={() => { setAddingDeposit(addingDeposit === c.id ? null : c.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
-                                    style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>+</button>
-                                </div>
-                                <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: customDeposits.length > 0 ? 8 : 0 }}>
-                                  <div style={{ height: "100%", borderRadius: 2, background: "#0d7c5f", width: `${Math.min(100, (depositedSoFar / c.min_dd_total) * 100)}%`, transition: "width 0.3s ease" }} />
-                                </div>
-                                {customDeposits.length > 0 && (
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                    {customDeposits.map(d => (
-                                      <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
-                                        <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
-                                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                          <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
-                                          <button onClick={() => handleDeleteDeposit(d.id)} style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                                {addingDeposit === c.id && (
-                                  <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
-                                    <div style={{ position: "relative", flex: 1 }}>
-                                      <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                                      <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
-                                        style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }} />
-                                    </div>
-                                    <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
-                                      style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
-                                    <button onClick={() => handleAddDeposit(c.id)}
-                                      style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>Add</button>
-                                  </div>
-                                )}
-                                {!isDone && windowDays > 0 && (
-                                  <div style={{ paddingTop: 8, fontSize: 12, color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999", fontWeight: daysRemaining <= 30 ? 600 : 400 }}>
-                                    {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          })()}
-
-                          {/* Actions */}
-                          {isDone && (
-                            <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                                <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                  Mark account closed
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end" }}>
-                            <button onClick={() => handleDeleteCustom(c.id)}
-                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
                   </div>
                 </div>
               )
             })()}
 
             {/* ── Available next ── */}
-            {upNextBonuses.length > 0 && (
+            {queueItems.length > 0 && (
               <div style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {upNextBonuses.map(({ bonus: b, weeksToComplete, churnStatus }, i) => {
-                    const isActive = churnStatus.status === "in_progress"
-                    const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
-                    const mDetail = record ? getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
-                    const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (upNextBonuses[0]?.weeksToComplete ?? 0)
-
+                  {queueItems.map(q => {
+                  if (q.kind === "custom") {
+                    const c = q.item
+                    const isDone = c.current_step === "requirements_met"
                     return (
+                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
+                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                            </div>
+                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                              {c.notes || (c.cooldown_months ? `Churnable every ${c.cooldown_months}mo` : "One-time")}
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center" }}>
+                          <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                            style={{ fontSize: 12, padding: "6px 14px", background: isDone ? "#0d7c5f" : "none", color: isDone ? "#fff" : "#999", border: isDone ? "none" : "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer", fontWeight: isDone ? 700 : 400 }}>
+                            {isDone ? "Mark closed" : "Mark closed"}
+                          </button>
+                          {isDone && (
+                            <button onClick={() => handleCustomKeptOpen(c.id)}
+                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#666", background: "none", borderRadius: 8, cursor: "pointer" }}>Keep open</button>
+                          )}
+                          <button onClick={() => handleCustomSkip(c.id)}
+                            style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
+                          <button onClick={() => handleDeleteCustom(c.id)}
+                            style={{ fontSize: 12, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "6px 4px" }}>Remove</button>
+                        </div>
+                        {/* Requirements met checkbox */}
+                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
+                          <div
+                            style={{ display: "flex", alignItems: "center", gap: 8, cursor: isDone ? "default" : "pointer" }}
+                            onClick={() => !isDone && handleCustomStepToggle(c.id, c.current_step)}>
+                            <div style={{ width: 16, height: 16, borderRadius: 3, flexShrink: 0, border: isDone ? "none" : "2px solid #d4d4d4", background: isDone ? "#0d7c5f" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              {isDone && <svg width="9" height="9" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                            </div>
+                            <span style={{ fontSize: 12, color: isDone ? "#888" : "#555", textDecoration: isDone ? "line-through" : "none" }}>Requirements met</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+                  // Standard bonus
+                  const { item: { bonus: b, churnStatus }, idx: i } = q as Extract<QueueItem, { kind: "standard" }>
+                  const isActive = churnStatus.status === "in_progress"
+                  const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
+                  const mDetail = record ? getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
+                  const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (upNextBonuses[0]?.weeksToComplete ?? 0)
+                  return (
                       <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
@@ -1539,7 +1362,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 const md = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
                 return md.bonusPosted
               })())
-              if (keptOpenRecords.length === 0 && openAccounts.length === 0) return null
+              if (keptOpenRecords.length === 0 && openAccounts.length === 0 && customKeptOpen.length === 0) return null
               return (
                 <div style={{ marginBottom: 24 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -1561,6 +1384,24 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Account still open · Close to become eligible again</div>
                           </div>
                           <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
+                            Close account
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {customKeptOpen.map(c => (
+                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
+                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                              <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>+{money(c.bonus_amount)} earned</span>
+                            </div>
+                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Account still open · Close to become eligible again</div>
+                          </div>
+                          <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
                             style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
                             Close account
                           </button>
@@ -1617,7 +1458,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             )}
 
             {/* ── Skipped bonuses ── */}
-            {skippedBonuses.length > 0 && (
+            {(skippedBonuses.length > 0 || customSkipped.length > 0) && (
               <div style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Skipped</div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -1628,6 +1469,21 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{money(b.bonus_amount)}</div>
                       </div>
                       <button onClick={() => handleUnskip(b.id)}
+                        style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                        Restore
+                      </button>
+                    </div>
+                  ))}
+                  {customSkipped.map(c => (
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                          <span style={{ fontSize: 9, color: "#999", background: "#f0f0f0", padding: "1px 6px", borderRadius: 99 }}>Custom</span>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{money(c.bonus_amount)}</div>
+                      </div>
+                      <button onClick={() => handleCustomUnskip(c.id)}
                         style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                         Restore
                       </button>
@@ -1776,17 +1632,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 })}
               </div>
             )}
-          </>
-        )}
 
         {/* ── Page disclaimer ── */}
-        {onboardingStep === "done" && (
-          <div style={{ marginTop: 32, padding: "16px 0", borderTop: "1px solid #f0f0f0" }}>
-            <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0 }}>
-              Bonus offers, requirements, and fees are determined by the financial institution and may change at any time. Stacks OS aggregates publicly available information but cannot guarantee accuracy. Always verify the current terms directly with the bank before applying.
-            </p>
-          </div>
-        )}
+        <div style={{ marginTop: 32, padding: "16px 0", borderTop: "1px solid #f0f0f0" }}>
+          <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0 }}>
+            Bonus offers, requirements, and fees are determined by the financial institution and may change at any time. Stacks OS aggregates publicly available information but cannot guarantee accuracy. Always verify the current terms directly with the bank before applying.
+          </p>
+        </div>
       </div>
 
       {/* Modal */}
@@ -1987,28 +1839,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   )
 }
 
-function DashStat({ value, label, color }: { value: number; label: string; color: string }) {
-  return <div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 800, color }}>{value}</div><div style={{ fontSize: 11, color: "#999" }}>{label}</div></div>
-}
-
 /* ── Styles ── */
 const topBtn: React.CSSProperties = { fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
-const primaryBtn: React.CSSProperties = { padding: "14px 28px", fontSize: 15, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", textDecoration: "none", textAlign: "center" as const, display: "inline-block" }
-const secondaryBtn: React.CSSProperties = { padding: "12px 28px", fontSize: 13, fontWeight: 600, color: "#666", border: "1px solid #ddd", borderRadius: 10, background: "#fff", cursor: "pointer", textDecoration: "none", textAlign: "center" as const, display: "inline-block" }
-const onboardingScreen: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: "32px" }
-const onboardingCard: React.CSSProperties = { maxWidth: 480, width: "100%" }
-const stepIndicator: React.CSSProperties = { fontSize: 12, color: "#bbb", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }
-const onboardingQ: React.CSSProperties = { fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 8px", lineHeight: 1.3 }
-const onboardingHint: React.CSSProperties = { fontSize: 14, color: "#999", lineHeight: 1.5, margin: 0 }
-const obOption: React.CSSProperties = { flex: 1, padding: "24px 16px", background: "#fff", border: "2px solid #e8e8e8", borderRadius: 12, cursor: "pointer", textAlign: "center" as const, transition: "border-color 0.15s" }
-const obOptionActive: React.CSSProperties = { ...obOption, background: "#0d7c5f", borderColor: "#0d7c5f", color: "#fff" }
-const obRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "#fff", border: "2px solid #e8e8e8", borderRadius: 12, cursor: "pointer", textAlign: "left" as const }
-const obRowActive: React.CSSProperties = { ...obRow, background: "#0d7c5f", borderColor: "#0d7c5f", color: "#fff" }
-const paycheckInput: React.CSSProperties = { padding: "16px 16px 16px 38px", fontSize: 28, fontWeight: 700, background: "#fff", color: "#111", border: "2px solid #e8e8e8", borderRadius: 12, width: "100%", boxSizing: "border-box" as const }
-const backLink: React.CSSProperties = { display: "block", marginTop: 16, fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }
 const settingsLabel: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
-const segBtnLight: React.CSSProperties = { padding: "6px 14px", fontSize: 13, background: "#fff", color: "#666", border: "1px solid #e0e0e0", borderRadius: 6, cursor: "pointer" }
-const segBtnActiveLight: React.CSSProperties = { ...segBtnLight, background: "#0d7c5f", color: "#fff", borderColor: "#0d7c5f", fontWeight: 700 }
 const settingsSelectLight: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6 }
 const settingsInputLight: React.CSSProperties = { padding: "8px 12px 8px 26px", fontSize: 14, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: 140 }
 const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#888", display: "block", marginBottom: 6 }
