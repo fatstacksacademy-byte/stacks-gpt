@@ -36,16 +36,49 @@ export default function LandingPage() {
 
   return (
     <div style={{ background: "#fafafa", minHeight: "100vh", fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <style>{`
+        .lp-nav { padding: 20px 40px; }
+        .lp-section { padding: 60px 40px; }
+        .lp-hero { padding: 80px 40px 60px; }
+        .lp-hero h1 { font-size: 56px; }
+        .lp-hero p { font-size: 19px; }
+        .lp-cta-buttons { display: flex; gap: 14px; margin-bottom: 48px; flex-wrap: wrap; justify-content: center; }
+        .lp-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+        .lp-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .lp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .lp-pricing-row { display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+        .lp-pricing-card { width: 340px; flex-shrink: 0; }
+        .lp-signup-card { width: 380px; flex-shrink: 0; }
+        .lp-footer { padding: 40px 40px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .lp-faq { padding: 60px 40px; }
+        .lp-nav-user { display: flex; align-items: center; gap: 16px; }
+        .lp-nav-email { font-size: 13px; color: #999; }
+        @media (max-width: 768px) {
+          .lp-nav { padding: 16px 20px; }
+          .lp-nav-email { display: none; }
+          .lp-section { padding: 40px 20px; }
+          .lp-hero { padding: 48px 20px 40px; }
+          .lp-hero h1 { font-size: 36px; }
+          .lp-hero p { font-size: 16px; }
+          .lp-cta-buttons { flex-direction: column; gap: 10px; width: 100%; }
+          .lp-cta-buttons a { text-align: center; }
+          .lp-stats { gap: 28px; }
+          .lp-grid-3 { grid-template-columns: 1fr; }
+          .lp-grid-2 { grid-template-columns: 1fr; }
+          .lp-pricing-row { flex-direction: column; align-items: center; gap: 20px; }
+          .lp-pricing-card { width: 100%; max-width: 420px; }
+          .lp-signup-card { width: 100%; max-width: 420px; }
+          .lp-footer { flex-direction: column; gap: 16px; padding: 32px 20px; text-align: center; }
+          .lp-faq { padding: 40px 20px; }
+        }
+      `}</style>
 
       {/* ── NAV ── */}
-      <nav style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "20px 40px", maxWidth: 1100, margin: "0 auto",
-      }}>
+      <nav className="lp-nav" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em" }}>Stacks OS</span>
         {loggedInEmail ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <span style={{ fontSize: 13, color: "#999" }}>{loggedInEmail}</span>
+          <div className="lp-nav-user">
+            <span className="lp-nav-email">{loggedInEmail}</span>
             <Link href="/roadmap" style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textDecoration: "none" }}>Go to app →</Link>
           </div>
         ) : (
@@ -54,10 +87,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{
-        maxWidth: 1100, margin: "0 auto", padding: "80px 40px 60px",
-        display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
-      }}>
+      <section className="lp-hero" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
         <div style={{
           display: "inline-block", fontSize: 12, fontWeight: 600, color: "#0d7c5f",
           background: "#e6f5f0", padding: "6px 14px", borderRadius: 99, marginBottom: 24,
@@ -65,18 +95,15 @@ export default function LandingPage() {
         }}>
           The bank bonus system
         </div>
-        <h1 style={{
-          fontSize: 56, fontWeight: 800, color: "#111", lineHeight: 1.1,
-          letterSpacing: "-0.03em", margin: "0 0 20px", maxWidth: 700,
-        }}>
+        <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px", maxWidth: 700 }}>
           Turn your paycheck into
           <br />
           <span style={{ color: "#0d7c5f" }}>$2,000+ per year</span>
         </h1>
-        <p style={{ fontSize: 19, color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520 }}>
+        <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 520 }}>
           Banks pay you to switch your direct deposit. Stacks OS tells you exactly where to send it next, when to move it, and how much you'll earn.
         </p>
-        <div style={{ display: "flex", gap: 14, marginBottom: 48 }}>
+        <div className="lp-cta-buttons">
           <a href="#signup" style={{
             fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
             padding: "16px 36px", borderRadius: 10, textDecoration: "none",
@@ -88,7 +115,7 @@ export default function LandingPage() {
             border: "1px solid #ddd",
           }}>See how it works</a>
         </div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 48 }}>
+        <div className="lp-stats">
           {[
             { value: "$3,000+", label: "potential first year" },
             { value: "15 min", label: "setup time" },
@@ -103,12 +130,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+      <section id="how-it-works" className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Three steps. Repeat.
         </h2>
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No gimmicks. Just a system.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+        <div className="lp-grid-3">
           {[
             { step: "01", title: "Open the account", desc: "We match you with the highest-value bonus based on your paycheck. Click the link, open the account in minutes." },
             { step: "02", title: "Route your deposit", desc: "Point your direct deposit to the new account. Meet the deposit requirement with your regular paycheck — no extra money needed." },
@@ -124,11 +151,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── WHAT YOU GET ── */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+      <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 48px" }}>
           Everything you need to stack bonuses
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div className="lp-grid-2">
           {[
             { title: "Personalized bonus queue", desc: "Ranked by your paycheck amount, pay frequency, and eligibility. Always know what's next." },
             { title: "Step-by-step checklists", desc: "Each bonus is a simple checklist. Check off steps as you go. No guesswork." },
@@ -146,7 +173,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRICING + SIGNUP ── */}
-      <section id="signup" style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px" }}>
+      <section id="signup" className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           Your first bonus covers the cost
         </h2>
@@ -154,12 +181,12 @@ export default function LandingPage() {
           Your first bonus often earns $300–$400, easily covering the subscription.
         </p>
 
-        <div style={{ display: "flex", gap: 40, alignItems: "flex-start", justifyContent: "center" }}>
+        <div className="lp-pricing-row">
           {/* Pricing card */}
-          <div style={{
-            width: 340, background: "#fff", border: "2px solid #0d7c5f",
+          <div className="lp-pricing-card" style={{
+            background: "#fff", border: "2px solid #0d7c5f",
             borderRadius: 16, padding: "32px", textAlign: "center",
-            boxShadow: "0 8px 32px rgba(13,124,95,0.08)", flexShrink: 0,
+            boxShadow: "0 8px 32px rgba(13,124,95,0.08)",
           }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS</div>
 
@@ -197,9 +224,9 @@ export default function LandingPage() {
           </div>
 
           {/* Signup form */}
-          <div style={{
-            width: 380, background: "#fff", borderRadius: 16, padding: "32px",
-            border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.04)", flexShrink: 0,
+          <div className="lp-signup-card" style={{
+            background: "#fff", borderRadius: 16, padding: "32px",
+            border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.04)",
           }}>
             <h3 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
               Create your account
@@ -247,7 +274,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ maxWidth: 700, margin: "0 auto", padding: "60px 40px" }}>
+      <section className="lp-faq" style={{ maxWidth: 700, margin: "0 auto" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
         {[
           { q: "Is this legal?", a: "Yes. Bank bonuses are promotional offers banks use to attract new customers. They want you to sign up." },
@@ -265,7 +292,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px 40px", textAlign: "center" }}>
+      <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>Your first bonus is waiting</h2>
         <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>Set up in minutes. Start earning this week.</p>
         <a href="#signup" style={{
@@ -278,17 +305,14 @@ export default function LandingPage() {
       </section>
 
       {/* ── DISCLAIMER ── */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px 24px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 24px" }}>
         <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0, textAlign: "center" }}>
           Bonus offers, requirements, and fees are determined by each financial institution and may change at any time. Always verify the current terms directly with the bank before applying.
         </p>
       </div>
 
       {/* ── FOOTER ── */}
-      <footer style={{
-        maxWidth: 1100, margin: "0 auto", padding: "40px 40px 32px",
-        borderTop: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center",
-      }}>
+      <footer className="lp-footer" style={{ maxWidth: 1100, margin: "0 auto", borderTop: "1px solid #f0f0f0" }}>
         <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Stacks OS</span>
         <div style={{ display: "flex", gap: 20 }}>
           <Link href="/terms" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Terms</Link>
