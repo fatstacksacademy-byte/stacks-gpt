@@ -13,6 +13,12 @@ export type CustomBonus = {
   notes: string | null
   cooldown_months: number | null
   created_at: string
+  dd_required: boolean | null
+  min_dd_total: number | null
+  min_dd_per_deposit: number | null
+  dd_count_required: number | null
+  deposit_window_days: number | null
+  holding_period_days: number | null
 }
 
 export async function getCustomBonuses(userId: string): Promise<CustomBonus[]> {
@@ -26,13 +32,23 @@ export async function getCustomBonuses(userId: string): Promise<CustomBonus[]> {
   return data ?? []
 }
 
+export type CustomBonusRequirements = {
+  ddRequired?: boolean
+  minDdTotal?: number | null
+  minDdPerDeposit?: number | null
+  ddCountRequired?: number | null
+  depositWindowDays?: number | null
+  holdingPeriodDays?: number | null
+}
+
 export async function addCustomBonus(
   userId: string,
   bankName: string,
   bonusAmount: number,
   openedDate: string,
   notes?: string,
-  cooldownMonths?: number | null
+  cooldownMonths?: number | null,
+  reqs?: CustomBonusRequirements
 ): Promise<CustomBonus | null> {
   const supabase = createClient()
   const { data, error } = await supabase
@@ -44,6 +60,12 @@ export async function addCustomBonus(
       opened_date: openedDate,
       notes: notes || null,
       cooldown_months: cooldownMonths ?? null,
+      dd_required: reqs?.ddRequired ?? false,
+      min_dd_total: reqs?.minDdTotal ?? null,
+      min_dd_per_deposit: reqs?.minDdPerDeposit ?? null,
+      dd_count_required: reqs?.ddCountRequired ?? null,
+      deposit_window_days: reqs?.depositWindowDays ?? null,
+      holding_period_days: reqs?.holdingPeriodDays ?? null,
     })
     .select()
     .single()

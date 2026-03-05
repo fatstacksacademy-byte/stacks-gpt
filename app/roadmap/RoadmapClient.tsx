@@ -163,6 +163,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customNotes, setCustomNotes] = useState("")
   const [customChurnable, setCustomChurnable] = useState(false)
   const [customCooldown, setCustomCooldown] = useState("12")
+  const [customDdRequired, setCustomDdRequired] = useState(false)
+  const [customMinDdTotal, setCustomMinDdTotal] = useState("")
+  const [customMinDdPerDeposit, setCustomMinDdPerDeposit] = useState("")
+  const [customDdCount, setCustomDdCount] = useState("")
+  const [customDepositWindow, setCustomDepositWindow] = useState("")
+  const [customHoldingPeriod, setCustomHoldingPeriod] = useState("")
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
@@ -211,11 +217,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   useEffect(() => { loadRecords() }, [loadRecords])
 
   useEffect(() => {
-    if (!loadingRecords && completedRecords.length === 0 && loaded) {
+    if (!loadingRecords && completedRecords.length === 0 && loaded && onboardingStep === "done") {
       const isDefault = profile.paycheck_amount === 1500 && profile.pay_frequency === "biweekly"
       if (isDefault) setOnboardingStep("welcome")
     }
-  }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency])
+  }, [loadingRecords, completedRecords.length, loaded, profile.paycheck_amount, profile.pay_frequency, onboardingStep])
 
   function handleRunSequencer() {
     const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
@@ -328,15 +334,20 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
     const cooldown = customChurnable ? parseInt(customCooldown) || null : null
-    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined, cooldown)
+    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined, cooldown, {
+      ddRequired: customDdRequired,
+      minDdTotal: customDdRequired && customMinDdTotal ? parseInt(customMinDdTotal) : null,
+      minDdPerDeposit: customDdRequired && customMinDdPerDeposit ? parseInt(customMinDdPerDeposit) : null,
+      ddCountRequired: customDdRequired && customDdCount ? parseInt(customDdCount) : null,
+      depositWindowDays: customDdRequired && customDepositWindow ? parseInt(customDepositWindow) : null,
+      holdingPeriodDays: customHoldingPeriod ? parseInt(customHoldingPeriod) : null,
+    })
     await loadRecords()
     setShowAddCustom(false)
-    setCustomBank("")
-    setCustomAmount("")
-    setCustomDate(todayStr())
-    setCustomNotes("")
-    setCustomChurnable(false)
-    setCustomCooldown("12")
+    setCustomBank(""); setCustomAmount(""); setCustomDate(todayStr()); setCustomNotes("")
+    setCustomChurnable(false); setCustomCooldown("12")
+    setCustomDdRequired(false); setCustomMinDdTotal(""); setCustomMinDdPerDeposit("")
+    setCustomDdCount(""); setCustomDepositWindow(""); setCustomHoldingPeriod("")
   }
 
   async function handleCloseCustom() {
@@ -1366,6 +1377,62 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             {c.notes ? ` · ${c.notes}` : ""}
                           </div>
 
+                          {/* Deposit tracker (when DD requirements are set) */}
+                          {c.dd_required && c.min_dd_total && (() => {
+                            const customDeposits = deposits.filter(d => d.bonus_id === c.id)
+                            const depositedSoFar = customDeposits.reduce((s, d) => s + d.amount, 0)
+                            const openedDate = new Date(c.opened_date + "T00:00:00")
+                            const today = new Date(); today.setHours(0, 0, 0, 0)
+                            const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
+                            const windowDays = c.deposit_window_days ?? 90
+                            const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
+                            return (
+                              <div style={{ padding: "12px 24px 0" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                  <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
+                                    Deposits — ${depositedSoFar.toLocaleString()} of ${c.min_dd_total.toLocaleString()}
+                                  </span>
+                                  <button onClick={() => { setAddingDeposit(addingDeposit === c.id ? null : c.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
+                                    style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>+</button>
+                                </div>
+                                <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: customDeposits.length > 0 ? 8 : 0 }}>
+                                  <div style={{ height: "100%", borderRadius: 2, background: "#0d7c5f", width: `${Math.min(100, (depositedSoFar / c.min_dd_total) * 100)}%`, transition: "width 0.3s ease" }} />
+                                </div>
+                                {customDeposits.length > 0 && (
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                    {customDeposits.map(d => (
+                                      <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                        <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                          <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                          <button onClick={() => handleDeleteDeposit(d.id)} style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {addingDeposit === c.id && (
+                                  <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
+                                    <div style={{ position: "relative", flex: 1 }}>
+                                      <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                      <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                        style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }} />
+                                    </div>
+                                    <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                      style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
+                                    <button onClick={() => handleAddDeposit(c.id)}
+                                      style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>Add</button>
+                                  </div>
+                                )}
+                                {!isDone && windowDays > 0 && (
+                                  <div style={{ paddingTop: 8, fontSize: 12, color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999", fontWeight: daysRemaining <= 30 ? 600 : 400 }}>
+                                    {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })()}
+
                           {/* Actions */}
                           {isDone && (
                             <div style={{ padding: "16px 24px 0" }}>
@@ -1789,10 +1856,49 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <label style={modalLabel}>Account opened date</label>
                 <input type="date" value={customDate} onChange={e => setCustomDate(e.target.value)} style={modalInput} />
               </div>
+              {/* Direct deposit requirements */}
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <input type="checkbox" id="customDdRequired" checked={customDdRequired} onChange={e => setCustomDdRequired(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="customDdRequired" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Requires direct deposit</label>
+                </div>
+                {customDdRequired && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 4 }}>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Min total DD ($)</label>
+                        <input type="number" value={customMinDdTotal} onChange={e => setCustomMinDdTotal(e.target.value)} placeholder="e.g. 500" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Min per deposit ($)</label>
+                        <input type="number" value={customMinDdPerDeposit} onChange={e => setCustomMinDdPerDeposit(e.target.value)} placeholder="e.g. 200" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>DD count required</label>
+                        <input type="number" value={customDdCount} onChange={e => setCustomDdCount(e.target.value)} placeholder="e.g. 2" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Deposit window (days)</label>
+                        <input type="number" value={customDepositWindow} onChange={e => setCustomDepositWindow(e.target.value)} placeholder="e.g. 90" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Holding period */}
+              <div>
+                <label style={{ ...modalLabel, fontSize: 11 }}>Holding period after bonus posts (days, optional)</label>
+                <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
+              </div>
+
               <div>
                 <label style={modalLabel}>Notes (optional)</label>
                 <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Any requirements or details" style={modalInput} />
               </div>
+
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => setCustomChurnable(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
