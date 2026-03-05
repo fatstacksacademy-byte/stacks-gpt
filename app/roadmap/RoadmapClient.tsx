@@ -345,11 +345,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await loadRecords()
   }
 
-  async function handleCustomStepToggle(id: string, currentStep: string | null) {
-    const newStep = currentStep === "requirements_met" ? null : "requirements_met"
-    await updateCustomBonus(id, { current_step: newStep })
-    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: newStep } : c))
-  }
 
   async function handleCustomKeptOpen(id: string) {
     await updateCustomBonus(id, { current_step: "kept_open" })
@@ -442,8 +437,41 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const today730End = addDays(todayStr(), 730)
   const yearBonuses365 = projected365.filter(p => new Date(p.start_date) <= today365End)
 
-  // Project churnable closed custom bonuses into the future (up to 2 years)
+  // Project custom bonuses into the plan (active + future churnable cycles)
   const customProjectedBonuses: ProjectedBonus[] = []
+  // Active (open) custom bonuses — project current cycle
+  for (const c of activeCustom) {
+    const estimatedDays = c.deposit_window_days ?? c.holding_period_days ?? 56
+    const startDate = new Date(c.opened_date + "T00:00:00")
+    const payoutDate = new Date(startDate.getTime() + (estimatedDays + 30) * 86400000)
+    if (startDate <= today730End) {
+      customProjectedBonuses.push({
+        bank_name: c.bank_name,
+        bonus_amount: c.bonus_amount,
+        start_date: fmtDate(startDate),
+        payout_date: fmtDate(payoutDate),
+        weeks: Math.ceil(estimatedDays / 7),
+      })
+    }
+    // If churnable, also project future cycles
+    if (c.cooldown_months) {
+      let nextStart = new Date(payoutDate.getTime())
+      nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
+      while (nextStart <= today730End) {
+        const nextPayout = new Date(nextStart.getTime() + (estimatedDays + 30) * 86400000)
+        customProjectedBonuses.push({
+          bank_name: c.bank_name,
+          bonus_amount: c.bonus_amount,
+          start_date: fmtDate(nextStart),
+          payout_date: fmtDate(nextPayout),
+          weeks: Math.ceil(estimatedDays / 7),
+        })
+        nextStart = new Date(nextStart.getTime())
+        nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
+      }
+    }
+  }
+  // Closed churnable custom bonuses — project future cycles
   for (const c of closedCustom) {
     if (!c.cooldown_months || !c.closed_date) continue
     const durationDays = Math.max(30, Math.round(
@@ -1254,35 +1282,23 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                             </div>
                             <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
-                              {c.notes || (c.cooldown_months ? `Churnable every ${c.cooldown_months}mo` : "One-time")}
+                              {c.notes || (c.cooldown_months ? `Churnable · every ${c.cooldown_months}mo` : "One-time")}
                             </div>
                           </div>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
                         </div>
-                        <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center" }}>
-                          <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                            style={{ fontSize: 12, padding: "6px 14px", background: isDone ? "#0d7c5f" : "none", color: isDone ? "#fff" : "#999", border: isDone ? "none" : "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer", fontWeight: isDone ? 700 : 400 }}>
-                            {isDone ? "Mark closed" : "Mark closed"}
-                          </button>
-                          {isDone && (
-                            <button onClick={() => handleCustomKeptOpen(c.id)}
-                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#666", background: "none", borderRadius: 8, cursor: "pointer" }}>Keep open</button>
+                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                          {isDone ? (
+                            <>
+                              <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                                style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Mark closed</button>
+                              <button onClick={() => handleCustomKeptOpen(c.id)}
+                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#666", background: "none", borderRadius: 8, cursor: "pointer" }}>Keep open</button>
+                            </>
+                          ) : (
+                            <button onClick={() => handleCustomSkip(c.id)}
+                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           )}
-                          <button onClick={() => handleCustomSkip(c.id)}
-                            style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
-                          <button onClick={() => handleDeleteCustom(c.id)}
-                            style={{ fontSize: 12, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "6px 4px" }}>Remove</button>
-                        </div>
-                        {/* Requirements met checkbox */}
-                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
-                          <div
-                            style={{ display: "flex", alignItems: "center", gap: 8, cursor: isDone ? "default" : "pointer" }}
-                            onClick={() => !isDone && handleCustomStepToggle(c.id, c.current_step)}>
-                            <div style={{ width: 16, height: 16, borderRadius: 3, flexShrink: 0, border: isDone ? "none" : "2px solid #d4d4d4", background: isDone ? "#0d7c5f" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              {isDone && <svg width="9" height="9" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                            </div>
-                            <span style={{ fontSize: 12, color: isDone ? "#888" : "#555", textDecoration: isDone ? "line-through" : "none" }}>Requirements met</span>
-                          </div>
                         </div>
                       </div>
                     )
