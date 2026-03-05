@@ -76,7 +76,7 @@ export default function OnboardingPage() {
     })
 
     const allBonusEntries = result.slots.flat().filter(
-      (e): e is SequencedBonus => e.type === "bonus" && e.payout_week <= 52
+      (e): e is SequencedBonus => e.type === "bonus" && e.start_week <= 52
     )
 
     const total = allBonusEntries.reduce((s, b) => s + b.bonus_amount, 0)
