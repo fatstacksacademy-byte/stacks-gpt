@@ -182,6 +182,57 @@ export default function LandingPage() {
         </p>
 
         <div className="lp-pricing-row">
+          {/* Signup form */}
+          <div className="lp-signup-card" style={{
+            background: "#fff", borderRadius: 16, padding: "32px",
+            border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.04)",
+          }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
+              Create your account
+            </p>
+            <h3 style={{ fontSize: 26, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+              See exactly how much you can earn this year.
+            </h3>
+            <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px" }}>
+              Before you pay a cent.
+            </p>
+
+            <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input type="email" placeholder="you@email.com" required value={email}
+                  onChange={e => setEmail(e.target.value)} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Password</label>
+                <input type="password" placeholder="••••••••" required minLength={6} value={password}
+                  onChange={e => setPassword(e.target.value)} style={inputStyle} />
+              </div>
+              {error && (
+                <div style={{ fontSize: 12, color: "#dc2626", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 12px" }}>
+                  {error}
+                </div>
+              )}
+              <button type="submit" disabled={loading} style={{
+                width: "100%", padding: "14px", fontSize: 15, fontWeight: 700,
+                background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
+                cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
+              }}>
+                {loading ? "Creating account…" : "Get my earnings plan →"}
+              </button>
+            </form>
+
+            <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, margin: "12px 0 0" }}>
+              Free to see your plan. No credit card until you subscribe.
+            </div>
+            <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
+              <span style={{ fontSize: 13, color: "#999" }}>
+                Already have an account?{" "}
+                <Link href="/login" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
+              </span>
+            </div>
+          </div>
+
           {/* Pricing card */}
           <div className="lp-pricing-card" style={{
             background: "#fff", border: "2px solid #0d7c5f",
@@ -223,53 +274,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Signup form */}
-          <div className="lp-signup-card" style={{
-            background: "#fff", borderRadius: 16, padding: "32px",
-            border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.04)",
-          }}>
-            <h3 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
-              Create your account
-            </h3>
-            <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px" }}>
-              See exactly how much you can earn with your paycheck — before you pay a cent.
-            </p>
-
-            <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input type="email" placeholder="you@email.com" required value={email}
-                  onChange={e => setEmail(e.target.value)} style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Password</label>
-                <input type="password" placeholder="••••••••" required minLength={6} value={password}
-                  onChange={e => setPassword(e.target.value)} style={inputStyle} />
-              </div>
-              {error && (
-                <div style={{ fontSize: 12, color: "#dc2626", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 12px" }}>
-                  {error}
-                </div>
-              )}
-              <button type="submit" disabled={loading} style={{
-                width: "100%", padding: "14px", fontSize: 15, fontWeight: 700,
-                background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
-                cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
-              }}>
-                {loading ? "Creating account…" : "Create Account & Continue →"}
-              </button>
-            </form>
-
-            <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, margin: "12px 0 0" }}>
-              You'll see your personalized earnings plan before you pay.
-            </div>
-            <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
-              <span style={{ fontSize: 13, color: "#999" }}>
-                Already have an account?{" "}
-                <Link href="/login" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
-              </span>
-            </div>
-          </div>
         </div>
       </section>
 
