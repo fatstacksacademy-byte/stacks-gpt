@@ -118,10 +118,13 @@ export default function LandingPage() {
               <br />
               <span style={{ fontSize: "0.6em", color: "#aaa", fontWeight: 600, letterSpacing: "-0.01em" }}>with bank bonus routing</span>
             </h1>
-            <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 480 }}>
+            <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 12px", maxWidth: 480 }}>
               Banks pay cash bonuses when you switch your direct deposit.
               <br />
               Stacks OS shows you which bonuses to do next and tracks your progress.
+            </p>
+            <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.6, margin: "0 0 32px", maxWidth: 480 }}>
+              Banks frequently offer $300–$500 bonuses for new checking accounts.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
@@ -196,10 +199,36 @@ export default function LandingPage() {
             { title: "Know which bonus to do next", desc: "Stacks builds a personalized sequence based on your paycheck. No guessing which bank to try." },
             { title: "One dashboard for everything", desc: "See what's in progress, what's next, and what's cooling down — all in one place." },
             { title: "12-month earnings projection", desc: "See your projected bonus earnings before you even start. Updated as you complete bonuses." },
+            { title: "Bonuses ranked by value", desc: "Stacks OS prioritizes the highest-value bank bonuses available. Recommendations are based on profitability and requirements — not affiliate payouts." },
           ].map((f, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 12, padding: "24px", border: "1px solid #e8e8e8" }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{f.title}</div>
               <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── HOW YOUR PLAN IS BUILT ── */}
+      <section className="lp-section" style={{ maxWidth: 700, margin: "0 auto" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+          How your bonus plan is built
+        </h2>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 36px" }}>Every recommendation is calculated — not curated.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {[
+            { label: "Profitability", desc: "Bonuses are ranked by net payout after deposit requirements, holding periods, and fees. The highest-value opportunities come first." },
+            { label: "Eligibility", desc: "Each bonus is matched to your paycheck amount and frequency. Offers you can't qualify for don't show up in your plan." },
+            { label: "Sequencing", desc: "Cooldown periods and ChexSystems considerations are factored in so your next bonus is always ready to start when the current one finishes." },
+          ].map((item, i) => (
+            <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "#e6f5f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#0d7c5f" }}>{i + 1}</span>
+              </div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 13, color: "#888", lineHeight: 1.6 }}>{item.desc}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -339,7 +368,8 @@ export default function LandingPage() {
             </div>
           ))}
           <div style={{ padding: "16px 24px", background: "#fafafa", borderTop: "1px solid #f0f0f0" }}>
-            <span style={{ fontSize: 13, color: "#999" }}>12 bonuses available in a typical yearly plan</span>
+            <div style={{ fontSize: 13, color: "#999", marginBottom: 2 }}>12 bonuses available in a typical yearly plan</div>
+            <div style={{ fontSize: 12, color: "#bbb" }}>Stacks OS tracks nationwide bonuses worth your time.</div>
           </div>
         </div>
       </section>

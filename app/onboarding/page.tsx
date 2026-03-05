@@ -247,30 +247,10 @@ export default function OnboardingPage() {
                     padding: "14px 16px", marginBottom: 16, textAlign: "center",
                   }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 2 }}>
-                      {bonuses.length} bonuses available in your plan
+                      10+ more bonuses in your plan
                     </div>
-                    <div style={{ fontSize: 12, color: "#999", marginBottom: 4 }}>
-                      Unlock the full roadmap to see the complete sequence.
-                    </div>
-                    <div style={{ fontSize: 11, color: "#bbb" }}>Tracking active nationwide bonus offers</div>
-                  </div>
-                )}
-
-                {/* ── First bonus anchor ── */}
-                {firstBonus && (
-                  <div style={{
-                    background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12,
-                    padding: "16px 20px", marginBottom: 16,
-                  }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Your first bonus</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
-                        <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>
-                          Estimated completion: ~{Math.ceil(firstBonus.payout_week * 7 / 30)} weeks
-                        </div>
-                      </div>
-                      <div style={{ fontSize: 26, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
+                    <div style={{ fontSize: 12, color: "#999" }}>
+                      Stacks OS tracks nationwide bonuses worth your time and ranks them by profitability.
                     </div>
                   </div>
                 )}
@@ -323,7 +303,7 @@ export default function OnboardingPage() {
                       color: "#fff", border: "none", borderRadius: 10,
                       cursor: checkoutLoading ? "wait" : "pointer",
                     }}>
-                    {checkoutLoading ? "Loading…" : `Unlock my bonus plan — $${selectedPlan === "annual" ? "50/yr" : "5/mo"}`}
+                    {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my bonus plan for $50/year" : "Unlock my bonus plan for $5/mo"}
                   </button>
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
