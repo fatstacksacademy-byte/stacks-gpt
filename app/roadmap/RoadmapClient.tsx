@@ -78,6 +78,54 @@ function computeVelocity(bonus: Bonus, payFrequency: string, paycheckAmount: num
   return { velocity: bonus.bonus_amount / weeksToComplete, weeksToComplete, feasible: true, reason: undefined }
 }
 
+function computeCustomVelocity(c: CustomBonus, payFrequency: string, paycheckAmount: number, extraSources?: IncomeSourceLocal[]) {
+  const sources: IncomeSourceLocal[] = [{ pay_frequency: payFrequency as PayFrequency, paycheck_amount: paycheckAmount }]
+  if (extraSources) sources.push(...extraSources)
+
+  if (!c.dd_required) {
+    const weeks = Math.max(1, Math.ceil((c.holding_period_days ?? 56) / 7))
+    return { velocity: c.bonus_amount / weeks, weeksToComplete: weeks, feasible: true }
+  }
+
+  const perDepositMin = c.min_dd_per_deposit ?? null
+  const totalMin = c.min_dd_total ?? null
+  const windowDays = c.deposit_window_days ?? null
+  const ddCountRequired = c.dd_count_required ?? null
+
+  if (perDepositMin) {
+    const maxPaycheck = Math.max(...sources.map(s => s.paycheck_amount))
+    if (maxPaycheck < perDepositMin) return { velocity: null, weeksToComplete: null, feasible: false }
+  }
+  if (totalMin && windowDays) {
+    let totalCapacity = 0
+    for (const src of sources) {
+      const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+      totalCapacity += Math.max(1, Math.ceil(windowDays / daysPerPay)) * src.paycheck_amount
+    }
+    if (totalCapacity < totalMin) return { velocity: null, weeksToComplete: null, feasible: false }
+  }
+
+  let weeklyRate = 0
+  for (const src of sources) {
+    const daysPerPay = DAYS_PER_PAY[src.pay_frequency] ?? 14
+    weeklyRate += (src.paycheck_amount / daysPerPay) * 7
+  }
+
+  let weeksToComplete: number
+  if (ddCountRequired) {
+    const viable = perDepositMin ? sources.filter(s => s.paycheck_amount >= perDepositMin) : sources
+    let depositsPerWeek = 0
+    for (const src of viable) { const d = DAYS_PER_PAY[src.pay_frequency] ?? 14; depositsPerWeek += 7 / d }
+    weeksToComplete = Math.ceil(ddCountRequired / depositsPerWeek)
+  } else if (totalMin) {
+    weeksToComplete = Math.ceil(totalMin / weeklyRate)
+  } else {
+    weeksToComplete = 1
+  }
+  weeksToComplete = Math.max(1, weeksToComplete)
+  return { velocity: c.bonus_amount / weeksToComplete, weeksToComplete, feasible: true }
+}
+
 function money(n: number | null | undefined) { return n == null ? "\u2014" : `$${n.toLocaleString()}` }
 function yesNo(v: boolean | null | undefined) { return v == null ? "\u2014" : v ? "Yes" : "No" }
 function textOrDash(v: string | null | undefined) { return v || "\u2014" }
@@ -98,10 +146,14 @@ function fmtDate(d: Date): string {
 type ProjectedBonus = {
   bank_name: string
   bonus_amount: number
-  start_date: string
-  payout_date: string
+  start_date: string   // ISO: YYYY-MM-DD
+  payout_date: string  // ISO: YYYY-MM-DD
   weeks: number
+  isCustom?: boolean
+  customId?: string
 }
+
+function toISODate(d: Date): string { return d.toISOString().split("T")[0] }
 
 function getProjectedBonuses(sequencerResult: SequencerResult): ProjectedBonus[] {
   const today = todayStr()
@@ -113,8 +165,8 @@ function getProjectedBonuses(sequencerResult: SequencerResult): ProjectedBonus[]
     return {
       bank_name: b.bank_name,
       bonus_amount: b.bonus_amount,
-      start_date: fmtDate(startDate),
-      payout_date: fmtDate(payoutDate),
+      start_date: toISODate(startDate),
+      payout_date: toISODate(payoutDate),
       weeks: b.weeks_to_complete,
     }
   })
@@ -154,6 +206,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [projectionTab, setProjectionTab] = useState<"year1" | "year2">("year1")
   const [customBonuses, setCustomBonuses] = useState<CustomBonus[]>([])
   const [showAddCustom, setShowAddCustom] = useState(false)
+  const [addCustomError, setAddCustomError] = useState<string | null>(null)
   const [customBank, setCustomBank] = useState("")
   const [customAmount, setCustomAmount] = useState("")
   const [customDate, setCustomDate] = useState(todayStr())
@@ -166,7 +219,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customDdCount, setCustomDdCount] = useState("")
   const [customDepositWindow, setCustomDepositWindow] = useState("")
   const [customHoldingPeriod, setCustomHoldingPeriod] = useState("")
-  const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "close" } | null>(null)
+  const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "start" | "close" } | null>(null)
+  const [editingCustom, setEditingCustom] = useState<CustomBonus | null>(null)
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
 
@@ -219,13 +273,24 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     window.location.href = "/login"
   }
 
+  function buildCustomSlotBlocks(): number[] {
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    return activeCustom.map(c => {
+      const estimatedDays = c.deposit_window_days ?? c.holding_period_days ?? 56
+      const openedDate = new Date(c.opened_date + "T00:00:00")
+      const endDate = new Date(openedDate.getTime() + (estimatedDays + 30) * 86400000)
+      return Math.max(1, Math.ceil((endDate.getTime() - today.getTime()) / (7 * 86400000)))
+    })
+  }
+
   function handleToggleProjection() {
     if (showProjection) {
       setShowProjection(false)
       return
     }
     if (!projectionResult) {
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources() })
+      const slotBlockedUntilWeeks = buildCustomSlotBlocks()
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -315,8 +380,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
+    setAddCustomError(null)
     const cooldown = customChurnable ? parseInt(customCooldown) || null : null
-    await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined, cooldown, {
+    const result = await addCustomBonus(userId, customBank, parseInt(customAmount), customDate, customNotes || undefined, cooldown, {
       ddRequired: customDdRequired,
       minDdTotal: customDdRequired && customMinDdTotal ? parseInt(customMinDdTotal) : null,
       minDdPerDeposit: customDdRequired && customMinDdPerDeposit ? parseInt(customMinDdPerDeposit) : null,
@@ -324,8 +390,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       depositWindowDays: customDdRequired && customDepositWindow ? parseInt(customDepositWindow) : null,
       holdingPeriodDays: customHoldingPeriod ? parseInt(customHoldingPeriod) : null,
     })
+    if (!result) { setAddCustomError("Failed to save — please check your connection and try again."); return }
     await loadRecords()
     setShowAddCustom(false)
+    setAddCustomError(null)
     setCustomBank(""); setCustomAmount(""); setCustomDate(todayStr()); setCustomNotes("")
     setCustomChurnable(false); setCustomCooldown("12")
     setCustomDdRequired(false); setCustomMinDdTotal(""); setCustomMinDdPerDeposit("")
@@ -345,23 +413,70 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     await loadRecords()
   }
 
+  function handleOpenEditCustom(c: CustomBonus) {
+    setCustomBank(c.bank_name)
+    setCustomAmount(String(c.bonus_amount))
+    setCustomDate(c.opened_date)
+    setCustomNotes(c.notes ?? "")
+    setCustomChurnable(c.cooldown_months != null)
+    setCustomCooldown(c.cooldown_months ? String(c.cooldown_months) : "12")
+    setCustomDdRequired(c.dd_required ?? false)
+    setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : "")
+    setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : "")
+    setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : "")
+    setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : "")
+    setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : "")
+    setEditingCustom(c)
+  }
+
+  async function handleSaveEditCustom() {
+    if (!editingCustom || !customBank || !customAmount) return
+    await updateCustomBonus(editingCustom.id, {
+      bank_name: customBank,
+      bonus_amount: parseInt(customAmount),
+      opened_date: customDate,
+      notes: customNotes || null,
+      cooldown_months: customChurnable ? (parseInt(customCooldown) || null) : null,
+      dd_required: customDdRequired,
+      min_dd_total: customDdRequired && customMinDdTotal ? parseInt(customMinDdTotal) : null,
+      min_dd_per_deposit: customDdRequired && customMinDdPerDeposit ? parseInt(customMinDdPerDeposit) : null,
+      dd_count_required: customDdRequired && customDdCount ? parseInt(customDdCount) : null,
+      deposit_window_days: customDdRequired && customDepositWindow ? parseInt(customDepositWindow) : null,
+      holding_period_days: customHoldingPeriod ? parseInt(customHoldingPeriod) : null,
+    })
+    await loadRecords()
+    setEditingCustom(null)
+  }
+
 
   async function handleCustomKeptOpen(id: string) {
     await updateCustomBonus(id, { current_step: "kept_open" })
     setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "kept_open" } : c))
   }
 
-  async function handleCustomSkip(id: string) {
-    await updateCustomBonus(id, { current_step: "skipped" })
-    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "skipped" } : c))
-  }
-
   async function handleCustomUnskip(id: string) {
-    await updateCustomBonus(id, { current_step: null })
-    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: null } : c))
+    await updateCustomBonus(id, { current_step: "pending" })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "pending" } : c))
   }
 
-  const activeCustom = customBonuses.filter(c => !c.closed_date && c.current_step !== "kept_open" && c.current_step !== "skipped")
+  function openStartCustomModal(bonus: CustomBonus) {
+    setActionCustom({ bonus, mode: "start" })
+    setActionDate(todayStr())
+  }
+
+  async function handleConfirmStartCustom() {
+    if (!actionCustom) return
+    const date = actionDate || todayStr()
+    await updateCustomBonus(actionCustom.bonus.id, { current_step: null, opened_date: date })
+    setCustomBonuses(prev => prev.map(c => c.id === actionCustom.bonus.id ? { ...c, current_step: null, opened_date: date } : c))
+    setProjectionResult(null)
+    setActionCustom(null)
+  }
+
+  // pending = added to queue but not yet started
+  const pendingCustom = customBonuses.filter(c => !c.closed_date && c.current_step === "pending")
+  // active = started (current_step !== pending/kept_open/skipped, not closed)
+  const activeCustom = customBonuses.filter(c => !c.closed_date && c.current_step !== "kept_open" && c.current_step !== "skipped" && c.current_step !== "pending")
   const customKeptOpen = customBonuses.filter(c => !c.closed_date && c.current_step === "kept_open")
   const customSkipped = customBonuses.filter(c => !c.closed_date && c.current_step === "skipped")
   const closedCustom = customBonuses.filter(c => c.closed_date)
@@ -423,21 +538,22 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
+  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds })
+      const slotBlockedUntilWeeks = buildCustomSlotBlocks()
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds])
+  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
   const today730End = addDays(todayStr(), 730)
   const yearBonuses365 = projected365.filter(p => new Date(p.start_date) <= today365End)
 
-  // Project custom bonuses into the plan (active + future churnable cycles)
+  // Project custom bonuses into the plan (active + future churnable cycles only — pending stay in queue until started)
   const customProjectedBonuses: ProjectedBonus[] = []
   // Active (open) custom bonuses — project current cycle
   for (const c of activeCustom) {
@@ -448,9 +564,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       customProjectedBonuses.push({
         bank_name: c.bank_name,
         bonus_amount: c.bonus_amount,
-        start_date: fmtDate(startDate),
-        payout_date: fmtDate(payoutDate),
+        start_date: toISODate(startDate),
+        payout_date: toISODate(payoutDate),
         weeks: Math.ceil(estimatedDays / 7),
+        isCustom: true,
+        customId: c.id,
       })
     }
     // If churnable, also project future cycles
@@ -462,9 +580,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         customProjectedBonuses.push({
           bank_name: c.bank_name,
           bonus_amount: c.bonus_amount,
-          start_date: fmtDate(nextStart),
-          payout_date: fmtDate(nextPayout),
+          start_date: toISODate(nextStart),
+          payout_date: toISODate(nextPayout),
           weeks: Math.ceil(estimatedDays / 7),
+          isCustom: true,
+          customId: c.id,
         })
         nextStart = new Date(nextStart.getTime())
         nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
@@ -484,9 +604,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       customProjectedBonuses.push({
         bank_name: c.bank_name,
         bonus_amount: c.bonus_amount,
-        start_date: fmtDate(nextStart),
-        payout_date: fmtDate(nextPayout),
+        start_date: toISODate(nextStart),
+        payout_date: toISODate(nextPayout),
         weeks: Math.ceil(durationDays / 7),
+        isCustom: true,
+        customId: c.id,
       })
       nextStart = new Date(nextStart.getTime())
       nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
@@ -501,28 +623,29 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const workingBonuses = inProgress.filter(({ bonus: b }) => !keptOpen.includes(b.id))
   // Number of parallel slots = number of income sources
   const totalSlots = allIncomeSources.length
-  // How many open slots are available for new bonuses
-  const openSlots = Math.max(0, totalSlots - workingBonuses.length)
-  // Hero cards: show one per open slot
-  const heroBonuses = available.slice(0, openSlots)
-  const currentBonus = workingBonuses[0] ?? available[0] ?? null
-  // Available Next: show bonuses after the hero cards
-  const upNextBonuses = available.slice(openSlots, openSlots + 2)
+  // How many open slots are available for new bonuses (custom bonuses occupy slots too)
+  const openSlots = Math.max(0, totalSlots - workingBonuses.length - activeCustom.length)
+  // Unified available pool: standard + pending custom, sorted by profitability
+  type AvailableItem =
+    | { kind: "standard"; bonus: typeof available[number]["bonus"]; weeksToComplete: number | null; velocity: number | null; feasible: boolean }
+    | { kind: "custom"; bonus: typeof pendingCustom[number]; weeksToComplete: number | null; velocity: number | null; feasible: boolean }
+  const allAvailable: AvailableItem[] = [
+    ...available.map((b): AvailableItem => ({
+      kind: "standard", bonus: b.bonus, weeksToComplete: b.weeksToComplete, velocity: b.velocity, feasible: b.feasible,
+    })),
+    ...pendingCustom.map((c): AvailableItem => {
+      const cv = computeCustomVelocity(c, profile.pay_frequency, profile.paycheck_amount, extraSources)
+      return { kind: "custom", bonus: c, velocity: cv.velocity, weeksToComplete: cv.weeksToComplete, feasible: cv.feasible }
+    }),
+  ].sort((a, b) => {
+    if (!a.feasible && b.feasible) return 1
+    if (a.feasible && !b.feasible) return -1
+    return (b.velocity ?? 0) - (a.velocity ?? 0)
+  })
 
-  // Merge standard and custom queue bonuses, sorted by profitability
-  type QueueItem =
-    | { kind: "standard"; item: typeof upNextBonuses[number]; idx: number; velocity: number }
-    | { kind: "custom"; item: typeof activeCustom[number]; velocity: number }
-  const queueItems: QueueItem[] = [
-    ...upNextBonuses.map((item, idx): QueueItem => ({
-      kind: "standard", item, idx,
-      velocity: item.velocity ?? (item.bonus.bonus_amount / (item.weeksToComplete ?? 8)),
-    })),
-    ...activeCustom.map((c): QueueItem => ({
-      kind: "custom", item: c,
-      velocity: c.bonus_amount / Math.ceil((c.deposit_window_days ?? c.holding_period_days ?? 56) / 7),
-    })),
-  ].sort((a, b) => b.velocity - a.velocity)
+  const heroBonuses = allAvailable.slice(0, openSlots)
+  const currentBonus = workingBonuses[0] ?? available[0] ?? null
+  const queueItems = allAvailable.slice(openSlots, openSlots + 3)
 
   if (!mounted || loadingRecords) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
@@ -766,18 +889,30 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               <div style={{ fontSize: 11, color: "#ccc" }}>{item.from} → {item.to}</div>
                             </div>
                           </div>
-                        ) : (
-                          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                              <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20 }}>{item.idx + 1}</span>
-                              <div>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{item.bonus.bank_name}</div>
-                                <div style={{ fontSize: 11, color: "#999" }}>Start {item.bonus.start_date} → Payout ~{item.bonus.payout_date}</div>
+                        ) : (() => {
+                          const p = item.bonus
+                          const startFmt = fmtDate(new Date(p.start_date + "T00:00:00"))
+                          const payoutFmt = fmtDate(new Date(p.payout_date + "T00:00:00"))
+                          return (
+                            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8, gap: 8 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+                                <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20, flexShrink: 0 }}>{item.idx + 1}</span>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{p.bank_name}</span>
+                                    {p.isCustom && (
+                                      <span style={{ fontSize: 10, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 4, padding: "1px 6px", letterSpacing: "0.04em" }}>Custom</span>
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: "#999" }}>Start {startFmt} → Payout ~{payoutFmt}</div>
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
                               </div>
                             </div>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(item.bonus.bonus_amount)}</span>
-                          </div>
-                        )
+                          )
+                        })()
                       )
                     })()}
                   </div>
@@ -793,103 +928,144 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             })()}
 
             {/* ── HERO: Action Cards (one per open income slot) ── */}
-            {heroBonuses.map((hb, heroIdx) => (
-              <div key={hb.bonus.id} style={{
-                background: "#fff", border: heroIdx === 0 ? "2px solid #0d7c5f" : "2px solid #2563eb", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
-                boxShadow: heroIdx === 0 ? "0 4px 24px rgba(13,124,95,0.08)" : "0 4px 24px rgba(37,99,235,0.06)",
-              }}>
-                {heroBonuses.length > 1 && (
-                  <div style={{ fontSize: 11, color: heroIdx === 0 ? "#0d7c5f" : "#2563eb", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
-                    Income source {workingBonuses.length + heroIdx + 1} — open slot
+            {heroBonuses.map((hb, heroIdx) => {
+              const accentColor = heroIdx === 0 ? "#0d7c5f" : "#2563eb"
+              return hb.kind === "custom" ? (
+                // Custom bonus hero card
+                <div key={hb.bonus.id} style={{
+                  background: "#fff", border: "2px solid #7c3aed", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                  boxShadow: "0 4px 24px rgba(124,58,237,0.08)",
+                }}>
+                  {heroBonuses.length > 1 && (
+                    <div style={{ fontSize: 11, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
+                      Income source {workingBonuses.length + heroIdx + 1} — open slot
+                    </div>
+                  )}
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+                    {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
                   </div>
-                )}
-                <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                  {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
-                </div>
-                <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
-
-                <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
-                  <div>
+                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>Custom bonus you added</div>
+                  <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
                     <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
-                  </div>
-                  <div style={{ fontSize: 14, color: "#666" }}>
-                    Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
-                  </div>
-                </div>
-
-                <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                  {hb.bonus.requirements?.min_direct_deposit_total && (
-                    <div style={{ fontSize: 14, color: "#555" }}>
-                      Deposit ${hb.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {hb.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
-                    </div>
-                  )}
-                  {!hb.bonus.requirements?.min_direct_deposit_total && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                    <div style={{ fontSize: 14, color: "#555" }}>
-                      Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
-                    </div>
-                  )}
-                  {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                    <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
-                  )}
-                </div>
-
-                {/* Fees dropdown */}
-                <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
-                  <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
-                    style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 10, color: "#999" }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
-                    Fees &amp; how to avoid
-                  </button>
-                  {expandedFees === hb.bonus.id && (
-                    <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-                      {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
-                        <div>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
-                          {hb.bonus.fees.monthly_fee_waiver_text && (
-                            <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
-                          )}
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
-                      )}
-                      {hb.bonus.fees?.early_closure_fee > 0 && (
-                        <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
-                  {bestLink(hb.bonus.source_links) && (
-                    <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
-                      style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: heroIdx === 0 ? "#0d7c5f" : "#2563eb", color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
-                      Open your account
-                    </a>
-                  )}
-                  <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
-                    style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
-                    I already opened it
-                  </button>
-                  <button onClick={() => handleSkip(hb.bonus.id)}
-                    style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
-                    Not now
-                  </button>
-                </div>
-                {heroIdx === 0 && (
-                  <div style={{ marginTop: 16 }}>
-                    <button onClick={() => setShowDisclaimer(d => !d)}
-                      style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                      {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
-                    </button>
-                    {showDisclaimer && (
-                      <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
-                        Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
-                      </p>
+                    <span style={{ fontSize: 11, color: "#7c3aed", background: "#ede9fe", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                    {hb.weeksToComplete && (
+                      <div style={{ fontSize: 14, color: "#666" }}>
+                        Complete in {Math.ceil(hb.weeksToComplete / 2)} pay cycle{Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            ))}
+                  {hb.bonus.notes && <div style={{ fontSize: 14, color: "#555", marginTop: 8 }}>{hb.bonus.notes}</div>}
+                  {hb.bonus.dd_required && hb.bonus.min_dd_total && (
+                    <div style={{ fontSize: 14, color: "#555", marginTop: 8 }}>
+                      Deposit ${hb.bonus.min_dd_total.toLocaleString()} in {hb.bonus.deposit_window_days ?? 90} days
+                    </div>
+                  )}
+                  {hb.bonus.cooldown_months && (
+                    <div style={{ fontSize: 13, color: "#888", marginTop: 6 }}>Churnable · every {hb.bonus.cooldown_months}mo</div>
+                  )}
+                  <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
+                    <button onClick={() => openStartCustomModal(hb.bonus)}
+                      style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#7c3aed", color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}>
+                      Start now
+                    </button>
+                    <button onClick={async () => { await updateCustomBonus(hb.bonus.id, { current_step: "skipped" }); setCustomBonuses(prev => prev.map(x => x.id === hb.bonus.id ? { ...x, current_step: "skipped" } : x)) }}
+                      style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                      Not now
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // Standard bonus hero card
+                <div key={hb.bonus.id} style={{
+                  background: "#fff", border: `2px solid ${accentColor}`, borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                  boxShadow: heroIdx === 0 ? "0 4px 24px rgba(13,124,95,0.08)" : "0 4px 24px rgba(37,99,235,0.06)",
+                }}>
+                  {heroBonuses.length > 1 && (
+                    <div style={{ fontSize: 11, color: accentColor, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
+                      Income source {workingBonuses.length + heroIdx + 1} — open slot
+                    </div>
+                  )}
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+                    {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
+                  </div>
+                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
+                  <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
+                    <div style={{ fontSize: 14, color: "#666" }}>
+                      Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+                    {hb.bonus.requirements?.min_direct_deposit_total && (
+                      <div style={{ fontSize: 14, color: "#555" }}>
+                        Deposit ${hb.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {hb.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
+                      </div>
+                    )}
+                    {!hb.bonus.requirements?.min_direct_deposit_total && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
+                      <div style={{ fontSize: 14, color: "#555" }}>
+                        Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
+                      </div>
+                    )}
+                    {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
+                      <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
+                    )}
+                  </div>
+                  <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                    <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
+                      style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontSize: 10, color: "#999" }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
+                      Fees &amp; how to avoid
+                    </button>
+                    {expandedFees === hb.bonus.id && (
+                      <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
+                            {hb.bonus.fees.monthly_fee_waiver_text && (
+                              <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                        )}
+                        {hb.bonus.fees?.early_closure_fee > 0 && (
+                          <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
+                    {bestLink(hb.bonus.source_links) && (
+                      <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
+                        style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                        Open your account
+                      </a>
+                    )}
+                    <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                      style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                      I already opened it
+                    </button>
+                    <button onClick={() => handleSkip(hb.bonus.id)}
+                      style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                      Not now
+                    </button>
+                  </div>
+                  {heroIdx === 0 && (
+                    <div style={{ marginTop: 16 }}>
+                      <button onClick={() => setShowDisclaimer(d => !d)}
+                        style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                        {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
+                      </button>
+                      {showDisclaimer && (
+                        <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
+                          Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
 
             {/* ══════════════════════════════════════════════════════════════════
                  CURRENTLY WORKING ON — Checklist cards
@@ -909,12 +1085,209 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 if (!aPosted && bPosted) return -1
                 return 0
               })
-              if (activeBonuses.length === 0) return null
+              if (activeBonuses.length === 0 && activeCustom.length === 0) return null
 
               return (
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {activeCustom.map(c => {
+                      const windowDays = c.deposit_window_days ?? c.holding_period_days ?? 56
+                      const openedDate = new Date(c.opened_date + "T00:00:00")
+                      const todayD = new Date(); todayD.setHours(0, 0, 0, 0)
+                      const daysSinceOpen = Math.floor((todayD.getTime() - openedDate.getTime()) / 86400000)
+                      const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
+
+                      // Step state derived from current_step
+                      const accountOpened = c.current_step !== null
+                      const requirementsMet = c.current_step === "requirements_met" || c.current_step === "bonus_posted"
+                      const bonusPosted = c.current_step === "bonus_posted"
+
+                      type CustomStep = { key: string; label: string; done: boolean }
+                      const customSteps: CustomStep[] = [
+                        { key: "account_opened", label: "Account Opened", done: accountOpened },
+                        ...(c.dd_required ? [{ key: "requirements_met", label: "Deposit Requirement Met", done: requirementsMet }] : []),
+                        { key: "bonus_posted", label: "Bonus Posted", done: bonusPosted },
+                      ]
+                      const firstUndone = customSteps.find(s => !s.done)
+
+                      async function advanceCustomStep(key: string) {
+                        await updateCustomBonus(c.id, { current_step: key })
+                        setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, current_step: key } : x))
+                      }
+                      async function undoCustomStep() {
+                        const order = ["account_opened", ...(c.dd_required ? ["requirements_met"] : []), "bonus_posted"]
+                        const idx = order.indexOf(c.current_step ?? "")
+                        const prev = idx > 0 ? order[idx - 1] : null
+                        await updateCustomBonus(c.id, { current_step: prev })
+                        setCustomBonuses(prev2 => prev2.map(x => x.id === c.id ? { ...x, current_step: prev } : x))
+                      }
+
+                      // Deposit tracking
+                      const customDeposits = deposits.filter(d => d.bonus_id === c.id)
+                      const depositedSoFar = customDeposits.reduce((s, d) => s + d.amount, 0)
+                      const totalRequired = c.min_dd_total ?? 0
+
+                      return (
+                        <div key={c.id} style={{
+                          background: "#fff",
+                          border: bonusPosted ? "1px solid #e0e0e0" : "2px solid #7c3aed",
+                          borderRadius: 14, overflow: "hidden",
+                          boxShadow: bonusPosted ? "none" : "0 2px 12px rgba(124,58,237,0.05)",
+                        }}>
+                          {/* Header */}
+                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                              <span style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{c.bank_name}</span>
+                              <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                            </div>
+                            <span style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</span>
+                          </div>
+
+                          {/* Checklist */}
+                          <div style={{ padding: "16px 24px 0" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Steps to unlock {money(c.bonus_amount)}</div>
+                              {c.current_step !== null && (
+                                <button onClick={undoCustomStep}
+                                  style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
+                                  Undo
+                                </button>
+                              )}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              {customSteps.map(step => {
+                                const isActive = firstUndone?.key === step.key
+                                return (
+                                  <div key={step.key}
+                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: step.done ? "default" : "pointer", borderRadius: 6 }}
+                                    onClick={() => { if (!step.done) advanceCustomStep(step.key) }}>
+                                    <div style={{
+                                      width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                      border: step.done ? "none" : `2px solid ${isActive ? "#7c3aed" : "#d4d4d4"}`,
+                                      background: step.done ? "#0d7c5f" : "transparent",
+                                      display: "flex", alignItems: "center", justifyContent: "center",
+                                    }}>
+                                      {step.done && (
+                                        <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                          <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <span style={{
+                                      fontSize: 14,
+                                      color: step.done ? "#888" : isActive ? "#111" : "#bbb",
+                                      fontWeight: isActive ? 600 : 400,
+                                      textDecoration: step.done ? "line-through" : "none",
+                                    }}>
+                                      {step.label}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Deposit tracking */}
+                          {c.dd_required && totalRequired > 0 && (
+                            <div style={{ padding: "12px 24px 0" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                <span style={{ fontSize: 12, color: "#888" }}>
+                                  Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
+                                </span>
+                                <button onClick={() => { setAddingDeposit(addingDeposit === c.id ? null : c.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
+                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
+                                  +
+                                </button>
+                              </div>
+                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: customDeposits.length > 0 ? 8 : 0 }}>
+                                <div style={{
+                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
+                                  width: `${Math.min(100, (depositedSoFar / totalRequired) * 100)}%`,
+                                  transition: "width 0.3s ease",
+                                }} />
+                              </div>
+                              {customDeposits.length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 4 }}>
+                                  {customDeposits.map(d => (
+                                    <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                        <button onClick={() => handleDeleteDeposit(d.id)}
+                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {addingDeposit === c.id && (
+                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
+                                  <div style={{ position: "relative", flex: 1 }}>
+                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                                      placeholder="Amount" />
+                                  </div>
+                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
+                                  <button onClick={() => handleAddDeposit(c.id)}
+                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
+                                    Add
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Urgency */}
+                          {!bonusPosted && windowDays > 0 && (
+                            <div style={{
+                              padding: "10px 24px 0", fontSize: 12,
+                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
+                              fontWeight: daysRemaining <= 30 ? 600 : 400,
+                            }}>
+                              {daysRemaining > 0 ? `${daysRemaining} days remaining to complete` : "Window may have passed"}
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          {bonusPosted && (
+                            <div style={{ padding: "16px 24px 0" }}>
+                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                                <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                  Mark account closed
+                                </button>
+                                <button onClick={() => handleCustomKeptOpen(c.id)}
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                  Keep open
+                                </button>
+                                <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
+                                  Closing the account starts your cooldown period for this bonus.
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {!bonusPosted && (
+                            <div style={{ padding: "14px 24px 0" }}>
+                              <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
+                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
+                                Mark as closed
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Edit / Remove */}
+                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end", gap: 12 }}>
+                            <button onClick={() => handleOpenEditCustom(c)}
+                              style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              Edit
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
                     {activeBonuses.map(({ bonus: b, churnStatus }) => {
                       const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
                       if (!record) return null
@@ -1269,76 +1642,51 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               <div style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {queueItems.map(q => {
-                  if (q.kind === "custom") {
-                    const c = q.item
-                    const isDone = c.current_step === "requirements_met"
-                    return (
-                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
-                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                  {queueItems.map((q, i) => {
+                    if (q.kind === "custom") {
+                      const c = q.bonus
+                      const payCycles = q.weeksToComplete ? Math.ceil(q.weeksToComplete / 2) : null
+                      return (
+                        <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</span>
+                                <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                              </div>
+                              <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                                {payCycles ? `Complete in ~${payCycles} pay cycle${payCycles > 1 ? "s" : ""}` : (c.notes || "Custom bonus")}
+                              </div>
                             </div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
-                              {c.notes || (c.cooldown_months ? `Churnable · every ${c.cooldown_months}mo` : "One-time")}
-                            </div>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
                           </div>
-                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
-                        </div>
-                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                          {isDone ? (
-                            <>
-                              <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                                style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Mark closed</button>
-                              <button onClick={() => handleCustomKeptOpen(c.id)}
-                                style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#666", background: "none", borderRadius: 8, cursor: "pointer" }}>Keep open</button>
-                            </>
-                          ) : (
-                            <button onClick={() => handleCustomSkip(c.id)}
+                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                            <button onClick={() => openStartCustomModal(c)}
+                              style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Start now</button>
+                            <button onClick={async () => { await updateCustomBonus(c.id, { current_step: "skipped" }); setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, current_step: "skipped" } : x)) }}
                               style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  }
-                  // Standard bonus
-                  const { item: { bonus: b, churnStatus }, idx: i } = q as Extract<QueueItem, { kind: "standard" }>
-                  const isActive = churnStatus.status === "in_progress"
-                  const record = isActive ? completedRecords.find(r => r.bonus_id === b.id && !r.closed_date) : null
-                  const mDetail = record ? getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount) : null
-                  const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (upNextBonuses[0]?.weeksToComplete ?? 0)
-                  return (
+                      )
+                    }
+                    // Standard bonus
+                    const b = q.bonus
+                    const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (queueItems[0]?.kind === "standard" ? (queueItems[0].weeksToComplete ?? 0) : 0)
+                    return (
                       <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
-                              {isActive
-                                ? (mDetail ? `Next: ${mDetail.nextStep}` : "In progress")
-                                : `Eligible in ~${weeksUntil} weeks`
-                              }
-                            </div>
+                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Eligible in ~{weeksUntil} weeks</div>
                           </div>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                         </div>
-                        {isActive ? (
-                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                            {mDetail?.safeToClose && mDetail?.bonusPosted && (
-                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Close and collect</button>
-                            )}
-                            <button onClick={() => handleDelete(b.id)}
-                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#bbb", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
-                          </div>
-                        ) : (
-                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                            <button onClick={() => handleSkip(b.id)}
-                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
-                          </div>
-                        )}
-                        {/* Fees dropdown */}
+                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                          <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
+                            style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Start now</button>
+                          <button onClick={() => handleSkip(b.id)}
+                            style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
+                        </div>
                         <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
                           <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
                             style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
@@ -1528,18 +1876,41 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </details>
             )}
 
-            {/* ── Custom Bonuses (closed history only) ── */}
-            {closedCustom.length > 0 && (
+            {/* ── Custom Bonuses (all — manage from here) ── */}
+            {customBonuses.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Custom bonus history</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Custom bonuses</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {customBonuses.filter(c => !c.closed_date).map(c => {
+                    const statusLabel = c.current_step === "pending" ? "In queue" : c.current_step === "skipped" ? "Skipped" : c.current_step === "kept_open" ? "Account open" : "In progress"
+                    const statusColor = c.current_step === "pending" ? "#999" : c.current_step === "skipped" ? "#bbb" : "#7c3aed"
+                    return (
+                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                              <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                            </div>
+                            <div style={{ fontSize: 11, marginTop: 2, color: statusColor }}>{statusLabel} · {money(c.bonus_amount)}</div>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : "") }}
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
+                            <button onClick={() => handleDeleteCustom(c.id)}
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
                   {closedCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: 0.7 }}>
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: 0.6 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
                           <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>Closed {fmtShortDate(c.closed_date!)}</div>
                         </div>
@@ -1646,6 +2017,43 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     </div>
                   )
                 })}
+                {[...pendingCustom, ...activeCustom].map(c => {
+                  const cv = computeCustomVelocity(c, profile.pay_frequency, profile.paycheck_amount, extraSources)
+                  const isActive = c.current_step !== "pending"
+                  return (
+                    <div key={c.id} style={{
+                      background: "#fff", border: isActive ? "1px solid #ddd6fe" : "1px solid #e8e8e8",
+                      borderRadius: 12, padding: "18px 20px",
+                      opacity: cv.feasible ? 1 : 0.4,
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 15, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 4, padding: "1px 6px" }}>Custom</span>
+                          </div>
+                          {isActive && <div style={{ fontSize: 11, color: "#7c3aed", marginTop: 2 }}>Active</div>}
+                        </div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 12 }}>
+                        {cv.weeksToComplete && <span><span style={{ color: "#bbb" }}>Time </span><span style={{ color: "#666" }}>{cv.weeksToComplete}w</span></span>}
+                        {c.deposit_window_days && <span><span style={{ color: "#bbb" }}>Window </span><span style={{ color: "#666" }}>{c.deposit_window_days}d</span></span>}
+                        {cv.velocity && <span><span style={{ color: "#bbb" }}>$/wk </span><span style={{ color: "#0d7c5f" }}>${cv.velocity.toFixed(0)}</span></span>}
+                      </div>
+                      {c.notes && <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>{c.notes}</div>}
+                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                        {isActive ? (
+                          <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
+                            style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
+                        ) : (
+                          <button onClick={() => openStartCustomModal(c)}
+                            style={{ flex: 1, padding: "8px", fontSize: 12, fontWeight: 600, background: "#7c3aed", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Start now</button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             )}
 
@@ -1720,10 +2128,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <input type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} placeholder="200" style={{ ...modalInput, paddingLeft: 24 }} />
                 </div>
               </div>
-              <div>
-                <label style={modalLabel}>Account opened date</label>
-                <input type="date" value={customDate} onChange={e => setCustomDate(e.target.value)} style={modalInput} />
-              </div>
               {/* Direct deposit requirements */}
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -1782,39 +2186,148 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 )}
               </div>
             </div>
+            {addCustomError && (
+              <div style={{ fontSize: 12, color: "#dc2626", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", marginTop: 12 }}>
+                {addCustomError}
+              </div>
+            )}
             <div style={modalActions}>
-              <button onClick={() => { setShowAddCustom(false); setCustomChurnable(false); setCustomCooldown("12") }} style={cancelBtnLight}>Cancel</button>
+              <button onClick={() => { setShowAddCustom(false); setCustomChurnable(false); setCustomCooldown("12"); setAddCustomError(null) }} style={cancelBtnLight}>Cancel</button>
               <button onClick={handleAddCustom} disabled={!customBank || !customAmount} style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Add Bonus</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Close Custom Bonus Modal */}
+      {/* Start / Close Custom Bonus Modal */}
       {actionCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
           <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionCustom.bonus.bank_name}</div>
-            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
-            <label style={modalLabel}>Account closed date</label>
-            <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
-            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
-              <input type="checkbox" id="customBonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-              <label htmlFor="customBonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
-            </div>
-            {bonusReceived && (
+            {actionCustom.mode === "start" ? (
               <>
-                <label style={modalLabel}>Amount received</label>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
-                  <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionCustom.bonus.bonus_amount)} />
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you open this account?</div>
+                <label style={modalLabel}>Account opened date</label>
+                <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
+                <div style={modalActions}>
+                  <button onClick={() => setActionCustom(null)} style={cancelBtnLight}>Cancel</button>
+                  <button onClick={handleConfirmStartCustom} style={confirmBtnLight}>Start Bonus</button>
                 </div>
-                <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionCustom.bonus.bonus_amount.toLocaleString()}</div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
+                <label style={modalLabel}>Account closed date</label>
+                <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
+                  <input type="checkbox" id="customBonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="customBonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+                </div>
+                {bonusReceived && (
+                  <>
+                    <label style={modalLabel}>Amount received</label>
+                    <div style={{ position: "relative" }}>
+                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                      <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionCustom.bonus.bonus_amount)} />
+                    </div>
+                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionCustom.bonus.bonus_amount.toLocaleString()}</div>
+                  </>
+                )}
+                <div style={modalActions}>
+                  <button onClick={() => setActionCustom(null)} style={cancelBtnLight}>Cancel</button>
+                  <button onClick={handleCloseCustom} style={confirmBtnLight}>Close Account</button>
+                </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Custom Bonus Modal */}
+      {editingCustom && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)", maxHeight: "90vh", overflowY: "auto" as const }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Edit Custom Bonus</div>
+            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>{editingCustom.bank_name}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={modalLabel}>Bank name</label>
+                <input type="text" value={customBank} onChange={e => setCustomBank(e.target.value)} style={modalInput} />
+              </div>
+              <div>
+                <label style={modalLabel}>Bonus amount</label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} />
+                </div>
+              </div>
+              <div>
+                <label style={modalLabel}>Account opened date</label>
+                <input type="date" value={customDate} onChange={e => setCustomDate(e.target.value)} style={modalInput} />
+              </div>
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <input type="checkbox" id="editCustomDdRequired" checked={customDdRequired} onChange={e => setCustomDdRequired(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="editCustomDdRequired" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Requires direct deposit</label>
+                </div>
+                {customDdRequired && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 4 }}>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Min total DD ($)</label>
+                        <input type="number" value={customMinDdTotal} onChange={e => setCustomMinDdTotal(e.target.value)} placeholder="e.g. 500" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Min per deposit ($)</label>
+                        <input type="number" value={customMinDdPerDeposit} onChange={e => setCustomMinDdPerDeposit(e.target.value)} placeholder="e.g. 200" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>DD count required</label>
+                        <input type="number" value={customDdCount} onChange={e => setCustomDdCount(e.target.value)} placeholder="e.g. 2" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ ...modalLabel, fontSize: 11 }}>Deposit window (days)</label>
+                        <input type="number" value={customDepositWindow} onChange={e => setCustomDepositWindow(e.target.value)} placeholder="e.g. 90" style={{ ...modalInput, padding: "6px 10px" }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                <label style={{ ...modalLabel, fontSize: 11 }}>Holding period after bonus posts (days, optional)</label>
+                <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
+              </div>
+              <div>
+                <label style={modalLabel}>Notes (optional)</label>
+                <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} style={modalInput} />
+              </div>
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" id="editCustomChurnable" checked={customChurnable} onChange={e => setCustomChurnable(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
+                </div>
+                {customChurnable && (
+                  <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                    <label style={{ fontSize: 13, color: "#666" }}>Cooldown period:</label>
+                    <input type="number" value={customCooldown} onChange={e => setCustomCooldown(e.target.value)}
+                      style={{ ...modalInput, width: 70, padding: "6px 10px", textAlign: "center" as const }} min={1} />
+                    <span style={{ fontSize: 13, color: "#666" }}>months</span>
+                  </div>
+                )}
+              </div>
+            </div>
             <div style={modalActions}>
-              <button onClick={() => setActionCustom(null)} style={cancelBtnLight}>Cancel</button>
-              <button onClick={handleCloseCustom} style={confirmBtnLight}>Close Account</button>
+              <button onClick={() => setEditingCustom(null)} style={cancelBtnLight}>Cancel</button>
+              <button onClick={handleSaveEditCustom} disabled={!customBank || !customAmount}
+                style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Save</button>
+            </div>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f5f5f5", display: "flex", justifyContent: "center" }}>
+              <button onClick={async () => { await handleDeleteCustom(editingCustom.id); setEditingCustom(null) }}
+                style={{ fontSize: 12, color: "#dc2626", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
+                Delete this bonus permanently
+              </button>
             </div>
           </div>
         </div>

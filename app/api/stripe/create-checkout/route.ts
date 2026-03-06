@@ -1,3 +1,5 @@
+export const runtime = "nodejs"
+
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "../../../../lib/supabase/server"
 import { stripe, PRICES, getOrCreateCustomer } from "../../../../lib/stripe"
@@ -19,7 +21,7 @@ export async function POST(req: NextRequest) {
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${req.nextUrl.origin}/roadmap?checkout=success`,
+      success_url: `${req.nextUrl.origin}/login?checkout=success`,
       cancel_url: `${req.nextUrl.origin}/?checkout=cancelled`,
       subscription_data: {
         metadata: { supabase_user_id: user.id },

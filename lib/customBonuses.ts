@@ -58,6 +58,7 @@ export async function addCustomBonus(
       bank_name: bankName,
       bonus_amount: bonusAmount,
       opened_date: openedDate,
+      current_step: "pending",
       notes: notes || null,
       cooldown_months: cooldownMonths ?? null,
       dd_required: reqs?.ddRequired ?? false,
@@ -75,7 +76,12 @@ export async function addCustomBonus(
 
 export async function updateCustomBonus(
   id: string,
-  updates: Partial<Pick<CustomBonus, "closed_date" | "bonus_received" | "actual_amount" | "current_step" | "notes">>
+  updates: Partial<Pick<CustomBonus,
+    | "closed_date" | "bonus_received" | "actual_amount" | "current_step" | "notes"
+    | "bank_name" | "bonus_amount" | "opened_date" | "cooldown_months"
+    | "dd_required" | "min_dd_total" | "min_dd_per_deposit" | "dd_count_required"
+    | "deposit_window_days" | "holding_period_days"
+  >>
 ): Promise<boolean> {
   const supabase = createClient()
   const { error } = await supabase

@@ -15,6 +15,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
   const [loading, setLoading] = useState<"monthly" | "annual" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [polling, setPolling] = useState(false)
+  const [pollGaveUp, setPollGaveUp] = useState(false)
 
   const checkoutSuccess = searchParams.get("checkout") === "success"
 
@@ -29,6 +30,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
       if (attempts >= 10) {
         clearInterval(interval)
         setPolling(false)
+        setPollGaveUp(true)
       }
     }, 2000)
     return () => clearInterval(interval)
@@ -54,7 +56,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
   if (isSubscribed) return <>{children}</>
 
   // Show loading spinner while waiting for webhook after payment
-  if (checkoutSuccess || polling) {
+  if ((checkoutSuccess && !pollGaveUp) || polling) {
     return (
       <div style={{
         minHeight: "100vh", background: "#fafafa",

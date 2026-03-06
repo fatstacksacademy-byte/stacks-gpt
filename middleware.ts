@@ -10,7 +10,10 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const isProtected = PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
 
-  if (isProtected && !user) {
+  // Allow checkout success redirect through — session may be lost after Stripe redirect
+  const isCheckoutReturn = request.nextUrl.searchParams.get("checkout") === "success"
+
+  if (isProtected && !user && !isCheckoutReturn) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = "/login"
     return NextResponse.redirect(loginUrl)
@@ -27,6 +30,6 @@ export const config = {
      * - favicon.ico
      * - /login and /auth (public routes)
      */
-    "/((?!_next/static|_next/image|favicon.ico|login|auth|reset-password).*)",
+    "/((?!_next/static|_next/image|favicon.ico|login|auth|reset-password|api/stripe/webhook).*)",
   ],
 }

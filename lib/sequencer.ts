@@ -153,6 +153,7 @@ export function runSequencer({
   completedRecords = [],
   incomeSources,
   skippedBonusIds = [],
+  slotBlockedUntilWeeks = [],
 }: {
   slots: number
   payFrequency: string
@@ -160,6 +161,7 @@ export function runSequencer({
   completedRecords?: CompletedBonus[]
   incomeSources?: IncomeSource[]
   skippedBonusIds?: string[]
+  slotBlockedUntilWeeks?: number[]
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -216,7 +218,9 @@ export function runSequencer({
     }
   }
 
-  const slotNextAvailable = Array(slots).fill(1) as number[]
+  const slotNextAvailable = Array.from({ length: slots }, (_, i) =>
+    slotBlockedUntilWeeks[i] != null ? Math.max(1, slotBlockedUntilWeeks[i]) : 1
+  )
   const slotBonuses: SlotEntry[][] = Array.from({ length: slots }, () => [])
   let totalPlacements = 0
 

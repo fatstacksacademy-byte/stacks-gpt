@@ -1,13 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 
 export default function LoginPage() {
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const checkoutSuccess = searchParams.get("checkout") === "success"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -85,6 +87,11 @@ export default function LoginPage() {
             <p style={{ fontSize: 14, color: "#999", margin: 0 }}>
               {mode === "signin" ? "Sign in to continue to your dashboard" : "We'll send you a reset link"}
             </p>
+            {checkoutSuccess && mode === "signin" && (
+              <div style={{ marginTop: 12, padding: "10px 14px", background: "#f0faf5", border: "1px solid #bbf7d0", borderRadius: 8, fontSize: 13, color: "#0d7c5f", fontWeight: 600 }}>
+                Payment received! Sign in to access your bonus plan.
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

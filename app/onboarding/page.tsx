@@ -44,6 +44,7 @@ export default function OnboardingPage() {
   const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">(initialPlan)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
@@ -87,6 +88,7 @@ export default function OnboardingPage() {
 
   async function handleCheckout() {
     setCheckoutLoading(true)
+    setCheckoutError(null)
     try {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -94,9 +96,14 @@ export default function OnboardingPage() {
         body: JSON.stringify({ plan: selectedPlan }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else setCheckoutLoading(false)
-    } catch {
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setCheckoutError(data.error ?? "Something went wrong. Please try again.")
+        setCheckoutLoading(false)
+      }
+    } catch (err: any) {
+      setCheckoutError(err.message ?? "Network error. Please try again.")
       setCheckoutLoading(false)
     }
   }
@@ -345,6 +352,11 @@ export default function OnboardingPage() {
                     }}>
                     {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my bonus plan for $50/year" : "Unlock my bonus plan for $5/mo"}
                   </button>
+                  {checkoutError && (
+                    <div style={{ fontSize: 12, color: "#dc2626", textAlign: "center" as const, marginTop: 8 }}>
+                      {checkoutError}
+                    </div>
+                  )}
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
                   </div>
