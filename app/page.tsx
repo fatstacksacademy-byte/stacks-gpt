@@ -281,6 +281,23 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── DEMO VIDEO ── */}
+      <section className="lp-section" style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+          See it in action
+        </h2>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>A quick walkthrough of how Stacks OS works.</p>
+        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+          <iframe
+            src="https://www.youtube.com/embed/cS9xRWycQQk"
+            title="Stacks OS Demo"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+          />
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section className="lp-faq" style={{ maxWidth: 700, margin: "0 auto" }}>
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
