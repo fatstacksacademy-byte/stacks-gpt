@@ -360,6 +360,23 @@ export default function OnboardingPage() {
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
                   </div>
+
+                  {/* Feature checklist */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
+                    {[
+                      "Personalized bonus queue",
+                      "Step-by-step checklists",
+                      "Deposit tracking",
+                      "12-month earnings projection",
+                      "Cooldown + eligibility tracking",
+                      "Bonus details + requirements",
+                    ].map((feature) => (
+                      <div key={feature} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ color: "#0d7c5f", fontSize: 16, fontWeight: 700 }}>✓</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             ) : (
