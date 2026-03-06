@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
@@ -10,6 +10,13 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get("checkout") === "success"
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) { router.push("/roadmap"); router.refresh() }
+    })
+  }, [])
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
