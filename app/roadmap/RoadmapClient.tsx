@@ -255,6 +255,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       getOpenAccounts(userId),
     ])
     setCompletedRecords(records)
+    // Backfill: any kept-open or bonus_posted custom bonus should have bonus_received = true
+    const keptOpenMissing = custom.filter(c => (c.current_step === "kept_open" || c.current_step === "bonus_posted") && !c.bonus_received)
+    if (keptOpenMissing.length > 0) {
+      await Promise.all(keptOpenMissing.map(c => updateCustomBonus(c.id, { bonus_received: true, actual_amount: c.actual_amount ?? c.bonus_amount })))
+      for (const c of keptOpenMissing) { c.bonus_received = true; c.actual_amount = c.actual_amount ?? c.bonus_amount }
+    }
     setCustomBonuses(custom)
     setDeposits(deps)
     setBonusNotes(notes)
@@ -450,8 +456,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
 
   async function handleCustomKeptOpen(id: string) {
-    await updateCustomBonus(id, { current_step: "kept_open" })
-    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "kept_open" } : c))
+    const bonus = customBonuses.find(c => c.id === id)
+    const amount = bonus?.bonus_amount ?? 0
+    await updateCustomBonus(id, { current_step: "kept_open", bonus_received: true, actual_amount: amount })
+    setCustomBonuses(prev => prev.map(c => c.id === id ? { ...c, current_step: "kept_open", bonus_received: true, actual_amount: amount } : c))
   }
 
   async function handleCustomUnskip(id: string) {
@@ -475,12 +483,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   // pending = added to queue but not yet started
   const pendingCustom = customBonuses.filter(c => !c.closed_date && c.current_step === "pending")
-  // active = started (current_step !== pending/kept_open/skipped, not closed)
-  const activeCustom = customBonuses.filter(c => !c.closed_date && c.current_step !== "kept_open" && c.current_step !== "skipped" && c.current_step !== "pending")
-  const customKeptOpen = customBonuses.filter(c => !c.closed_date && c.current_step === "kept_open")
+  // active = started (current_step !== pending/kept_open/skipped/bonus_posted, not closed)
+  const activeCustom = customBonuses.filter(c => !c.closed_date && c.current_step !== "kept_open" && c.current_step !== "skipped" && c.current_step !== "pending" && c.current_step !== "bonus_posted")
+  const customKeptOpen = customBonuses.filter(c => !c.closed_date && (c.current_step === "kept_open" || c.current_step === "bonus_posted"))
   const customSkipped = customBonuses.filter(c => !c.closed_date && c.current_step === "skipped")
   const closedCustom = customBonuses.filter(c => c.closed_date)
-  const customEarned = closedCustom.filter(c => c.bonus_received).reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
+  const customEarned = [
+    ...closedCustom.filter(c => c.bonus_received),
+    ...customKeptOpen,
+  ].reduce((s, c) => s + (c.actual_amount ?? c.bonus_amount), 0)
   const customInProgress = activeCustom.reduce((s, c) => s + c.bonus_amount, 0)
 
   const customInCooldown = closedCustom.filter(c => {
