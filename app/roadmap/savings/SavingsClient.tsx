@@ -1,0 +1,457 @@
+"use client"
+
+import React, { useEffect, useState, useCallback } from "react"
+import CheckpointNav from "../../components/CheckpointNav"
+import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, SavingsEntry } from "../../../lib/savingsEntries"
+import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
+import { createClient } from "../../../lib/supabase/client"
+
+const money = (n: number) => `$${n.toLocaleString()}`
+const pct = (n: number) => `${(n * 100).toFixed(2)}%`
+const todayStr = () => new Date().toISOString().split("T")[0]
+
+const topBtn: React.CSSProperties = { fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
+const label: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
+const inputStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: "100%" }
+const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6 }
+
+const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
+
+export default function SavingsClient({ userEmail, userId }: { userEmail: string; userId: string }) {
+  const [entries, setEntries] = useState<SavingsEntry[]>([])
+  const [profile, setProfile] = useState<SavingsProfile>({ user_id: userId, ...DEFAULT_SAVINGS_PROFILE, updated_at: "" })
+  const [loading, setLoading] = useState(true)
+  const [showAdd, setShowAdd] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+
+  // Form state
+  const [fInstitution, setFInstitution] = useState("")
+  const [fBonusName, setFBonusName] = useState("")
+  const [fBonusAmount, setFBonusAmount] = useState("")
+  const [fDepositRequired, setFDepositRequired] = useState("")
+  const [fHoldingDays, setFHoldingDays] = useState("")
+  const [fOfferApy, setFOfferApy] = useState("")
+  const [fPromoApy, setFPromoApy] = useState("")
+  const [fEstimatedYield, setFEstimatedYield] = useState("")
+  const [fExpectedTotal, setFExpectedTotal] = useState("")
+  const [fActualValue, setFActualValue] = useState("")
+  const [fOpenedDate, setFOpenedDate] = useState(todayStr())
+  const [fDeadline, setFDeadline] = useState("")
+  const [fStatus, setFStatus] = useState<SavingsEntry["status"]>("planned")
+  const [fNotes, setFNotes] = useState("")
+
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    const [e, p] = await Promise.all([
+      getSavingsEntries(userId),
+      getSavingsProfile(userId),
+    ])
+    setEntries(e)
+    setProfile(p)
+    setLoading(false)
+  }, [userId])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  function resetForm() {
+    setFInstitution(""); setFBonusName(""); setFBonusAmount(""); setFDepositRequired("")
+    setFHoldingDays(""); setFOfferApy(""); setFPromoApy(""); setFEstimatedYield("")
+    setFExpectedTotal(""); setFActualValue(""); setFOpenedDate(todayStr()); setFDeadline("")
+    setFStatus("planned"); setFNotes(""); setEditingId(null)
+  }
+
+  function populateForm(e: SavingsEntry) {
+    setFInstitution(e.institution_name); setFBonusName(e.bonus_name ?? ""); setFBonusAmount(String(e.bonus_amount ?? ""))
+    setFDepositRequired(String(e.deposit_required ?? "")); setFHoldingDays(String(e.holding_period_days ?? ""))
+    setFOfferApy(e.offer_apy != null ? String(e.offer_apy * 100) : ""); setFPromoApy(e.promo_apy != null ? String(e.promo_apy * 100) : "")
+    setFEstimatedYield(String(e.estimated_yield ?? "")); setFExpectedTotal(String(e.expected_total_value ?? ""))
+    setFActualValue(String(e.actual_value ?? "")); setFOpenedDate(e.opened_date ?? todayStr())
+    setFDeadline(e.deadline ?? ""); setFStatus(e.status); setFNotes(e.notes ?? "")
+  }
+
+  async function handleSave() {
+    const payload = {
+      institution_name: fInstitution,
+      bonus_name: fBonusName || null,
+      bonus_amount: fBonusAmount ? parseFloat(fBonusAmount) : null,
+      deposit_required: fDepositRequired ? parseFloat(fDepositRequired) : null,
+      holding_period_days: fHoldingDays ? parseInt(fHoldingDays) : null,
+      offer_apy: fOfferApy ? parseFloat(fOfferApy) / 100 : null,
+      promo_apy: fPromoApy ? parseFloat(fPromoApy) / 100 : null,
+      estimated_yield: fEstimatedYield ? parseFloat(fEstimatedYield) : null,
+      expected_total_value: fExpectedTotal ? parseFloat(fExpectedTotal) : null,
+      actual_value: fActualValue ? parseFloat(fActualValue) : null,
+      opened_date: fOpenedDate || null,
+      deadline: fDeadline || null,
+      status: fStatus,
+      notes: fNotes || null,
+    }
+    if (editingId) {
+      await updateSavingsEntry(editingId, payload)
+    } else {
+      await addSavingsEntry(userId, payload)
+    }
+    resetForm()
+    setShowAdd(false)
+    await loadData()
+  }
+
+  async function handleDelete(id: string) {
+    await deleteSavingsEntry(id)
+    await loadData()
+  }
+
+  // Profile save with debounce
+  const profileTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  function updateProfileField(updates: Partial<SavingsProfile>) {
+    const next = { ...profile, ...updates }
+    setProfile(next)
+    if (profileTimeout.current) clearTimeout(profileTimeout.current)
+    profileTimeout.current = setTimeout(() => {
+      upsertSavingsProfile({ user_id: userId, ...updates })
+    }, 400)
+  }
+
+  // Calculations
+  const activeEntries = entries.filter(e => e.status === "active")
+  const plannedEntries = entries.filter(e => e.status === "planned")
+  const completedEntries = entries.filter(e => e.status === "completed")
+  const canceledEntries = entries.filter(e => e.status === "canceled")
+
+  const totalEarned = completedEntries.reduce((s, e) => s + (e.actual_value ?? e.expected_total_value ?? 0), 0)
+
+  // Current annual yield from savings profile
+  const currentBalance = profile.current_balance ?? 0
+  const currentApy = profile.current_apy ?? 0
+  const currentAnnualYield = currentBalance * currentApy
+
+  // Potential from active + planned opportunities
+  const potentialFromOpportunities = [...activeEntries, ...plannedEntries].reduce((s, e) => {
+    return s + (e.expected_total_value ?? (e.bonus_amount ?? 0) + (e.estimated_yield ?? 0))
+  }, 0)
+
+  const delta = potentialFromOpportunities
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = "/login"
+  }
+
+  if (loading) {
+    return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
+  }
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#fafafa", color: "#1a1a1a", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+      <style>{`
+        .rm-topbar { padding: 14px 32px; }
+        .rm-topbar-email { font-size: 12px; color: #bbb; }
+        .rm-content { padding: 28px 32px 80px; }
+        @media (max-width: 768px) {
+          .rm-topbar { padding: 12px 16px; }
+          .rm-topbar-email { display: none; }
+          .rm-content { padding: 16px 16px 80px; }
+        }
+      `}</style>
+
+      {/* Top Bar */}
+      <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
+        <a href="/roadmap" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <span className="rm-topbar-email">{userEmail}</span>
+          <button onClick={() => setShowProfile(s => !s)} style={topBtn}>{showProfile ? "Close" : "Savings Profile"}</button>
+          <button onClick={async () => {
+            const res = await fetch("/api/stripe/portal", { method: "POST" })
+            const data = await res.json()
+            if (data.url) window.location.href = data.url
+          }} style={topBtn}>Subscription</button>
+          <button onClick={handleLogout} style={topBtn}>Log out</button>
+        </div>
+      </div>
+
+      <CheckpointNav />
+
+      <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
+
+        {/* Savings Profile Panel */}
+        {showProfile && (
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Savings Profile</div>
+
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div>
+                <div style={label}>Current balance</div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={profile.current_balance ?? ""} onChange={e => updateProfileField({ current_balance: Number(e.target.value) || null })}
+                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
+                </div>
+              </div>
+              <div>
+                <div style={label}>Current APY (%)</div>
+                <input type="number" step="0.01" value={profile.current_apy != null ? profile.current_apy * 100 : ""} onChange={e => updateProfileField({ current_apy: e.target.value ? parseFloat(e.target.value) / 100 : null })}
+                  style={{ ...inputStyle, width: 100 }} placeholder="4.5" />
+              </div>
+              <div>
+                <div style={label}>Current institution</div>
+                <input type="text" value={profile.current_institution ?? ""} onChange={e => updateProfileField({ current_institution: e.target.value || null })}
+                  style={{ ...inputStyle, width: 180 }} placeholder="e.g. Marcus" />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end", marginTop: 16 }}>
+              <div>
+                <div style={label}>Emergency fund</div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={profile.emergency_fund ?? ""} onChange={e => updateProfileField({ emergency_fund: Number(e.target.value) || null })}
+                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
+                </div>
+              </div>
+              <div>
+                <div style={label}>Cash reserves</div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={profile.cash_reserves ?? ""} onChange={e => updateProfileField({ cash_reserves: Number(e.target.value) || null })}
+                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+          </div>
+        )}
+
+        {/* Summary Cards */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Current annual yield</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(Math.round(currentAnnualYield))}</div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{currentApy > 0 ? pct(currentApy) : "No APY set"} on {money(currentBalance)}</div>
+          </div>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Potential upside</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: delta > 0 ? "#0d7c5f" : "#111", marginTop: 2 }}>
+              {delta > 0 ? "+" : ""}{money(Math.round(delta))}
+            </div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeEntries.length + plannedEntries.length} opportunities</div>
+          </div>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned from bonuses</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(totalEarned)}</div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedEntries.length} completed</div>
+          </div>
+        </div>
+
+        {/* Active Entries */}
+        {activeEntries.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {activeEntries.map(e => <EntryRow key={e.id} entry={e} onEdit={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }} onDelete={() => handleDelete(e.id)} onStatusChange={async (s) => { await updateSavingsEntry(e.id, { status: s }); await loadData() }} />)}
+            </div>
+          </div>
+        )}
+
+        {/* Planned Entries */}
+        {plannedEntries.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {plannedEntries.map(e => <EntryRow key={e.id} entry={e} onEdit={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }} onDelete={() => handleDelete(e.id)} onStatusChange={async (s) => { await updateSavingsEntry(e.id, { status: s }); await loadData() }} />)}
+            </div>
+          </div>
+        )}
+
+        {/* Add button */}
+        <button onClick={() => { resetForm(); setShowAdd(true) }}
+          style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", background: "none", border: "1px solid #0d7c5f", borderRadius: 8, padding: "10px 20px", cursor: "pointer", marginBottom: 28 }}>
+          + Add savings bonus / opportunity
+        </button>
+
+        {/* Completed */}
+        {completedEntries.length > 0 && (
+          <details style={{ marginBottom: 24 }}>
+            <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Completed ({completedEntries.length})</summary>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+              {completedEntries.map(e => <EntryRow key={e.id} entry={e} onEdit={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }} onDelete={() => handleDelete(e.id)} onStatusChange={async (s) => { await updateSavingsEntry(e.id, { status: s }); await loadData() }} />)}
+            </div>
+          </details>
+        )}
+
+        {/* Canceled */}
+        {canceledEntries.length > 0 && (
+          <details style={{ marginBottom: 24 }}>
+            <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Canceled ({canceledEntries.length})</summary>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+              {canceledEntries.map(e => <EntryRow key={e.id} entry={e} onEdit={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }} onDelete={() => handleDelete(e.id)} onStatusChange={async (s) => { await updateSavingsEntry(e.id, { status: s }); await loadData() }} />)}
+            </div>
+          </details>
+        )}
+
+        {/* Add/Edit Modal */}
+        {showAdd && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={e => { if (e.target === e.currentTarget) { setShowAdd(false); resetForm() } }}>
+            <div style={{ background: "#fff", borderRadius: 14, padding: "28px 32px", width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 20 }}>
+                {editingId ? "Edit Savings Entry" : "Add Savings Bonus / Opportunity"}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div>
+                  <div style={label}>Institution *</div>
+                  <input value={fInstitution} onChange={e => setFInstitution(e.target.value)} style={inputStyle} placeholder="e.g. Wealthfront" />
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Bonus name</div>
+                    <input value={fBonusName} onChange={e => setFBonusName(e.target.value)} style={inputStyle} placeholder="e.g. New deposit bonus" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Status</div>
+                    <select value={fStatus} onChange={e => setFStatus(e.target.value as SavingsEntry["status"])} style={{ ...selectStyle, width: "100%" }}>
+                      {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Bonus amount</div>
+                    <input type="number" value={fBonusAmount} onChange={e => setFBonusAmount(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Deposit required</div>
+                    <input type="number" value={fDepositRequired} onChange={e => setFDepositRequired(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Holding period (days)</div>
+                    <input type="number" value={fHoldingDays} onChange={e => setFHoldingDays(e.target.value)} style={inputStyle} placeholder="90" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Deadline</div>
+                    <input type="date" value={fDeadline} onChange={e => setFDeadline(e.target.value)} style={inputStyle} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Offer APY (%)</div>
+                    <input type="number" step="0.01" value={fOfferApy} onChange={e => setFOfferApy(e.target.value)} style={inputStyle} placeholder="4.5" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Promo APY (%)</div>
+                    <input type="number" step="0.01" value={fPromoApy} onChange={e => setFPromoApy(e.target.value)} style={inputStyle} placeholder="5.0" />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Estimated yield</div>
+                    <input type="number" value={fEstimatedYield} onChange={e => setFEstimatedYield(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Expected total value</div>
+                    <input type="number" value={fExpectedTotal} onChange={e => setFExpectedTotal(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Opened date</div>
+                    <input type="date" value={fOpenedDate} onChange={e => setFOpenedDate(e.target.value)} style={inputStyle} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Actual value received</div>
+                    <input type="number" value={fActualValue} onChange={e => setFActualValue(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                </div>
+                <div>
+                  <div style={label}>Notes</div>
+                  <textarea value={fNotes} onChange={e => setFNotes(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="Any notes..." />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
+                <button onClick={() => { setShowAdd(false); resetForm() }}
+                  style={{ padding: "10px 20px", fontSize: 13, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                  Cancel
+                </button>
+                <button onClick={handleSave} disabled={!fInstitution}
+                  style={{ padding: "10px 20px", fontSize: 13, fontWeight: 700, background: fInstitution ? "#0d7c5f" : "#ccc", color: "#fff", border: "none", borderRadius: 8, cursor: fInstitution ? "pointer" : "default" }}>
+                  {editingId ? "Save Changes" : "Add Entry"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function EntryRow({ entry: e, onEdit, onDelete, onStatusChange }: {
+  entry: SavingsEntry
+  onEdit: () => void
+  onDelete: () => void
+  onStatusChange: (s: SavingsEntry["status"]) => void
+}) {
+  const totalValue = e.expected_total_value ?? ((e.bonus_amount ?? 0) + (e.estimated_yield ?? 0))
+  const statusColors: Record<string, string> = { planned: "#7c3aed", active: "#2563eb", completed: "#0d7c5f", canceled: "#999" }
+
+  return (
+    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{e.institution_name}</span>
+            {e.bonus_name && <span style={{ fontSize: 11, color: "#999" }}>{e.bonus_name}</span>}
+            <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: statusColors[e.status] ?? "#999", background: e.status === "active" ? "#eff6ff" : e.status === "completed" ? "#e6f5f0" : e.status === "planned" ? "#ede9fe" : "#f5f5f5" }}>
+              {e.status.charAt(0).toUpperCase() + e.status.slice(1)}
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: "#555", marginTop: 4, display: "flex", gap: 16, flexWrap: "wrap" }}>
+            {e.bonus_amount != null && <span>Bonus: <strong>${e.bonus_amount.toLocaleString()}</strong></span>}
+            {e.deposit_required != null && <span>Deposit: ${e.deposit_required.toLocaleString()}</span>}
+            {e.offer_apy != null && <span>APY: {(e.offer_apy * 100).toFixed(2)}%</span>}
+            {e.promo_apy != null && <span>Promo: {(e.promo_apy * 100).toFixed(2)}%</span>}
+            {e.holding_period_days != null && <span>{e.holding_period_days} day hold</span>}
+            {e.deadline && <span>By: {e.deadline}</span>}
+          </div>
+          {e.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>{e.notes}</div>}
+        </div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>
+            +${totalValue.toLocaleString()}
+          </div>
+          {e.actual_value != null && (
+            <div style={{ fontSize: 11, color: "#999" }}>Actual: ${e.actual_value.toLocaleString()}</div>
+          )}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center" }}>
+        {e.status === "planned" && (
+          <button onClick={() => onStatusChange("active")}
+            style={{ fontSize: 11, padding: "4px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
+            Start
+          </button>
+        )}
+        {e.status === "active" && (
+          <button onClick={() => onStatusChange("completed")}
+            style={{ fontSize: 11, padding: "4px 12px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
+            Complete
+          </button>
+        )}
+        <button onClick={onEdit}
+          style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>
+          Edit
+        </button>
+        <button onClick={onDelete}
+          style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>
+          Remove
+        </button>
+      </div>
+    </div>
+  )
+}

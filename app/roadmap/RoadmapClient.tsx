@@ -15,6 +15,7 @@ import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonu
 import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
 import { markKeptOpen } from "../../lib/keptOpen"
 import { createClient } from "../../lib/supabase/client"
+import CheckpointNav from "../components/CheckpointNav"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -700,6 +701,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <span style={{ fontSize: 12, color: "#aaa" }}>Last updated March 24, 2026</span>
         </div>
       </div>
+
+      <CheckpointNav />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
 
