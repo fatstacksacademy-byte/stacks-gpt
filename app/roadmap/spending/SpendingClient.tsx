@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
-import { getSpendingCards, addSpendingCard, updateSpendingCard, deleteSpendingCard, SpendingCard, SPENDING_CATEGORIES, CATEGORY_LABELS, SpendingCategory } from "../../../lib/spendingCards"
+import { getSpendingCards, addSpendingCard, updateSpendingCard, deleteSpendingCard, SpendingCard, SPENDING_CATEGORIES, CATEGORY_LABELS } from "../../../lib/spendingCards"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { createClient } from "../../../lib/supabase/client"
 
@@ -23,6 +23,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [showAdd, setShowAdd] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [showAdvancedModal, setShowAdvancedModal] = useState(false)
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -54,7 +55,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   function resetForm() {
     setFCardName(""); setFIssuer(""); setFSignupBonus(""); setFAnnualFee(""); setFSpendReq("")
     setFSpendDeadline(""); setFOpenedDate(todayStr()); setFExpectedValue(""); setFActualValue("")
-    setFStatus("planned"); setFNotes(""); setFMultipliers({}); setEditingId(null)
+    setFStatus("planned"); setFNotes(""); setFMultipliers({}); setEditingId(null); setShowAdvancedModal(false)
   }
 
   function populateForm(c: SpendingCard) {
@@ -66,6 +67,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     const mults: Record<string, string> = {}
     for (const [k, v] of Object.entries(c.category_multipliers ?? {})) mults[k] = String(v)
     setFMultipliers(mults)
+    setShowAdvancedModal(Object.keys(mults).length > 0)
   }
 
   async function handleSave() {
@@ -120,22 +122,26 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const completedCards = cards.filter(c => c.status === "completed")
   const canceledCards = cards.filter(c => c.status === "canceled")
 
+  const monthlySpend = profile.monthly_spend ?? 0
+  const baseRate = profile.current_multipliers?.["base"] ?? 2
+  const baseAnnualRewards = (monthlySpend * baseRate * 12) / 100
+
   const totalEarned = completedCards.reduce((s, c) => s + (c.actual_value ?? c.expected_value ?? 0), 0)
-  const activeValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
+  const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
   const plannedValue = plannedCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
 
-  // Current annual rewards from spending profile
-  const monthlySpend = profile.monthly_spend ?? 0
-  const currentAnnualRewards = SPENDING_CATEGORIES.reduce((sum, cat) => {
-    const spend = (profile.category_spend?.[cat] ?? 0)
-    const mult = (profile.current_multipliers?.[cat] ?? 1)
-    return sum + (spend * mult * 12) / 100 // cents to dollars
-  }, 0)
-
-  // Potential from active opportunities
-  const potentialAnnualRewards = currentAnnualRewards + activeValue + plannedValue
-
-  const delta = potentialAnnualRewards - currentAnnualRewards
+  // Can the user hit the spend requirement for active cards?
+  function canHitSpend(c: SpendingCard): { canHit: boolean; monthsNeeded: number } {
+    if (!c.spend_requirement || monthlySpend <= 0) return { canHit: false, monthsNeeded: 0 }
+    const months = Math.ceil(c.spend_requirement / monthlySpend)
+    if (c.spend_deadline) {
+      const deadlineDate = new Date(c.spend_deadline + "T00:00:00")
+      const now = new Date()
+      const monthsAvailable = Math.max(0, (deadlineDate.getFullYear() - now.getFullYear()) * 12 + deadlineDate.getMonth() - now.getMonth())
+      return { canHit: months <= monthsAvailable, monthsNeeded: months }
+    }
+    return { canHit: true, monthsNeeded: months }
+  }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -184,42 +190,21 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Spending Profile</div>
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={label}>Estimated monthly spend</div>
-              <div style={{ position: "relative", width: 160 }}>
-                <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
-                <input type="number" value={profile.monthly_spend ?? ""} onChange={e => updateProfile({ monthly_spend: Number(e.target.value) || null })}
-                  style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
-              </div>
-            </div>
-
-            <div style={{ fontSize: 12, fontWeight: 600, color: "#555", marginBottom: 8 }}>Monthly spend by category</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
-              {SPENDING_CATEGORIES.map(cat => (
-                <div key={cat} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <div style={{ fontSize: 11, color: "#999" }}>{CATEGORY_LABELS[cat]}</div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <div style={{ position: "relative", flex: 1 }}>
-                      <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12 }}>$</span>
-                      <input type="number" value={profile.category_spend?.[cat] ?? ""}
-                        onChange={e => updateProfile({ category_spend: { ...profile.category_spend, [cat]: Number(e.target.value) || 0 } })}
-                        style={{ ...inputStyle, paddingLeft: 22, fontSize: 12 }} placeholder="0" />
-                    </div>
-                    <input type="text" value={profile.current_cards?.[cat] ?? ""}
-                      onChange={e => updateProfile({ current_cards: { ...profile.current_cards, [cat]: e.target.value } })}
-                      style={{ ...inputStyle, fontSize: 12, flex: 1 }} placeholder="Current card" />
-                    <div style={{ position: "relative", width: 60 }}>
-                      <input type="number" step="0.1" value={profile.current_multipliers?.[cat] ?? ""}
-                        onChange={e => updateProfile({ current_multipliers: { ...profile.current_multipliers, [cat]: parseFloat(e.target.value) || 0 } })}
-                        style={{ ...inputStyle, fontSize: 12, width: 60 }} placeholder="1x" />
-                      <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 11 }}>x</span>
-                    </div>
-                  </div>
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div>
+                <div style={label}>Available monthly spend</div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <input type="number" value={profile.monthly_spend ?? ""} onChange={e => updateProfile({ monthly_spend: Number(e.target.value) || null })}
+                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
                 </div>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+              </div>
+              <div>
+                <div style={label}>Current base earn rate (%)</div>
+                <input type="number" step="0.1" value={baseRate}
+                  onChange={e => updateProfile({ current_multipliers: { ...profile.current_multipliers, base: parseFloat(e.target.value) || 0 } })}
+                  style={{ ...inputStyle, width: 80 }} placeholder="2" />
+              </div>
               <div>
                 <div style={label}>Rewards valuation</div>
                 <select value={profile.rewards_valuation ?? "cashback"} onChange={e => updateProfile({ rewards_valuation: e.target.value as "cashback" | "points" })} style={selectStyle}>
@@ -236,26 +221,56 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
               )}
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+
+            {/* Advanced: category breakdown */}
+            <details style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
+              <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Advanced rewards setup</summary>
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Break down your monthly spend by category for more accurate tracking.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+                  {SPENDING_CATEGORIES.map(cat => (
+                    <div key={cat} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <div style={{ fontSize: 11, color: "#999" }}>{CATEGORY_LABELS[cat]}</div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <div style={{ position: "relative", flex: 1 }}>
+                          <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12 }}>$</span>
+                          <input type="number" value={profile.category_spend?.[cat] ?? ""}
+                            onChange={e => updateProfile({ category_spend: { ...profile.category_spend, [cat]: Number(e.target.value) || 0 } })}
+                            style={{ ...inputStyle, paddingLeft: 22, fontSize: 12 }} placeholder="0" />
+                        </div>
+                        <input type="text" value={profile.current_cards?.[cat] ?? ""}
+                          onChange={e => updateProfile({ current_cards: { ...profile.current_cards, [cat]: e.target.value } })}
+                          style={{ ...inputStyle, fontSize: 12, flex: 1 }} placeholder="Current card" />
+                        <div style={{ position: "relative", width: 60 }}>
+                          <input type="number" step="0.1" value={profile.current_multipliers?.[cat] ?? ""}
+                            onChange={e => updateProfile({ current_multipliers: { ...profile.current_multipliers, [cat]: parseFloat(e.target.value) || 0 } })}
+                            style={{ ...inputStyle, fontSize: 12, width: 60 }} placeholder="1x" />
+                          <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 11 }}>x</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </details>
           </div>
         )}
 
         {/* Summary Cards */}
         <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Current annual rewards</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(Math.round(currentAnnualRewards))}</div>
-            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>from spending profile</div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available spend</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(monthlySpend)}<span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>/mo</span></div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{baseRate}% base earn = {money(Math.round(baseAnnualRewards))}/yr</div>
           </div>
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Potential upside</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: delta > 0 ? "#0d7c5f" : "#111", marginTop: 2 }}>
-              {delta > 0 ? "+" : ""}{money(Math.round(delta))}
-            </div>
-            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeCards.length + plannedCards.length} opportunities</div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: inProgressValue > 0 ? "#2563eb" : "#111", marginTop: 2 }}>{money(inProgressValue)}</div>
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeCards.length} active bonus{activeCards.length !== 1 ? "es" : ""}</div>
           </div>
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned from bonuses</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(totalEarned)}</div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(totalEarned)}</div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedCards.length} completed</div>
           </div>
         </div>
@@ -265,7 +280,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeCards.map(c => <CardRow key={c.id} card={c} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {activeCards.map(c => <CardRow key={c.id} card={c} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -275,7 +290,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {plannedCards.map(c => <CardRow key={c.id} card={c} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {plannedCards.map(c => <CardRow key={c.id} card={c} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -356,10 +371,25 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                   <div style={label}>Opened date</div>
                   <input type="date" value={fOpenedDate} onChange={e => setFOpenedDate(e.target.value)} style={{ ...inputStyle, width: 180 }} />
                 </div>
-
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Expected net value</div>
+                    <input type="number" value={fExpectedValue} onChange={e => setFExpectedValue(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={label}>Actual value received</div>
+                    <input type="number" value={fActualValue} onChange={e => setFActualValue(e.target.value)} style={inputStyle} placeholder="0" />
+                  </div>
+                </div>
                 <div>
-                  <div style={label}>Category multipliers (earn rate)</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <div style={label}>Notes</div>
+                  <textarea value={fNotes} onChange={e => setFNotes(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="Any notes..." />
+                </div>
+
+                {/* Advanced: category multipliers */}
+                <details open={showAdvancedModal} onToggle={e => setShowAdvancedModal((e.target as HTMLDetailsElement).open)}>
+                  <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Advanced: category multipliers</summary>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
                     {SPENDING_CATEGORIES.map(cat => (
                       <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <span style={{ fontSize: 12, color: "#555", width: 100 }}>{CATEGORY_LABELS[cat]}</span>
@@ -371,23 +401,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                       </div>
                     ))}
                   </div>
-                </div>
-
-                <div style={{ display: "flex", gap: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={label}>Expected net value</div>
-                    <input type="number" value={fExpectedValue} onChange={e => setFExpectedValue(e.target.value)} style={inputStyle} placeholder="0" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={label}>Actual value received</div>
-                    <input type="number" value={fActualValue} onChange={e => setFActualValue(e.target.value)} style={inputStyle} placeholder="0" />
-                  </div>
-                </div>
-
-                <div>
-                  <div style={label}>Notes</div>
-                  <textarea value={fNotes} onChange={e => setFNotes(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="Any notes..." />
-                </div>
+                </details>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
@@ -408,8 +422,9 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   )
 }
 
-function CardRow({ card: c, onEdit, onDelete, onStatusChange }: {
+function CardRow({ card: c, spendCheck, onEdit, onDelete, onStatusChange }: {
   card: SpendingCard
+  spendCheck?: { canHit: boolean; monthsNeeded: number }
   onEdit: () => void
   onDelete: () => void
   onStatusChange: (s: SpendingCard["status"]) => void
@@ -434,14 +449,23 @@ function CardRow({ card: c, onEdit, onDelete, onStatusChange }: {
             {c.spend_requirement != null && <span>Spend: ${c.spend_requirement.toLocaleString()} req</span>}
             {c.spend_deadline && <span>By: {c.spend_deadline}</span>}
           </div>
+          {/* Spend feasibility indicator */}
+          {spendCheck && c.spend_requirement != null && c.spend_requirement > 0 && (
+            <div style={{ fontSize: 11, marginTop: 4, color: spendCheck.canHit ? "#0d7c5f" : "#d97706", fontWeight: 500 }}>
+              {spendCheck.canHit
+                ? `~${spendCheck.monthsNeeded} month${spendCheck.monthsNeeded !== 1 ? "s" : ""} to hit spend`
+                : "May not hit spend in time"}
+            </div>
+          )}
           {c.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>{c.notes}</div>}
         </div>
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: netValue >= 0 ? "#0d7c5f" : "#dc2626" }}>
-            {netValue >= 0 ? "+" : ""}${Math.abs(netValue).toLocaleString()}
+            {netValue >= 0 ? "+" : ""}{money(Math.abs(netValue))}
           </div>
+          <div style={{ fontSize: 10, color: "#999" }}>net of fee</div>
           {c.actual_value != null && (
-            <div style={{ fontSize: 11, color: "#999" }}>Actual: ${c.actual_value.toLocaleString()}</div>
+            <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>Actual: ${c.actual_value.toLocaleString()}</div>
           )}
         </div>
       </div>

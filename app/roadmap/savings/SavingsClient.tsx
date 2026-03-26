@@ -14,8 +14,18 @@ const topBtn: React.CSSProperties = { fontSize: 12, color: "#999", background: "
 const label: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
 const inputStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: "100%" }
 const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6 }
+const computedStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#f9f9f9", color: "#555", border: "1px solid #e8e8e8", borderRadius: 6, width: "100%" }
 
 const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
+
+// Auto-calculate yield from deposit * APY * holding period
+function calcYield(deposit: string, apy: string, holdingDays: string): number {
+  const d = parseFloat(deposit) || 0
+  const a = (parseFloat(apy) || 0) / 100 // form value is %, convert to decimal
+  const days = parseInt(holdingDays) || 0
+  if (d <= 0 || a <= 0 || days <= 0) return 0
+  return Math.round(d * a * (days / 365))
+}
 
 export default function SavingsClient({ userEmail, userId }: { userEmail: string; userId: string }) {
   const [entries, setEntries] = useState<SavingsEntry[]>([])
@@ -33,13 +43,15 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [fHoldingDays, setFHoldingDays] = useState("")
   const [fOfferApy, setFOfferApy] = useState("")
   const [fPromoApy, setFPromoApy] = useState("")
-  const [fEstimatedYield, setFEstimatedYield] = useState("")
-  const [fExpectedTotal, setFExpectedTotal] = useState("")
   const [fActualValue, setFActualValue] = useState("")
   const [fOpenedDate, setFOpenedDate] = useState(todayStr())
   const [fDeadline, setFDeadline] = useState("")
   const [fStatus, setFStatus] = useState<SavingsEntry["status"]>("planned")
   const [fNotes, setFNotes] = useState("")
+
+  // Auto-calculated values from form inputs
+  const autoYield = calcYield(fDepositRequired, fOfferApy || fPromoApy, fHoldingDays)
+  const autoTotal = (parseFloat(fBonusAmount) || 0) + autoYield
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -56,8 +68,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
 
   function resetForm() {
     setFInstitution(""); setFBonusName(""); setFBonusAmount(""); setFDepositRequired("")
-    setFHoldingDays(""); setFOfferApy(""); setFPromoApy(""); setFEstimatedYield("")
-    setFExpectedTotal(""); setFActualValue(""); setFOpenedDate(todayStr()); setFDeadline("")
+    setFHoldingDays(""); setFOfferApy(""); setFPromoApy("")
+    setFActualValue(""); setFOpenedDate(todayStr()); setFDeadline("")
     setFStatus("planned"); setFNotes(""); setEditingId(null)
   }
 
@@ -65,7 +77,6 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     setFInstitution(e.institution_name); setFBonusName(e.bonus_name ?? ""); setFBonusAmount(String(e.bonus_amount ?? ""))
     setFDepositRequired(String(e.deposit_required ?? "")); setFHoldingDays(String(e.holding_period_days ?? ""))
     setFOfferApy(e.offer_apy != null ? String(e.offer_apy * 100) : ""); setFPromoApy(e.promo_apy != null ? String(e.promo_apy * 100) : "")
-    setFEstimatedYield(String(e.estimated_yield ?? "")); setFExpectedTotal(String(e.expected_total_value ?? ""))
     setFActualValue(String(e.actual_value ?? "")); setFOpenedDate(e.opened_date ?? todayStr())
     setFDeadline(e.deadline ?? ""); setFStatus(e.status); setFNotes(e.notes ?? "")
   }
@@ -79,8 +90,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
       holding_period_days: fHoldingDays ? parseInt(fHoldingDays) : null,
       offer_apy: fOfferApy ? parseFloat(fOfferApy) / 100 : null,
       promo_apy: fPromoApy ? parseFloat(fPromoApy) / 100 : null,
-      estimated_yield: fEstimatedYield ? parseFloat(fEstimatedYield) : null,
-      expected_total_value: fExpectedTotal ? parseFloat(fExpectedTotal) : null,
+      estimated_yield: autoYield > 0 ? autoYield : null,
+      expected_total_value: autoTotal > 0 ? autoTotal : null,
       actual_value: fActualValue ? parseFloat(fActualValue) : null,
       opened_date: fOpenedDate || null,
       deadline: fDeadline || null,
@@ -121,12 +132,10 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
 
   const totalEarned = completedEntries.reduce((s, e) => s + (e.actual_value ?? e.expected_total_value ?? 0), 0)
 
-  // Current annual yield from savings profile
   const currentBalance = profile.current_balance ?? 0
   const currentApy = profile.current_apy ?? 0
   const currentAnnualYield = currentBalance * currentApy
 
-  // Potential from active + planned opportunities
   const potentialFromOpportunities = [...activeEntries, ...plannedEntries].reduce((s, e) => {
     return s + (e.expected_total_value ?? (e.bonus_amount ?? 0) + (e.estimated_yield ?? 0))
   }, 0)
@@ -200,27 +209,30 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                   style={{ ...inputStyle, width: 180 }} placeholder="e.g. Marcus" />
               </div>
             </div>
-
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end", marginTop: 16 }}>
-              <div>
-                <div style={label}>Emergency fund</div>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
-                  <input type="number" value={profile.emergency_fund ?? ""} onChange={e => updateProfileField({ emergency_fund: Number(e.target.value) || null })}
-                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
-                </div>
-              </div>
-              <div>
-                <div style={label}>Cash reserves</div>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
-                  <input type="number" value={profile.cash_reserves ?? ""} onChange={e => updateProfileField({ cash_reserves: Number(e.target.value) || null })}
-                    style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
-                </div>
-              </div>
-            </div>
-
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+
+            {/* Optional: emergency fund / cash reserves */}
+            <details style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
+              <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Optional: reserves tracking</summary>
+              <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end", marginTop: 12 }}>
+                <div>
+                  <div style={label}>Emergency fund</div>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                    <input type="number" value={profile.emergency_fund ?? ""} onChange={e => updateProfileField({ emergency_fund: Number(e.target.value) || null })}
+                      style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
+                  </div>
+                </div>
+                <div>
+                  <div style={label}>Cash reserves</div>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                    <input type="number" value={profile.cash_reserves ?? ""} onChange={e => updateProfileField({ cash_reserves: Number(e.target.value) || null })}
+                      style={{ ...inputStyle, paddingLeft: 26, width: 160 }} placeholder="0" />
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         )}
 
@@ -239,8 +251,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeEntries.length + plannedEntries.length} opportunities</div>
           </div>
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned from bonuses</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(totalEarned)}</div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(totalEarned)}</div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedEntries.length} completed</div>
           </div>
         </div>
@@ -339,7 +351,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Offer APY (%)</div>
+                    <div style={label}>Ongoing APY (%)</div>
                     <input type="number" step="0.01" value={fOfferApy} onChange={e => setFOfferApy(e.target.value)} style={inputStyle} placeholder="4.5" />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -347,16 +359,27 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                     <input type="number" step="0.01" value={fPromoApy} onChange={e => setFPromoApy(e.target.value)} style={inputStyle} placeholder="5.0" />
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={label}>Estimated yield</div>
-                    <input type="number" value={fEstimatedYield} onChange={e => setFEstimatedYield(e.target.value)} style={inputStyle} placeholder="0" />
+
+                {/* Auto-calculated summary */}
+                <div style={{ background: "#f9fafb", border: "1px solid #e8e8e8", borderRadius: 8, padding: "12px 16px" }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Calculated value</div>
+                  <div style={{ display: "flex", gap: 24 }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: "#999" }}>Est. yield</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#555" }}>{autoYield > 0 ? money(autoYield) : "—"}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: "#999" }}>Bonus</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#555" }}>{fBonusAmount ? money(parseFloat(fBonusAmount)) : "—"}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: "#999" }}>Total expected</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: autoTotal > 0 ? "#0d7c5f" : "#555" }}>{autoTotal > 0 ? money(autoTotal) : "—"}</div>
+                    </div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={label}>Expected total value</div>
-                    <input type="number" value={fExpectedTotal} onChange={e => setFExpectedTotal(e.target.value)} style={inputStyle} placeholder="0" />
-                  </div>
+                  <div style={{ fontSize: 10, color: "#bbb", marginTop: 6 }}>Auto-calculated from deposit, APY, and holding period</div>
                 </div>
+
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ flex: 1 }}>
                     <div style={label}>Opened date</div>
@@ -400,6 +423,13 @@ function EntryRow({ entry: e, onEdit, onDelete, onStatusChange }: {
   const totalValue = e.expected_total_value ?? ((e.bonus_amount ?? 0) + (e.estimated_yield ?? 0))
   const statusColors: Record<string, string> = { planned: "#7c3aed", active: "#2563eb", completed: "#0d7c5f", canceled: "#999" }
 
+  // Format holding period
+  const holdLabel = e.holding_period_days != null
+    ? e.holding_period_days >= 365
+      ? `${Math.round(e.holding_period_days / 30)} mo hold`
+      : `${e.holding_period_days} day hold`
+    : null
+
   return (
     <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -416,17 +446,26 @@ function EntryRow({ entry: e, onEdit, onDelete, onStatusChange }: {
             {e.deposit_required != null && <span>Deposit: ${e.deposit_required.toLocaleString()}</span>}
             {e.offer_apy != null && <span>APY: {(e.offer_apy * 100).toFixed(2)}%</span>}
             {e.promo_apy != null && <span>Promo: {(e.promo_apy * 100).toFixed(2)}%</span>}
-            {e.holding_period_days != null && <span>{e.holding_period_days} day hold</span>}
+            {holdLabel && <span>{holdLabel}</span>}
             {e.deadline && <span>By: {e.deadline}</span>}
           </div>
+          {/* Holding period callout for active entries */}
+          {e.status === "active" && holdLabel && e.opened_date && (() => {
+            const opened = new Date(e.opened_date + "T00:00:00")
+            const holdEnd = new Date(opened.getTime() + (e.holding_period_days! * 86400000))
+            const daysLeft = Math.max(0, Math.ceil((holdEnd.getTime() - Date.now()) / 86400000))
+            if (daysLeft > 0) return <div style={{ fontSize: 11, color: "#d97706", fontWeight: 500, marginTop: 4 }}>{daysLeft} days remaining in hold</div>
+            return <div style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 500, marginTop: 4 }}>Hold period complete</div>
+          })()}
           {e.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>{e.notes}</div>}
         </div>
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>
-            +${totalValue.toLocaleString()}
+            +{money(totalValue)}
           </div>
+          <div style={{ fontSize: 10, color: "#999" }}>bonus + yield</div>
           {e.actual_value != null && (
-            <div style={{ fontSize: 11, color: "#999" }}>Actual: ${e.actual_value.toLocaleString()}</div>
+            <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>Actual: ${e.actual_value.toLocaleString()}</div>
           )}
         </div>
       </div>
