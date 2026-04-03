@@ -100,6 +100,7 @@ export const bonuses: any[] = [
       "must_remain_open_days": 135
     },
     "source_links": [
+      "https://i.capitalone.com/GRErGO2HT",
       "https://www.capitalone.com/bank/offer300/",
       "https://www.doctorofcredit.com/capital-one-300-checking-bonus/",
       "https://www.profitablecontent.com/capital-one-350-checking-bonus/"
