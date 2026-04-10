@@ -5,6 +5,7 @@ import CheckpointNav from "../../components/CheckpointNav"
 import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, SavingsEntry } from "../../../lib/savingsEntries"
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
+import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -34,6 +35,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [showAdd, setShowAdd] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [expandedRec, setExpandedRec] = useState<string | null>(null)
+  const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -141,6 +144,44 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   }, 0)
 
   const delta = potentialFromOpportunities
+
+  // Savings sequencer — rank bonuses by effective APY
+  const inProgressBonusIds = entries
+    .filter(e => e.status === "active" || e.status === "planned")
+    .map(e => e.canonical_offer_id)
+    .filter(Boolean) as string[]
+  const completedBonusIds = entries
+    .filter(e => e.status === "completed")
+    .map(e => e.canonical_offer_id)
+    .filter(Boolean) as string[]
+
+  const sequencerResult = runSavingsSequencer({
+    availableBalance: currentBalance || 50000, // default to $50k if not set
+    completedBonusIds,
+    skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
+  })
+
+  // Start a recommended bonus — add it as a savings entry
+  async function handleStartRecommended(rec: SavingsSequencedEntry) {
+    await addSavingsEntry(userId, {
+      institution_name: rec.bank_name,
+      bonus_name: rec.bonus.id,
+      bonus_amount: rec.bonus_amount,
+      deposit_required: rec.deposit,
+      holding_period_days: rec.hold_days,
+      offer_apy: rec.base_apy,
+      promo_apy: null,
+      estimated_yield: rec.interest_earned,
+      expected_total_value: rec.total_earnings,
+      actual_value: null,
+      opened_date: todayStr(),
+      deadline: null,
+      status: "active",
+      notes: rec.bonus.notes || null,
+      canonical_offer_id: rec.id,
+    })
+    await loadData()
+  }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -256,6 +297,167 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedEntries.length} completed</div>
           </div>
         </div>
+
+        {/* ── Recommended Savings Bonuses ── */}
+        {sequencerResult.entries.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
+              Recommended — Ranked by Effective APY
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {sequencerResult.entries.map((rec, idx) => {
+                const isExpanded = expandedRec === rec.id
+                return (
+                  <div key={rec.id} style={{
+                    background: "#fff",
+                    border: idx === 0 ? "2px solid #2563eb" : "1px solid #e8e8e8",
+                    borderRadius: 14,
+                    overflow: "hidden",
+                    boxShadow: idx === 0 ? "0 2px 12px rgba(37,99,235,0.05)" : "none",
+                  }}>
+                    {/* Header */}
+                    <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{rec.bank_name}</div>
+                        {rec.bonus.source_links?.[0] && (
+                          <a href={rec.bonus.source_links[0]} target="_blank" rel="noreferrer"
+                            style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                            View offer
+                          </a>
+                        )}
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>+{money(rec.total_earnings)}</div>
+                        <div style={{ fontSize: 11, color: "#999" }}>bonus + yield</div>
+                      </div>
+                    </div>
+
+                    {/* Key metrics */}
+                    <div style={{ padding: "12px 24px 0", display: "flex", gap: 20, flexWrap: "wrap" }}>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Effective APY</div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: "#7c3aed" }}>{(rec.effective_apy * 100).toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Bonus</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{money(rec.bonus_amount)}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Interest</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{money(rec.interest_earned)}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Deposit</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{money(rec.deposit)}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Hold</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{rec.hold_days} days</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Base APY</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{(rec.base_apy * 100).toFixed(2)}%</div>
+                      </div>
+                    </div>
+
+                    {/* Rotation indicator */}
+                    <div style={{ padding: "8px 24px 0", fontSize: 11, color: "#999" }}>
+                      Rotation #{rec.rotation} — Day {rec.start_day} to {rec.end_day}
+                    </div>
+
+                    {/* Expandable details */}
+                    <div style={{ padding: "8px 24px 4px" }}>
+                      <button onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
+                        style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                        {isExpanded ? "Hide details" : "Offer details"}
+                      </button>
+                    </div>
+
+                    {isExpanded && (
+                      <div style={{ padding: "0 24px 8px", display: "flex", flexDirection: "column", gap: 10 }}>
+                        {rec.bonus.eligibility.eligibility_notes && (
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Eligibility</div>
+                            <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{rec.bonus.eligibility.eligibility_notes}</div>
+                          </div>
+                        )}
+                        {rec.bonus.raw_excerpt && (
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>How it works</div>
+                            <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{rec.bonus.raw_excerpt}</div>
+                          </div>
+                        )}
+                        {rec.bonus.notes && (
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Strategy</div>
+                            <div style={{ fontSize: 12, color: "#7c3aed", lineHeight: 1.5, fontWeight: 500 }}>{rec.bonus.notes}</div>
+                          </div>
+                        )}
+                        {/* All tiers */}
+                        {rec.bonus.tiers.length > 1 && (
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>All tiers</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              {rec.bonus.tiers.map(t => (
+                                <div key={t.min_deposit} style={{ fontSize: 12, color: t.min_deposit === rec.deposit ? "#0d7c5f" : "#666" }}>
+                                  {t.min_deposit === rec.deposit ? "→ " : "  "}
+                                  {money(t.min_deposit)} deposit → {money(t.bonus_amount)} bonus
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div style={{ fontSize: 11, color: "#bbb" }}>Requirements are set by the bank and may change.</div>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div style={{ padding: "8px 24px 16px", display: "flex", gap: 8 }}>
+                      <button onClick={() => handleStartRecommended(rec)}
+                        style={{ padding: "8px 18px", fontSize: 13, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                        Start this bonus
+                      </button>
+                      <button onClick={() => setSkippedSavingsIds(prev => [...prev, rec.id])}
+                        style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Sequencer summary */}
+            <div style={{ marginTop: 12, padding: "12px 16px", background: "#f9fafb", border: "1px solid #e8e8e8", borderRadius: 10, display: "flex", gap: 24, flexWrap: "wrap" }}>
+              <div>
+                <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Total potential</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#0d7c5f" }}>{money(sequencerResult.total_earnings)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Rotation period</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{Math.round(sequencerResult.total_days / 30)} months</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Bonuses available</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{sequencerResult.entries.length}</div>
+              </div>
+            </div>
+
+            {/* Skipped bonuses */}
+            {sequencerResult.skipped.length > 0 && (
+              <details style={{ marginTop: 8 }}>
+                <summary style={{ fontSize: 11, color: "#999", cursor: "pointer" }}>
+                  {sequencerResult.skipped.length} bonuses not shown
+                </summary>
+                <div style={{ marginTop: 4 }}>
+                  {sequencerResult.skipped.map((s, i) => (
+                    <div key={i} style={{ fontSize: 11, color: "#bbb" }}>{s.bank_name}: {s.reason}</div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </div>
+        )}
 
         {/* Active Entries */}
         {activeEntries.length > 0 && (

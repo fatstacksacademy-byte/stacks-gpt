@@ -56,6 +56,7 @@ export async function addSavingsEntry(
       opened_date: entry.opened_date ?? null,
       deadline: entry.deadline ?? null,
       status: entry.status ?? "planned",
+      canonical_offer_id: entry.canonical_offer_id ?? null,
       notes: entry.notes ?? null,
     })
     .select()
