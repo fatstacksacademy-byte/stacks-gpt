@@ -1021,5 +1021,63 @@ export const bonuses: any[] = [
       "requirements.billpay_required",
       "screening.hard_pull"
     ]
+  },
+  {
+    "id": "bcu-500-powerplus-checking-2026",
+    "bank_name": "BCU (Baxter Credit Union)",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 3000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 30,
+      "billpay_required": null,
+      "other_requirements_text": "Open PowerPlus Checking with promo code BOOST by 5/15/2026. Complete $3,000+ in direct deposits AND 30 qualifying transactions within 60 days. Qualifying transactions include debit/credit card purchases, bill pay, ACH, Zelle, and check payments. Must be a new BCU member."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly fee.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": null,
+      "hard_pull": null,
+      "soft_pull": null,
+      "screening_notes": "Credit union membership required; screening details not confirmed."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Must be a new BCU member. Membership requires meeting at least one criterion: employment-based, community-based, family-based, or Life. Money. You. subscriber. One bonus per membership."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 120,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.bcu.org/resources/bd-event/boost",
+      "https://www.doctorofcredit.com/bcu-500-checking-bonus/"
+    ],
+    "raw_excerpt": "Open PowerPlus Checking with code BOOST by 5/15/2026, complete $3,000 DD and 30 transactions in 60 days. Bonus posts by 7/31/2026.",
+    "missing_fields": [
+      "requirements.min_direct_deposit_per_deposit",
+      "requirements.dd_count_required",
+      "requirements.holding_period_days",
+      "requirements.min_opening_deposit",
+      "requirements.min_balance",
+      "screening.chex_sensitive",
+      "screening.hard_pull",
+      "screening.soft_pull",
+      "timeline.must_remain_open_days"
+    ]
   }
 ]

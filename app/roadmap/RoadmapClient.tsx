@@ -1477,6 +1477,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
 
+                          {/* ── Transaction requirement ── */}
+                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (
+                            <div style={{ padding: "10px 24px 0", fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>
+                              Also required: {req.debit_transactions_required} qualifying transactions within {windowDays || "the"} {windowDays ? "days" : "qualification window"}
+                            </div>
+                          )}
+
                           {/* ── Urgency ── */}
                           {!milestoneDetail.bonusPosted && windowDays > 0 && (
                             <div style={{
