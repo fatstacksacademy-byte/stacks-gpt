@@ -118,7 +118,7 @@ export const bonuses: any[] = [
     "id": "varo-money-100-referral-dd",
     "bank_name": "Varo Bank",
     "product_type": "checking",
-    "bonus_amount": 100,
+    "bonus_amount": 150,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -236,6 +236,7 @@ export const bonuses: any[] = [
     "bank_name": "316 Financial (Primis Bank division)",
     "product_type": "checking",
     "bonus_amount": 100,
+    "expired": true,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -452,11 +453,11 @@ export const bonuses: any[] = [
     "id": "bmo-400-checking-2026",
     "bank_name": "BMO",
     "product_type": "checking",
-    "bonus_amount": 400,
+    "bonus_amount": 600,
     "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": 4000,
+      "min_direct_deposit_total": 8000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": 90,
@@ -465,7 +466,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open eligible checking account from 2026-01-29 to 2026-05-04, complete cumulative $4,000 qualifying direct deposits in 90 days, and keep account open/in good standing with balance > 0 when paid."
+      "other_requirements_text": "Tiered bonus: $200 for $2,000+ DD, $400 for $4,000+ DD, $600 for $8,000+ DD within 90 days of account opening. Open by 2026-05-04, keep account in good standing with balance > 0 when paid."
     },
     "fees": {
       "monthly_fee": 0,
@@ -855,7 +856,7 @@ export const bonuses: any[] = [
     "id": "sofi-checking-savings-300-dd-2026",
     "bank_name": "SoFi",
     "product_type": "checking",
-    "bonus_amount": 300,
+    "bonus_amount": 400,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -868,7 +869,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "First qualifying direct deposit must post by 2026-12-31. Tiered bonus: $50 for $1,000-$4,999 total DD, $300 for $5,000+ total DD within the 25-day evaluation window."
+      "other_requirements_text": "First qualifying direct deposit must post by 2026-12-31. Tiered bonus: $50 for $1,000-$4,999 total DD, $400 for $5,000+ total DD within the 25-day evaluation window."
     },
     "fees": {
       "monthly_fee": 0,

@@ -523,7 +523,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const inProgress = bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress")
   const available = bonusesWithMeta
-    .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id))
+    .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id) && !(b.bonus as any).expired)
     .sort((a, b) => {
       if (a.feasible && !b.feasible) return -1
       if (!a.feasible && b.feasible) return 1
@@ -1336,6 +1336,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                             <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
                               <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                              {(b as any).expired && (
+                                <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, padding: "2px 8px" }}>Expired</span>
+                              )}
                               {bestLink(b.source_links) && (
                                 <a href={bestLink(b.source_links)!} target="_blank" rel="noreferrer"
                                   style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
