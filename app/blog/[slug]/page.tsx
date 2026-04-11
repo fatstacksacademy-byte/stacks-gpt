@@ -2,6 +2,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById } from "../../../lib/data/blogPosts"
 
+const BASE = "https://fatstacksacademy.com"
+
 export function generateStaticParams() {
   return blogPosts.map(p => ({ slug: p.slug }))
 }
@@ -10,9 +12,62 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const post = getPostBySlug(slug)
   if (!post) return { title: "Not Found" }
+
+  const title = post.title
+  const description = post.excerpt.length > 155 ? post.excerpt.slice(0, 155) + "…" : post.excerpt
+  const url = `${BASE}/blog/${post.slug}`
+
   return {
-    title: `${post.title} | Fat Stacks Academy`,
-    description: post.excerpt.slice(0, 160),
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article" as const,
+      title,
+      description,
+      url,
+      siteName: "Fat Stacks Academy",
+      locale: "en_US",
+      publishedTime: post.date,
+      modifiedTime: post.date,
+      section: post.category,
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary" as const,
+      title,
+      description,
+    },
+  }
+}
+
+function buildJsonLd(post: NonNullable<ReturnType<typeof getPostBySlug>>) {
+  const url = `${BASE}/blog/${post.slug}`
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.excerpt.slice(0, 160),
+        url,
+        datePublished: post.date,
+        dateModified: post.date,
+        author: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
+        publisher: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
+        mainEntityOfPage: { "@type": "WebPage", "@id": url },
+        articleSection: post.category,
+        keywords: post.tags.join(", "),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE}/blog` },
+          { "@type": "ListItem", position: 2, name: post.category, item: `${BASE}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: url },
+        ],
+      },
+    ],
   }
 }
 
@@ -276,8 +331,12 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
 
   if (!checkingBonus && !savingsBonus) notFound()
 
+  const jsonLd = buildJsonLd(post)
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* Header */}
       <header style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
