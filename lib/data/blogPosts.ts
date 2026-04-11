@@ -26,12 +26,20 @@ const checkingPosts: BlogPost[] = bonuses
   .map((b: any) => {
     const bankShort = b.bank_name.split("(")[0].trim()
     const amount = formatMoney(b.bonus_amount)
+    // Build tags based on bonus characteristics
+    const tags: string[] = ["Checking", "Bank Bonus"]
+    if (b.requirements?.direct_deposit_required) tags.push("Direct Deposit")
+    if (b.requirements?.debit_transactions_required) tags.push("Transaction Requirement")
+    if (b.eligibility?.state_restricted) tags.push("Regional")
+    else tags.push("Nationwide")
+    if (b.screening?.chex_sensitive === "low") tags.push("Easy Approval")
+    if (b.fees?.monthly_fee === 0) tags.push("No Monthly Fee")
     return {
       slug: slugify(`${bankShort}-${b.bonus_amount}-checking-bonus`),
-      title: `${bankShort} – ${amount} Checking Bonus`,
+      title: `${bankShort} ${amount} Checking Account Bonus (2026) - Review & Requirements`,
       excerpt: b.raw_excerpt || b.requirements?.other_requirements_text || "",
       category: "Bank Bonuses" as const,
-      tags: ["Checking", "Nationwide", b.requirements?.direct_deposit_required ? "Direct Deposit" : ""].filter(Boolean),
+      tags,
       date: "2026-04-10",
       bonusId: b.id,
       bonusType: "checking" as const,
@@ -45,12 +53,20 @@ const savingsPosts: BlogPost[] = savingsBonuses
     const bankShort = b.bank_name.split("(")[0].trim()
     const maxTier = b.tiers[b.tiers.length - 1]
     const amount = formatMoney(maxTier.bonus_amount)
+    // Calculate best effective APY for tags
+    const minTier = b.tiers[0]
+    const interest = minTier.min_deposit * b.base_apy * (b.total_hold_days / 365)
+    const effApy = (((minTier.bonus_amount + interest) / minTier.min_deposit) * (365 / b.total_hold_days) * 100).toFixed(1)
+    const tags: string[] = ["Savings", "Bank Bonus", "Nationwide"]
+    if (b.base_apy >= 0.03) tags.push("High Yield")
+    if (b.fees.monthly_fee === 0) tags.push("No Monthly Fee")
+    if (b.tiers.length > 1) tags.push("Tiered Bonus")
     return {
       slug: slugify(`${bankShort}-${maxTier.bonus_amount}-savings-bonus`),
-      title: `${bankShort} – ${amount} Savings Bonus`,
+      title: `${bankShort} ${amount} Savings Bonus (${effApy}% Effective APY) - 2026 Review`,
       excerpt: b.raw_excerpt || "",
       category: "Savings Bonuses" as const,
-      tags: ["Savings", "Nationwide"],
+      tags,
       date: "2026-04-10",
       bonusId: b.id,
       bonusType: "savings" as const,

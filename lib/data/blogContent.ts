@@ -136,7 +136,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "Can I get the Bank of America bonus again?", a: "Yes, after 12 months. You can't have had a BofA personal checking account in the past 12 months, and you can only receive one bonus per 12-month period." },
       { q: "Does Bank of America do a hard pull?", a: "Reports are mixed. A soft pull is commonly reported, especially when declining overdraft protection. Some users have reported a hard inquiry in specific circumstances." },
     ],
-    relatedSlugs: ["chase-400-checking-bonus", "bcu-500-checking-bonus", "us-bank-450-checking-bonus"],
+    relatedSlugs: ["chase-400-checking-bonus", "bcu-500-checking-bonus", "u-s-bank-450-checking-bonus"],
   },
 
   "pnc-400-virtual-wallet-performance-select-2026": {
@@ -164,7 +164,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "What's the difference between PNC Virtual Wallet tiers?", a: "Virtual Wallet (basic) is $7/month with a lower bonus. Performance Spend is mid-tier. Performance Select is $25/month but gets the $400 bonus. Each tier has different fee waiver thresholds." },
       { q: "Can I downgrade after getting the bonus?", a: "Yes. After the bonus posts and the 150-day holding period, you can downgrade to a lower-fee PNC account or close the account entirely." },
     ],
-    relatedSlugs: ["chase-400-checking-bonus", "wells-fargo-400-checking-bonus", "us-bank-450-checking-bonus"],
+    relatedSlugs: ["chase-400-checking-bonus", "wells-fargo-400-checking-bonus", "u-s-bank-450-checking-bonus"],
   },
 
   "chase-total-checking-400-2026": {
@@ -194,7 +194,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "Does Chase do a hard credit pull?", a: "No. Chase uses a soft pull and/or Early Warning Services (EWS) check. Opening a checking account will not affect your credit score." },
       { q: "Can I do the Chase checking and savings combo?", a: "Yes. Chase frequently offers a $900 total bonus when you open both checking ($300) and savings ($200 + $400 combo bonus). The savings portion requires a $15,000 deposit maintained for 90 days." },
     ],
-    relatedSlugs: ["wells-fargo-400-checking-bonus", "capital-one-300-checking-bonus", "us-bank-450-checking-bonus"],
+    relatedSlugs: ["wells-fargo-400-checking-bonus", "capital-one-300-checking-bonus", "u-s-bank-450-checking-bonus"],
   },
 
   "wells-fargo-400-everyday-checking-2026": {
@@ -251,7 +251,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "How long does the BMO bonus take to post?", a: "About 100 days after account opening. The bonus posts once you've met the direct deposit requirements and maintained the account in good standing." },
       { q: "What counts as a direct deposit at BMO?", a: "Qualifying direct deposits include payroll and government benefit payments. Check BMO's terms for the complete list of qualifying deposit types." },
     ],
-    relatedSlugs: ["bank-of-america-500-checking-bonus", "chase-400-checking-bonus", "us-bank-450-checking-bonus"],
+    relatedSlugs: ["bank-of-america-500-checking-bonus", "chase-400-checking-bonus", "u-s-bank-450-checking-bonus"],
   },
 
   "affinity-fcu-100-checking-referral": {
@@ -306,7 +306,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "What is the GHYCHECK promo code?", a: "GHYCHECK is the promo code you enter when opening your High Yield Checking account. It qualifies you for the $100/$250 tiered bonus based on direct deposit volume." },
       { q: "Do I need 3 deposits for the $100 tier too?", a: "Yes. Both tiers require 3+ separate ACH direct deposits. The difference is the total amount: $3,000-$14,999 for $100, or $15,000+ for $250." },
     ],
-    relatedSlugs: ["bank-of-america-500-checking-bonus", "us-bank-450-checking-bonus", "keypoint-credit-union-300-checking-bonus"],
+    relatedSlugs: ["bank-of-america-500-checking-bonus", "u-s-bank-450-checking-bonus", "keypoint-credit-union-300-checking-bonus"],
   },
 
   "keypoint-cu-300-money4me-nm26": {
@@ -333,7 +333,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "Can I do other bank bonuses at the same time?", a: "Yes, if you split your direct deposit. Route $1,000 to KeyPoint and the remainder to whatever bonus you're currently working on at another bank." },
       { q: "What happens if I miss a month?", a: "Missing a qualifying month may reset your progress. Contact KeyPoint directly for their exact policy on missed months, but the safest approach is to never miss." },
     ],
-    relatedSlugs: ["teachers-fcu-300-checking-bonus", "psecu-300-checking-bonus", "capital-one-300-checking-bonus"],
+    relatedSlugs: ["teachers-federal-credit-union-300-checking-bonus", "psecu-300-checking-bonus", "capital-one-300-checking-bonus"],
   },
 
   "etrade-max-rate-checking-300-checking25": {
