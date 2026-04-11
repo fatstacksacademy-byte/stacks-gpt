@@ -1,8 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById } from "../../../lib/data/blogPosts"
+import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 
 const BASE = "https://fatstacksacademy.com"
+const YT = "https://www.youtube.com/@nathanielbooth"
 
 export function generateStaticParams() {
   return blogPosts.map(p => ({ slug: p.slug }))
@@ -13,8 +15,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPostBySlug(slug)
   if (!post) return { title: "Not Found" }
 
+  const content = blogContent[post.bonusId]
   const title = post.title
-  const description = post.excerpt.length > 155 ? post.excerpt.slice(0, 155) + "…" : post.excerpt
+  const rawDesc = content?.summary || post.excerpt
+  const description = rawDesc.length > 155 ? rawDesc.slice(0, 155) + "..." : rawDesc
   const url = `${BASE}/blog/${post.slug}`
 
   return {
@@ -43,32 +47,44 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 function buildJsonLd(post: NonNullable<ReturnType<typeof getPostBySlug>>) {
   const url = `${BASE}/blog/${post.slug}`
-  return {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.excerpt.slice(0, 160),
-        url,
-        datePublished: post.date,
-        dateModified: post.date,
-        author: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
-        publisher: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
-        mainEntityOfPage: { "@type": "WebPage", "@id": url },
-        articleSection: post.category,
-        keywords: post.tags.join(", "),
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE}/blog` },
-          { "@type": "ListItem", position: 2, name: post.category, item: `${BASE}/blog` },
-          { "@type": "ListItem", position: 3, name: post.title, item: url },
-        ],
-      },
-    ],
+  const content = blogContent[post.bonusId]
+
+  const graph: any[] = [
+    {
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: content?.summary || post.excerpt.slice(0, 160),
+      url,
+      datePublished: post.date,
+      dateModified: post.date,
+      author: { "@type": "Person", name: "Nathaniel Booth", url: YT },
+      publisher: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      articleSection: post.category,
+      keywords: post.tags.join(", "),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE}/blog` },
+        { "@type": "ListItem", position: 2, name: post.category, item: `${BASE}/blog` },
+        { "@type": "ListItem", position: 3, name: post.title, item: url },
+      ],
+    },
+  ]
+
+  if (content?.faqs?.length) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: content.faqs.map(faq => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a },
+      })),
+    })
   }
+
+  return { "@context": "https://schema.org", "@graph": graph }
 }
 
 function money(n: number | null | undefined): string {
@@ -87,14 +103,103 @@ function InfoRow({ label, value, accent }: { label: string; value: string; accen
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 32 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", margin: "0 0 16px", letterSpacing: "-0.01em" }}>{title}</h2>
+    <div style={{ marginBottom: 36 }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", margin: "0 0 16px", letterSpacing: "-0.01em" }}>{title}</h2>
       {children}
     </div>
   )
 }
 
-function CheckingArticle({ bonus }: { bonus: any }) {
+/** Editorial content sections: summary, strategy, pros/cons, comparison, FAQs, cross-links */
+function EditorialContent({ content, bonusType }: { content: BlogContent; bonusType: string }) {
+  return (
+    <>
+      {/* Summary */}
+      <Section title="Overview">
+        <p style={{ fontSize: 15, color: "#ccc", lineHeight: 1.8, margin: 0 }}>{content.summary}</p>
+      </Section>
+
+      {/* Best For */}
+      <Section title={`Who This ${bonusType === "checking" ? "Checking" : "Savings"} Bonus Is Best For`}>
+        <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.7, margin: 0 }}>{content.bestFor}</p>
+      </Section>
+
+      {/* Strategy */}
+      <Section title="How to Maximize This Bonus">
+        <div style={{ background: "rgba(136,224,109,0.05)", border: "1px solid rgba(136,224,109,0.15)", borderRadius: 12, padding: "20px" }}>
+          <p style={{ fontSize: 14, color: "#ccc", lineHeight: 1.8, margin: 0 }}>{content.strategy}</p>
+        </div>
+      </Section>
+
+      {/* Pros and Cons */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 36 }}>
+        <div>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#88e06d", margin: "0 0 12px" }}>Pros</h2>
+          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: "16px" }}>
+            {content.pros.map((pro, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: i < content.pros.length - 1 ? 10 : 0, alignItems: "flex-start" }}>
+                <span style={{ color: "#88e06d", fontSize: 13, flexShrink: 0, marginTop: 2 }}>+</span>
+                <span style={{ fontSize: 13, color: "#bbb", lineHeight: 1.5 }}>{pro}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#ff6b6b", margin: "0 0 12px" }}>Cons</h2>
+          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: "16px" }}>
+            {content.cons.map((con, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: i < content.cons.length - 1 ? 10 : 0, alignItems: "flex-start" }}>
+                <span style={{ color: "#ff6b6b", fontSize: 13, flexShrink: 0, marginTop: 2 }}>-</span>
+                <span style={{ fontSize: 13, color: "#bbb", lineHeight: 1.5 }}>{con}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Comparison */}
+      <Section title="How This Compares to Other Bonuses">
+        <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.7, margin: 0 }}>{content.comparison}</p>
+      </Section>
+
+      {/* FAQs */}
+      {content.faqs.length > 0 && (
+        <Section title="Frequently Asked Questions">
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {content.faqs.map((faq, i) => (
+              <div key={i} style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 0" }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: "0 0 8px" }}>{faq.q}</h3>
+                <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Related bonuses cross-links */}
+      {content.relatedSlugs.length > 0 && (
+        <Section title="Related Bonus Reviews">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {content.relatedSlugs.map(slug => {
+              const related = blogPosts.find(p => p.slug === slug)
+              if (!related) return null
+              return (
+                <Link key={slug} href={`/blog/${slug}`} style={{
+                  display: "block", padding: "14px 16px", background: "#111", border: "1px solid #222",
+                  borderRadius: 8, textDecoration: "none", fontSize: 14, color: "#88e06d", fontWeight: 600,
+                }}>
+                  {related.title} →
+                </Link>
+              )
+            })}
+          </div>
+        </Section>
+      )}
+    </>
+  )
+}
+
+function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent }) {
   const req = bonus.requirements || {}
   const fees = bonus.fees || {}
   const screen = bonus.screening || {}
@@ -137,8 +242,11 @@ function CheckingArticle({ bonus }: { bonus: any }) {
         )}
       </div>
 
+      {/* Editorial content (summary, strategy, pros/cons, FAQs, related) */}
+      {content && <EditorialContent content={content} bonusType="checking" />}
+
       {/* Requirements */}
-      <Section title="Requirements">
+      <Section title="Full Requirements">
         <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.7, margin: 0 }}>
           {req.other_requirements_text || "See bank website for full requirements."}
         </p>
@@ -149,9 +257,7 @@ function CheckingArticle({ bonus }: { bonus: any }) {
         <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: "20px" }}>
           <InfoRow label="Monthly Fee" value={fees.monthly_fee != null ? (fees.monthly_fee === 0 ? "$0" : money(fees.monthly_fee) + "/mo") : "Not stated"} />
           {fees.monthly_fee_waiver_text && (
-            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>
-              {fees.monthly_fee_waiver_text}
-            </p>
+            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{fees.monthly_fee_waiver_text}</p>
           )}
           {fees.early_closure_fee != null && fees.early_closure_fee > 0 && (
             <InfoRow label="Early Closure Fee" value={money(fees.early_closure_fee)} />
@@ -168,9 +274,7 @@ function CheckingArticle({ bonus }: { bonus: any }) {
           <InfoRow label="Hard Pull" value={screen.hard_pull === true ? "Yes" : screen.hard_pull === false ? "No" : "Unknown"} />
           <InfoRow label="Soft Pull" value={screen.soft_pull === true ? "Yes" : screen.soft_pull === false ? "No" : "Unknown"} />
           {screen.screening_notes && (
-            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>
-              {screen.screening_notes}
-            </p>
+            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{screen.screening_notes}</p>
           )}
         </div>
       </Section>
@@ -181,26 +285,19 @@ function CheckingArticle({ bonus }: { bonus: any }) {
           <InfoRow label="Availability" value={elig.states_allowed?.[0] || "See terms"} />
           <InfoRow label="Lifetime Limit" value={elig.lifetime_language ? "Yes" : "No"} />
           {elig.eligibility_notes && (
-            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>
-              {elig.eligibility_notes}
-            </p>
+            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{elig.eligibility_notes}</p>
           )}
         </div>
       </Section>
 
-      {/* Apply Link */}
+      {/* Apply */}
       {links.length > 0 && (
         <Section title="Apply">
-          <a
-            href={links[0]}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
-              background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
-            }}
-          >
-            Open Account →
+          <a href={links[0]} target="_blank" rel="noopener noreferrer" style={{
+            display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
+            background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
+          }}>
+            Open Account &rarr;
           </a>
           {links.length > 1 && (
             <div style={{ marginTop: 16 }}>
@@ -220,7 +317,7 @@ function CheckingArticle({ bonus }: { bonus: any }) {
   )
 }
 
-function SavingsArticle({ bonus }: { bonus: any }) {
+function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent }) {
   const links = bonus.source_links || []
   const elig = bonus.eligibility || {}
 
@@ -260,15 +357,16 @@ function SavingsArticle({ bonus }: { bonus: any }) {
         </div>
       </Section>
 
+      {/* Editorial content */}
+      {content && <EditorialContent content={content} bonusType="savings" />}
+
       {/* Eligibility */}
       <Section title="Eligibility">
         <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: "20px" }}>
           <InfoRow label="Availability" value={elig.states_allowed?.[0] || "See terms"} />
           <InfoRow label="Lifetime Limit" value={elig.lifetime_language ? "Yes" : "No"} />
           {elig.eligibility_notes && (
-            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>
-              {elig.eligibility_notes}
-            </p>
+            <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{elig.eligibility_notes}</p>
           )}
         </div>
       </Section>
@@ -280,28 +378,14 @@ function SavingsArticle({ bonus }: { bonus: any }) {
         </div>
       </Section>
 
-      {/* Strategy Notes */}
-      {bonus.notes && (
-        <Section title="Strategy">
-          <div style={{ background: "rgba(136,224,109,0.05)", border: "1px solid rgba(136,224,109,0.15)", borderRadius: 12, padding: "20px" }}>
-            <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.7, margin: 0 }}>{bonus.notes}</p>
-          </div>
-        </Section>
-      )}
-
-      {/* Apply Link */}
+      {/* Apply */}
       {links.length > 0 && (
         <Section title="Apply">
-          <a
-            href={links[0]}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
-              background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
-            }}
-          >
-            Open Account →
+          <a href={links[0]} target="_blank" rel="noopener noreferrer" style={{
+            display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
+            background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
+          }}>
+            Open Account &rarr;
           </a>
           {links.length > 1 && (
             <div style={{ marginTop: 16 }}>
@@ -328,6 +412,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
 
   const checkingBonus = post.bonusType === "checking" ? getCheckingBonusById(post.bonusId) : null
   const savingsBonus = post.bonusType === "savings" ? getSavingsBonusById(post.bonusId) : null
+  const content = blogContent[post.bonusId]
 
   if (!checkingBonus && !savingsBonus) notFound()
 
@@ -343,9 +428,11 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
           <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#fff", textDecoration: "none", letterSpacing: "-0.02em" }}>
             Fat Stacks Academy
           </Link>
-          <nav style={{ display: "flex", gap: 24 }}>
-            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>All Posts</Link>
-            <Link href="/" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Stacks OS</Link>
+          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
+            <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
+            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>All Reviews</Link>
+            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
           </nav>
         </div>
       </header>
@@ -356,7 +443,11 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         <div style={{ fontSize: 13, color: "#555", marginBottom: 24 }}>
           <Link href="/blog" style={{ color: "#88e06d", textDecoration: "none" }}>Blog</Link>
           <span style={{ margin: "0 8px" }}>/</span>
-          <span>{post.category}</span>
+          <Link href={post.bonusType === "checking" ? "/blog/best-checking-bonuses-2026" : "/blog/best-savings-bonuses-2026"} style={{ color: "#88e06d", textDecoration: "none" }}>
+            {post.bonusType === "checking" ? "Best Checking Bonuses" : "Best Savings Bonuses"}
+          </Link>
+          <span style={{ margin: "0 8px" }}>/</span>
+          <span style={{ color: "#777" }}>{post.title}</span>
         </div>
 
         {/* Title */}
@@ -364,10 +455,15 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
           {post.title}
         </h1>
 
-        {/* Meta */}
-        <div style={{ display: "flex", gap: 16, marginBottom: 32, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 13, color: "#88e06d", fontWeight: 600 }}>{post.category}</span>
+        {/* Author + Meta */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+          <span style={{ fontSize: 13, color: "#999" }}>
+            By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Nathaniel Booth</a>
+          </span>
           <span style={{ fontSize: 13, color: "#555" }}>{post.date}</span>
+          <span style={{ fontSize: 13, color: "#88e06d", fontWeight: 600 }}>{post.category}</span>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
           {post.tags.map(tag => (
             <span key={tag} style={{ fontSize: 11, color: "#666", background: "#1a1a1a", padding: "3px 10px", borderRadius: 99 }}>
               {tag}
@@ -376,11 +472,25 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         </div>
 
         {/* Content */}
-        {checkingBonus && <CheckingArticle bonus={checkingBonus} />}
-        {savingsBonus && <SavingsArticle bonus={savingsBonus} />}
+        {checkingBonus && <CheckingArticle bonus={checkingBonus} content={content} />}
+        {savingsBonus && <SavingsArticle bonus={savingsBonus} content={content} />}
+
+        {/* YouTube CTA */}
+        <div style={{ marginTop: 48, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Watch the Video Breakdown</div>
+          <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
+            Nathaniel covers the best bank bonuses, credit card strategies, and savings optimization on his YouTube channel.
+          </p>
+          <a href={YT} target="_blank" rel="noopener noreferrer" style={{
+            display: "inline-block", padding: "10px 20px", fontSize: 13, fontWeight: 700,
+            background: "#ff0000", color: "#fff", borderRadius: 8, textDecoration: "none",
+          }}>
+            Subscribe on YouTube &rarr;
+          </a>
+        </div>
 
         {/* Disclaimer */}
-        <div style={{ marginTop: 48, padding: "20px", background: "#111", border: "1px solid #222", borderRadius: 12 }}>
+        <div style={{ marginTop: 32, padding: "20px", background: "#111", border: "1px solid #222", borderRadius: 12 }}>
           <p style={{ fontSize: 12, color: "#555", lineHeight: 1.7, margin: 0 }}>
             Bonus offers, requirements, and fees are determined by each financial institution and may change at any time.
             Always verify the current terms directly with the bank before applying. This content is for informational
@@ -389,9 +499,15 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         </div>
 
         {/* Back */}
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 32, display: "flex", gap: 20 }}>
           <Link href="/blog" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>
-            ← Back to all reviews
+            &larr; All reviews
+          </Link>
+          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>
+            Best checking bonuses
+          </Link>
+          <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>
+            Best savings bonuses
           </Link>
         </div>
       </article>
@@ -401,6 +517,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
           <span style={{ fontSize: 13, color: "#555" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
+            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>YouTube</a>
             <Link href="/" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Blog</Link>
           </div>

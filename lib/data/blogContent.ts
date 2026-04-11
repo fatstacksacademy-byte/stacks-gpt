@@ -1,0 +1,673 @@
+/**
+ * Rich editorial content for each blog post.
+ * Keyed by bonus ID — matches bonuses.ts and savingsBonuses.ts IDs.
+ * This provides the "editorial depth" that search engines reward:
+ * strategy tips, pros/cons, who it's for, FAQs, and comparison notes.
+ */
+
+export type BlogContent = {
+  /** 2-3 sentence editorial summary (different from raw_excerpt) */
+  summary: string
+  /** Strategy section — how to maximize the bonus */
+  strategy: string
+  /** Who this bonus is best for */
+  bestFor: string
+  /** Pros list */
+  pros: string[]
+  /** Cons list */
+  cons: string[]
+  /** Comparison notes — how this compares to alternatives */
+  comparison: string
+  /** FAQ pairs for FAQ schema */
+  faqs: { q: string; a: string }[]
+  /** Related bonus slugs for cross-linking */
+  relatedSlugs: string[]
+}
+
+export const blogContent: Record<string, BlogContent> = {
+  // ─── CHECKING BONUSES ─────────────────────────────────────────
+
+  "psecu-300-checking-2026": {
+    summary: "PSECU's $300 checking bonus is one of the stronger credit union offers available nationwide. Despite being a Pennsylvania-based credit union, anyone can join through the PA Consumer Council or PRPS membership path. The two direct deposits of $500+ each within 100 days make this accessible for most working adults.",
+    strategy: "Use promo code 2026REFER when opening your account to qualify. You'll need two payroll direct deposits of at least $500 each within 100 days. If your employer allows split direct deposit, route $500 per paycheck to PSECU while keeping the rest at your primary bank. Make sure to enroll in digital banking and activate your debit card — both are requirements that are easy to miss. The bonus posts within 145 days, which is on the slower side, so plan accordingly.",
+    bestFor: "Anyone with a regular paycheck of $500+ who wants a solid $300 bonus from a no-fee credit union. Especially good for people who've already exhausted the big bank bonuses (Chase, Wells Fargo, etc.) and are looking for the next tier.",
+    pros: [
+      "$300 bonus is strong for a credit union",
+      "No monthly fees on Free Checking",
+      "No early closure fee",
+      "Available nationwide via PA Consumer Council membership",
+      "Soft pull only — won't affect your credit score",
+    ],
+    cons: [
+      "145-day bonus posting timeline is slow",
+      "ChexSystems inquiry required — can't apply with Chex frozen",
+      "Must unfreeze Experian for soft pull",
+      "Lifetime limit — one bonus per tax ID",
+      "Requires joining PA Consumer Council or PRPS first",
+    ],
+    comparison: "At $300, PSECU sits in the same tier as Capital One ($300) and KeyPoint CU ($300), but with a simpler requirement — just two direct deposits vs. Capital One's 75-day window or KeyPoint's 6-month commitment. The downside is the 145-day wait for the bonus to post, which is significantly longer than Chase (15 days) or Chime (instant).",
+    faqs: [
+      { q: "Can I open a PSECU account if I don't live in Pennsylvania?", a: "Yes. You can join PSECU from any state by becoming a member of the PA Consumer Council ($15) or the Pennsylvania Recreation and Park Society (PRPS). This is a one-time membership that gives you lifetime PSECU eligibility." },
+      { q: "Does PSECU do a hard credit pull?", a: "No. PSECU does a soft pull on Experian and a ChexSystems inquiry. Neither will affect your credit score, but you'll need to have Experian and ChexSystems unfrozen when you apply." },
+      { q: "How long does the PSECU bonus take to post?", a: "The bonus posts within 145 days of meeting the direct deposit requirements. This is slower than most bank bonuses, so factor that into your bonus rotation timeline." },
+      { q: "What counts as a qualifying direct deposit at PSECU?", a: "Payroll direct deposits of $500 or more each. You need at least two within 100 days of account opening. ACH transfers from other banks may or may not work — payroll is the safest method." },
+    ],
+    relatedSlugs: ["capital-one-300-checking-bonus", "keypoint-credit-union-300-checking-bonus", "chase-400-checking-bonus"],
+  },
+
+  "capital-one-360-checking-300-offer300": {
+    summary: "Capital One's 360 Checking bonus is a reliable $300 offer from one of the most beginner-friendly banks in the bonus game. No monthly fees, no minimum balance, and a straightforward direct deposit requirement. It's often one of the first bonuses recommended for newcomers because Capital One is easy to work with and the requirements are simple.",
+    strategy: "Use promo code OFFER300 when opening your 360 Checking account. You need two direct deposits of $500+ each within 75 days. The fastest approach: split your paycheck so at least $500 per pay period goes to Capital One. If you're paid biweekly, you'll hit the requirement within a month. Keep the account open for at least 135 days to avoid any issues — the bonus posts within 60 days after your second qualifying deposit.",
+    bestFor: "First-time bonus seekers who want a simple, no-fee checking account with a solid bonus. Also great for anyone with a regular paycheck who wants a stress-free experience — Capital One's online banking is excellent and the app is well-designed.",
+    pros: [
+      "$300 bonus with simple requirements",
+      "No monthly fee, no minimum balance",
+      "No early closure fee",
+      "Excellent mobile app and online banking",
+      "Low ChexSystems sensitivity — high approval rate",
+      "Available nationwide",
+    ],
+    cons: [
+      "3-year cooldown before you can get another bonus",
+      "Must keep account open 135 days",
+      "Ineligible if you've had Capital One checking since 2023",
+      "75-day window is shorter than some competitors",
+    ],
+    comparison: "Capital One's $300 sits below Chase ($400) and Wells Fargo ($400) in raw bonus value, but the requirements are easier — $1,000 total DD vs. Chase's $1,000 (similar) but with a much friendlier bank to deal with. The 3-year cooldown is the main drawback compared to Chase's 2-year cooldown. For beginners, Capital One is often the better starting point because of the no-fee structure and easy requirements.",
+    faqs: [
+      { q: "What counts as a direct deposit at Capital One?", a: "Payroll deposits, government benefits, and pension payments qualify. Capital One is generally lenient — ACH transfers from some banks have also been reported to work, though payroll is the safest option." },
+      { q: "Can I close my Capital One account after getting the bonus?", a: "Yes, but wait at least 135 days from account opening. There's no early closure fee, but closing too early could theoretically cause issues with the bonus." },
+      { q: "How long is the Capital One checking bonus cooldown?", a: "36 months (3 years). You can't get another Capital One checking bonus if you've had a 360 Checking, Simply Checking, Total Control Checking, or Money Teen Checking account on or after January 1, 2023." },
+      { q: "Does Capital One do a hard pull for checking accounts?", a: "No. Capital One primarily uses Early Warning Services (EWS) with a soft pull. Your credit score won't be affected." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "wells-fargo-400-checking-bonus", "psecu-300-checking-bonus"],
+  },
+
+  "varo-money-100-referral-dd": {
+    summary: "Varo's $150 referral bonus is one of the easiest checking bonuses to earn. Open an account through a referral link, receive one qualifying direct deposit of $500+, and you're done. No monthly fees, no minimum balance, and Varo is one of the most ChexSystems-friendly banks available — making it ideal for people who've been denied elsewhere.",
+    strategy: "You must open your account through a referral link — there's no public bonus for signing up directly. Once open, route at least $500 from one paycheck as a direct deposit. The bonus posts quickly after the qualifying deposit clears. Since there's no holding period requirement, you can move on to your next bonus immediately after receiving it. This makes Varo an excellent \"quick hit\" between larger bonuses.",
+    bestFor: "People who want a fast, easy bonus with minimal requirements. Especially valuable for anyone with ChexSystems issues who've been denied by traditional banks — Varo's approval rate is very high.",
+    pros: [
+      "Only $500 single direct deposit required",
+      "No monthly fees whatsoever",
+      "Extremely ChexSystems-friendly — soft pull only",
+      "Fast bonus posting",
+      "No holding period requirement",
+      "Available nationwide",
+    ],
+    cons: [
+      "$150 is on the lower end of checking bonuses",
+      "Must use referral link — no public offer",
+      "Lifetime limit — one bonus ever",
+      "Must never have been a Varo customer (including old Varo Money accounts)",
+    ],
+    comparison: "Varo's $150 is less than Chase ($400) or Wells Fargo ($400), but the effort-to-reward ratio is excellent. The $500 single deposit requirement is the lowest among checking bonuses tracked here. Compare to Chime ($100 with $200 DD) — Varo pays more with a slightly higher deposit requirement. For people cycling through bonuses, Varo is a great filler between larger bonuses that have longer timelines.",
+    faqs: [
+      { q: "Does Varo do a hard pull or ChexSystems check?", a: "No hard pull and no traditional ChexSystems check. Varo does a soft pull only, making it one of the most accessible banks for people with banking history issues." },
+      { q: "How quickly does the Varo bonus post?", a: "The bonus typically posts within a few days of your qualifying direct deposit clearing. This is significantly faster than most bank bonuses which take 60-150 days." },
+      { q: "Can I use an ACH transfer instead of a real direct deposit?", a: "Varo's terms specify qualifying direct deposits. Payroll is the safest method. Some users have reported success with ACH transfers from certain banks, but results vary." },
+      { q: "Is Varo a real bank?", a: "Yes. Varo Bank, N.A. is a nationally chartered, FDIC-insured bank. It was the first consumer fintech to receive a national bank charter in the U.S." },
+    ],
+    relatedSlugs: ["chime-100-checking-bonus", "sofi-400-checking-bonus", "affinity-federal-credit-union-100-checking-bonus"],
+  },
+
+  "bank-of-america-500-tiered-checking-2026": {
+    summary: "Bank of America's tiered checking bonus tops out at $500 for $10,000+ in direct deposits within 90 days. The tiered structure is appealing — you can still earn $100 or $300 at lower deposit levels — but the monthly fee structure requires attention. This is a strong bonus for high earners who can route significant paycheck volume.",
+    strategy: "The key to maximizing this bonus is understanding the tiers: $100 for $2,000 DD, $300 for $5,000 DD, and $500 for $10,000+ DD, all within 90 days. If you're paid biweekly at $2,000+ per paycheck, you'll hit the $500 tier in about 2.5 months by routing your full paycheck. Choose the Advantage SafePass account to minimize fees — the monthly fee is waivable with a $500 daily balance or if you're under 25. Apply by May 31, 2026.",
+    bestFor: "Higher earners who can route $10,000+ in direct deposits over 90 days. If you earn $80k+ annually and can dedicate your full paycheck temporarily, the $500 tier is very achievable. Also good for people who only want to route part of their paycheck — the $300 tier at $5,000 DD is still competitive.",
+    pros: [
+      "Up to $500 — one of the highest checking bonuses available",
+      "Tiered structure means you still earn something at lower deposit levels",
+      "12-month cooldown is reasonable for re-churning",
+      "Bank of America branches are everywhere",
+      "Low ChexSystems sensitivity",
+    ],
+    cons: [
+      "$10,000 DD requirement for the top tier is high",
+      "Monthly fee ($4.95-$25) requires careful management",
+      "150-day hold period before bonus posts",
+      "Must keep account open 150 days",
+      "Offer expires May 31, 2026",
+    ],
+    comparison: "The $500 top tier matches BCU ($500) and beats Chase ($400) and Wells Fargo ($400), but requires significantly more in direct deposits — $10,000 vs. $1,000 for Chase. The effort-to-reward ratio is lower than Chase or Wells Fargo at the top tier, but the $300 tier ($5,000 DD) is competitive with similar requirements to other $300 bonuses. The 12-month cooldown is better than Capital One's 36 months.",
+    faqs: [
+      { q: "Which Bank of America checking account should I open for the bonus?", a: "The Advantage SafePass Banking account has the lowest monthly fee ($4.95) and is the easiest to manage. It's waivable if you're under 25, maintain a $500 daily balance, or are enrolled in Preferred Rewards." },
+      { q: "What counts as a direct deposit at Bank of America?", a: "Payroll, government benefits, and pension payments qualify. BofA is known to be relatively flexible — some ACH transfers from external banks have been reported to work, but payroll is the safest method." },
+      { q: "Can I get the Bank of America bonus again?", a: "Yes, after 12 months. You can't have had a BofA personal checking account in the past 12 months, and you can only receive one bonus per 12-month period." },
+      { q: "Does Bank of America do a hard pull?", a: "Reports are mixed. A soft pull is commonly reported, especially when declining overdraft protection. Some users have reported a hard inquiry in specific circumstances." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "bcu-500-checking-bonus", "us-bank-450-checking-bonus"],
+  },
+
+  "pnc-400-virtual-wallet-performance-select-2026": {
+    summary: "PNC's $400 checking bonus through their Virtual Wallet with Performance Select is a strong offer, but comes with important caveats — a $25/month fee (waivable) and geographic restrictions to PNC footprint states. If you're in a PNC state and can meet the $5,000 DD requirement, this is one of the better big-bank bonuses available.",
+    strategy: "Open the Virtual Wallet with Performance Select specifically — that's the $400 tier. To waive the $25/month fee, maintain $5,000+ in combined balances or route $5,000+ in monthly direct deposits. Since you need $5,000 in DDs within 60 days anyway, timing your direct deposit switch correctly can cover both the bonus requirement and the fee waiver simultaneously. Start your direct deposit immediately after opening to maximize the 60-day window.",
+    bestFor: "People in PNC footprint states who want a high-value big-bank bonus and can maintain $5,000+ in balances or direct deposits to waive the monthly fee. Good for those who've already done Chase and Wells Fargo.",
+    pros: [
+      "$400 bonus is competitive with major banks",
+      "Virtual Wallet is actually a useful banking product",
+      "Multiple fee waiver options available",
+      "24-month cooldown allows for re-churning",
+    ],
+    cons: [
+      "$25/month fee if not waived — highest among checking bonuses",
+      "Limited to PNC footprint states",
+      "$5,000 DD requirement in just 60 days is aggressive",
+      "150-day hold period",
+      "$25 early closure fee",
+      "Medium ChexSystems sensitivity",
+    ],
+    comparison: "PNC's $400 matches Chase ($400) and Wells Fargo ($400) in bonus amount, but has a higher DD requirement ($5,000 vs. $1,000) and a shorter window (60 days vs. 90 days). The monthly fee is also significantly higher. However, PNC offers this on a 24-month cooldown, same as Chase. If you're in a PNC state and have the income to support it, this is worth doing after Chase and Wells Fargo.",
+    faqs: [
+      { q: "Is the PNC bonus available in my state?", a: "PNC operates in a limited footprint including AL, DC, DE, FL, GA, IL, IN, KY, MD, MI, MO, NC, NJ, NY, OH, PA, SC, VA, WI, and WV. Check PNC's website for the most current list." },
+      { q: "How do I avoid the $25 monthly fee?", a: "Maintain $5,000+ in combined average balances across PNC accounts, OR have $5,000+ in monthly qualifying direct deposits, OR have an active PNC mortgage or home equity loan." },
+      { q: "What's the difference between PNC Virtual Wallet tiers?", a: "Virtual Wallet (basic) is $7/month with a lower bonus. Performance Spend is mid-tier. Performance Select is $25/month but gets the $400 bonus. Each tier has different fee waiver thresholds." },
+      { q: "Can I downgrade after getting the bonus?", a: "Yes. After the bonus posts and the 150-day holding period, you can downgrade to a lower-fee PNC account or close the account entirely." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "wells-fargo-400-checking-bonus", "us-bank-450-checking-bonus"],
+  },
+
+  "chase-total-checking-400-2026": {
+    summary: "Chase's $400 checking bonus is the gold standard for bank bonus newcomers. Simple requirements ($1,000 direct deposit in 90 days), fast posting (~15 days after qualifying), and Chase's massive branch network make this the most popular checking bonus in the country. If you haven't done this one yet, it should be your first.",
+    strategy: "Open a Chase Total Checking account using the offer link — this automatically applies the coupon. Route at least $1,000 in direct deposits within 90 days. One paycheck usually covers it. The bonus posts within about 15 business days after your qualifying deposit, which is the fastest of any major bank. To avoid the $15/month fee, maintain $500+ in qualifying electronic deposits per month or a $1,500 daily balance. Offer expires April 15, 2026.",
+    bestFor: "First-time bonus seekers and anyone who hasn't had a Chase checking account in the past 2 years. The low requirements and fast payout make this the ideal starting point for building a bonus rotation system.",
+    pros: [
+      "$400 bonus with just $1,000 direct deposit required",
+      "Bonus posts in ~15 days — fastest major bank",
+      "Simple, clear requirements",
+      "Massive branch and ATM network",
+      "Easy fee waiver with direct deposit",
+      "Available nationwide",
+    ],
+    cons: [
+      "$15/month fee if waiver conditions aren't met",
+      "24-month cooldown between bonuses",
+      "Not available to existing Chase checking customers",
+      "P2P payments (Zelle, Venmo) don't count as direct deposit",
+      "Offer expires April 15, 2026",
+    ],
+    comparison: "Chase's $400 is the benchmark. Wells Fargo matches it at $400 but with a 120-day posting time vs. Chase's 15 days. Capital One offers $300 with similar requirements but a 3-year cooldown. Bank of America can go higher ($500) but requires $10,000 in deposits. For most people, Chase should be bonus #1 due to speed and simplicity.",
+    faqs: [
+      { q: "What counts as a direct deposit at Chase?", a: "Payroll, pension, or government benefits via ACH, RTP, FedNow, or Visa/Mastercard debit network. Zelle, cash deposits, checks, wire transfers, and interest payments do NOT qualify. Micro-deposits also don't count." },
+      { q: "How long do I need to keep my Chase account open?", a: "There's no stated minimum holding period, but it's best practice to keep it open at least 6 months. There's no early closure fee." },
+      { q: "Can I get the Chase bonus again?", a: "Yes, every 24 months. The cooldown is measured from your last coupon enrollment date, not when you received the bonus." },
+      { q: "Does Chase do a hard credit pull?", a: "No. Chase uses a soft pull and/or Early Warning Services (EWS) check. Opening a checking account will not affect your credit score." },
+      { q: "Can I do the Chase checking and savings combo?", a: "Yes. Chase frequently offers a $900 total bonus when you open both checking ($300) and savings ($200 + $400 combo bonus). The savings portion requires a $15,000 deposit maintained for 90 days." },
+    ],
+    relatedSlugs: ["wells-fargo-400-checking-bonus", "capital-one-300-checking-bonus", "us-bank-450-checking-bonus"],
+  },
+
+  "wells-fargo-400-everyday-checking-2026": {
+    summary: "Wells Fargo's $400 Everyday Checking bonus matches Chase's offer with the same simple requirement: $1,000 in qualifying electronic deposits within 90 days. The main difference is Wells Fargo's bonus takes about 120 days to post, compared to Chase's 15 days. Still, this is one of the core big-bank bonuses everyone should do.",
+    strategy: "Open an Everyday Checking account using the offer code and route $1,000+ in qualifying electronic deposits within 90 days. One or two paychecks covers it. To avoid the $15/month fee, set up $500+ in qualifying electronic deposits (your direct deposit handles this). The bonus posts within 30 days after the 90-day qualification period — so expect about 120 days total. Keep the account open for at least 120 days.",
+    bestFor: "Anyone who's completed the Chase bonus and is looking for the next big-bank offer. Also great for people who prefer Wells Fargo's branch network or already use Wells Fargo for other products.",
+    pros: [
+      "$400 bonus with just $1,000 electronic deposit required",
+      "Simple requirements similar to Chase",
+      "12-month cooldown — can re-churn annually",
+      "Large branch and ATM network",
+      "Low ChexSystems sensitivity",
+      "Available nationwide",
+    ],
+    cons: [
+      "~120-day total wait for bonus to post (slower than Chase)",
+      "$15/month fee if not waived",
+      "Must keep account open 120 days",
+      "Qualifying deposits must be electronic",
+    ],
+    comparison: "Wells Fargo and Chase are nearly identical offers — both $400, both requiring $1,000 in deposits within 90 days. The key differences: Chase posts in 15 days vs. Wells Fargo's 120 days, but Wells Fargo has a shorter cooldown (12 months vs. 24 months). In a bonus rotation, you should do both — Chase first for the faster payout, then Wells Fargo.",
+    faqs: [
+      { q: "What counts as a qualifying electronic deposit at Wells Fargo?", a: "Direct deposits (payroll, government benefits), online transfers from external banks, and other electronic deposits. Cash and check deposits typically do not qualify." },
+      { q: "How often can I get the Wells Fargo bonus?", a: "Every 12 months. You must not have received a Wells Fargo consumer checking bonus in the past 12 months and must be a new checking customer." },
+      { q: "How do I avoid the monthly fee?", a: "The $15/month fee is waived with $1,500 daily balance, $5,000 combined balances, $500+ monthly qualifying electronic deposits, or if you're active military or under age 24." },
+      { q: "Does Wells Fargo do a hard pull?", a: "No. Wells Fargo typically does a soft pull or no pull at all for checking accounts. Your credit score won't be affected." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "bank-of-america-500-checking-bonus", "capital-one-300-checking-bonus"],
+  },
+
+  "bmo-400-checking-2026": {
+    summary: "BMO's tiered checking bonus goes up to $600 for $8,000+ in direct deposits — one of the highest checking bonuses available. The $400 tier at $4,000 DD is the sweet spot for most people. BMO's Smart Advantage Checking has no monthly fee, making this a clean, high-value bonus with no fee management headaches.",
+    strategy: "Open a Smart Advantage Checking account (no monthly fee) by May 4, 2026. The tiered structure gives you options: $200 for $2,000 DD, $400 for $4,000 DD, or $600 for $8,000 DD — all within 90 days of opening. For the $400 tier, route about $1,350/month in direct deposits. For the $600 tier, you'll need about $2,700/month. Keep a balance above $0 when the bonus posts (~100 days after opening).",
+    bestFor: "People who want a high-value bonus with no monthly fee. The tiered structure makes this accessible at multiple income levels. The $400 tier is achievable with a $35,000+ annual salary, and the $600 tier with $55,000+.",
+    pros: [
+      "Up to $600 — one of the highest checking bonuses",
+      "Tiered structure accommodates different income levels",
+      "Smart Advantage Checking has $0 monthly fee",
+      "No early closure fee",
+      "Available nationwide",
+      "12-month cooldown for re-churning",
+    ],
+    cons: [
+      "$8,000 DD for the top tier requires significant paycheck volume",
+      "~100-day wait for bonus to post",
+      "Must keep account open 100 days",
+      "ChexSystems/EWS screening info is unclear",
+      "Must open by May 4, 2026",
+    ],
+    comparison: "BMO's $600 top tier beats Chase ($400), Wells Fargo ($400), and matches the highest tier of Bank of America ($500). But at the $400 tier ($4,000 DD), it requires 4x the deposits of Chase for the same bonus amount. The real value here is the $600 tier if you can swing it — and the $0 monthly fee on Smart Advantage makes it cleaner than BofA or PNC.",
+    faqs: [
+      { q: "Which BMO checking account should I open?", a: "Smart Advantage Checking has $0 monthly fee and qualifies for all bonus tiers. This is the best option unless you need features from the higher-tier accounts." },
+      { q: "Can I get the BMO bonus if I'm not near a branch?", a: "Yes. BMO offers online account opening nationwide. You don't need to visit a branch." },
+      { q: "How long does the BMO bonus take to post?", a: "About 100 days after account opening. The bonus posts once you've met the direct deposit requirements and maintained the account in good standing." },
+      { q: "What counts as a direct deposit at BMO?", a: "Qualifying direct deposits include payroll and government benefit payments. Check BMO's terms for the complete list of qualifying deposit types." },
+    ],
+    relatedSlugs: ["bank-of-america-500-checking-bonus", "chase-400-checking-bonus", "us-bank-450-checking-bonus"],
+  },
+
+  "affinity-fcu-100-checking-referral": {
+    summary: "Affinity Federal Credit Union's $100 referral bonus is a solid low-requirement offer. Just $500 in recurring direct deposits within 60 days, and the bonus posts by the end of the following month. The catch: Affinity is highly ChexSystems-sensitive, meaning people with banking history issues may be denied.",
+    strategy: "Open your account through a referral link for the bonus. Route at least $500 in total recurring direct deposits within a single calendar month, within 60 days of opening. One paycheck of $500+ typically handles it. You'll need to open a $5 Membership Eligibility Account as part of the membership process. The bonus posts by the end of the month following the month you qualified.",
+    bestFor: "People with clean ChexSystems reports who want to add a credit union bonus to their rotation. Good as a filler bonus between larger bank offers.",
+    pros: [
+      "Low $500 direct deposit requirement",
+      "$0 monthly fee with eStatements",
+      "No early closure fee",
+      "Available nationwide via membership path",
+      "Relatively fast bonus posting",
+    ],
+    cons: [
+      "Only $100 — lower than most checking bonuses",
+      "Highly ChexSystems-sensitive — online denials are common",
+      "Requires $5 membership account",
+      "Must be a new member",
+      "12-month cooldown",
+    ],
+    comparison: "At $100, Affinity is in the same tier as Chime ($100) and Varo ($150). The advantage over Chime is the credit union relationship and potential for future products. The disadvantage is the high ChexSystems sensitivity — Chime and Varo are much more forgiving. If you have a clean banking history, Affinity is a quick $100 to add to your rotation.",
+    faqs: [
+      { q: "How do I join Affinity FCU if I'm not in their area?", a: "Anyone can join by qualifying through a membership eligibility path — typically a one-time donation to a qualifying organization. The credit union handles this during the application process." },
+      { q: "Is Affinity FCU ChexSystems-sensitive?", a: "Yes, very. Online applications are frequently denied due to ChexSystems or LexisNexis authentication issues. If denied online, trying in-branch (if available) may yield better results." },
+      { q: "How quickly does the bonus post?", a: "The bonus posts by the end of the month following the month in which you met the direct deposit requirement." },
+    ],
+    relatedSlugs: ["chime-100-checking-bonus", "varo-bank-150-checking-bonus", "psecu-300-checking-bonus"],
+  },
+
+  "figfcu-250-high-yield-checking-ghycheck": {
+    summary: "FIGFCU (Farmers Insurance Federal Credit Union) offers a $250 checking bonus for routing $15,000+ in direct deposits over 90 days. There's also a $100 tier for $3,000-$14,999. The \"high yield\" in the account name refers to the checking account itself earning interest, not just the bonus. Use promo code GHYCHECK when opening.",
+    strategy: "Join FIGFCU through the American Consumer Council membership path, then open a High Yield Checking account within 10 days using code GHYCHECK. For the $250 tier, you need 3+ separate ACH direct deposits totaling $15,000+ in the first 90 days. That's about $5,000/month or $2,500 per biweekly paycheck. If you can't hit $15,000, the $100 tier at $3,000 total is much more achievable.",
+    bestFor: "Higher earners who can route $5,000+/month in direct deposits and want to stack a credit union bonus on top of their rotation. The $100 tier is accessible to most people with a $3,000 total DD requirement.",
+    pros: [
+      "$250 bonus is strong for a credit union",
+      "Two tiers accommodate different income levels",
+      "Interest-earning checking account",
+      "$0 monthly fee with eStatements",
+      "Available nationwide via membership path",
+    ],
+    cons: [
+      "$15,000 DD for the top tier is very high",
+      "Must open within 10 days of joining CU",
+      "Medium ChexSystems sensitivity",
+      "$5/month inactivity fee possible",
+      "Lifetime limit — one bonus per person",
+      "Slower 120-day bonus posting",
+    ],
+    comparison: "The $250 bonus for $15,000 DD is comparable to the lower tiers of Bank of America ($300 for $5,000) or U.S. Bank ($250 for $2,000). The DD requirement is disproportionately high. The $100 tier at $3,000 DD offers a better ratio and is more comparable to Affinity ($100 for $500) — though with a higher requirement. FIGFCU makes most sense if you have high paycheck volume you're not routing elsewhere.",
+    faqs: [
+      { q: "How do I join FIGFCU if I don't work at Farmers Insurance?", a: "Anyone can join through the American Consumer Council or other qualifying membership organizations. FIGFCU's field of membership extends beyond Farmers Insurance employees." },
+      { q: "What is the GHYCHECK promo code?", a: "GHYCHECK is the promo code you enter when opening your High Yield Checking account. It qualifies you for the $100/$250 tiered bonus based on direct deposit volume." },
+      { q: "Do I need 3 deposits for the $100 tier too?", a: "Yes. Both tiers require 3+ separate ACH direct deposits. The difference is the total amount: $3,000-$14,999 for $100, or $15,000+ for $250." },
+    ],
+    relatedSlugs: ["bank-of-america-500-checking-bonus", "us-bank-450-checking-bonus", "keypoint-credit-union-300-checking-bonus"],
+  },
+
+  "keypoint-cu-300-money4me-nm26": {
+    summary: "KeyPoint Credit Union's Money4Me checking bonus pays $300 — but it's earned $50 per month over 6 months of qualifying direct deposits. This is a long play: you need a $1,000+ direct deposit every month for 6 consecutive months. The upside is steady, predictable bonus income; the downside is your direct deposit is locked up for half a year.",
+    strategy: "Open Money4Me checking with promo code NM26 and set up a direct deposit of $1,000+ that hits every month. You must start within 60 days and maintain it for 6 consecutive months. Each qualifying month earns $50, paid within 30 days of that evaluation period. Don't miss a month — if your direct deposit skips a cycle, you may need to restart the count.",
+    bestFor: "People who can commit their direct deposit for 6 months and want a guaranteed $50/month income stream. Works well as a long-term background bonus while you do faster bonuses at other banks with the rest of your paycheck.",
+    pros: [
+      "$300 total over 6 months is solid",
+      "$50/month provides steady bonus income",
+      "No monthly fee",
+      "Available nationwide via Financial Fitness Association",
+      "24-month cooldown allows for re-churning",
+    ],
+    cons: [
+      "6-month commitment ties up your direct deposit",
+      "$1,000/month DD requirement is ongoing",
+      "High ChexSystems sensitivity",
+      "Missing one month can disrupt the bonus",
+      "Slow overall timeline compared to one-time bonuses",
+    ],
+    comparison: "KeyPoint's $300 over 6 months is similar to Teachers FCU ($300 over 6 months with the same $50/month structure). The difference: KeyPoint requires $1,000/month DD vs. Teachers FCU's $1,000/month per statement cycle. Both are long-commitment bonuses that work best as background plays alongside faster bonuses at other banks.",
+    faqs: [
+      { q: "What is the NM26 promo code?", a: "NM26 is KeyPoint's current promotional code for the Money4Me checking account bonus. Enter it when opening your account to qualify for the $50/month bonus program." },
+      { q: "Can I do other bank bonuses at the same time?", a: "Yes, if you split your direct deposit. Route $1,000 to KeyPoint and the remainder to whatever bonus you're currently working on at another bank." },
+      { q: "What happens if I miss a month?", a: "Missing a qualifying month may reset your progress. Contact KeyPoint directly for their exact policy on missed months, but the safest approach is to never miss." },
+    ],
+    relatedSlugs: ["teachers-fcu-300-checking-bonus", "psecu-300-checking-bonus", "capital-one-300-checking-bonus"],
+  },
+
+  "etrade-max-rate-checking-300-checking25": {
+    summary: "E*TRADE's $300 Max-Rate Checking bonus requires two direct deposits of $1,500+ each within 90 days. The $15/month fee (waivable with $5,000 balance) is a consideration, but the bonus itself is straightforward. Good for people already in the Morgan Stanley/E*TRADE ecosystem or those with larger paychecks.",
+    strategy: "Use promo code CHECKING25 when opening. Fund within 30 days, then route two direct deposits of at least $1,500 each within 90 days. If you're paid biweekly at $1,500+, you'll qualify within one month. Keep a $5,000 balance to waive the $15/month fee, or plan to close after the 120-day holding period. The bonus posts around day 120.",
+    bestFor: "Higher earners with $1,500+ per-deposit paychecks who want to add E*TRADE to their bonus rotation. Also good for people who already use E*TRADE for investing and want to consolidate banking.",
+    pros: [
+      "Solid $300 bonus",
+      "Max-Rate Checking earns interest",
+      "Well-known brand (Morgan Stanley)",
+      "12-month cooldown for re-churning",
+    ],
+    cons: [
+      "$1,500 per deposit requirement is higher than most",
+      "$15/month fee unless $5,000 balance maintained",
+      "120-day holding period",
+      "Medium ChexSystems sensitivity",
+    ],
+    comparison: "E*TRADE's $300 for $3,000 total DD (two $1,500 deposits) compares to Capital One ($300 for $1,000 total DD) and PSECU ($300 for $1,000 total DD). The per-deposit requirement is significantly higher. Unless you're specifically interested in E*TRADE's banking features, Capital One offers a simpler path to the same $300.",
+    faqs: [
+      { q: "What is the CHECKING25 promo code?", a: "CHECKING25 is E*TRADE's promo code for the $300 checking bonus. Enter it during account opening to qualify." },
+      { q: "Does E*TRADE do a hard pull?", a: "Reports are mixed. A ChexSystems inquiry is typical, but whether it's a hard or soft credit pull isn't consistently documented. Your credit score is unlikely to be significantly affected." },
+      { q: "How do I waive the monthly fee?", a: "Maintain a $5,000 average monthly balance in your Max-Rate Checking account. If you can't maintain this, plan to close the account after the 120-day holding period." },
+    ],
+    relatedSlugs: ["capital-one-300-checking-bonus", "psecu-300-checking-bonus", "chase-400-checking-bonus"],
+  },
+
+  "teachers-fcu-300-checking-smart26": {
+    summary: "Teachers Federal Credit Union pays $300 in checking bonuses — $50 per month for 6 consecutive qualifying months. Like KeyPoint CU, this is a long-play bonus that requires sustained direct deposit commitment. The credit union is strict about direct deposit coding and may request payroll proof.",
+    strategy: "Open eligible checking with promo code SMART26 and enroll in online banking and eStatements. You need a $1,000+ qualifying direct deposit each monthly statement cycle for 6 consecutive evaluation periods. Start your direct deposit before the second evaluation period. Each qualifying month earns $50, paid within 30 days. Don't skip any months — consecutive qualification is required.",
+    bestFor: "People who can commit a $1,000 monthly direct deposit for 6 months. Works well as a background bonus while doing faster bonuses at other banks. Best for those with a clean banking history and verifiable payroll.",
+    pros: [
+      "$300 total over 6 months",
+      "Predictable $50/month income",
+      "No monthly fee",
+      "Soft pull only",
+      "Available nationwide (reported)",
+    ],
+    cons: [
+      "6-month commitment required",
+      "Strict about direct deposit coding — may request proof",
+      "Lifetime limit — one per primary member",
+      "Medium ChexSystems sensitivity",
+      "New members only",
+    ],
+    comparison: "Nearly identical to KeyPoint CU's $300 over 6 months. Teachers FCU is slightly stricter on direct deposit verification. Choose whichever you can join more easily — or do both simultaneously by splitting your direct deposit if your paycheck is large enough.",
+    faqs: [
+      { q: "What is the SMART26 promo code?", a: "SMART26 is Teachers FCU's current promotional code for the checking bonus. Enter it when opening your account." },
+      { q: "Can I join Teachers FCU if I'm not a teacher?", a: "Yes. Teachers FCU has expanded its membership eligibility beyond educators. Check their website for current membership paths available in your area." },
+      { q: "What if my direct deposit doesn't code as payroll?", a: "Teachers FCU is known to be strict about DD coding. If your deposit doesn't automatically qualify, they may request payroll documentation. Standard payroll deposits from an employer are the safest bet." },
+    ],
+    relatedSlugs: ["keypoint-credit-union-300-checking-bonus", "psecu-300-checking-bonus", "capital-one-300-checking-bonus"],
+  },
+
+  "chime-100-referral-checking": {
+    summary: "Chime's $100 referral bonus is one of the easiest and fastest checking bonuses available. Open through a referral link, receive a $200+ direct deposit, activate your debit card, and the bonus posts instantly. No monthly fees, no ChexSystems issues, and the whole process takes about a week. This is the ultimate quick-hit bonus.",
+    strategy: "Open your Chime account through a referral link (not the regular signup page). Set up a direct deposit of at least $200 from your employer. Once the deposit posts, activate your physical debit card within 14 days of the deposit. The $100 bonus posts immediately after card activation. You can also stack additional bonuses by going through cashback portals like Swagbucks or TopCashback before opening the account.",
+    bestFor: "Anyone who wants a fast, no-hassle $100. Perfect for beginners, people with ChexSystems issues, or anyone who wants to add a quick bonus between larger bank offers. The $200 DD minimum is the lowest of any checking bonus.",
+    pros: [
+      "Instant bonus posting — fastest available",
+      "Only $200 direct deposit required — lowest minimum",
+      "No monthly fees whatsoever",
+      "No ChexSystems check — extremely high approval rate",
+      "Stackable with cashback portal bonuses",
+      "Available nationwide",
+    ],
+    cons: [
+      "$100 is on the lower end",
+      "Must use referral link (no public bonus)",
+      "Lifetime limit — one referral bonus",
+      "Must activate physical debit card within 14 days",
+      "Online-only — no branches",
+    ],
+    comparison: "Chime's $100 is less than Varo ($150) but requires even less in direct deposits ($200 vs. $500). The instant posting is the biggest advantage — no other bank pays same-day. With portal stacking, you can sometimes earn $150-200+ total from a single Chime signup. For effort-to-reward ratio, Chime is one of the best in the game.",
+    faqs: [
+      { q: "Does Chime do a credit check or ChexSystems check?", a: "No. Chime uses a lightweight soft screening that doesn't check ChexSystems or pull your credit. This makes it one of the most accessible accounts available." },
+      { q: "What counts as a qualifying direct deposit?", a: "Payroll, government benefits, tax refunds, and other employer-originated ACH deposits of $200 or more. The deposit must be a traditional direct deposit — P2P transfers don't qualify." },
+      { q: "Can I stack Chime with a cashback portal?", a: "Yes. Sites like Swagbucks, TopCashback, InboxDollars, MyPoints, and Rakuten sometimes offer additional bonuses for opening a Chime account. Check portals before signing up through the referral link." },
+      { q: "How quickly does the Chime bonus post?", a: "Instantly. Once your qualifying direct deposit posts and you activate your debit card, the $100 bonus is credited to your account immediately." },
+    ],
+    relatedSlugs: ["varo-bank-150-checking-bonus", "sofi-400-checking-bonus", "affinity-federal-credit-union-100-checking-bonus"],
+  },
+
+  "sofi-checking-savings-300-dd-2026": {
+    summary: "SoFi's $400 checking bonus (via their Checking & Savings combo account) offers one of the best returns for high direct deposit volume. The tiered structure pays $50 for $1,000-$4,999 DD or $400 for $5,000+ DD — all evaluated in a 25-day window. Plus, SoFi pays 3.80%+ APY on your entire balance, effectively paying you while you earn the bonus.",
+    strategy: "Open a SoFi Checking & Savings account and route $5,000+ in direct deposits within a 25-day evaluation window. The window starts when your first qualifying DD posts. If you're paid biweekly at $2,500, two paychecks within the window hits $5,000. SoFi is known for counting ACH transfers from many banks as qualifying deposits. The bonus posts within 7 business days of qualifying — one of the fastest posting times available.",
+    bestFor: "People who can front-load $5,000 in direct deposits within 25 days. The 3.80%+ APY makes SoFi an excellent place to park cash while working on the bonus. Great for high earners or people who can temporarily route their full paycheck.",
+    pros: [
+      "$400 bonus with fast 7-day posting",
+      "3.80%+ APY on all balances (with direct deposit)",
+      "No monthly fees",
+      "No minimum balance",
+      "Very low ChexSystems sensitivity",
+      "ACH transfers from many banks count as DD",
+      "Available nationwide",
+    ],
+    cons: [
+      "$5,000 DD in 25 days is aggressive for the top tier",
+      "Lifetime limit — one DD bonus per SSN",
+      "25-day window is the shortest of any bonus",
+      "Must have first DD post by December 31, 2026",
+    ],
+    comparison: "SoFi's $400 matches Chase ($400) but requires more in deposits ($5,000 vs. $1,000) in a shorter window (25 days vs. 90 days). The trade-off: SoFi posts in 7 days vs. Chase's 15 days, and SoFi pays excellent APY on your balance. If you have the deposit volume, SoFi is arguably the best overall checking account to hold — the APY alone is worth it. The lifetime limit means you should make sure to hit the $5,000 tier, not the $50 tier.",
+    faqs: [
+      { q: "Does SoFi count ACH transfers as direct deposits?", a: "SoFi is known to be generous with what counts as a qualifying deposit. Many users report that ACH transfers from external banks (including other fintechs) trigger the bonus. However, payroll is still the safest method." },
+      { q: "What is the 25-day evaluation window?", a: "The evaluation period starts when your first qualifying direct deposit posts and runs for 25 calendar days. All qualifying deposits within that window are added up to determine your tier." },
+      { q: "Can I get the SoFi bonus more than once?", a: "No. It's a lifetime limit — one direct deposit bonus per Social Security Number. Make sure to hit the $5,000 tier for $400, not the lower $50 tier." },
+      { q: "Does SoFi do a hard pull?", a: "No. SoFi performs a soft pull only. No ChexSystems inquiry is reported either, making this one of the most accessible accounts available." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "chime-100-checking-bonus", "varo-bank-150-checking-bonus"],
+  },
+
+  "citi-regular-checking-325-edd-2026": {
+    summary: "Citi's $325 checking bonus stands out because of what counts as a qualifying deposit: Zelle incoming payments and P2P ACH transfers from Venmo and PayPal explicitly qualify as \"Enhanced Direct Deposits\" (EDD). This makes Citi one of the most flexible bonuses for people who don't have a traditional employer direct deposit or want to self-fund the requirement.",
+    strategy: "Open a Citi checking account and complete at least 2 Enhanced Direct Deposits totaling $3,000-$5,999 within 90 days. The secret weapon: you can fund this with Zelle transfers, Venmo, or PayPal ACH transfers. Send yourself $1,500 twice via Zelle from another bank account. The bonus posts between day 90 and 120 after account opening. Keep the account open for at least 120 days.",
+    bestFor: "People who can't or don't want to switch their payroll direct deposit. Citi's EDD system lets you qualify using P2P payments, making this the most flexible bonus for gig workers, freelancers, or anyone who wants to keep their main DD unchanged.",
+    pros: [
+      "Zelle and Venmo/PayPal ACH count as qualifying deposits",
+      "Don't need to change your payroll direct deposit",
+      "$325 is competitive",
+      "Low ChexSystems sensitivity",
+      "Available nationwide",
+      "12-month cooldown for re-churning",
+    ],
+    cons: [
+      "$3,000 total DD required for the $325 tier",
+      "120-day hold period",
+      "Bonus posting takes 90-120 days",
+      "Monthly fee details not always clear",
+      "Instant transfers don't count — must be ACH",
+    ],
+    comparison: "Citi's $325 is slightly less than Chase ($400) but infinitely more flexible in how you fund it. No other major bank explicitly accepts Zelle and Venmo as qualifying deposits. For people who can't change their payroll DD, Citi is the best big-bank option. The 12-month cooldown also means you can re-churn annually.",
+    faqs: [
+      { q: "Can I really use Zelle to qualify for the Citi bonus?", a: "Yes. Citi explicitly states that Zelle incoming payments qualify as Enhanced Direct Deposits (EDD). This is confirmed in their terms and reported by many users." },
+      { q: "Do Venmo and PayPal transfers count?", a: "Yes, but only ACH transfers — not instant transfers. When sending from Venmo or PayPal, make sure to use the standard (non-instant) transfer method to your Citi account." },
+      { q: "What is an Enhanced Direct Deposit?", a: "Citi's EDD includes traditional payroll direct deposits PLUS Zelle incoming payments and P2P ACH transfers from services like Venmo and PayPal. This broader definition is what makes Citi's bonus uniquely flexible." },
+      { q: "How long do I need to keep the Citi account open?", a: "At least 120 days. The bonus posts between day 90 and 120, and you'll want to wait until it posts before considering closing the account." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "wells-fargo-400-checking-bonus", "capital-one-300-checking-bonus"],
+  },
+
+  "us-bank-smartly-checking-450-2026": {
+    summary: "U.S. Bank's Smartly Checking bonus tops out at $450 for $8,000+ in direct deposits — a strong payout for a major national bank. The tiered structure ($250/$350/$450) gives flexibility, and the middle tier at $5,000 DD is competitive with other big-bank bonuses. Apply by April 6, 2026.",
+    strategy: "Open a Smartly Checking account by April 6, 2026, and fund with $25 within 30 days. Then complete 2+ direct deposits totaling at least $8,000 within 90 days for the top $450 tier. The $350 tier at $5,000-$7,999 is more achievable for most people. Enroll in mobile/online banking within 90 days (required). The $12/month fee is waived with $1,500+ in monthly direct deposits — which you'll be doing anyway for the bonus.",
+    bestFor: "People who can route $5,000-$8,000 in direct deposits over 90 days and want a major-bank bonus. The $350 tier is the sweet spot — competitive with Chase ($400) with only slightly more effort.",
+    pros: [
+      "Up to $450 — among the highest checking bonuses",
+      "Tiered structure works for different income levels",
+      "Major national bank with good branch network",
+      "Multiple fee waiver options",
+      "12-month cooldown for re-churning",
+    ],
+    cons: [
+      "$8,000 DD for the top tier requires significant income",
+      "$12/month fee if not waived",
+      "Must apply by April 6, 2026",
+      "Strict about what counts as DD — P2P payments don't qualify",
+      "120-day holding period",
+      "Medium ChexSystems sensitivity",
+    ],
+    comparison: "U.S. Bank's $450 beats Chase ($400) and Wells Fargo ($400) at the top tier, but requires 8x the deposits of Chase. The $350 tier at $5,000 DD is more directly comparable to PNC ($400 for $5,000). U.S. Bank is stricter than Citi about what counts as a direct deposit — only payroll and government benefits qualify. Good option after Chase and Wells Fargo.",
+    faqs: [
+      { q: "What counts as a direct deposit at U.S. Bank?", a: "ACH payroll and government benefits only. P2P payments and other electronic deposits explicitly do NOT qualify. U.S. Bank is stricter than most banks on this." },
+      { q: "When does the offer expire?", a: "You must apply by April 6, 2026. This is a firm deadline — the offer may or may not be renewed." },
+      { q: "How do I avoid the monthly fee?", a: "Maintain $1,500+ in combined monthly direct deposits, $1,500+ average balance, or have a U.S. Bank Smartly Visa Signature Card. Also waived for military members, ages 13-24, and 65+." },
+      { q: "How many direct deposits do I need?", a: "At least 2 separate direct deposits within 90 days. The total of all deposits determines your tier: $2,000-$4,999 for $250, $5,000-$7,999 for $350, or $8,000+ for $450." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "bmo-600-checking-bonus", "bank-of-america-500-checking-bonus"],
+  },
+
+  "bcu-500-powerplus-checking-2026": {
+    summary: "BCU's $500 PowerPlus Checking bonus is one of the highest available, but comes with a unique twist: in addition to $3,000 in direct deposits, you must complete 30 qualifying transactions within 60 days. This makes it more work than most bonuses, but the $500 payout rewards the effort.",
+    strategy: "Open PowerPlus Checking with promo code BOOST by May 15, 2026. You need BOTH $3,000+ in direct deposits AND 30 qualifying transactions within 60 days. For the transactions, use your BCU debit card for everyday purchases — coffee, gas, groceries. You can also use online bill pay, ACH payments, Zelle, and check payments. At roughly one transaction per day for two months, the transaction requirement is manageable with intention. The direct deposit piece is standard — route about $1,500/month to BCU.",
+    bestFor: "People willing to put in slightly more effort for a top-tier $500 bonus. If you're already doing debit card transactions daily, the 30-transaction requirement adds minimal extra work. Great for people who can make BCU their primary spending account for 60 days.",
+    pros: [
+      "$500 bonus — tied for highest checking bonus available",
+      "Multiple transaction types qualify (debit, bill pay, Zelle, checks)",
+      "No monthly fee",
+      "No early closure fee",
+      "Credit union membership benefits",
+    ],
+    cons: [
+      "30 transactions in 60 days requires active effort",
+      "Must be a new BCU member",
+      "Must open by May 15, 2026",
+      "60-day window is shorter than most",
+      "Dual requirement (DD + transactions) is more complex",
+    ],
+    comparison: "BCU's $500 matches Bank of America's top tier but with dramatically lower direct deposit requirements ($3,000 vs. $10,000). The catch is the 30-transaction requirement, which no other bonus has. If you're okay using your debit card regularly for 60 days, BCU offers the best value-to-DD-ratio of any $500 bonus.",
+    faqs: [
+      { q: "What counts as a qualifying transaction at BCU?", a: "BCU debit and credit card transactions (purchases and payments), Online Bill Pay, ACH payments, Zelle transactions, and paper/electronic check payments all qualify. That gives you lots of options to hit 30." },
+      { q: "Do I need to do exactly 30 transactions, or can small ones count?", a: "There's no minimum transaction amount specified. Even small debit card purchases (like a $2 coffee) count. The key is reaching 30 total qualifying transactions within 60 days." },
+      { q: "How do I join BCU?", a: "BCU membership requires meeting at least one criterion: employment-based, community-based, family-based, or via their Life.Money.You subscriber path. Check BCU's membership page for current eligibility options." },
+      { q: "What is the BOOST promo code?", a: "BOOST is BCU's promotional code for the $500 PowerPlus Checking bonus. Enter it when opening your account by May 15, 2026." },
+    ],
+    relatedSlugs: ["bank-of-america-500-checking-bonus", "chase-400-checking-bonus", "bmo-600-checking-bonus"],
+  },
+
+  // ─── SAVINGS BONUSES ──────────────────────────────────────────
+
+  "capital-one-360-savings-2026": {
+    summary: "Capital One's 360 Performance Savings bonus pays up to $1,500 for depositing and maintaining $100,000 in new funds for about 105 days. With a competitive 3.40% base APY on top of the bonus, this is one of the strongest savings offers available — especially at the $20,000-$50,000 tiers where the effective APY approaches 9%+.",
+    strategy: "Open a 360 Performance Savings account with promo code BONUS1500 and deposit external funds within 15 days. The key word is external — transfers from other Capital One accounts don't count. Maintain the full balance for 90 days after the 15-day funding window. At the $20,000 tier, you earn $300 bonus + ~$183 interest = $483 total, for an effective APY of ~9.4%. The sweet spot is the $50,000 tier: $750 bonus + ~$457 interest = ~$1,207 at ~9.1% effective APY.",
+    bestFor: "Anyone with $20,000-$100,000 in savings they can park for about 3.5 months. The effective APY at every tier beats what you'd earn in a standard HYSA. Capital One's 3.40% base rate also means your money works well even after the bonus period.",
+    pros: [
+      "Up to $1,500 bonus on $100k",
+      "Competitive 3.40% base APY",
+      "No monthly fees",
+      "~105-day total hold is relatively short for savings",
+      "Excellent online banking platform",
+      "Available nationwide",
+    ],
+    cons: [
+      "External funds only — can't use internal transfers",
+      "Only 15 days to fund (tighter than most)",
+      "Ineligible if you've had Capital One savings since Jan 2022",
+      "Bonus posts ~60 days after qualifying (long wait)",
+    ],
+    comparison: "Capital One's savings bonus competes directly with Chase's savings combo ($600 on $15k at ~16% effective APY). Chase wins on effective APY at the minimum tier, but Capital One's base APY (3.40% vs. 0.02%) means your money earns significantly more interest. For larger balances ($50k+), Capital One is the clear choice.",
+    faqs: [
+      { q: "What is the BONUS1500 promo code?", a: "BONUS1500 is Capital One's promo code for the 360 Performance Savings bonus. Enter it when opening your account to qualify for the tiered bonus up to $1,500." },
+      { q: "Can I transfer from my Capital One checking to qualify?", a: "No. The funds must come from external accounts (other banks). Internal Capital One transfers do not qualify as new money." },
+      { q: "What's the current APY on 360 Performance Savings?", a: "As of early 2026, the base APY is approximately 3.40%. This rate is variable and may change." },
+      { q: "Do I need to maintain exactly $20k/$50k/$100k?", a: "You need to maintain at least the tier minimum throughout the 90-day maintenance period. Going above is fine; dipping below drops you to a lower tier or disqualifies you." },
+    ],
+    relatedSlugs: ["chase-600-savings-bonus", "ally-100-savings-bonus", "ameriprise-300-savings-bonus"],
+  },
+
+  "chase-savings-combo-2026": {
+    summary: "Chase's savings combo bonus delivers up to $600 in savings-related bonuses when combined with their checking offer. Park $15,000 for 90 days and earn $200 (savings) + $400 (combo bonus for doing both checking and savings) = $600. At just $15,000 required, the effective APY is an incredible ~16.2% — the highest of any savings bonus.",
+    strategy: "Open both Chase Total Checking and Chase Savings using the \"Open both accounts\" link to ensure the coupon tracks. For the savings portion, deposit $15,000 in new (external) money and maintain it for 90 days. Complete the checking direct deposit requirement simultaneously to earn the $400 combo bonus on top of the $200 savings bonus. The $300 checking bonus is separate and earned via direct deposit. Total possible: $900 across both accounts.",
+    bestFor: "Anyone with $15,000 in available savings who hasn't had a Chase savings account recently. The ~16.2% effective APY on the savings portion is unbeatable. This should be one of your first savings bonuses if you qualify.",
+    pros: [
+      "$600 in savings bonuses on just $15,000",
+      "~16.2% effective APY — highest available",
+      "90-day maintenance period is short",
+      "Chase branch network for easy deposits",
+      "Can earn $900 total with checking combo",
+    ],
+    cons: [
+      "Near-zero base APY (~0.02%) on Chase Savings",
+      "Must also do checking for the $400 combo bonus",
+      "New Chase savings customers only",
+      "24-month cooldown",
+      "$15,000 capital requirement",
+    ],
+    comparison: "At ~16.2% effective APY, Chase's savings combo destroys every other savings bonus on a return basis. Capital One pays more in total dollars at higher tiers ($1,500 on $100k), but the effective APY is only ~9.0%. The trade-off: your $15k earns almost nothing in base interest at Chase (0.02% APY) vs. meaningful interest at Capital One (3.40%). For a 90-day hold, the bonus more than compensates for the lost interest.",
+    faqs: [
+      { q: "Do I need to do the checking bonus too?", a: "For the full $600, yes. The $400 combo bonus requires completing both checking and savings requirements. Without checking, you only get the $200 savings bonus." },
+      { q: "Does the $15,000 need to come from outside Chase?", a: "Yes. The funds must be new money from external accounts. Transferring from other Chase accounts doesn't qualify." },
+      { q: "How long is the Chase savings cooldown?", a: "24 months from your last coupon enrollment date. You can only receive one savings account opening bonus every two years." },
+      { q: "Can I move the money out after 90 days?", a: "Yes. Once the 90-day maintenance period ends and the bonus posts, you can move the $15,000 to a higher-yielding account." },
+    ],
+    relatedSlugs: ["capital-one-1500-savings-bonus", "ameriprise-300-savings-bonus", "blue-foundry-bank-300-savings-bonus"],
+  },
+
+  "ameriprise-savings-2026": {
+    summary: "Ameriprise's $300 savings bonus requires a $25,000 deposit maintained through September 30, 2026. The 3.05% base APY adds meaningful interest on top of the bonus. The catch: you must already be an Ameriprise Financial client. If you are, this is a straightforward, solid bonus.",
+    strategy: "Fund as late as possible within the offer period (by June 30, 2026) to minimize your hold time. If you fund on June 25, your required hold is only about 97 days (through Sep 30). This maximizes your effective APY. At $25,000, you'll earn the $300 bonus plus about $210 in interest for roughly $510 total — a ~7-9% effective APY depending on when you fund.",
+    bestFor: "Existing Ameriprise Financial clients with $25,000+ in available savings. If you already have an Ameriprise relationship, this is essentially free money on top of a competitive APY.",
+    pros: [
+      "$300 bonus with solid 3.05% base APY",
+      "No monthly fees",
+      "Calendar-based hold lets you optimize timing",
+      "Competitive total return (bonus + interest)",
+    ],
+    cons: [
+      "Must be an existing Ameriprise client",
+      "Only one tier — $25,000 minimum",
+      "External funds only",
+      "Bonus may not credit until March 2027",
+      "Calendar-based hold (through Sep 30) vs. fixed-day hold",
+    ],
+    comparison: "Ameriprise's $300 on $25k (~9.6% effective APY if timed well) is competitive with Capital One's $20k tier ($300 at ~9.4%). The key difference: Ameriprise requires existing client status, making it inaccessible to most people. If you qualify, the timing strategy (fund late) can make this one of the better effective APY plays.",
+    faqs: [
+      { q: "Do I need to be an existing Ameriprise client?", a: "Yes. You must have been an Ameriprise Financial client before April 7, 2026. This is not open to new clients." },
+      { q: "When should I fund my account?", a: "As late as possible — fund close to June 30, 2026 to minimize the hold period. You must maintain through September 30, 2026 regardless of when you fund." },
+      { q: "When does the bonus actually post?", a: "The bonus is credited by March 31, 2027 — a long wait after the qualification period. Factor this into your cash flow planning." },
+    ],
+    relatedSlugs: ["capital-one-1500-savings-bonus", "chase-600-savings-bonus", "blue-foundry-bank-300-savings-bonus"],
+  },
+
+  "ally-savings-referral-2026": {
+    summary: "Ally's $100 savings referral bonus is the easiest savings bonus available. Set up a $20/month recurring transfer for 3 months, and you're done. Total committed: $60. Total earned: $100. No large balance required, no complex requirements — just set it and forget it.",
+    strategy: "Open an Ally Online Savings account through the referral link. Set up an automated recurring transfer of $20 (or any amount) from your external bank account. Let it run for 3 consecutive months. That's it. The bonus posts within 30 days of your third transfer. While your money is at Ally, it earns 3.30% APY — not bad for a set-and-forget account. Ally also frequently runs larger checking bonuses ($300+), so use this referral for savings and save the checking bonus for later.",
+    bestFor: "Everyone. Seriously — there's no reason not to do this one. It requires minimal capital, minimal effort, and minimal attention. Perfect as a background bonus while you work on larger offers at other banks.",
+    pros: [
+      "Easiest $100 bonus available",
+      "Only $60 total commitment ($20 x 3 months)",
+      "No large balance required",
+      "3.30% APY on your balance",
+      "No monthly fees",
+      "Set and forget — fully automated",
+    ],
+    cons: [
+      "Only $100 — won't move the needle alone",
+      "New Ally customers only (can't have had account since 1/24/24)",
+      "Must complete all 3 monthly transfers",
+      "Referral deadline 12/31/2026",
+    ],
+    comparison: "Nothing else compares at this effort level. Every other savings bonus requires thousands in deposits. Ally asks for $60. The only downside is the modest $100 payout — but the ROI is technically infinite since you're barely tying up any capital. Do this alongside every other bonus on your list.",
+    faqs: [
+      { q: "What is the minimum recurring transfer amount?", a: "There's no stated minimum — even $1/month would technically work. Most people set up $20/month for simplicity." },
+      { q: "Can I cancel the transfer after 3 months?", a: "Yes. Once your third qualifying transfer posts and the bonus is credited, you can cancel the recurring transfer and withdraw your funds." },
+      { q: "Does Ally also offer a checking bonus?", a: "Yes, Ally frequently offers checking bonuses of $300+ with direct deposit requirements. We recommend using this referral for the savings bonus and doing the checking bonus separately when available." },
+      { q: "What if I miss a monthly transfer?", a: "The transfers must be consecutive. Missing a month may disqualify you. Set up the recurring transfer immediately and don't cancel it early." },
+    ],
+    relatedSlugs: ["chase-600-savings-bonus", "capital-one-1500-savings-bonus", "blue-foundry-bank-300-savings-bonus"],
+  },
+
+  "blue-foundry-savings-2026": {
+    summary: "Blue Foundry Bank's $300 savings bonus requires $15,000 maintained for 6 months (182 days). The long hold and low blended APY (mostly 1.30% on the bulk of your balance) make this a weak standalone play. It only makes sense if you're also doing the Blue Foundry checking bonus and have idle cash you don't need to rotate.",
+    strategy: "This is a combo play — only do it alongside the Blue Foundry checking bonus ($300). Deposit $15,000 in new money and don't touch it for 182 days. Due to the blended APY structure (3.73% on first $5k, 1.30% on $5k-$250k), your effective interest is low. Total earnings over 6 months: ~$460 (bonus + interest) for an effective APY of about 3.7%. Compare that to just parking $15k in a 3.85% HYSA for the same period (~$288 in interest) — the bonus adds ~$172 in incremental value. Only worth it if the capital isn't needed elsewhere.",
+    bestFor: "People with excess savings they won't need for 6 months who are also doing the Blue Foundry checking bonus. Not recommended as a standalone savings play — the capital could earn more through faster bonus rotations.",
+    pros: [
+      "$300 bonus on $15,000",
+      "No monthly fee",
+      "Can stack with checking bonus for $600 total",
+      "Nationwide availability reported",
+    ],
+    cons: [
+      "182-day lockup is the longest of any savings bonus",
+      "Blended APY is mostly 1.30% — worse than most HYSAs",
+      "Weak standalone effective APY (~3.7%)",
+      "Kills capital velocity for 6 months",
+      "Bonus payout has been reported as inconsistent",
+    ],
+    comparison: "At ~3.7% effective APY, Blue Foundry is the weakest savings bonus tracked. Compare to Chase (~16.2%), Capital One (~9.4%), or even Ally ($100 with $60 commitment). The only scenario where Blue Foundry wins is the combo: $600 total (checking + savings) for someone who can dedicate both their direct deposit and $15k in savings to Blue Foundry for 6 months.",
+    faqs: [
+      { q: "Should I do this bonus?", a: "Only if you're also doing the Blue Foundry checking bonus AND you have $15,000 you won't need for 6 months. As a standalone play, your money earns more in faster bonus rotations." },
+      { q: "What is the blended APY?", a: "Blue Foundry uses tiered rates: 3.73% on the first $5,000, 1.30% on $5,000-$250,000. On a $15,000 deposit, most of your balance earns only 1.30%." },
+      { q: "How long until the bonus posts?", a: "The bonus is credited within 60 days after the 182-day qualification period. So total time from deposit to bonus is about 8 months." },
+      { q: "Is Blue Foundry available nationwide?", a: "Blue Foundry is NJ-based, but many out-of-state applications have been approved according to community reports on Doctor of Credit." },
+    ],
+    relatedSlugs: ["chase-600-savings-bonus", "capital-one-1500-savings-bonus", "ally-100-savings-bonus"],
+  },
+}
