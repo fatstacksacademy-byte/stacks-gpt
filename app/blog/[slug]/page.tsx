@@ -475,8 +475,23 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         {checkingBonus && <CheckingArticle bonus={checkingBonus} content={content} />}
         {savingsBonus && <SavingsArticle bonus={savingsBonus} content={content} />}
 
+        {/* Stacks OS CTA */}
+        <div style={{ marginTop: 48, padding: "28px", background: "linear-gradient(135deg, #0d2818 0%, #111 100%)", border: "1px solid #1a3a2a", borderRadius: 12, textAlign: "center" }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 8 }}>Track This Bonus in Stacks OS</div>
+          <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 16px", maxWidth: 450, marginLeft: "auto", marginRight: "auto" }}>
+            Get a personalized bonus sequence, requirement tracking, and deadline reminders — all in one place.
+          </p>
+          <Link href="/" style={{
+            display: "inline-block", padding: "12px 28px", fontSize: 14, fontWeight: 700,
+            background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
+          }}>
+            Try Stacks OS &rarr;
+          </Link>
+          <div style={{ fontSize: 11, color: "#555", marginTop: 10 }}>$5/month. Most first bonuses are $300-$400.</div>
+        </div>
+
         {/* YouTube CTA */}
-        <div style={{ marginTop: 48, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
+        <div style={{ marginTop: 20, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Watch the Video Breakdown</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
             Nathaniel covers the best bank bonuses, credit card strategies, and savings optimization on his YouTube channel.
