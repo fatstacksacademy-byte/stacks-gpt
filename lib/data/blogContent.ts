@@ -838,6 +838,30 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: ["bank-of-america-500-checking-bonus", "chase-400-checking-bonus", "bmo-600-checking-bonus"],
   },
 
+  "316-financial-100-checking-relevant2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "The safest method. Must total $1,000+ in qualifying deposits." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed", notes: "316 Financial is a Primis Bank division — limited community data. Fidelity sends DD-coded ACH that works at most banks." },
+      { method: "Ally ACH push", works: "mixed", notes: "Ally sends DD-coded ACH. Limited 316 Financial-specific data." },
+      { method: "Schwab ACH push", works: "mixed" },
+      { method: "Chase ACH push", works: "mixed" },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "316 Financial (a Primis Bank division) offered a $100 checking bonus for $1,000+ in direct deposits. This offer has expired.",
+    strategy: "This offer has expired. The promo code was RELEVANT2026 with a March 31, 2026 deadline.",
+    bestFor: "This offer is no longer available.",
+    pros: ["$100 bonus with $1,000 DD requirement", "No monthly fee", "Low ChexSystems sensitivity"],
+    cons: ["Offer has expired", "Limited community data on DD methods"],
+    comparison: "At $100, this was comparable to Chime ($100) and Affinity FCU ($100) but with a higher DD requirement.",
+    faqs: [
+      { q: "Is the 316 Financial bonus still available?", a: "No. This offer expired on March 31, 2026." },
+    ],
+    relatedSlugs: ["chime-100-checking-bonus", "affinity-federal-credit-union-100-checking-bonus"],
+  },
+
   // ─── SAVINGS BONUSES ──────────────────────────────────────────
 
   "capital-one-360-savings-2026": {

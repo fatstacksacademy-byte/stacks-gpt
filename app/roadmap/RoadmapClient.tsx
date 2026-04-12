@@ -5,6 +5,7 @@ import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
+import { blogContent } from "../../lib/data/blogContent"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
@@ -224,6 +225,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [editingCustom, setEditingCustom] = useState<CustomBonus | null>(null)
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
+  const [expandedDD, setExpandedDD] = useState<string | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -1048,6 +1050,39 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       </div>
                     )}
                   </div>
+                  {/* DD methods dropdown */}
+                  {(() => {
+                    const ddMethods = blogContent[hb.bonus.id]?.ddMethods
+                    if (!ddMethods || ddMethods.length === 0) return null
+                    const isOpen = expandedDD === hb.bonus.id
+                    return (
+                      <div style={{ marginTop: 2, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                        <button onClick={() => setExpandedDD(isOpen ? null : hb.bonus.id)}
+                          style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontSize: 10, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                          What counts as direct deposit
+                        </button>
+                        {isOpen && (
+                          <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                            {ddMethods.map((dd, i) => (
+                              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, lineHeight: "18px", flexShrink: 0,
+                                  color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                }}>
+                                  {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
+                                </span>
+                                <div>
+                                  <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
+                                  {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
                   <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
                     {bestLink(hb.bonus.source_links) && (
                       <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
@@ -1553,6 +1588,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             )}
                           </div>
 
+                          {/* ── What counts as direct deposit (expandable) ── */}
+                          {(() => {
+                            const ddMethods = blogContent[b.id]?.ddMethods
+                            if (!ddMethods || ddMethods.length === 0) return null
+                            const isOpen = expandedDD === b.id
+                            return (
+                              <div style={{ padding: "10px 24px 0" }}>
+                                <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
+                                  style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                                  <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                                  What counts as direct deposit
+                                </button>
+                                {isOpen && (
+                                  <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 5, paddingBottom: 4 }}>
+                                    {ddMethods.map((dd, i) => (
+                                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                        <span style={{
+                                          fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
+                                          color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                        }}>
+                                          {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
+                                        </span>
+                                        <div>
+                                          <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
+                                          {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })()}
+
                           {/* ── Bonus details (expandable) ── */}
                           <div style={{ padding: "10px 24px 4px" }}>
                             <button
@@ -1735,6 +1804,39 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
                         </div>
+                        {/* DD methods dropdown */}
+                        {(() => {
+                          const ddMethods = blogContent[b.id]?.ddMethods
+                          if (!ddMethods || ddMethods.length === 0) return null
+                          const isOpen = expandedDD === b.id
+                          return (
+                            <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
+                              <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
+                                style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                                <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                                What counts as direct deposit
+                              </button>
+                              {isOpen && (
+                                <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 5 }}>
+                                  {ddMethods.map((dd, i) => (
+                                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                      <span style={{
+                                        fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
+                                        color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                      }}>
+                                        {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
+                                      </span>
+                                      <div>
+                                        <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
+                                        {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
                       </div>
                     )
                   })}
