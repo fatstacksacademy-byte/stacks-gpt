@@ -101,7 +101,7 @@ export default function WhatCountsAsDirectDeposit() {
   const sectionHeading: React.CSSProperties = {
     fontSize: 26,
     fontWeight: 700,
-    color: "#fff",
+    color: "#111",
     margin: "48px 0 16px",
     letterSpacing: "-0.02em",
     lineHeight: 1.2,
@@ -109,32 +109,32 @@ export default function WhatCountsAsDirectDeposit() {
   const subHeading: React.CSSProperties = {
     fontSize: 20,
     fontWeight: 700,
-    color: "#fff",
+    color: "#111",
     margin: "32px 0 12px",
     lineHeight: 1.3,
   }
   const para: React.CSSProperties = {
     fontSize: 15,
-    color: "#ccc",
+    color: "#555",
     lineHeight: 1.8,
     margin: "0 0 16px",
     maxWidth: 680,
   }
   const listItem: React.CSSProperties = {
     fontSize: 15,
-    color: "#ccc",
+    color: "#555",
     lineHeight: 1.8,
     margin: "0 0 8px",
     paddingLeft: 8,
   }
   const bankCard: React.CSSProperties = {
     padding: "20px 24px",
-    borderBottom: "1px solid #1a1a1a",
+    borderBottom: "1px solid #f0f0f0",
   }
   const bankName: React.CSSProperties = {
     fontSize: 17,
     fontWeight: 700,
-    color: "#fff",
+    color: "#111",
     marginBottom: 6,
   }
   const bankDetail: React.CSSProperties = {
@@ -144,7 +144,7 @@ export default function WhatCountsAsDirectDeposit() {
     margin: 0,
   }
   const highlight: React.CSSProperties = {
-    color: "#88e06d",
+    color: "#0d7c5f",
     fontWeight: 600,
   }
   const warning: React.CSSProperties = {
@@ -156,9 +156,9 @@ export default function WhatCountsAsDirectDeposit() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 0" }}>
+      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#fff", textDecoration: "none" }}>Fat Stacks Academy</Link>
+          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
           <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
             <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
@@ -169,19 +169,19 @@ export default function WhatCountsAsDirectDeposit() {
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 60px" }}>
-        <div style={{ fontSize: 13, color: "#555", marginBottom: 24 }}>
-          <Link href="/blog" style={{ color: "#88e06d", textDecoration: "none" }}>Blog</Link>
+        <div style={{ fontSize: 13, color: "#bbb", marginBottom: 24 }}>
+          <Link href="/blog" style={{ color: "#0d7c5f", textDecoration: "none" }}>Blog</Link>
           <span style={{ margin: "0 8px" }}>/</span>
           <span>What Counts as Direct Deposit</span>
         </div>
 
-        <h1 style={{ fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
+        <h1 style={{ fontSize: 38, fontWeight: 800, color: "#111", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
           What Counts as a Direct Deposit for Bank Bonuses?
         </h1>
-        <p style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#88e06d", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
+        <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
         </p>
-        <p style={{ fontSize: 16, color: "#ccc", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
+        <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
           The single most common reason people fail to earn a bank bonus is that their deposit did not qualify as a &quot;direct deposit.&quot; Every bank defines this term differently, and the fine print is often vague. This guide breaks down exactly what counts at each major bank so you can get your bonus with confidence.
         </p>
         <p style={para}>
@@ -194,13 +194,13 @@ export default function WhatCountsAsDirectDeposit() {
           A direct deposit is an electronic transfer of funds into a bank account via the Automated Clearing House (ACH) network. When your employer pays you, they initiate an ACH credit transaction that moves money from their bank account directly into yours. This transaction carries a Standard Entry Class (SEC) code that identifies its type.
         </p>
         <p style={para}>
-          The most common SEC code for payroll is <strong style={{ color: "#fff" }}>PPD (Prearranged Payment and Deposit)</strong>. This is what your employer sends when you set up direct deposit through your HR or payroll system. Government benefits like Social Security and tax refunds also use PPD codes. Some banks look specifically for PPD-coded transactions when evaluating direct deposit requirements.
+          The most common SEC code for payroll is <strong style={{ color: "#111" }}>PPD (Prearranged Payment and Deposit)</strong>. This is what your employer sends when you set up direct deposit through your HR or payroll system. Government benefits like Social Security and tax refunds also use PPD codes. Some banks look specifically for PPD-coded transactions when evaluating direct deposit requirements.
         </p>
         <p style={para}>
-          However, when you push money from one bank to another (like transferring from Fidelity to Chase), that transfer typically uses a <strong style={{ color: "#fff" }}>CCD (Cash Concentration or Disbursement)</strong> or <strong style={{ color: "#fff" }}>WEB (Internet-Initiated Entry)</strong> SEC code. Whether a bank counts these non-payroll ACH credits as &quot;direct deposits&quot; varies significantly.
+          However, when you push money from one bank to another (like transferring from Fidelity to Chase), that transfer typically uses a <strong style={{ color: "#111" }}>CCD (Cash Concentration or Disbursement)</strong> or <strong style={{ color: "#111" }}>WEB (Internet-Initiated Entry)</strong> SEC code. Whether a bank counts these non-payroll ACH credits as &quot;direct deposits&quot; varies significantly.
         </p>
         <p style={para}>
-          In addition to traditional ACH, some banks now accept deposits via <strong style={{ color: "#fff" }}>RTP (Real-Time Payments)</strong> and <strong style={{ color: "#fff" }}>FedNow</strong>, which are newer instant payment rails. Chase, for example, explicitly states that payroll received via ACH, RTP, or FedNow qualifies.
+          In addition to traditional ACH, some banks now accept deposits via <strong style={{ color: "#111" }}>RTP (Real-Time Payments)</strong> and <strong style={{ color: "#111" }}>FedNow</strong>, which are newer instant payment rails. Chase, for example, explicitly states that payroll received via ACH, RTP, or FedNow qualifies.
         </p>
 
         {/* --- Section: Why Banks Require DD --- */}
@@ -218,7 +218,7 @@ export default function WhatCountsAsDirectDeposit() {
           Below is a detailed breakdown of what each major bank accepts as a qualifying direct deposit for their current bonus offers. This information is based on official terms, data points from the bank bonus community, and our own testing.
         </p>
 
-        <div style={{ border: "1px solid #1a1a1a", borderRadius: 12, overflow: "hidden", marginTop: 24 }}>
+        <div style={{ border: "1px solid #f0f0f0", borderRadius: 12, overflow: "hidden", marginTop: 24 }}>
           {/* Chase */}
           <div style={bankCard}>
             <div style={bankName}>Chase ($400 Checking Bonus)</div>
@@ -229,7 +229,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Zelle transfers, cash deposits, mobile check deposits, wire transfers, interest payments, and micro-deposits. Person-to-person transfers and bank-to-bank ACH pushes generally do not work unless they carry a payroll SEC code.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> $1,000 total direct deposits within 90 days of coupon enrollment. Chase is one of the stricter banks. Stick with actual payroll for the most reliable results.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000 total direct deposits within 90 days of coupon enrollment. Chase is one of the stricter banks. Stick with actual payroll for the most reliable results.
             </p>
           </div>
 
@@ -237,13 +237,13 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Citi ($325 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Citi uses &quot;Enhanced Direct Deposit&quot; (EDD), which is one of the broadest definitions available. Payroll ACH, government benefits, <strong style={{ color: "#fff" }}>Zelle incoming transfers</strong>, and <strong style={{ color: "#fff" }}>P2P ACH from Venmo and PayPal</strong> all qualify.
+              <span style={highlight}>What counts:</span> Citi uses &quot;Enhanced Direct Deposit&quot; (EDD), which is one of the broadest definitions available. Payroll ACH, government benefits, <strong style={{ color: "#111" }}>Zelle incoming transfers</strong>, and <strong style={{ color: "#111" }}>P2P ACH from Venmo and PayPal</strong> all qualify.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
               <span style={warning}>What does NOT count:</span> Instant transfers from Venmo/PayPal (must be standard ACH speed), wire transfers, cash deposits, check deposits, and Citi-to-Citi internal transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> 2 EDD deposits totaling $3,000+ within 90 days. Citi is the easiest major bank to satisfy because Zelle and Venmo/PayPal ACH transfers count.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2 EDD deposits totaling $3,000+ within 90 days. Citi is the easiest major bank to satisfy because Zelle and Venmo/PayPal ACH transfers count.
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Wire transfers and internal SoFi-to-SoFi transfers do not count. Some P2P transfers may not trigger the requirement depending on how they are coded.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> $5,000 total direct deposits within a 25-day evaluation window. Despite the lenient definition, the short window and high dollar amount make this one time-sensitive.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $5,000 total direct deposits within a 25-day evaluation window. Despite the lenient definition, the short window and high dollar amount make this one time-sensitive.
             </p>
           </div>
 
@@ -271,7 +271,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Zelle transfers, wire transfers, ATM deposits, and internal Wells Fargo transfers do not qualify. The terms are somewhat vague, so payroll is the safest option.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> $1,000+ in qualifying electronic deposits within 90 days of account opening.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000+ in qualifying electronic deposits within 90 days of account opening.
             </p>
           </div>
 
@@ -279,13 +279,13 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>U.S. Bank ($450 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> ACH payroll and government benefit deposits qualify. U.S. Bank is one of the <strong style={{ color: "#fff" }}>stricter banks</strong> and explicitly states that P2P payments and other electronic deposits do not qualify.
+              <span style={highlight}>What counts:</span> ACH payroll and government benefit deposits qualify. U.S. Bank is one of the <strong style={{ color: "#111" }}>stricter banks</strong> and explicitly states that P2P payments and other electronic deposits do not qualify.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
               <span style={warning}>What does NOT count:</span> P2P payments (Zelle, Venmo, PayPal), bank-to-bank ACH transfers, wire transfers, cash deposits, and check deposits. ACH pushes from brokerages have mixed results.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> 2+ direct deposits totaling $8,000+ within 90 days for the top $450 tier. Use actual payroll here.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2+ direct deposits totaling $8,000+ within 90 days for the top $450 tier. Use actual payroll here.
             </p>
           </div>
 
@@ -299,7 +299,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Zelle, P2P transfers, wire transfers, and internal Bank of America transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> Tiered bonus based on total DD: $100 at $2,000, $300 at $5,000, $500 at $10,000+ within 90 days.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Tiered bonus based on total DD: $100 at $2,000, $300 at $5,000, $500 at $10,000+ within 90 days.
             </p>
           </div>
 
@@ -313,7 +313,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Transfers between BMO accounts, wire transfers, and non-ACH deposits.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> Tiered bonus: $200 at $2,000 DD, $400 at $4,000 DD, $600 at $8,000+ DD within 90 days.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Tiered bonus: $200 at $2,000 DD, $400 at $4,000 DD, $600 at $8,000+ DD within 90 days.
             </p>
           </div>
 
@@ -327,7 +327,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Internal transfers and non-ACH deposits (cash loads at retailers, etc.).
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> $200+ qualifying direct deposit plus debit card activation within 14 days. One of the easiest bonuses to trigger.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $200+ qualifying direct deposit plus debit card activation within 14 days. One of the easiest bonuses to trigger.
             </p>
           </div>
 
@@ -341,7 +341,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Zelle, P2P transfers, wire transfers, and internal Capital One transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> Two deposits of $500+ each within 75 days using promo code OFFER300.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Two deposits of $500+ each within 75 days using promo code OFFER300.
             </p>
           </div>
 
@@ -355,7 +355,7 @@ export default function WhatCountsAsDirectDeposit() {
               <span style={warning}>What does NOT count:</span> Zelle, wire transfers, mobile deposits, and internal PNC transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>Requirement:</span> $5,000+ in qualifying direct deposits within 60 days for the $400 Performance Select tier.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $5,000+ in qualifying direct deposits within 60 days for the $400 Performance Select tier.
             </p>
           </div>
         </div>
@@ -371,10 +371,10 @@ export default function WhatCountsAsDirectDeposit() {
           This is the most widely used workaround. Transferring money from a brokerage account at Fidelity, Charles Schwab, or similar institutions initiates an ACH push that many banks count as a direct deposit. Fidelity in particular is known for coding their outgoing ACH transfers in a way that triggers direct deposit credit at a large number of banks.
         </p>
         <ul style={{ padding: "0 0 0 20px", margin: "0 0 16px" }}>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Fidelity:</strong> Widely reported as the most reliable workaround. Works at SoFi, Chime, Wells Fargo (mixed), and many credit unions. Does not reliably work at Chase or U.S. Bank.</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Charles Schwab:</strong> Similar success rate to Fidelity. ACH pushes from Schwab brokerage or checking accounts have triggered DD at multiple banks.</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>E*TRADE:</strong> Some success reported but less consistent than Fidelity or Schwab.</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Robinhood:</strong> ACH pushes from Robinhood have worked at some fintech banks but generally not at traditional banks.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Fidelity:</strong> Widely reported as the most reliable workaround. Works at SoFi, Chime, Wells Fargo (mixed), and many credit unions. Does not reliably work at Chase or U.S. Bank.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Charles Schwab:</strong> Similar success rate to Fidelity. ACH pushes from Schwab brokerage or checking accounts have triggered DD at multiple banks.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>E*TRADE:</strong> Some success reported but less consistent than Fidelity or Schwab.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Robinhood:</strong> ACH pushes from Robinhood have worked at some fintech banks but generally not at traditional banks.</li>
         </ul>
 
         <h3 style={subHeading}>Employer Payroll Splitting</h3>
@@ -398,14 +398,14 @@ export default function WhatCountsAsDirectDeposit() {
           Regardless of which bank you are working with, the following deposit types almost never count as a direct deposit for bonus purposes:
         </p>
         <ul style={{ padding: "0 0 0 20px", margin: "0 0 16px" }}>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Zelle transfers</strong> (exception: Citi)</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Cash deposits</strong> at ATMs or branches</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Mobile check deposits</strong></li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Wire transfers</strong> (Fedwire, not ACH)</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Internal transfers</strong> between accounts at the same bank</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Interest payments</strong> from the bank itself</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Micro-deposits</strong> from account verification</li>
-          <li style={listItem}><strong style={{ color: "#fff" }}>Instant transfers</strong> from payment apps (must be standard ACH speed)</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Zelle transfers</strong> (exception: Citi)</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Cash deposits</strong> at ATMs or branches</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Mobile check deposits</strong></li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Wire transfers</strong> (Fedwire, not ACH)</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Internal transfers</strong> between accounts at the same bank</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Interest payments</strong> from the bank itself</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Micro-deposits</strong> from account verification</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Instant transfers</strong> from payment apps (must be standard ACH speed)</li>
         </ul>
         <p style={para}>
           When in doubt, use actual payroll. It is the only method that works at 100% of banks, 100% of the time.
@@ -426,7 +426,7 @@ export default function WhatCountsAsDirectDeposit() {
 
         <h3 style={subHeading}>3. Track Your Progress</h3>
         <p style={para}>
-          Keep a spreadsheet or use <Link href="/" style={{ color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> to track which deposits have posted, how much you have deposited toward the minimum, and when your bonus window closes. Missing a deadline by even one day means losing the entire bonus.
+          Keep a spreadsheet or use <Link href="/" style={{ color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> to track which deposits have posted, how much you have deposited toward the minimum, and when your bonus window closes. Missing a deadline by even one day means losing the entire bonus.
         </p>
 
         <h3 style={subHeading}>4. Have a Backup Plan</h3>
@@ -445,53 +445,53 @@ export default function WhatCountsAsDirectDeposit() {
           Here is how major banks rank from strictest to most lenient in their direct deposit definitions:
         </p>
 
-        <div style={{ border: "1px solid #1a1a1a", borderRadius: 12, overflow: "hidden", marginTop: 16, marginBottom: 32 }}>
-          <div style={{ padding: "16px 24px", borderBottom: "1px solid #1a1a1a" }}>
+        <div style={{ border: "1px solid #f0f0f0", borderRadius: 12, overflow: "hidden", marginTop: 16, marginBottom: 32 }}>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#ff6b6b" }}>STRICT</span>
-            <span style={{ fontSize: 14, color: "#ccc", marginLeft: 12 }}>Chase, U.S. Bank, Teachers FCU -- Payroll/government only; ACH pushes rarely work</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Chase, U.S. Bank, Teachers FCU -- Payroll/government only; ACH pushes rarely work</span>
           </div>
-          <div style={{ padding: "16px 24px", borderBottom: "1px solid #1a1a1a" }}>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#f0c040" }}>MODERATE</span>
-            <span style={{ fontSize: 14, color: "#ccc", marginLeft: 12 }}>Wells Fargo, Bank of America, PNC, Capital One, BMO -- Payroll preferred; some ACH pushes work</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Wells Fargo, Bank of America, PNC, Capital One, BMO -- Payroll preferred; some ACH pushes work</span>
           </div>
-          <div style={{ padding: "16px 24px", borderBottom: "1px solid #1a1a1a" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#88e06d" }}>LENIENT</span>
-            <span style={{ fontSize: 14, color: "#ccc", marginLeft: 12 }}>SoFi, Chime, Varo -- Most incoming ACH credits count</span>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>LENIENT</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>SoFi, Chime, Varo -- Most incoming ACH credits count</span>
           </div>
           <div style={{ padding: "16px 24px" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#88e06d" }}>BROADEST</span>
-            <span style={{ fontSize: 14, color: "#ccc", marginLeft: 12 }}>Citi (EDD) -- Zelle, Venmo, PayPal ACH, and payroll all count</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>BROADEST</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Citi (EDD) -- Zelle, Venmo, PayPal ACH, and payroll all count</span>
           </div>
         </div>
 
         {/* --- FAQ Section --- */}
         <h2 style={sectionHeading}>Frequently Asked Questions</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1px solid #1a1a1a", borderRadius: 12, overflow: "hidden", marginTop: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1px solid #f0f0f0", borderRadius: 12, overflow: "hidden", marginTop: 16 }}>
           {faqItems.map((item, i) => (
-            <div key={i} style={{ padding: "20px 24px", borderBottom: i < faqItems.length - 1 ? "1px solid #1a1a1a" : "none" }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", margin: "0 0 8px", lineHeight: 1.4 }}>{item.q}</h3>
-              <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: 0 }}>{item.a}</p>
+            <div key={i} style={{ padding: "20px 24px", borderBottom: i < faqItems.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", margin: "0 0 8px", lineHeight: 1.4 }}>{item.q}</h3>
+              <p style={{ fontSize: 14, color: "#777", lineHeight: 1.7, margin: 0 }}>{item.a}</p>
             </div>
           ))}
         </div>
 
         {/* --- Stacks OS CTA --- */}
-        <div style={{ marginTop: 48, padding: "32px", background: "rgba(136,224,109,0.04)", border: "1px solid rgba(136,224,109,0.15)", borderRadius: 12 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Track Your Bank Bonuses With Stacks OS</div>
+        <div style={{ marginTop: 48, padding: "32px", background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 8 }}>Track Your Bank Bonuses With Stacks OS</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: "0 0 16px" }}>
             Keep track of direct deposit requirements, bonus windows, and payouts across all your active bank bonuses. Stacks OS gives you a clear dashboard to manage your bonus pipeline so you never miss a deadline.
           </p>
           <Link href="/" style={{
             display: "inline-block", padding: "12px 24px", fontSize: 14, fontWeight: 700,
-            background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
+            background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
             Try Stacks OS Free
           </Link>
         </div>
 
         {/* YouTube CTA */}
-        <div style={{ marginTop: 24, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Watch: Direct Deposit Strategies for Bank Bonuses</div>
+        <div style={{ marginTop: 24, padding: "24px", background: "rgba(255,0,0,0.03)", border: "1px solid rgba(255,0,0,0.1)", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 8 }}>Watch: Direct Deposit Strategies for Bank Bonuses</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
             Nathaniel walks through his direct deposit strategy, including which workarounds he uses and how he splits payroll across multiple banks.
           </p>
@@ -504,20 +504,20 @@ export default function WhatCountsAsDirectDeposit() {
         </div>
 
         <div style={{ marginTop: 32, display: "flex", gap: 20, flexWrap: "wrap" }}>
-          <Link href="/blog" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
-          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
-          <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Best savings bonuses &rarr;</Link>
-          <Link href="/blog/bank-bonus-tax-guide-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Bank bonus tax guide &rarr;</Link>
+          <Link href="/blog" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
+          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
+          <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best savings bonuses &rarr;</Link>
+          <Link href="/blog/bank-bonus-tax-guide-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Bank bonus tax guide &rarr;</Link>
         </div>
       </main>
 
-      <footer style={{ borderTop: "1px solid #1a1a1a", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <span style={{ fontSize: 13, color: "#555" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
+          <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Stacks OS</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Blog</Link>
+            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
+            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>
       </footer>

@@ -79,12 +79,12 @@ export default function BestSavingsBonuses() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 0" }}>
+      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#fff", textDecoration: "none" }}>Fat Stacks Academy</Link>
+          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
           <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
-            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Best Savings</Link>
+            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best Savings</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>All Reviews</Link>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
           </nav>
@@ -92,20 +92,20 @@ export default function BestSavingsBonuses() {
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 60px" }}>
-        <div style={{ fontSize: 13, color: "#555", marginBottom: 24 }}>
-          <Link href="/blog" style={{ color: "#88e06d", textDecoration: "none" }}>Blog</Link>
+        <div style={{ fontSize: 13, color: "#bbb", marginBottom: 24 }}>
+          <Link href="/blog" style={{ color: "#0d7c5f", textDecoration: "none" }}>Blog</Link>
           <span style={{ margin: "0 8px" }}>/</span>
           <span>Best Savings Bonuses 2026</span>
         </div>
 
-        <h1 style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
+        <h1 style={{ fontSize: 40, fontWeight: 800, color: "#111", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
           Best Savings Account Bonuses of 2026
         </h1>
-        <p style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#88e06d", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
+        <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
         </p>
 
-        <p style={{ fontSize: 16, color: "#ccc", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
+        <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
           These are the best savings account bonuses available right now, ranked by effective APY — the real return you earn
           when you combine the cash bonus with the base interest rate over the holding period.
         </p>
@@ -128,20 +128,20 @@ export default function BestSavingsBonuses() {
               <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
                 <div style={{
                   display: "flex", alignItems: "center", gap: 16, padding: "20px 16px",
-                  borderBottom: "1px solid #1a1a1a",
-                  background: i === 0 ? "rgba(136,224,109,0.04)" : "transparent",
+                  borderBottom: "1px solid #f0f0f0",
+                  background: i === 0 ? "rgba(13,124,95,0.04)" : "transparent",
                 }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: i < 3 ? "#88e06d" : "#333", width: 32, textAlign: "center", flexShrink: 0 }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: i < 3 ? "#0d7c5f" : "#ccc", width: 32, textAlign: "center", flexShrink: 0 }}>
                     {i + 1}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{b.bank_name.split("(")[0].trim()}</span>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: "#88e06d" }}>{money(minTier.bonus_amount)}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#88e06d", background: "rgba(136,224,109,0.1)", padding: "2px 8px", borderRadius: 99 }}>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{b.bank_name.split("(")[0].trim()}</span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: "#0d7c5f" }}>{money(minTier.bonus_amount)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", padding: "2px 8px", borderRadius: 99 }}>
                         {effApy}% eff. APY
                       </span>
-                      {i === 0 && <span style={{ fontSize: 10, fontWeight: 700, color: "#000", background: "#88e06d", padding: "2px 8px", borderRadius: 99 }}>TOP PICK</span>}
+                      {i === 0 && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "2px 8px", borderRadius: 99 }}>TOP PICK</span>}
                     </div>
                     <div style={{ fontSize: 12, color: "#777" }}>
                       {money(minTier.min_deposit)} deposit | {b.total_hold_days}-day hold | {(b.base_apy * 100).toFixed(2)}% base APY
@@ -153,7 +153,7 @@ export default function BestSavingsBonuses() {
                       </p>
                     )}
                   </div>
-                  <span style={{ fontSize: 13, color: "#88e06d", fontWeight: 600, flexShrink: 0 }}>Review &rarr;</span>
+                  <span style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 600, flexShrink: 0 }}>Review &rarr;</span>
                 </div>
               </Link>
             )
@@ -162,26 +162,26 @@ export default function BestSavingsBonuses() {
 
         {/* Bottom editorial */}
         <div style={{ marginTop: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>How Savings Bonuses Work</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>How Savings Bonuses Work</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               Savings bonuses require depositing a lump sum into a new savings account and keeping it there for a set period — usually 90-180 days. After the holding period, the bank pays the bonus and you can move your money to the next opportunity.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Effective APY is the key metric.</strong> It combines the cash bonus with the base interest rate, annualized over the holding period. A $600 bonus on $15,000 for 90 days (Chase) beats a $300 bonus on $15,000 for 182 days (Blue Foundry) because your money is tied up for half the time.
+              <strong style={{ color: "#111" }}>Effective APY is the key metric.</strong> It combines the cash bonus with the base interest rate, annualized over the holding period. A $600 bonus on $15,000 for 90 days (Chase) beats a $300 bonus on $15,000 for 182 days (Blue Foundry) because your money is tied up for half the time.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Rotate your capital.</strong> After one bonus completes, move the same money to the next savings bonus. This is called capital rotation — you{"'"}re using the same pool of savings to earn multiple bonuses per year.
+              <strong style={{ color: "#111" }}>Rotate your capital.</strong> After one bonus completes, move the same money to the next savings bonus. This is called capital rotation — you{"'"}re using the same pool of savings to earn multiple bonuses per year.
             </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#fff" }}>Don{"'"}t forget about the Ally referral.</strong> At just $60 in total deposits for a $100 bonus, the Ally savings referral is the easiest bonus on this list. Set it up in the background while you work on larger bonuses.
+              <strong style={{ color: "#111" }}>Don{"'"}t forget about the Ally referral.</strong> At just $60 in total deposits for a $100 bonus, the Ally savings referral is the easiest bonus on this list. Set it up in the background while you work on larger bonuses.
             </p>
           </div>
         </div>
 
         {/* YouTube CTA */}
-        <div style={{ marginTop: 40, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Watch: Best Savings Bonuses of 2026</div>
+        <div style={{ marginTop: 40, padding: "24px", background: "rgba(255,0,0,0.03)", border: "1px solid rgba(255,0,0,0.1)", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 8 }}>Watch: Best Savings Bonuses of 2026</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
             Nathaniel breaks down the best savings bonuses, effective APY calculations, and his personal capital rotation strategy on YouTube.
           </p>
@@ -194,18 +194,18 @@ export default function BestSavingsBonuses() {
         </div>
 
         <div style={{ marginTop: 32, display: "flex", gap: 20 }}>
-          <Link href="/blog" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
-          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
+          <Link href="/blog" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
+          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
         </div>
       </main>
 
-      <footer style={{ borderTop: "1px solid #1a1a1a", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <span style={{ fontSize: 13, color: "#555" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
+          <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Stacks OS</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Blog</Link>
+            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
+            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>
       </footer>

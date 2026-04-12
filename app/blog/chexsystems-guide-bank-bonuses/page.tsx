@@ -93,9 +93,9 @@ export default function ChexSystemsGuide() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 0" }}>
+      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#fff", textDecoration: "none" }}>Fat Stacks Academy</Link>
+          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
           <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
             <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
@@ -106,20 +106,20 @@ export default function ChexSystemsGuide() {
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 60px" }}>
-        <div style={{ fontSize: 13, color: "#555", marginBottom: 24 }}>
-          <Link href="/blog" style={{ color: "#88e06d", textDecoration: "none" }}>Blog</Link>
+        <div style={{ fontSize: 13, color: "#bbb", marginBottom: 24 }}>
+          <Link href="/blog" style={{ color: "#0d7c5f", textDecoration: "none" }}>Blog</Link>
           <span style={{ margin: "0 8px" }}>/</span>
           <span>ChexSystems Guide</span>
         </div>
 
-        <h1 style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
+        <h1 style={{ fontSize: 40, fontWeight: 800, color: "#111", letterSpacing: "-0.03em", margin: "0 0 16px", lineHeight: 1.1 }}>
           ChexSystems Explained: How It Affects Your Bank Bonus Eligibility
         </h1>
-        <p style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#88e06d", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
+        <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
         </p>
 
-        <p style={{ fontSize: 16, color: "#ccc", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
+        <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
           If you have ever been denied a new bank account, ChexSystems is likely the reason. This guide covers
           everything you need to know about ChexSystems as a bank bonus hunter — what it is, how to check your
           report for free, which banks care about it, and exactly what to do if you get denied.
@@ -131,8 +131,8 @@ export default function ChexSystemsGuide() {
         </p>
 
         {/* Table of Contents */}
-        <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 12, padding: "20px 24px", marginBottom: 40 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 12 }}>In This Guide</div>
+        <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 12, padding: "20px 24px", marginBottom: 40 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 12 }}>In This Guide</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {[
               { label: "What Is ChexSystems?", id: "what-is-chexsystems" },
@@ -146,15 +146,15 @@ export default function ChexSystemsGuide() {
               { label: "Early Warning Services (EWS)", id: "early-warning-services" },
               { label: "FAQ", id: "faq" },
             ].map(item => (
-              <a key={item.id} href={`#${item.id}`} style={{ fontSize: 13, color: "#88e06d", textDecoration: "none" }}>{item.label}</a>
+              <a key={item.id} href={`#${item.id}`} style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none" }}>{item.label}</a>
             ))}
           </div>
         </div>
 
         {/* What Is ChexSystems */}
         <section id="what-is-chexsystems" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>What Is ChexSystems?</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>What Is ChexSystems?</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               ChexSystems is a consumer reporting agency owned by Fidelity National Information Services (FIS). It maintains
               a database of people who have had problems with bank accounts — specifically checking and savings accounts.
@@ -178,8 +178,8 @@ export default function ChexSystemsGuide() {
 
         {/* ChexSystems vs Credit Bureaus */}
         <section id="chexsystems-vs-credit-bureaus" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>ChexSystems vs. Credit Bureaus</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>ChexSystems vs. Credit Bureaus</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               ChexSystems is often confused with the three major credit bureaus — Equifax, Experian, and TransUnion — but
               they serve fundamentally different purposes. The credit bureaus track your credit history: credit cards, loans,
@@ -209,36 +209,36 @@ export default function ChexSystemsGuide() {
 
         {/* What Shows Up */}
         <section id="what-shows-up" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>What Shows Up on a ChexSystems Report</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>What Shows Up on a ChexSystems Report</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               Your ChexSystems report can contain several categories of information. Understanding what each one means
               helps you assess whether your report might cause issues when applying for bank bonuses.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Closed accounts with negative balances.</strong> This is the most common
+              <strong style={{ color: "#111" }}>Closed accounts with negative balances.</strong> This is the most common
               negative item. If you had a bank account that was closed while you owed money — whether from overdrafts,
               fees, or a negative balance you never resolved — the bank reports it to ChexSystems. This is the item most
               likely to get you denied at a new bank.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Unpaid overdrafts.</strong> Even if your account was not formally closed,
+              <strong style={{ color: "#111" }}>Unpaid overdrafts.</strong> Even if your account was not formally closed,
               significant overdraft activity that went unpaid can appear on your report. Banks view chronic overdrafting
               as a sign of financial instability or potential abuse.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Fraud or suspected fraud.</strong> If a bank flagged your account for
+              <strong style={{ color: "#111" }}>Fraud or suspected fraud.</strong> If a bank flagged your account for
               suspected fraudulent activity — whether you were the perpetrator or the victim — it can show up on your
               ChexSystems report. Fraud flags are taken very seriously and can result in denial even at banks with low
               ChexSystems sensitivity.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Account abuse.</strong> This is a broad category that can include things
+              <strong style={{ color: "#111" }}>Account abuse.</strong> This is a broad category that can include things
               like excessive returned checks (bounced checks), kiting schemes, or other patterns that a bank considers
               abusive. The bank decides what qualifies as abuse, and the threshold varies by institution.
             </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#fff" }}>Inquiries.</strong> Every time a bank checks your ChexSystems report, an
+              <strong style={{ color: "#111" }}>Inquiries.</strong> Every time a bank checks your ChexSystems report, an
               inquiry is recorded. Unlike the negative items above, inquiries are informational — most banks do not penalize
               you for having many inquiries. However, a very high number of recent inquiries (from opening many accounts in
               a short period) may raise flags at some medium-sensitivity banks. For most bonus hunters, inquiries are not a concern.
@@ -248,10 +248,10 @@ export default function ChexSystemsGuide() {
 
         {/* How Long Items Stay */}
         <section id="how-long-items-stay" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>How Long Items Stay on Your Report</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>How Long Items Stay on Your Report</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
-              Negative items on your ChexSystems report remain for <strong style={{ color: "#fff" }}>five years</strong> from
+              Negative items on your ChexSystems report remain for <strong style={{ color: "#111" }}>five years</strong> from
               the date the bank reported them. After five years, the item is automatically removed. There is no way to
               accelerate this timeline through ChexSystems directly.
             </p>
@@ -262,7 +262,7 @@ export default function ChexSystemsGuide() {
               especially if you can document that the issue was resolved.
             </p>
             <p style={{ margin: 0 }}>
-              Inquiries have a shorter lifespan. ChexSystems inquiries typically remain on your report for <strong style={{ color: "#fff" }}>three
+              Inquiries have a shorter lifespan. ChexSystems inquiries typically remain on your report for <strong style={{ color: "#111" }}>three
               years</strong>, but as mentioned above, most banks do not weigh inquiries in their approval decisions. If you
               are actively churning bank bonuses, expect to accumulate inquiries — this is normal and rarely causes problems.
             </p>
@@ -271,8 +271,8 @@ export default function ChexSystemsGuide() {
 
         {/* How to Get Your Free Report */}
         <section id="free-report" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>How to Get Your Free ChexSystems Report</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>How to Get Your Free ChexSystems Report</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               Under the Fair Credit Reporting Act (FCRA), you are entitled to one free ChexSystems Consumer Disclosure
               report every 12 months. This is the same law that entitles you to free credit reports from each of the
@@ -281,18 +281,18 @@ export default function ChexSystemsGuide() {
             <p style={{ margin: "0 0 16px" }}>
               There are three ways to request your free report:
             </p>
-            <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "16px 20px", marginBottom: 16 }}>
+            <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px", marginBottom: 16 }}>
               <p style={{ margin: "0 0 8px" }}>
-                <strong style={{ color: "#fff" }}>Online:</strong> Visit{" "}
-                <span style={{ color: "#88e06d" }}>chexsystems.com</span> and navigate to the Consumer Disclosure
+                <strong style={{ color: "#111" }}>Online:</strong> Visit{" "}
+                <span style={{ color: "#0d7c5f" }}>chexsystems.com</span> and navigate to the Consumer Disclosure
                 section. You will need to verify your identity with personal information including your Social Security number.
               </p>
               <p style={{ margin: "0 0 8px" }}>
-                <strong style={{ color: "#fff" }}>Phone:</strong> Call <span style={{ color: "#88e06d" }}>800-428-9623</span> and
+                <strong style={{ color: "#111" }}>Phone:</strong> Call <span style={{ color: "#0d7c5f" }}>800-428-9623</span> and
                 request a Consumer Disclosure report. The automated system will guide you through identity verification.
               </p>
               <p style={{ margin: 0 }}>
-                <strong style={{ color: "#fff" }}>Mail:</strong> Send a written request with your full name, current address,
+                <strong style={{ color: "#111" }}>Mail:</strong> Send a written request with your full name, current address,
                 previous addresses (last five years), Social Security number, and date of birth to: Chex Systems, Inc.,
                 Attn: Consumer Relations, 7805 Hudson Road, Suite 100, Woodbury, MN 55125.
               </p>
@@ -312,8 +312,8 @@ export default function ChexSystemsGuide() {
 
         {/* ChexSystems Sensitivity by Bank */}
         <section id="sensitivity-by-bank" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>ChexSystems Sensitivity by Bank</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>ChexSystems Sensitivity by Bank</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 20px" }}>
               Not all banks treat ChexSystems the same way. Some banks are lenient and will approve you even with negative
               marks on your report. Others are strict and will deny you for any blemish. Based on data from our bonus
@@ -324,10 +324,10 @@ export default function ChexSystemsGuide() {
           {/* Low Sensitivity */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#000", background: "#88e06d", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Low Sensitivity</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Low Sensitivity</span>
               <span style={{ fontSize: 13, color: "#777" }}>Likely to approve with negative marks</span>
             </div>
-            <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "16px 20px" }}>
+            <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px" }}>
               {[
                 { name: "Capital One", note: "Does not use ChexSystems at all. Uses a proprietary internal system. One of the safest options if you have banking history issues." },
                 { name: "Varo", note: "Online-only neobank. Known for approving applicants with ChexSystems records. No minimum balance or monthly fees." },
@@ -337,8 +337,8 @@ export default function ChexSystemsGuide() {
                 { name: "Wells Fargo", note: "Despite being a major bank, Wells Fargo is known for approving applicants with minor ChexSystems items. Serious fraud flags may still cause denial." },
                 { name: "316 Financial", note: "Small institution with lenient screening. Good option for those building their banking history back up." },
               ].map(bank => (
-                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #1a1a1a" }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{bank.name}</div>
+                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 4 }}>{bank.name}</div>
                   <div style={{ fontSize: 13, color: "#888" }}>{bank.note}</div>
                 </div>
               ))}
@@ -351,7 +351,7 @@ export default function ChexSystemsGuide() {
               <span style={{ fontSize: 11, fontWeight: 700, color: "#000", background: "#f5c542", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Medium Sensitivity</span>
               <span style={{ fontSize: 13, color: "#777" }}>May deny with negative marks; inquiries usually fine</span>
             </div>
-            <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "16px 20px" }}>
+            <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px" }}>
               {[
                 { name: "Chase", note: "Checks ChexSystems and may deny for significant negative items. Clean reports with only inquiries are typically fine. One of the highest-value bonuses at $400-$600." },
                 { name: "PNC", note: "Moderate screening. Minor items from several years ago may pass, but recent negative marks will likely result in denial." },
@@ -361,8 +361,8 @@ export default function ChexSystemsGuide() {
                 { name: "E*TRADE", note: "Morgan Stanley subsidiary. Runs a ChexSystems check and may deny for negative banking history." },
                 { name: "Teachers FCU", note: "Credit union that checks ChexSystems but focuses primarily on the severity of reported items rather than the count." },
               ].map(bank => (
-                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #1a1a1a" }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{bank.name}</div>
+                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 4 }}>{bank.name}</div>
                   <div style={{ fontSize: 13, color: "#888" }}>{bank.note}</div>
                 </div>
               ))}
@@ -375,13 +375,13 @@ export default function ChexSystemsGuide() {
               <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#e04444", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>High Sensitivity</span>
               <span style={{ fontSize: 13, color: "#777" }}>Strict screening; even minor items may cause denial</span>
             </div>
-            <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "16px 20px" }}>
+            <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px" }}>
               {[
                 { name: "Affinity FCU", note: "Credit union with strict ChexSystems requirements. Even minor or old items can trigger denial. Recommend a clean report before applying." },
                 { name: "KeyPoint CU", note: "Strict screening. If you have any negative items on your ChexSystems report, this credit union is very likely to deny your application." },
               ].map(bank => (
-                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #1a1a1a" }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{bank.name}</div>
+                <div key={bank.name} style={{ padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 4 }}>{bank.name}</div>
                   <div style={{ fontSize: 13, color: "#888" }}>{bank.note}</div>
                 </div>
               ))}
@@ -391,20 +391,20 @@ export default function ChexSystemsGuide() {
           {/* Unknown */}
           <div style={{ marginBottom: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#555", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Unknown</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#999", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Unknown</span>
               <span style={{ fontSize: 13, color: "#777" }}>Not enough data to determine sensitivity</span>
             </div>
-            <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 10, padding: "16px 20px" }}>
+            <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px" }}>
               <div style={{ padding: "10px 0" }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>BMO</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 4 }}>BMO</div>
                 <div style={{ fontSize: 13, color: "#888" }}>BMO (formerly BMO Harris) checks ChexSystems, but there is not enough community data to reliably categorize their sensitivity level. Their $600 bonus is one of the highest available, so it may be worth attempting even if you have minor items on your report.</div>
               </div>
             </div>
           </div>
 
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8, marginTop: 20 }}>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8, marginTop: 20 }}>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#fff" }}>Strategy tip:</strong> If you have a negative ChexSystems record, start with the
+              <strong style={{ color: "#111" }}>Strategy tip:</strong> If you have a negative ChexSystems record, start with the
               low-sensitivity banks to earn bonuses while you wait for items to age off your report. Capital One, SoFi, and Wells
               Fargo all offer competitive bonuses and are accessible to almost everyone.
             </p>
@@ -413,43 +413,43 @@ export default function ChexSystemsGuide() {
 
         {/* What to Do If Denied */}
         <section id="denied" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>What to Do If You Are Denied a Bank Account</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>What to Do If You Are Denied a Bank Account</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               Getting denied a bank account is frustrating, especially when a bonus is on the line. Here is a step-by-step
               plan for dealing with a denial based on your ChexSystems report.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Step 1: Get your adverse action notice.</strong> When a bank denies you based on
+              <strong style={{ color: "#111" }}>Step 1: Get your adverse action notice.</strong> When a bank denies you based on
               ChexSystems, they are required by law to send you an adverse action notice. This letter tells you which consumer
               reporting agency was used and how to obtain a copy of your report. If you do not receive one, call the bank and
               request it explicitly.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Step 2: Pull your ChexSystems report.</strong> After a denial, you are entitled to
+              <strong style={{ color: "#111" }}>Step 2: Pull your ChexSystems report.</strong> After a denial, you are entitled to
               an additional free report (beyond your annual entitlement) within 60 days. Use this to see exactly what the bank
               saw when they denied you.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Step 3: Dispute any errors.</strong> Review every item on your report carefully.
+              <strong style={{ color: "#111" }}>Step 3: Dispute any errors.</strong> Review every item on your report carefully.
               If anything is inaccurate — wrong amounts, accounts that are not yours, items that should have been removed — file
               a dispute directly with ChexSystems. They are required to investigate within 30 days. You can dispute online at
               chexsystems.com, by phone, or by mail. Also contact the reporting bank directly, as they can request removal of
               incorrect information.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Step 4: Resolve outstanding debts.</strong> If the negative items are accurate,
+              <strong style={{ color: "#111" }}>Step 4: Resolve outstanding debts.</strong> If the negative items are accurate,
               contact the bank that reported them and pay off any outstanding balances. Get written confirmation of payment.
               Some banks will then request removal from ChexSystems, which can improve your chances at other institutions.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Step 5: Try second-chance banks.</strong> Several banks explicitly offer
+              <strong style={{ color: "#111" }}>Step 5: Try second-chance banks.</strong> Several banks explicitly offer
               second-chance checking accounts designed for people with ChexSystems records. These accounts may have higher fees
               or fewer features, but they allow you to rebuild your banking history. After 12 months of good standing, you can
               often upgrade to a standard account.
             </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#fff" }}>Step 6: Try applying in-branch.</strong> Some people report better success when
+              <strong style={{ color: "#111" }}>Step 6: Try applying in-branch.</strong> Some people report better success when
               applying for bank accounts in person rather than online. Branch employees sometimes have more discretion to override
               ChexSystems denials, especially for minor or old items. This is not guaranteed, but it is worth trying if the online
               application was denied.
@@ -459,20 +459,20 @@ export default function ChexSystemsGuide() {
 
         {/* Freeze / Unfreeze */}
         <section id="freeze-unfreeze" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>How to Freeze and Unfreeze Your ChexSystems Report</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>How to Freeze and Unfreeze Your ChexSystems Report</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               A security freeze on your ChexSystems report prevents banks from accessing it. This is useful if you want
               to protect yourself from identity theft — someone cannot open a fraudulent bank account in your name if the
               bank cannot pull your ChexSystems report.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              To place a freeze, contact ChexSystems directly at <span style={{ color: "#88e06d" }}>800-428-9623</span> or
+              To place a freeze, contact ChexSystems directly at <span style={{ color: "#0d7c5f" }}>800-428-9623</span> or
               submit a request through their website. You will receive a PIN that you will need to temporarily lift or
               permanently remove the freeze later. Keep this PIN somewhere safe.
             </p>
             <p style={{ margin: "0 0 12px" }}>
-              <strong style={{ color: "#fff" }}>Important for bank bonus hunters:</strong> If your ChexSystems report is
+              <strong style={{ color: "#111" }}>Important for bank bonus hunters:</strong> If your ChexSystems report is
               frozen, most banks will be unable to process your application and will deny you by default. You must temporarily
               lift the freeze before applying for any new bank account. You can lift the freeze for a specific bank or for
               a specific time period (for example, one week while you submit applications). Once you are done applying,
@@ -488,8 +488,8 @@ export default function ChexSystemsGuide() {
 
         {/* Early Warning Services */}
         <section id="early-warning-services" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 16px" }}>Early Warning Services (EWS): The Other Screening System</h2>
-          <div style={{ fontSize: 14, color: "#bbb", lineHeight: 1.8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>Early Warning Services (EWS): The Other Screening System</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
             <p style={{ margin: "0 0 12px" }}>
               ChexSystems is not the only banking verification system. Early Warning Services (EWS) is a separate consumer
               reporting agency that performs a similar function. EWS is co-owned by seven major banks: Bank of America,
@@ -502,8 +502,8 @@ export default function ChexSystemsGuide() {
             </p>
             <p style={{ margin: "0 0 12px" }}>
               You have the same FCRA rights with EWS as you do with ChexSystems. You can request a free annual report from
-              Early Warning Services at <span style={{ color: "#88e06d" }}>earlywarning.com</span> or by calling{" "}
-              <span style={{ color: "#88e06d" }}>800-325-7775</span>. If you were denied a bank account and the adverse
+              Early Warning Services at <span style={{ color: "#0d7c5f" }}>earlywarning.com</span> or by calling{" "}
+              <span style={{ color: "#0d7c5f" }}>800-325-7775</span>. If you were denied a bank account and the adverse
               action notice mentions Early Warning Services, pull your EWS report in addition to your ChexSystems report.
             </p>
             <p style={{ margin: 0 }}>
@@ -516,35 +516,35 @@ export default function ChexSystemsGuide() {
 
         {/* FAQ */}
         <section id="faq" style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 0 20px" }}>Frequently Asked Questions</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "0 0 20px" }}>Frequently Asked Questions</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             {faqs.map((faq, i) => (
-              <div key={i} style={{ borderBottom: "1px solid #1a1a1a", padding: "20px 0" }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: "0 0 8px" }}>{faq.q}</h3>
-                <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
+              <div key={i} style={{ borderBottom: "1px solid #f0f0f0", padding: "20px 0" }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: "0 0 8px" }}>{faq.q}</h3>
+                <p style={{ fontSize: 14, color: "#777", lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Stacks OS CTA */}
-        <div style={{ marginTop: 40, padding: "24px", background: "rgba(136,224,109,0.05)", border: "1px solid rgba(136,224,109,0.15)", borderRadius: 12 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Track Your Bank Bonuses With Stacks OS</div>
+        <div style={{ marginTop: 40, padding: "24px", background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 8 }}>Track Your Bank Bonuses With Stacks OS</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
             Keep track of which bonuses you are working on, what is next in your pipeline, and your total earnings across
             all banks. Stacks OS helps you stay organized as you work through checking and savings bonuses.
           </p>
           <Link href="/" style={{
             display: "inline-block", padding: "10px 20px", fontSize: 13, fontWeight: 700,
-            background: "#88e06d", color: "#000", borderRadius: 8, textDecoration: "none",
+            background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
             Try Stacks OS &rarr;
           </Link>
         </div>
 
         {/* YouTube CTA */}
-        <div style={{ marginTop: 20, padding: "24px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.15)", borderRadius: 12 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Watch: ChexSystems Explained for Bank Bonus Hunters</div>
+        <div style={{ marginTop: 20, padding: "24px", background: "rgba(255,0,0,0.03)", border: "1px solid rgba(255,0,0,0.1)", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 8 }}>Watch: ChexSystems Explained for Bank Bonus Hunters</div>
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.6, margin: "0 0 12px" }}>
             Nathaniel walks through ChexSystems, bank sensitivity levels, and strategies for getting approved even with negative marks on his YouTube channel.
           </p>
@@ -557,18 +557,18 @@ export default function ChexSystemsGuide() {
         </div>
 
         <div style={{ marginTop: 32, display: "flex", gap: 20 }}>
-          <Link href="/blog" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
-          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#88e06d", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
+          <Link href="/blog" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>
+          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best checking bonuses &rarr;</Link>
         </div>
       </main>
 
-      <footer style={{ borderTop: "1px solid #1a1a1a", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <span style={{ fontSize: 13, color: "#555" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
+          <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Stacks OS</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>Blog</Link>
+            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
+            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>
       </footer>
