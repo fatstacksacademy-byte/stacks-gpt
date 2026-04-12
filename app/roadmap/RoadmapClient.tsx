@@ -6,6 +6,8 @@ import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { blogContent } from "../../lib/data/blogContent"
+import { creditCardBonuses } from "../../lib/data/creditCardBonuses"
+import { sequenceCards, formatCurrency, SequencedCard } from "../../lib/ccSequencer"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
@@ -226,6 +228,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
+  const [expandedCCDetails, setExpandedCCDetails] = useState<string | null>(null)
+  const [showCCSection, setShowCCSection] = useState(true)
+  const [ccBudget] = useState(2000)
+  const ccSequence = sequenceCards(creditCardBonuses, ccBudget)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -1843,6 +1849,102 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 </div>
               </div>
             )}
+
+            {/* ══════════════════════════════════════════════════════════════════
+                 CREDIT CARD SPENDING BONUSES — Sequenced by return on spend
+                 ══════════════════════════════════════════════════════════════════ */}
+            <div style={{ marginTop: 32 }}>
+              <button onClick={() => setShowCCSection(!showCCSection)}
+                style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: showCCSection ? 16 : 0 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#111", letterSpacing: "-0.02em" }}>
+                  Credit Card Spending Bonuses
+                </div>
+                <span style={{ fontSize: 12, color: "#999" }}>{showCCSection ? "▲" : "▼"}</span>
+                <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600, background: "#f0faf5", padding: "2px 8px", borderRadius: 99 }}>
+                  {formatCurrency(ccSequence.reduce((s, c) => s + c.net_value, 0))} total value
+                </span>
+              </button>
+
+              {showCCSection && (
+                <>
+                  <div style={{ fontSize: 13, color: "#888", marginBottom: 16, maxWidth: 600 }}>
+                    Application order optimized by return per month of spend at ${ccBudget.toLocaleString()}/mo budget. Points valued at 1&cent; (0.5&cent; for hotel). Net value = bonus - annual fee + year-1 credits.
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {ccSequence.map((sc, idx) => {
+                      const isExpanded = expandedCCDetails === sc.card.id
+                      const accentColor = sc.card.card_type === "business" ? "#7c3aed" : "#2563eb"
+                      return (
+                        <div key={sc.card.id} style={{
+                          background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px",
+                          borderLeft: `3px solid ${accentColor}`,
+                        }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+                            <div style={{ flex: 1, minWidth: 200 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                <span style={{ fontSize: 12, color: "#bbb", fontWeight: 700 }}>#{idx + 1}</span>
+                                <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{sc.card.card_name}</span>
+                                {sc.card.card_type === "business" && (
+                                  <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "1px 6px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
+                                )}
+                              </div>
+                              <div style={{ fontSize: 13, color: "#555" }}>
+                                {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
+                                {sc.card.min_spend > 0 && <span style={{ color: "#999" }}> · ${sc.card.min_spend.toLocaleString()} spend in {sc.card.spend_months}mo</span>}
+                              </div>
+                            </div>
+                            <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{formatCurrency(sc.net_value)}</div>
+                              <div style={{ fontSize: 11, color: "#999" }}>
+                                {formatCurrency(sc.return_per_month)}/mo · {sc.months_to_complete.toFixed(1)}mo
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: 10, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                            <div style={{ fontSize: 12, color: "#888" }}>
+                              AF: {sc.card.annual_fee === 0 ? <span style={{ color: "#0d7c5f", fontWeight: 600 }}>$0</span> : <span>${sc.card.annual_fee}{sc.card.annual_fee_waived_first_year ? " (waived Y1)" : ""}</span>}
+                              {sc.card.statement_credits_year1 > 0 && <span> · Credits: ${sc.card.statement_credits_year1}</span>}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#bbb" }}>
+                              Cumulative: {formatCurrency(sc.cumulative_value)} in {sc.cumulative_months}mo
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center" }}>
+                            <a href={sc.card.offer_link} target="_blank" rel="noreferrer"
+                              style={{ padding: "8px 20px", fontSize: 13, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", display: "inline-block" }}>
+                              Apply
+                            </a>
+                            <button onClick={() => setExpandedCCDetails(isExpanded ? null : sc.card.id)}
+                              style={{ padding: "8px 16px", fontSize: 12, color: "#555", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer" }}>
+                              {isExpanded ? "Hide details" : "Details"}
+                            </button>
+                          </div>
+
+                          {isExpanded && (
+                            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 6 }}>Key Benefits</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                {sc.card.key_benefits.map((b, i) => (
+                                  <div key={i} style={{ fontSize: 12, color: "#666" }}>• {b}</div>
+                                ))}
+                              </div>
+                              {sc.card.is_hotel_card && (
+                                <div style={{ fontSize: 11, color: "#d97706", marginTop: 8 }}>
+                                  Hotel points valued at 0.5&cent; per point
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* ── Accounts open (kept open + standalone accounts) ── */}
             {(() => {
