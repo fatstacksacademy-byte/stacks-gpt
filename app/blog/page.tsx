@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { blogPosts } from "../../lib/data/blogPosts"
+import NewsletterCTA from "./components/NewsletterCTA"
 
 const YT = "https://www.youtube.com/@nathanielbooth"
 
@@ -79,6 +80,11 @@ export default function BlogIndex() {
             </div>
           </Link>
         </div>
+      </section>
+
+      {/* Newsletter */}
+      <section style={{ maxWidth: 600, margin: "0 auto", padding: "0 24px 40px" }}>
+        <NewsletterCTA />
       </section>
 
       {/* Checking Bonuses */}
