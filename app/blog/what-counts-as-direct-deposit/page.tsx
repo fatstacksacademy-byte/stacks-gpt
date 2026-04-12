@@ -33,11 +33,11 @@ export const metadata: Metadata = {
 const faqItems = [
   {
     q: "Does Zelle count as a direct deposit?",
-    a: "At most banks, Zelle does NOT count as a direct deposit. The major exception is Citi, which explicitly includes Zelle incoming transfers as part of their Enhanced Direct Deposit (EDD) requirement. At Chase, Wells Fargo, U.S. Bank, and most others, Zelle transfers will not trigger the direct deposit requirement.",
+    a: "At most banks, Zelle does NOT count as a direct deposit. The major exception is Citi, which explicitly includes Zelle incoming transfers as part of their Enhanced Direct Deposit (EDD) requirement (30+ confirmed data points). Capital One also has data points showing Zelle works. At Chase, Wells Fargo, U.S. Bank, Bank of America, and most others, Zelle transfers will not trigger the direct deposit requirement.",
   },
   {
     q: "Can I use a transfer from another bank as a direct deposit?",
-    a: "It depends on the bank. Some banks like SoFi and Chime accept most incoming ACH transfers as direct deposits, even if they are not payroll. Other banks like Chase specifically require payroll, pension, or government benefit deposits. Pushing an ACH transfer from a brokerage like Fidelity or Schwab works at many banks but not all.",
+    a: "It depends on the bank. Capital One, Bank of America, SoFi, Chime, and Citi accept most incoming ACH transfers as direct deposits. Chase is stricter but Fidelity ACH pushes still work there. U.S. Bank and BCU are the strictest — only payroll and government deposits qualify. Pushing from Fidelity works at the most banks, with 60+ data points at both BofA and Capital One.",
   },
   {
     q: "What is the difference between ACH and direct deposit?",
@@ -45,7 +45,7 @@ const faqItems = [
   },
   {
     q: "Does PayPal or Venmo count as a direct deposit?",
-    a: "At Citi, yes. Citi explicitly includes P2P ACH transfers from Venmo and PayPal as qualifying Enhanced Direct Deposits. At most other banks, PayPal and Venmo transfers do not count. Some fintech banks like SoFi and Chime may accept them since they tend to count any incoming ACH, but results are inconsistent.",
+    a: "At Citi, yes — both PayPal and Venmo ACH transfers explicitly count as Enhanced Direct Deposits. Capital One also accepts Venmo (10+ data points) and PayPal transfers. At Chase, Bank of America, Wells Fargo, U.S. Bank, and PNC, PayPal and Venmo do not count. SoFi and Chime may accept them since they tend to count most incoming ACH, but results are inconsistent.",
   },
   {
     q: "How long does a direct deposit take to post for a bank bonus?",
@@ -223,13 +223,16 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Chase ($400 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Payroll, pension, or government benefits deposited via ACH, RTP, or FedNow. Visa and Mastercard debit network deposits also qualify.
+              <span style={highlight}>What counts:</span> Payroll, pension, or government benefits deposited via ACH, RTP, or FedNow. Fidelity ACH push is the most reliable workaround (many confirmed data points). PenFed, Elements Financial, Barclays Online Savings, and TreasuryDirect ACH pushes also work. Square business payouts and DoorDash/Uber payouts have been reported as working.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> Zelle transfers, cash deposits, mobile check deposits, wire transfers, interest payments, and micro-deposits. Person-to-person transfers and bank-to-bank ACH pushes generally do not work unless they carry a payroll SEC code.
+              <span style={{ color: "#d97706", fontWeight: 600 }}>Mixed results:</span> Schwab (checking does not work, brokerage mostly not working), E*TRADE, Robinhood, TopCashback, Vanguard, Wells Fargo, Discover Savings, and Wise all have inconsistent results with recent failures trending upward.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000 total direct deposits within 90 days of coupon enrollment. Chase is one of the stricter banks. Stick with actual payroll for the most reliable results.
+              <span style={warning}>What does NOT count:</span> Ally, Alliant, Capital One, Bank of America, Coinbase, IRS tax refunds, PayPal, Venmo, Zelle, USAA, cash deposits, check deposits, wire transfers, and micro-deposits.
+            </p>
+            <p style={{ ...bankDetail, marginTop: 6 }}>
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000 total direct deposits within 90 days of coupon enrollment. Chase is one of the stricter banks but Fidelity ACH push remains a reliable workaround.
             </p>
           </div>
 
@@ -237,13 +240,13 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Citi ($325 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Citi uses &quot;Enhanced Direct Deposit&quot; (EDD), which is one of the broadest definitions available. Payroll ACH, government benefits, <strong style={{ color: "#111" }}>Zelle incoming transfers</strong>, and <strong style={{ color: "#111" }}>P2P ACH from Venmo and PayPal</strong> all qualify.
+              <span style={highlight}>What counts:</span> Citi uses &quot;Enhanced Direct Deposit&quot; (EDD), which is the broadest definition available. Payroll ACH, government benefits, <strong style={{ color: "#111" }}>Zelle incoming transfers (30+ data points)</strong>, <strong style={{ color: "#111" }}>P2P ACH from Venmo and PayPal</strong>, and ACH pushes from virtually every bank and brokerage all qualify. Confirmed working sources include Fidelity (50+ DPs), Chase (35+ DPs), Ally (25+ DPs), Capital One (20+ DPs), SoFi (20+ DPs), Discover, Schwab, Wells Fargo, USAA, Robinhood, Truist, and Bluevine.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
               <span style={warning}>What does NOT count:</span> Instant transfers from Venmo/PayPal (must be standard ACH speed), wire transfers, cash deposits, check deposits, and Citi-to-Citi internal transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2 EDD deposits totaling $3,000+ within 90 days. Citi is the easiest major bank to satisfy because Zelle and Venmo/PayPal ACH transfers count.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2 EDD deposits totaling $3,000+ within 90 days. Citi is the easiest major bank to satisfy — almost any incoming ACH transfer counts.
             </p>
           </div>
 
@@ -293,13 +296,16 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Bank of America (Up to $500 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Payroll, pension, and government benefit ACH deposits qualify. Some data points indicate ACH pushes from Fidelity and Schwab have triggered the requirement, but results are inconsistent.
+              <span style={highlight}>What counts:</span> BofA is one of the most lenient major banks. Payroll and government benefits qualify, plus ACH pushes from <strong style={{ color: "#111" }}>Fidelity (69 DPs), Ally (34 DPs), Chase (36 DPs), AmEx Serve (32 DPs), SoFi (28 DPs)</strong>, Capital One (10 DPs), Discover, PenFed, Wise, USAA, AmEx Bluebird, PNC, HSBC, Fifth Third, TreasuryDirect, and U.S. Bank. You do not need to change your payroll to earn this bonus.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> Zelle, P2P transfers, wire transfers, and internal Bank of America transfers.
+              <span style={{ color: "#d97706", fontWeight: 600 }}>Mixed results:</span> Schwab (5 work / 3 don&apos;t), Wealthfront (4/2), Robinhood (4/3), E*TRADE (3/1), Coinbase (4/3), Alliant (2/1).
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Tiered bonus based on total DD: $100 at $2,000, $300 at $5,000, $500 at $10,000+ within 90 days.
+              <span style={warning}>What does NOT count:</span> PayPal (used to work, no longer does), Venmo, Zelle, Vanguard, wire transfers, and internal Bank of America transfers.
+            </p>
+            <p style={{ ...bankDetail, marginTop: 6 }}>
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Tiered bonus based on total DD: $100 at $2,000, $300 at $5,000, $500 at $10,000+ within 90 days. Easy to hit with ACH pushes from multiple accounts.
             </p>
           </div>
 
@@ -335,10 +341,10 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Capital One ($300 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Payroll and employer direct deposits. Capital One generally looks for standard payroll-coded ACH. Some data points indicate ACH pushes from certain banks and brokerages may work, but results vary.
+              <span style={highlight}>What counts:</span> Capital One is one of the most lenient banks. Payroll and government benefits qualify, plus ACH pushes from virtually every source: <strong style={{ color: "#111" }}>Schwab (60+ DPs), Fidelity (60+ DPs)</strong>, Ally (30+ DPs), Chase (40+ DPs), SoFi (15+ DPs), Venmo (10+ DPs), Vanguard, PayPal, Discover Savings, Marcus, Wise, Cash App, Wells Fargo, E*TRADE, and even Zelle have all been confirmed.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> Zelle, P2P transfers, wire transfers, and internal Capital One transfers.
+              <span style={warning}>What does NOT count:</span> Internal Capital One transfers and USAA. Almost everything else works.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
               <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> Two deposits of $500+ each within 75 days using promo code OFFER300.
@@ -349,10 +355,13 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>PNC Bank ($400 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Qualifying direct deposits including payroll and government benefits. PNC has moderate strictness. Some ACH pushes have worked, but payroll is the safest route.
+              <span style={highlight}>What counts:</span> Payroll and government benefits. PNC is moderately lenient with ACH pushes — Alliant (19+ data points) and Ally (12+ DPs) are the most reliable workarounds. AmEx Serve and Bluebird also work.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> Zelle, wire transfers, mobile deposits, and internal PNC transfers.
+              <span style={{ color: "#d97706", fontWeight: 600 }}>Mixed results:</span> Fidelity and Schwab ACH pushes have had some success but PNC has tightened requirements over time.
+            </p>
+            <p style={{ ...bankDetail, marginTop: 6 }}>
+              <span style={warning}>What does NOT count:</span> PayPal, Venmo, Zelle, wire transfers, mobile deposits, and internal PNC transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
               <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $5,000+ in qualifying direct deposits within 60 days for the $400 Performance Select tier.
@@ -371,10 +380,11 @@ export default function WhatCountsAsDirectDeposit() {
           This is the most widely used workaround. Transferring money from a brokerage account at Fidelity, Charles Schwab, or similar institutions initiates an ACH push that many banks count as a direct deposit. Fidelity in particular is known for coding their outgoing ACH transfers in a way that triggers direct deposit credit at a large number of banks.
         </p>
         <ul style={{ padding: "0 0 0 20px", margin: "0 0 16px" }}>
-          <li style={listItem}><strong style={{ color: "#111" }}>Fidelity:</strong> Widely reported as the most reliable workaround. Works at SoFi, Chime, Wells Fargo (mixed), and many credit unions. Does not reliably work at Chase or U.S. Bank.</li>
-          <li style={listItem}><strong style={{ color: "#111" }}>Charles Schwab:</strong> Similar success rate to Fidelity. ACH pushes from Schwab brokerage or checking accounts have triggered DD at multiple banks.</li>
-          <li style={listItem}><strong style={{ color: "#111" }}>E*TRADE:</strong> Some success reported but less consistent than Fidelity or Schwab.</li>
-          <li style={listItem}><strong style={{ color: "#111" }}>Robinhood:</strong> ACH pushes from Robinhood have worked at some fintech banks but generally not at traditional banks.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Fidelity:</strong> The most reliable workaround with hundreds of confirmed data points. Works at Bank of America (60+ DPs), Capital One (60+ DPs), Citi (50+ DPs), Chase (many DPs, some recent failures), SoFi, Chime, PNC (mixed), and most credit unions. Does not reliably work at U.S. Bank or BCU.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Charles Schwab:</strong> Extremely reliable at Capital One (60+ DPs) and Citi. Mixed results at Chase (brokerage mostly not working) and Bank of America. Does not work at U.S. Bank.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Ally ACH push:</strong> Confirmed working at Bank of America (30+ DPs), Capital One (30+ DPs), Citi (25+ DPs), and PNC (12+ DPs). Does not work at Chase.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>E*TRADE:</strong> Some success at Chase and Capital One, but inconsistent overall.</li>
+          <li style={listItem}><strong style={{ color: "#111" }}>Robinhood:</strong> Works at Citi and Capital One. Mixed results at Chase with recent failures. Does not reliably work at traditional banks.</li>
         </ul>
 
         <h3 style={subHeading}>Employer Payroll Splitting</h3>
@@ -448,19 +458,19 @@ export default function WhatCountsAsDirectDeposit() {
         <div style={{ border: "1px solid #f0f0f0", borderRadius: 12, overflow: "hidden", marginTop: 16, marginBottom: 32 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#ff6b6b" }}>STRICT</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Chase, U.S. Bank, Teachers FCU -- Payroll/government only; ACH pushes rarely work</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>U.S. Bank, Teachers FCU, BCU -- Payroll/government only; ACH pushes do not work</span>
           </div>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#f0c040" }}>MODERATE</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Wells Fargo, Bank of America, PNC, Capital One, BMO -- Payroll preferred; some ACH pushes work</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Chase, Wells Fargo, PNC, BMO -- Payroll preferred; Fidelity and select ACH pushes work at Chase; Alliant/Ally work at PNC</span>
           </div>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>LENIENT</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>SoFi, Chime, Varo -- Most incoming ACH credits count</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Bank of America, Capital One, SoFi, Chime, Varo -- Most ACH pushes from banks and brokerages count</span>
           </div>
           <div style={{ padding: "16px 24px" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>BROADEST</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Citi (EDD) -- Zelle, Venmo, PayPal ACH, and payroll all count</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Citi (EDD) -- Zelle, Venmo, PayPal ACH, and virtually any incoming ACH all count</span>
           </div>
         </div>
 
