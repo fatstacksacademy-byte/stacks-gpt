@@ -5,6 +5,8 @@ import CheckpointNav from "../../components/CheckpointNav"
 import { getSpendingCards, addSpendingCard, updateSpendingCard, deleteSpendingCard, SpendingCard, SPENDING_CATEGORIES, CATEGORY_LABELS } from "../../../lib/spendingCards"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { createClient } from "../../../lib/supabase/client"
+import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
+import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const todayStr = () => new Date().toISOString().split("T")[0]
@@ -24,6 +26,8 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [showProfile, setShowProfile] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showAdvancedModal, setShowAdvancedModal] = useState(false)
+  const [showRecommendations, setShowRecommendations] = useState(true)
+  const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -129,6 +133,28 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const totalEarned = completedCards.reduce((s, c) => s + (c.actual_value ?? c.expected_value ?? 0), 0)
   const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
   const plannedValue = plannedCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
+
+  // Sequencer: filter out cards user is already tracking
+  const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000)
+    .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
+
+  function addFromRecommendation(sc: (typeof ccSequence)[0]) {
+    const c = sc.card
+    const deadlineDate = new Date()
+    deadlineDate.setMonth(deadlineDate.getMonth() + c.spend_months)
+    resetForm()
+    setFCardName(c.card_name)
+    setFIssuer(c.issuer)
+    setFSignupBonus(String(Math.round(c.bonus_amount * c.cpp_value)))
+    setFAnnualFee(String(c.annual_fee_waived_first_year ? 0 : c.annual_fee))
+    setFSpendReq(String(c.min_spend))
+    setFSpendDeadline(deadlineDate.toISOString().split("T")[0])
+    setFExpectedValue(String(Math.round(sc.net_value)))
+    setFStatus("planned")
+    setFNotes(`${c.bonus_amount.toLocaleString()} ${c.bonus_currency}${c.is_hotel_card ? " (hotel — 0.5 cpp)" : ""}\n${c.offer_link}`)
+    setShowAdd(true)
+  }
 
   // Can the user hit the spend requirement for active cards?
   function canHitSpend(c: SpendingCard): { canHit: boolean; monthsNeeded: number } {
@@ -273,6 +299,92 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
             <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(totalEarned)}</div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedCards.length} completed</div>
           </div>
+        </div>
+
+        {/* ── Recommended Cards (sequencer) ── */}
+        <div style={{ marginBottom: 28 }}>
+          <button onClick={() => setShowRecommendations(!showRecommendations)}
+            style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: showRecommendations ? 12 : 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Recommended Next Cards</div>
+            <span style={{ fontSize: 10, color: "#999" }}>{showRecommendations ? "▲" : "▼"}</span>
+            <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600, background: "#f0faf5", padding: "2px 8px", borderRadius: 99 }}>
+              {formatCurrency(ccSequence.reduce((s, c) => s + c.net_value, 0))} available
+            </span>
+          </button>
+
+          {showRecommendations && (
+            <>
+              <div style={{ fontSize: 12, color: "#999", marginBottom: 12 }}>
+                Ranked by return per month at {money(monthlySpend || 2000)}/mo spend. Points at 1&cent; (0.5&cent; hotel). Net = bonus - fee + year-1 credits.
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {ccSequence.slice(0, 15).map((sc, idx) => {
+                  const isExpanded = expandedRecCard === sc.card.id
+                  const accentColor = sc.card.card_type === "business" ? "#7c3aed" : "#2563eb"
+                  return (
+                    <div key={sc.card.id} style={{
+                      background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 20px",
+                      borderLeft: `3px solid ${accentColor}`,
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, minWidth: 180 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                            <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700 }}>#{idx + 1}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{sc.card.card_name}</span>
+                            {sc.card.card_type === "business" && (
+                              <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 12, color: "#555" }}>
+                            {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
+                            {sc.card.min_spend > 0 && <span style={{ color: "#999" }}> · ${sc.card.min_spend.toLocaleString()} in {sc.card.spend_months}mo</span>}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                            AF: {sc.card.annual_fee === 0 ? <span style={{ color: "#0d7c5f" }}>$0</span> : <span>${sc.card.annual_fee}{sc.card.annual_fee_waived_first_year ? " (waived Y1)" : ""}</span>}
+                            {sc.card.statement_credits_year1 > 0 && <span> · Credits: ${sc.card.statement_credits_year1}</span>}
+                            <span> · Cum: {formatCurrency(sc.cumulative_value)} in {sc.cumulative_months}mo</span>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{formatCurrency(sc.net_value)}</div>
+                          <div style={{ fontSize: 10, color: "#999" }}>{formatCurrency(sc.return_per_month)}/mo · {sc.months_to_complete.toFixed(1)}mo</div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                        <a href={sc.card.offer_link} target="_blank" rel="noreferrer"
+                          style={{ padding: "5px 14px", fontSize: 12, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 6, textDecoration: "none", display: "inline-block" }}>
+                          Apply
+                        </a>
+                        <button onClick={() => addFromRecommendation(sc)}
+                          style={{ padding: "5px 14px", fontSize: 12, fontWeight: 600, color: "#0d7c5f", background: "none", border: "1px solid #0d7c5f", borderRadius: 6, cursor: "pointer" }}>
+                          + Add to planned
+                        </button>
+                        <button onClick={() => setExpandedRecCard(isExpanded ? null : sc.card.id)}
+                          style={{ padding: "5px 12px", fontSize: 11, color: "#999", background: "none", border: "1px solid #e8e8e8", borderRadius: 6, cursor: "pointer" }}>
+                          {isExpanded ? "Hide" : "Details"}
+                        </button>
+                      </div>
+                      {isExpanded && (
+                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f0f0f0", display: "flex", flexDirection: "column", gap: 2 }}>
+                          {sc.card.key_benefits.map((b, i) => (
+                            <div key={i} style={{ fontSize: 11, color: "#666" }}>• {b}</div>
+                          ))}
+                          {sc.card.is_hotel_card && (
+                            <div style={{ fontSize: 10, color: "#d97706", marginTop: 4 }}>Hotel points valued at 0.5&cent; per point</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                {ccSequence.length > 15 && (
+                  <div style={{ fontSize: 12, color: "#999", textAlign: "center", padding: 8 }}>
+                    + {ccSequence.length - 15} more cards available
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Active Cards */}
