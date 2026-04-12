@@ -28,6 +28,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [showAdvancedModal, setShowAdvancedModal] = useState(false)
   const [showRecommendations, setShowRecommendations] = useState(true)
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
+  const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -134,10 +135,13 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
   const plannedValue = plannedCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
 
-  // Sequencer: filter out cards user is already tracking
+  // Sequencer: filter out cards user is already tracking + airline/hotel toggle
+  const AIRLINE_CURRENCIES = new Set(["AAdvantage miles", "Alaska miles", "JetBlue TrueBlue", "United MileagePlus"])
+  const isAirlineOrHotel = (c: (typeof creditCardBonuses)[0]) => c.is_hotel_card || AIRLINE_CURRENCIES.has(c.bonus_currency)
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
+    .filter(sc => includeHotelAirline || !isAirlineOrHotel(sc.card))
 
   function addFromRecommendation(sc: (typeof ccSequence)[0]) {
     const c = sc.card
@@ -314,8 +318,23 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
 
           {showRecommendations && (
             <>
-              <div style={{ fontSize: 12, color: "#999", marginBottom: 12 }}>
-                Ranked by return per month at {money(monthlySpend || 2000)}/mo spend. Points at 1&cent; (0.5&cent; hotel). Net = bonus - fee + year-1 credits.
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+                <div style={{ fontSize: 12, color: "#999" }}>
+                  Ranked by return per month at {money(monthlySpend || 2000)}/mo spend. Points at 1&cent; (0.5&cent; hotel). Net = bonus - fee + year-1 credits.
+                </div>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
+                  <div onClick={() => setIncludeHotelAirline(!includeHotelAirline)}
+                    style={{
+                      width: 36, height: 20, borderRadius: 10, position: "relative",
+                      background: includeHotelAirline ? "#0d7c5f" : "#ddd", transition: "background 0.2s", cursor: "pointer",
+                    }}>
+                    <div style={{
+                      width: 16, height: 16, borderRadius: 8, background: "#fff", position: "absolute", top: 2,
+                      left: includeHotelAirline ? 18 : 2, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                    }} />
+                  </div>
+                  <span style={{ fontSize: 12, color: "#555" }}>Include airline &amp; hotel cards</span>
+                </label>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {ccSequence.slice(0, 15).map((sc, idx) => {
