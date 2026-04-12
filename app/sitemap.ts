@@ -10,6 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/blog/best-bank-account-bonuses-2026`, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/blog/best-checking-bonuses-2026`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
     { url: `${BASE}/blog/best-savings-bonuses-2026`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
+    { url: `${BASE}/blog/what-counts-as-direct-deposit`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/blog/bank-bonus-tax-guide-2026`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/blog/chexsystems-guide-bank-bonuses`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/login`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ]
 
