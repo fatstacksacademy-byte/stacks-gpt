@@ -243,6 +243,37 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
         )}
       </div>
 
+      {/* What Counts as Direct Deposit */}
+      {content?.ddMethods && content.ddMethods.length > 0 && (
+        <Section title="What Counts as Direct Deposit">
+          <p style={{ fontSize: 13, color: "#999", marginBottom: 16, lineHeight: 1.6 }}>
+            Based on community data points and bank terms. Employer payroll is always the safest method. &quot;Mixed&quot; means some users report success but it is not guaranteed.
+          </p>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden" }}>
+            {content.ddMethods.map((dd, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px",
+                borderBottom: i < content.ddMethods!.length - 1 ? "1px solid #f0f0f0" : "none",
+              }}>
+                <span style={{
+                  fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2,
+                  color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                }}>
+                  {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
+                </span>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 14, color: "#111", fontWeight: 500 }}>{dd.method}</span>
+                  {dd.notes && <div style={{ fontSize: 12, color: "#999", marginTop: 2, lineHeight: 1.5 }}>{dd.notes}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 12, fontSize: 12, color: "#bbb", lineHeight: 1.5 }}>
+            Source: <a href="https://www.doctorofcredit.com/knowledge-base/list-methods-banks-count-direct-deposits/" target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Doctor of Credit DD Methods Database</a>. Data points are community-reported and may change. Always verify with the bank.
+          </div>
+        </Section>
+      )}
+
       {/* Editorial content (summary, strategy, pros/cons, FAQs, related) */}
       {content && <EditorialContent content={content} bonusType="checking" />}
 
