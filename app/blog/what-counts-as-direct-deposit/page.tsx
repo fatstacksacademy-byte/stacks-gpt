@@ -268,13 +268,13 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>Wells Fargo ($400 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> Wells Fargo uses the term &quot;qualifying electronic deposits&quot; rather than strict direct deposit. Payroll, pension, government benefits, and some employer-initiated ACH deposits qualify. Data points suggest that ACH pushes from some brokerages and banks may also trigger the requirement.
+              <span style={highlight}>What counts:</span> Wells Fargo uses the broad term &quot;qualifying electronic deposits&quot; and is one of the more lenient major banks. Payroll, government benefits, and ACH pushes from <strong style={{ color: "#111" }}>Alliant, Ally, Fidelity, Schwab, Chase, Capital One, Discover, SoFi, AmEx Serve, AmEx Bluebird, and PNC</strong> all count. You do not need to change your payroll.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> Zelle transfers, wire transfers, ATM deposits, and internal Wells Fargo transfers do not qualify. The terms are somewhat vague, so payroll is the safest option.
+              <span style={warning}>What does NOT count:</span> PayPal, Venmo, Zelle, wire transfers, ATM deposits, and internal Wells Fargo transfers.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000+ in qualifying electronic deposits within 90 days of account opening.
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> $1,000+ in qualifying electronic deposits within 90 days of account opening. Easy to hit with one ACH push.
             </p>
           </div>
 
@@ -282,13 +282,16 @@ export default function WhatCountsAsDirectDeposit() {
           <div style={bankCard}>
             <div style={bankName}>U.S. Bank ($450 Checking Bonus)</div>
             <p style={bankDetail}>
-              <span style={highlight}>What counts:</span> ACH payroll and government benefit deposits qualify. U.S. Bank is one of the <strong style={{ color: "#111" }}>stricter banks</strong> and explicitly states that P2P payments and other electronic deposits do not qualify.
+              <span style={highlight}>What counts:</span> Payroll, government benefits, and ACH pushes from <strong style={{ color: "#111" }}>Alliant, Ally, Fidelity, Chase, Capital One, Discover, Wells Fargo, SoFi, Marcus, and AmEx Serve</strong> all qualify. U.S. Bank is moderately lenient — most standard bank ACH pushes trigger DD credit.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={warning}>What does NOT count:</span> P2P payments (Zelle, Venmo, PayPal), bank-to-bank ACH transfers, wire transfers, cash deposits, and check deposits. ACH pushes from brokerages have mixed results.
+              <span style={{ color: "#d97706", fontWeight: 600 }}>Mixed results:</span> Schwab has inconsistent data points.
             </p>
             <p style={{ ...bankDetail, marginTop: 6 }}>
-              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2+ direct deposits totaling $8,000+ within 90 days for the top $450 tier. Use actual payroll here.
+              <span style={warning}>What does NOT count:</span> PayPal, Venmo, Zelle, wire transfers, cash deposits, and check deposits.
+            </p>
+            <p style={{ ...bankDetail, marginTop: 6 }}>
+              <span style={{ color: "#111", fontWeight: 600 }}>Requirement:</span> 2+ direct deposits totaling $8,000+ within 90 days for the top $450 tier.
             </p>
           </div>
 
@@ -458,15 +461,15 @@ export default function WhatCountsAsDirectDeposit() {
         <div style={{ border: "1px solid #f0f0f0", borderRadius: 12, overflow: "hidden", marginTop: 16, marginBottom: 32 }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#ff6b6b" }}>STRICT</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>U.S. Bank, Teachers FCU, BCU -- Payroll/government only; ACH pushes do not work</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Teachers FCU, BCU -- Payroll/government only; ACH pushes do not work</span>
           </div>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#f0c040" }}>MODERATE</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Chase, Wells Fargo, PNC, BMO -- Payroll preferred; Fidelity and select ACH pushes work at Chase; Alliant/Ally work at PNC</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Chase, PNC -- Fidelity and select ACH pushes work at Chase; Alliant/Ally work at PNC</span>
           </div>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #f0f0f0" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>LENIENT</span>
-            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Bank of America, Capital One, SoFi, Chime, Varo -- Most ACH pushes from banks and brokerages count</span>
+            <span style={{ fontSize: 14, color: "#555", marginLeft: 12 }}>Bank of America, Capital One, Wells Fargo, U.S. Bank, BMO, SoFi, Chime, Varo -- Most ACH pushes from banks and brokerages count</span>
           </div>
           <div style={{ padding: "16px 24px" }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>BROADEST</span>
