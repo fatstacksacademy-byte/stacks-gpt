@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:bonuses": "tsx scripts/verify-bonuses/run.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -17,13 +18,17 @@
     "stripe": "^20.4.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "p-limit": "^7.3.0",
+    "playwright": "^1.59.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

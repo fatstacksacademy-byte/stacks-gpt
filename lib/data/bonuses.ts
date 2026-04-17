@@ -5500,8 +5500,8 @@ export const bonuses: any[] = [
       "billpay_required": null,
       "other_requirements_text": "Open new Premier eChecking; establish $500+ monthly recurring DD for 3 consecutive months AND 15 debit card purchases (PIN or signature) per month for 3 consecutive months, all within 120 days of account opening."
     },
-    "fees": { "monthly_fee": 8, "monthly_fee_waiver_text": "Waived with $500+ monthly direct deposit or $200 average daily balance.", "early_closure_fee": 0 },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull reported." },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $500+ monthly direct deposit or $200 average daily balance.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull reported. Verified from nasafcu.com: $10/mo fee (DoC was outdated at $8)." },
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
