@@ -294,26 +294,135 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
           </div>
         )}
 
-        {/* Summary Cards */}
-        <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Current annual yield</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(Math.round(currentAnnualYield))}</div>
-            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{currentApy > 0 ? pct(currentApy) : "No APY set"} on {money(currentBalance)}</div>
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Potential upside</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: delta > 0 ? "#0d7c5f" : "#111", marginTop: 2 }}>
-              {delta > 0 ? "+" : ""}{money(Math.round(delta))}
-            </div>
-            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeEntries.length + plannedEntries.length} opportunities</div>
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(totalEarned)}</div>
-            <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedEntries.length} completed</div>
-          </div>
-        </div>
+        {/* ── Projection Hero ── */}
+        {(() => {
+          const balance = currentBalance || 50000
+          const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
+          const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
+          let y1Bonus = 0, y1Interest = 0, y2Bonus = 0, y2Interest = 0
+          for (const e of year1Entries) { y1Bonus += e.bonus_amount; y1Interest += e.interest_earned }
+          for (const e of year2Entries) { y2Bonus += e.bonus_amount; y2Interest += e.interest_earned }
+          const y1Total = y1Bonus + y1Interest
+          const y2Total = y2Bonus + y2Interest
+          const taxRate = 0.20
+          const taxReserve = Math.round((y1Total + totalEarned) * taxRate)
+
+          function addDaysToDate(d: Date, n: number) { const r = new Date(d); r.setDate(r.getDate() + n); return r }
+          function fmtShortDate(d: Date) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) }
+          const today = new Date()
+
+          return (
+            <>
+              {/* Big number at top */}
+              <div style={{ background: "#f0faf5", border: "2px solid #0d7c5f", borderRadius: 14, padding: "24px 28px", marginBottom: 20 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>12-Month Projected Earnings</div>
+                    <div style={{ fontSize: 36, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>{money(y1Total)}</div>
+                    <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+                      {money(y1Bonus)} in bonuses + {money(y1Interest)} interest on {money(balance)}
+                      {year1Entries.length > 0 && ` · ${year1Entries.length} rotation${year1Entries.length !== 1 ? "s" : ""}`}
+                    </div>
+                    {y1Total > 0 && (
+                      <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+                        Effective return: <span style={{ color: "#0d7c5f", fontWeight: 700 }}>{(y1Total / balance * 100).toFixed(1)}%</span> vs {currentApy > 0 ? pct(currentApy) : "0%"} HYSA
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    {y2Total > 0 && (
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 600 }}>Year 2</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{money(y2Total)}</div>
+                      </div>
+                    )}
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 600 }}>Earned so far</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(totalEarned)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax reserve line */}
+                {(y1Total > 0 || totalEarned > 0) && (
+                  <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #a7f3d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontSize: 12, color: "#888" }}>
+                      Estimated tax reserve (20%): <span style={{ color: "#d97706", fontWeight: 600 }}>{money(taxReserve)}</span>
+                      <span style={{ color: "#bbb" }}> on {money(y1Total + totalEarned)} total earnings</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Collapsible breakdown */}
+                {year1Entries.length > 0 && (
+                  <details style={{ marginTop: 12 }}>
+                    <summary style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", cursor: "pointer" }}>Show full breakdown</summary>
+                    <div style={{ marginTop: 12, overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ borderBottom: "1px solid #a7f3d0" }}>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>#</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bank</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Open</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Close</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Deposit</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bonus</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Interest</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Total</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Eff. APY</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...year1Entries, ...year2Entries].map((e, i) => (
+                            <tr key={e.id} style={{ borderBottom: "1px solid #e8f5e9", background: e.start_day >= 365 ? "#fafafa" : "transparent" }}>
+                              <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
+                              <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
+                              <td style={{ padding: "8px", color: "#555" }}>{fmtShortDate(addDaysToDate(today, e.start_day))}</td>
+                              <td style={{ padding: "8px", color: "#555" }}>{fmtShortDate(addDaysToDate(today, e.end_day))}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.deposit)}</td>
+                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 600 }}>{money(e.bonus_amount)}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.interest_earned)}</td>
+                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(e.total_earnings)}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{(e.effective_apy * 100).toFixed(1)}%</td>
+                            </tr>
+                          ))}
+                          <tr style={{ background: "#e6f5f0" }}>
+                            <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Total</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(y1Bonus + y2Bonus)}</td>
+                            <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(y1Interest + y2Interest)}</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 800 }}>{money(y1Total + y2Total)}</td>
+                            <td style={{ padding: "8px" }}></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </details>
+                )}
+              </div>
+
+              {/* Summary Cards */}
+              <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Current annual yield</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(Math.round(currentAnnualYield))}</div>
+                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{currentApy > 0 ? pct(currentApy) : "No APY set"} on {money(currentBalance)}</div>
+                </div>
+                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Potential upside</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: delta > 0 ? "#0d7c5f" : "#111", marginTop: 2 }}>
+                    {delta > 0 ? "+" : ""}{money(Math.round(delta))}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{activeEntries.length + plannedEntries.length} opportunities</div>
+                </div>
+                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Earned</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>{money(totalEarned)}</div>
+                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedEntries.length} completed</div>
+                </div>
+              </div>
+            </>
+          )
+        })()}
 
         {/* ── Recommended Savings Bonuses ── */}
         {sequencerResult.entries.length > 0 && (
@@ -460,8 +569,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
 
-            {/* 12-Month Projection Table */}
-            {sequencerResult.entries.length > 0 && (() => {
+            {/* Old projection removed — now at top of page */}
+            {false && sequencerResult.entries.length > 0 && (() => {
               const balance = currentBalance || 50000
               const today = new Date()
               const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
