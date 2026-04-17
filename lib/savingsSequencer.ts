@@ -128,37 +128,81 @@ export function runSavingsSequencer({
   // Sort by effective APY descending
   candidates.sort((a, b) => b.effectiveApy - a.effectiveApy)
 
-  // Build sequential rotation plan
+  // Build parallel deployment plan
+  // At each time step, deploy capital across as many bonuses as possible
   const entries: SavingsSequencedEntry[] = []
+  const remaining = [...candidates]
+  let rotation = 0
+
+  // Track active deployments: when capital frees up
+  type ActiveDeploy = { endDay: number; amount: number }
+  const active: ActiveDeploy[] = []
   let currentDay = 0
 
-  for (let i = 0; i < candidates.length; i++) {
-    const { bonus, tier, effectiveApy, interestEarned, totalEarnings } = candidates[i]
-    const startDay = currentDay
-    const endDay = startDay + bonus.total_hold_days
+  while (remaining.length > 0) {
+    // Free up any capital from ended deployments
+    const freed = active.filter(a => a.endDay <= currentDay)
+    for (const f of freed) active.splice(active.indexOf(f), 1)
 
-    entries.push({
-      id: bonus.id,
-      bank_name: bonus.bank_name,
-      deposit: tier.min_deposit,
-      bonus_amount: tier.bonus_amount,
-      base_apy: bonus.base_apy,
-      interest_earned: interestEarned,
-      total_earnings: totalEarnings,
-      effective_apy: effectiveApy,
-      hold_days: bonus.total_hold_days,
-      tier,
-      bonus,
-      start_day: startDay,
-      end_day: endDay,
-      rotation: i + 1,
-    })
+    // Available capital = total balance minus what's currently locked
+    const locked = active.reduce((s, a) => s + a.amount, 0)
+    let freeCapital = availableBalance - locked
 
-    currentDay = endDay
+    // Try to deploy to multiple bonuses simultaneously
+    const toRemove: number[] = []
+    for (let i = 0; i < remaining.length; i++) {
+      const { bonus, tier, effectiveApy, interestEarned, totalEarnings } = remaining[i]
+      if (tier.min_deposit > freeCapital) continue
+
+      rotation++
+      const startDay = currentDay
+      const endDay = startDay + bonus.total_hold_days
+
+      entries.push({
+        id: bonus.id,
+        bank_name: bonus.bank_name,
+        deposit: tier.min_deposit,
+        bonus_amount: tier.bonus_amount,
+        base_apy: bonus.base_apy,
+        interest_earned: interestEarned,
+        total_earnings: totalEarnings,
+        effective_apy: effectiveApy,
+        hold_days: bonus.total_hold_days,
+        tier,
+        bonus,
+        start_day: startDay,
+        end_day: endDay,
+        rotation,
+      })
+
+      active.push({ endDay, amount: tier.min_deposit })
+      freeCapital -= tier.min_deposit
+      toRemove.push(i)
+    }
+
+    // Remove deployed candidates
+    for (let i = toRemove.length - 1; i >= 0; i--) remaining.splice(toRemove[i], 1)
+
+    if (toRemove.length === 0) {
+      // No bonuses could be deployed — advance to the next capital release
+      if (active.length > 0) {
+        const nextFree = Math.min(...active.map(a => a.endDay))
+        currentDay = nextFree
+      } else {
+        // No active deployments and can't deploy anything — skip remaining
+        for (const r of remaining) {
+          skipped.push({ bank_name: r.bonus.bank_name, reason: `Need $${r.tier.min_deposit.toLocaleString()} but only $${freeCapital.toLocaleString()} available` })
+        }
+        break
+      }
+    }
   }
 
+  // Sort entries by start_day for clean display
+  entries.sort((a, b) => a.start_day - b.start_day || b.effective_apy - a.effective_apy)
+
   const totalEarnings = entries.reduce((s, e) => s + e.total_earnings, 0)
-  const totalDays = entries.length > 0 ? entries[entries.length - 1].end_day : 0
+  const totalDays = entries.length > 0 ? Math.max(...entries.map(e => e.end_day)) : 0
 
   return { entries, total_earnings: totalEarnings, total_days: totalDays, skipped }
 }

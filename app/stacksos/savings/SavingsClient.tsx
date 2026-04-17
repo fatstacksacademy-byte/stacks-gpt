@@ -343,13 +343,12 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                   </div>
                 </div>
 
-                {/* Tax reserve line */}
+                {/* Tax link */}
                 {(y1Total > 0 || totalEarned > 0) && (
-                  <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #a7f3d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: 12, color: "#888" }}>
-                      Estimated tax reserve (20%): <span style={{ color: "#d97706", fontWeight: 600 }}>{money(taxReserve)}</span>
-                      <span style={{ color: "#bbb" }}> on {money(y1Total + totalEarned)} total earnings</span>
-                    </div>
+                  <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #a7f3d0" }}>
+                    <a href="/stacksos/taxes" style={{ fontSize: 12, color: "#d97706", textDecoration: "none", fontWeight: 600 }}>
+                      View tax summary &rarr;
+                    </a>
                   </div>
                 )}
 
