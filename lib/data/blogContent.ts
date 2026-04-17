@@ -876,6 +876,130 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: ["chime-100-checking-bonus", "affinity-federal-credit-union-100-checking-bonus"],
   },
 
+  // ─── STATE-SPECIFIC / REGIONAL CHECKING BONUSES ────────────────
+
+  "wintrust-500-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "Must be $2,000+ per month for 2 consecutive months." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed", notes: "Wintrust-specific data is limited." },
+      { method: "Ally ACH push", works: "mixed" },
+      { method: "Schwab ACH push", works: "mixed" },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Wintrust Bank offers a $500 checking bonus for $2,000+ monthly direct deposits over 2 consecutive months. Available in IL, FL, WI, IN, and MI. No monthly fee, no early closure fee. Also has a $200 savings bonus for $15k deposits.",
+    strategy: "Open Total Access Checking and set up $2,000+/month in direct deposits. The qualifying months start after the first calendar month your account is open. Enroll in online banking and eStatements. The $300 tier requires $500/month instead.",
+    bestFor: "People in IL, FL, WI, IN, or MI who can route $2,000+/month in direct deposits. The $500 bonus with no fees makes this one of the best regional offers available.",
+    pros: ["$500 bonus — highest regional offer", "No monthly fee", "No early closure fee", "Available in 5 states", "$200 savings bonus stackable"],
+    cons: ["$2,000/month DD for 2 months is a higher ongoing commitment", "Must enroll in online banking + eStatements", "Lifetime limit — one bonus per customer"],
+    comparison: "Wintrust's $500 matches BCU nationally but is easier — no transaction requirement. Better than Huntington $400 for the same states. The no-fee structure beats most regional offers.",
+    faqs: [
+      { q: "Is Wintrust available outside Illinois?", a: "Yes — FL, WI, IN, and MI also qualify. Each state has its own application link." },
+      { q: "Can I also get the $200 savings bonus?", a: "Yes. Deposit $15,000+ during account opening month and maintain for 3 months." },
+    ],
+    relatedSlugs: ["bcu-500-checking-bonus", "huntington-400-checking-bonus"],
+  },
+
+  "huntington-400-perks-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "Just $500+ total DD in 90 days for the $400 tier." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Alliant ACH push", works: true },
+      { method: "Ally ACH push", works: true, notes: "Confirmed with multiple data points." },
+      { method: "Fidelity ACH push", works: true, notes: "Confirmed with multiple data points." },
+      { method: "Chase ACH push", works: true, notes: "Confirmed with multiple data points." },
+      { method: "Capital One ACH push", works: true },
+      { method: "PNC ACH push", works: true },
+      { method: "SoFi ACH push", works: true },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Huntington Bank's $400 Perks Checking bonus only requires $500 in direct deposits within 90 days — one of the lowest DD requirements for a $400+ bonus. Available in 13 states. The $600 Platinum Perks tier requires $25,000 in deposits.",
+    strategy: "Open Perks Checking and route $500+ in direct deposits within 90 days. That's it — one paycheck covers it. The bonus posts within 14 days of meeting requirements, which is very fast. To waive the $10/month fee, maintain $1,000 minimum balance.",
+    bestFor: "Anyone in the 13 covered states who wants a high-value bonus with minimal effort. The $500 DD requirement is the lowest of any $400 bonus.",
+    pros: ["$400 for just $500 DD — best effort-to-reward ratio", "Bonus posts in 14 days — very fast", "Available in 13 states", "No early closure fee", "24-month cooldown allows re-churning"],
+    cons: ["$10/month fee requires $1,000 balance to waive", "Must keep open 90 days", "State-restricted", "$600 tier requires $25k deposit"],
+    comparison: "Huntington's $400 for $500 DD is a better deal than Chase ($400 for $1,000 DD) on effort. The 14-day posting time matches Chase's speed. The $600 Platinum tier is only worth it if you have $25k to park.",
+    faqs: [
+      { q: "Which states have Huntington?", a: "OH, MI, IN, PA, KY, WV, IL, CO, MN, SC, WI, NC, TX." },
+      { q: "Is the $600 tier worth it?", a: "Only if you have $25,000 to deposit in 60 days. For most people, the $400 Perks tier is the better play." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "fifth-third-400-checking-bonus"],
+  },
+
+  "fifth-third-400-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "Just $500+ total DD in 90 days." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: true },
+      { method: "Ally ACH push", works: true },
+      { method: "Chase ACH push", works: true },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Fifth Third Bank's $400 Essential Checking bonus requires just $500 in direct deposits within 90 days — no monthly fee, no early closure fee, and the bonus posts within 10 business days. Available in 12 states. One of the simplest regional bonuses available.",
+    strategy: "Open Essential Checking and complete $500+ in direct deposits within 90 days. One paycheck handles it. The bonus posts within 10 business days — the fastest of any regional bank. No fee management needed.",
+    bestFor: "People in the 12 covered states who want a clean, no-fee $400 bonus with minimal effort. The 10-day posting time and $500 DD minimum make this one of the easiest bonuses period.",
+    pros: ["$400 bonus for just $500 DD", "No monthly fee on Essential Checking", "No early closure fee", "Bonus posts in ~10 business days — fastest regional", "Available in 12 states"],
+    cons: ["13-month cooldown", "May require proximity to branch", "State-restricted"],
+    comparison: "Nearly identical to Huntington ($400 for $500 DD) but with no monthly fee and faster posting (10 days vs 14). If you're in a state with both, do Fifth Third first for the cleaner experience.",
+    faqs: [
+      { q: "Which states have Fifth Third?", a: "AL, FL, GA, IL, IN, KY, MI, NC, OH, TN, WV, SC." },
+      { q: "Do I need to go in-branch?", a: "Some locations require in-branch opening. The online application may not be available in all areas." },
+    ],
+    relatedSlugs: ["huntington-400-checking-bonus", "chase-400-checking-bonus"],
+  },
+
+  "associated-bank-600-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "$500+ DD in 90 days required. P2P and external transfers do not qualify." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: false, notes: "Associated Bank explicitly excludes 'transfers from existing or external accounts.'" },
+      { method: "Ally ACH push", works: false, notes: "External account transfers do not qualify." },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Associated Bank offers up to $600 in checking bonuses — but the top tier requires maintaining $10,000+ in average daily balances for 60 days on top of $500 in direct deposits. The $300 tier at $1,000 balance is more achievable. Available in 9 Midwest states. Must keep open 12 months.",
+    strategy: "Open Access Checking ($25 min) by May 31, 2026 and complete $500+ in direct deposits within 90 days. Your bonus tier is based on average daily balance across all Associated accounts from days 31-90: $1k-$5k = $300, $5k-$10k = $400, $10k+ = $600. ACH pushes do NOT count — you need actual payroll or government deposits.",
+    bestFor: "Midwest residents who can park $5,000-$10,000 for 90 days AND have payroll direct deposit. The balance requirement makes this a combo DD + savings play.",
+    pros: ["Up to $600 — highest regional bonus", "No monthly fee on Access Checking", "Available in 9 states"],
+    cons: ["Requires maintaining high balances ($10k+ for top tier)", "Must keep open 12 months or bonus clawback", "ACH pushes don't count — payroll only", "24-month cooldown", "Strict DD definition"],
+    comparison: "The $600 top tier beats Huntington ($400) and Fifth Third ($400) but requires $10k in balances plus payroll DD. The $300 tier at $1k balance is more comparable to those offers. Only worth the top tier if you have idle cash.",
+    faqs: [
+      { q: "Which states have Associated Bank?", a: "IA, IL, IN, KS, MI, MN, MO, OH, WI." },
+      { q: "Can I use ACH pushes from Fidelity?", a: "No. Associated Bank explicitly excludes P2P payments and transfers from external accounts. You must use payroll or government direct deposit." },
+    ],
+    relatedSlugs: ["huntington-400-checking-bonus", "wintrust-500-checking-bonus"],
+  },
+
+  "regions-400-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "$1,000+ total deposits in 60 days." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "ACH transfers", works: true, notes: "ACH transfers of $1,000+ qualify per terms." },
+      { method: "Fidelity ACH push", works: "mixed", notes: "Terms say 'deposits' — ACH transfers may work but limited data." },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Regions Bank offers $400 for $1,000 in deposits within 60 days — but it's in-branch only and YMMV. Available in 15 Southern and Midwestern states. $25 early closure fee if closed within 180 days.",
+    strategy: "Visit a Regions branch and open LifeGreen Checking. Make $1,000 in deposits within 60 days and enroll in online banking within 30 days. To waive the $8/month fee, set up $500+ in ACH direct deposit. Keep the account open 180 days to avoid the $25 early closure fee.",
+    bestFor: "People near a Regions branch in the 15 covered states who want a quick $400 with a low deposit requirement.",
+    pros: ["$400 bonus with just $1,000 in deposits", "60-day window is short — quick completion", "Available in 15 states"],
+    cons: ["In-branch only — no online application", "YMMV — availability varies", "$8/month fee requires management", "$25 early closure fee if closed before 180 days", "Must keep open 180 days"],
+    comparison: "Similar to PNC ($400 for $5,000 DD) but much easier at $1,000. The in-branch requirement and YMMV status are the main downsides vs. online-only offers like Chase.",
+    faqs: [
+      { q: "Which states have Regions?", a: "AL, AR, FL, GA, IL, IN, IA, KY, LA, MS, MO, NC, SC, TN, TX." },
+      { q: "Can I open online?", a: "No. This offer is currently in-branch only." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "fifth-third-400-checking-bonus"],
+  },
+
   // ─── SAVINGS BONUSES ──────────────────────────────────────────
 
   "capital-one-360-savings-2026": {

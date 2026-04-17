@@ -1098,5 +1098,253 @@ export const bonuses: any[] = [
       "screening.soft_pull",
       "timeline.must_remain_open_days"
     ]
+  },
+  {
+    "id": "wintrust-500-checking-2026",
+    "bank_name": "Wintrust Bank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 1000 },
+      { "bonus": 500, "min_dd_total": 4000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 4000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open Total Access Checking and complete $2,000+ monthly direct deposits for 2 consecutive months after first calendar month. Enroll in online banking and eStatements."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly fee.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Low ChexSystems sensitivity reported."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IL", "FL", "WI", "IN", "MI"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Not available to existing or closed checking account customers of Wintrust Financial Corporation."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 30,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.wintrust.com/solutions-and-services/community-banking/total-access-checking.html",
+      "https://www.doctorofcredit.com/il-only-wintrust-bank-300-checking-bonus/"
+    ],
+    "raw_excerpt": "Open Total Access Checking with $2,000+ monthly DD for 2 consecutive months for $500 bonus. Also $200 savings bonus with $15k deposit."
+  },
+  {
+    "id": "huntington-400-perks-checking-2026",
+    "bank_name": "Huntington Bank",
+    "product_type": "checking",
+    "bonus_amount": 600,
+    "cooldown_months": 24,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 500 },
+      { "bonus": 600, "min_dd_total": 25000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "$400 for Perks Checking with $500+ DD in 90 days. $600 for Platinum Perks with $25,000 total deposits in 60 days. Keep open 90 days."
+    },
+    "fees": {
+      "monthly_fee": 10,
+      "monthly_fee_waiver_text": "Waivable with $1,000 minimum balance or $2,500 combined balance.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems inquiry reported. Soft pull."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "24-month rolling limit on bonuses. Must not have had Huntington checking bonus in past 24 months."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 14,
+      "must_remain_open_days": 90
+    },
+    "source_links": [
+      "https://www.huntington.com/checking-account-promotions-bonuses-offers",
+      "https://www.doctorofcredit.com/oh-mi-pa-ky-wv-huntington-bank-200-checking-promotion-no-direct-deposit-requirement/"
+    ],
+    "raw_excerpt": "Perks Checking $400 with $500 DD in 90 days. Platinum Perks $600 with $25k deposits in 60 days. Bonus posts within 14 days."
+  },
+  {
+    "id": "fifth-third-400-checking-2026",
+    "bank_name": "Fifth Third Bank",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "cooldown_months": 13,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open new Essential Checking and complete $500+ direct deposit within 90 days. Offer expires June 30, 2026."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly fee on Essential Checking.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems inquiry. Soft pull reported."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["AL", "FL", "GA", "IL", "IN", "KY", "MI", "NC", "OH", "TN", "WV", "SC"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Must not have had Fifth Third checking in past 13 months. May require proximity to branch."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 10,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.53.com/content/fifth-third/en/mkg/checking-offer.html",
+      "https://www.doctorofcredit.com/fifth-third-200-checking-bonus-fl-ga-il-ky-mi-nc-oh-tn-wv/"
+    ],
+    "raw_excerpt": "Open Essential Checking with $500+ DD in 90 days for $400 bonus. Posts within 10 business days. Expires June 30, 2026."
+  },
+  {
+    "id": "associated-bank-600-checking-2026",
+    "bank_name": "Associated Bank",
+    "product_type": "checking",
+    "bonus_amount": 600,
+    "cooldown_months": 24,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 500 },
+      { "bonus": 400, "min_dd_total": 500 },
+      { "bonus": 600, "min_dd_total": 500 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": 25,
+      "min_balance": 10000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open by May 31, 2026. $500+ DD in 90 days required. Bonus tier based on average daily balance days 31-90: $1k-$5k=$300, $5k-$10k=$400, $10k+=$600. Account must stay open 12 months or bonus clawback."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly fee on Access Checking ($25 min opening deposit).",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Low ChexSystems sensitivity reported."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IA", "IL", "IN", "KS", "MI", "MN", "MO", "OH", "WI"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Not available to those who received Associated Bank checking bonus in past 24 months or had checking account in past 12 months. Must remain open 12 months."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 120,
+      "must_remain_open_days": 365
+    },
+    "source_links": [
+      "https://www.associatedbank.com/checking-account-bonus-offer-promotion",
+      "https://www.doctorofcredit.com/il-in-mn-wi-only-associated-bank-500-checking-bonus/"
+    ],
+    "raw_excerpt": "Open checking by 5/31/2026 with $500+ DD in 90 days. Bonus based on avg daily balance: $300/$400/$600. Must keep open 12 months."
+  },
+  {
+    "id": "regions-400-checking-2026",
+    "bank_name": "Regions Bank",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 1000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open LifeGreen Checking in-branch, make $1,000 in deposits within 60 days, enroll in online banking within 30 days. In-branch only."
+    },
+    "fees": {
+      "monthly_fee": 8,
+      "monthly_fee_waiver_text": "Waivable with $500+ single ACH DD, $1,000+ total deposits, or $1,500 avg monthly balance.",
+      "early_closure_fee": 25
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Low ChexSystems sensitivity. Soft pull."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["AL", "AR", "FL", "GA", "IL", "IN", "IA", "KY", "LA", "MS", "MO", "NC", "SC", "TN", "TX"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "YMMV — availability varies. In-branch only. Must not have had Regions checking in past 12 months."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 60,
+      "must_remain_open_days": 180
+    },
+    "source_links": [
+      "https://www.regions.com/promo/checking",
+      "https://www.doctorofcredit.com/regions-bank-400-checking-bonus/"
+    ],
+    "raw_excerpt": "Open LifeGreen Checking in-branch, $1,000 deposits in 60 days. $400 bonus. $25 early closure fee if closed within 180 days."
   }
 ]
