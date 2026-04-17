@@ -557,15 +557,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
   const today365End = addDays(todayStr(), 365)
