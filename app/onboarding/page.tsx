@@ -42,6 +42,8 @@ export default function OnboardingPage() {
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
   const [paycheck, setPaycheck] = useState<string>("1500")
   const [userState, setUserState] = useState<string>("")
+  const [ddSlots, setDdSlots] = useState<string>("1")
+  const [savingsBalance, setSavingsBalance] = useState<string>("")
   const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
@@ -70,7 +72,7 @@ export default function OnboardingPage() {
     if (amt <= 0) return
 
     const result = runSequencer({
-      slots: 1,
+      slots: parseInt(ddSlots) || 1,
       payFrequency: frequency,
       paycheckAmount: amt,
       completedRecords: [],
@@ -182,9 +184,9 @@ export default function OnboardingPage() {
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 2 of 2</div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                What's your take-home pay?
+                Tell us about your finances
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Per paycheck after taxes. An estimate is fine.</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine. This helps us find the best bonuses for you.</p>
             </div>
             <div style={{ position: "relative", marginBottom: 24 }}>
               <span style={{
@@ -202,6 +204,25 @@ export default function OnboardingPage() {
                 min={0} step={100} autoFocus
                 onKeyDown={e => e.key === "Enter" && handleBuildPlan()}
               />
+            </div>
+            <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Income sources <span style={{ color: "#bbb" }}>(DD slots)</span></div>
+                <select value={ddSlots} onChange={e => setDdSlots(e.target.value)}
+                  style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
+                  <option value="1">1 job</option>
+                  <option value="2">2 jobs / income sources</option>
+                  <option value="3">3 income sources</option>
+                </select>
+              </div>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available <span style={{ color: "#bbb" }}>(optional)</span></div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
+                  <input type="number" value={savingsBalance} onChange={e => setSavingsBalance(e.target.value)}
+                    style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
+                </div>
+              </div>
             </div>
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(for state-specific bonuses)</span></div>

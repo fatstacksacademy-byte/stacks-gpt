@@ -148,6 +148,9 @@ function fmtDate(d: Date): string {
 type ProjectedBonus = {
   bank_name: string
   bonus_amount: number
+  net_bonus: number
+  total_fees: number
+  fee_waived_by_dd: boolean
   start_date: string   // ISO: YYYY-MM-DD
   payout_date: string  // ISO: YYYY-MM-DD
   weeks: number
@@ -167,6 +170,9 @@ function getProjectedBonuses(sequencerResult: SequencerResult): ProjectedBonus[]
     return {
       bank_name: b.bank_name,
       bonus_amount: b.bonus_amount,
+      net_bonus: b.net_bonus ?? b.bonus_amount,
+      total_fees: b.total_fees ?? 0,
+      fee_waived_by_dd: b.fee_waived_by_dd ?? false,
       start_date: toISODate(startDate),
       payout_date: toISODate(payoutDate),
       weeks: b.weeks_to_complete,
@@ -593,7 +599,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         start_date: toISODate(startDate),
         payout_date: toISODate(payoutDate),
         weeks: Math.ceil(estimatedDays / 7),
-        isCustom: true,
+        isCustom: true, net_bonus: c.bonus_amount, total_fees: 0, fee_waived_by_dd: false,
         customId: c.id,
       })
     }
@@ -609,7 +615,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           start_date: toISODate(nextStart),
           payout_date: toISODate(nextPayout),
           weeks: Math.ceil(estimatedDays / 7),
-          isCustom: true,
+          isCustom: true, net_bonus: c.bonus_amount, total_fees: 0, fee_waived_by_dd: false,
           customId: c.id,
         })
         nextStart = new Date(nextStart.getTime())
@@ -633,7 +639,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         start_date: toISODate(nextStart),
         payout_date: toISODate(nextPayout),
         weeks: Math.ceil(durationDays / 7),
-        isCustom: true,
+        isCustom: true, net_bonus: c.bonus_amount, total_fees: 0, fee_waived_by_dd: false,
         customId: c.id,
       })
       nextStart = new Date(nextStart.getTime())
@@ -870,6 +876,33 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           </div>
         )}
 
+        {/* ── Cross-Module Summary ── */}
+        {projectionResult && (
+          <div style={{ background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px", marginBottom: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 11, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>12-Month Total Portfolio</div>
+                <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>
+                  {money(projected365.reduce((s, p) => s + p.net_bonus, 0))}
+                </div>
+                <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                  Paycheck bonuses · <a href="/stacksos/savings" style={{ color: "#0d7c5f", textDecoration: "none" }}>+ Savings</a> · <a href="/stacksos/spending" style={{ color: "#0d7c5f", textDecoration: "none" }}>+ Credit Cards</a>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase" }}>Earned</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{money(totalEarned + customEarned)}</div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase" }}>In Progress</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "#2563eb" }}>{money(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
@@ -917,7 +950,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         color: projectionTab === tab ? "#111" : "#999",
                         boxShadow: projectionTab === tab ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
                       }}>
-                        {tab === "year1" ? `This year · ${money(year1Bonuses.reduce((s, p) => s + p.bonus_amount, 0))}` : `Next year · ${money(year2Bonuses.reduce((s, p) => s + p.bonus_amount, 0))}`}
+                        {tab === "year1" ? `This year · ${money(year1Bonuses.reduce((s, p) => s + p.net_bonus, 0))}` : `Next year · ${money(year2Bonuses.reduce((s, p) => s + p.net_bonus, 0))}`}
                       </button>
                     ))}
                   </div>
@@ -995,10 +1028,22 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       )
                     })()}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>${activeBonuses.reduce((s, p) => s + p.bonus_amount, 0).toLocaleString()}</span>
-                  </div>
+                  {(() => {
+                    const grossTotal = activeBonuses.reduce((s, p) => s + p.bonus_amount, 0)
+                    const netTotal = activeBonuses.reduce((s, p) => s + p.net_bonus, 0)
+                    const totalFees = grossTotal - netTotal
+                    return (
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8, alignItems: "center" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
+                        <div style={{ textAlign: "right" }}>
+                          <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>{money(netTotal)}</span>
+                          {totalFees > 0 && (
+                            <span style={{ fontSize: 11, color: "#999", marginLeft: 6 }}>(net of {money(totalFees)} in fees)</span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })()}
                   <div style={{ fontSize: 11, color: "#bbb", marginTop: 10, textAlign: "center", lineHeight: 1.5 }}>
                     Your bonus plan updates automatically as offers change and you complete bonuses.
                   </div>
