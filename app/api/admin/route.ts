@@ -26,14 +26,22 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
 
   if (action === "users") {
-    const { data: profiles } = await supabase
+    // Start from auth users (source of truth) rather than profiles
+    const { data: authUsers, error: authErr } = await supabase.auth.admin.listUsers()
+    if (authErr) {
+      console.error("[admin] auth.admin.listUsers failed:", authErr.message)
+      return NextResponse.json({ error: authErr.message, users: [] })
+    }
+
+    const { data: profiles, error: profErr } = await supabase
       .from("profiles")
       .select("user_id, pay_frequency, paycheck_amount, created_at")
-      .order("created_at", { ascending: false })
+    if (profErr) console.error("[admin] profiles query failed:", profErr.message)
 
-    const { data: subs } = await supabase
+    const { data: subs, error: subErr } = await supabase
       .from("subscriptions")
       .select("user_id, status, plan")
+    if (subErr) console.error("[admin] subscriptions query failed:", subErr.message)
 
     const { data: completed } = await supabase
       .from("completed_bonuses")
@@ -43,15 +51,8 @@ export async function GET(req: NextRequest) {
       .from("custom_bonuses")
       .select("user_id, bank_name, bonus_amount, current_step")
 
-    // Get emails using service role admin API
-    const { data: authUsers } = await supabase.auth.admin.listUsers()
-
-    const emailMap: Record<string, string> = {}
-    if (authUsers?.users) {
-      for (const u of authUsers.users) {
-        emailMap[u.id] = u.email ?? ""
-      }
-    }
+    const profileMap: Record<string, any> = {}
+    for (const p of profiles ?? []) profileMap[p.user_id] = p
 
     const subMap: Record<string, { status: string; plan: string }> = {}
     for (const s of subs ?? []) {
@@ -70,16 +71,20 @@ export async function GET(req: NextRequest) {
       customMap[c.user_id].push(c)
     }
 
-    const users = (profiles ?? []).map(p => ({
-      user_id: p.user_id,
-      email: emailMap[p.user_id] ?? "unknown",
-      pay_frequency: p.pay_frequency,
-      paycheck_amount: p.paycheck_amount,
-      created_at: p.created_at,
-      subscription: subMap[p.user_id] ?? null,
-      completed_bonuses: completedMap[p.user_id] ?? [],
-      custom_bonuses: customMap[p.user_id] ?? [],
-    }))
+    // Build user list from auth users (every signed-up user), enriched with profile/bonus data
+    const users = (authUsers?.users ?? []).map(u => {
+      const prof = profileMap[u.id]
+      return {
+        user_id: u.id,
+        email: u.email ?? "unknown",
+        pay_frequency: prof?.pay_frequency ?? null,
+        paycheck_amount: prof?.paycheck_amount ?? 0,
+        created_at: prof?.created_at ?? u.created_at,
+        subscription: subMap[u.id] ?? null,
+        completed_bonuses: completedMap[u.id] ?? [],
+        custom_bonuses: customMap[u.id] ?? [],
+      }
+    })
 
     return NextResponse.json({ users })
   }
