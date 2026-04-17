@@ -724,7 +724,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
           <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-          <span style={{ fontSize: 12, color: "#aaa" }}>Last updated April 16, 2026</span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>Last updated April 17, 2026</span>
         </div>
       </div>
 
