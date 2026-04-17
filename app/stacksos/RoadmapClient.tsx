@@ -1258,6 +1258,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       Not now
                     </button>
                   </div>
+                  <a href={`/blog/${hb.bonus.bank_name.split("(")[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-${hb.bonus.bonus_amount}-checking-bonus`}
+                    style={{ display: "block", marginTop: 10, fontSize: 12, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                    Read full review &rarr;
+                  </a>
                   {heroIdx === 0 && (
                     <div style={{ marginTop: 16 }}>
                       <button onClick={() => setShowDisclaimer(d => !d)}
