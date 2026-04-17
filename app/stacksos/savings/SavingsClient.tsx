@@ -38,6 +38,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [expandedRec, setExpandedRec] = useState<string | null>(null)
   const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
   const [userState, setUserState] = useState<string | null>(null)
+  const [showBusiness, setShowBusiness] = useState(false)
+  const [showBrokerage, setShowBrokerage] = useState(false)
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -426,8 +428,22 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         {/* ── Recommended Savings Bonuses ── */}
         {sequencerResult.entries.length > 0 && (
           <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-              Recommended — Ranked by Effective APY
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Recommended — Ranked by Effective APY
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
+                  <input type="checkbox" checked={showBusiness} onChange={e => setShowBusiness(e.target.checked)}
+                    style={{ accentColor: "#7c3aed" }} />
+                  <span style={{ fontSize: 12, color: "#555" }}>Business</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
+                  <input type="checkbox" checked={showBrokerage} onChange={e => setShowBrokerage(e.target.checked)}
+                    style={{ accentColor: "#2563eb" }} />
+                  <span style={{ fontSize: 12, color: "#555" }}>Brokerage</span>
+                </label>
+              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {sequencerResult.entries.map((rec, idx) => {
