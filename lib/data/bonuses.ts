@@ -1490,6 +1490,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "vantage-cu-250-checking-2026",
+    "expired": true,
     "bank_name": "Vantage Credit Union",
     "product_type": "checking",
     "bonus_amount": 250,
@@ -1522,6 +1523,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "quad-city-bank-300-checking-2026",
+    "expired": true,
     "bank_name": "Quad City Bank & Trust",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -1688,7 +1690,7 @@ export const bonuses: any[] = [
     "id": "hancock-whitney-600-checking-2026",
     "bank_name": "Hancock Whitney",
     "product_type": "checking",
-    "bonus_amount": 600,
+    "bonus_amount": 300,
     "cooldown_months": null,
     "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 3000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Freestyle Checking. $3,000 DD in 90 days. Enter email for promo code. Must keep open 6 months. Expires June 30, 2026." },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
@@ -2023,6 +2025,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "first-federal-kc-300-checking-2026",
+    "expired": true,
     "bank_name": "First Federal Bank of Kansas City",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3039,7 +3042,7 @@ export const bonuses: any[] = [
     "id": "easthampton-savings-300-checking-2026",
     "bank_name": "Easthampton Savings Bank",
     "product_type": "checking",
-    "bonus_amount": 300,
+    "bonus_amount": 325,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": false,
@@ -3069,6 +3072,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "state-bank-trust-300-checking-2026",
+    "expired": true,
     "bank_name": "The State Bank and Trust Company",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3101,6 +3105,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "greenfield-banking-300-checking-2026",
+    "expired": true,
     "bank_name": "Greenfield Banking Company",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3393,6 +3398,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "cornerstone-financial-300-checking-2026",
+    "expired": true,
     "bank_name": "Cornerstone Financial Credit Union",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3690,6 +3696,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "point-breeze-275-checking-2026",
+    "expired": true,
     "bank_name": "Point Breeze Credit Union",
     "product_type": "checking",
     "bonus_amount": 275,
@@ -3946,6 +3953,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "associated-healthcare-250-checking-2026",
+    "expired": true,
     "bank_name": "Associated Healthcare Credit Union",
     "product_type": "checking",
     "bonus_amount": 250,
@@ -4556,7 +4564,7 @@ export const bonuses: any[] = [
     "id": "people-first-fcu-200-checking-2026",
     "bank_name": "People First Federal Credit Union",
     "product_type": "checking",
-    "bonus_amount": 200,
+    "bonus_amount": 250,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -4714,6 +4722,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "public-employees-cu-200-checking-2026",
+    "expired": true,
     "bank_name": "Public Employees Credit Union",
     "product_type": "checking",
     "bonus_amount": 200,
