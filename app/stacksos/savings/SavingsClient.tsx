@@ -6,7 +6,6 @@ import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEn
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
-import { bonuses as allCheckingBonuses } from "../../../lib/data/bonuses"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -168,14 +167,12 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
     userState,
     currentHysaApy: currentApy || 0,
+    includeBusiness: showBusiness,
+    includeBrokerage: showBrokerage,
   })
 
-  // Filter brokerage bonuses based on toggle
-  const isBrokerage = (name: string) => name.includes("Brokerage") || name.includes("Invest")
-  const filteredEntries = sequencerResult.entries.filter(e => {
-    if (isBrokerage(e.bank_name) && !showBrokerage) return false
-    return true
-  })
+  // Sequencer now handles business/brokerage filtering
+  const filteredEntries = sequencerResult.entries
 
   // Start a recommended bonus — add it as a savings entry
   async function handleStartRecommended(rec: SavingsSequencedEntry) {
@@ -579,43 +576,6 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 )
               })}
             </div>
-
-            {/* Business checking bonuses */}
-            {showBusiness && (() => {
-              const bizBonuses = allCheckingBonuses
-                .filter(b => (b as any).business && !b.expired)
-                .filter(b => {
-                  if (!userState || !b.eligibility?.state_restricted) return true
-                  return (b.eligibility.states_allowed ?? []).includes(userState)
-                })
-                .sort((a, b) => b.bonus_amount - a.bonus_amount)
-              if (bizBonuses.length === 0) return null
-              return (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                    Business Checking Bonuses
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {bizBonuses.map(b => (
-                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderLeft: "3px solid #7c3aed", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                        <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{b.bank_name}</span>
-                            <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
-                          </div>
-                          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
-                            {b.requirements?.min_balance ? `$${b.requirements.min_balance.toLocaleString()} deposit` : "Deposit required"}
-                            {b.requirements?.deposit_window_days ? ` in ${b.requirements.deposit_window_days} days` : ""}
-                            {b.eligibility?.state_restricted ? ` · ${(b.eligibility.states_allowed ?? []).join(", ")}` : " · Nationwide"}
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#7c3aed" }}>{money(b.bonus_amount)}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            })()}
 
             {/* Sequencer summary */}
             <div style={{ marginTop: 12, padding: "12px 16px", background: "#f9fafb", border: "1px solid #e8e8e8", borderRadius: 10, display: "flex", gap: 24, flexWrap: "wrap" }}>

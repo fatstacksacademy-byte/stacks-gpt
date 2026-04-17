@@ -71,12 +71,16 @@ export function runSavingsSequencer({
   skippedBonusIds = [],
   userState,
   currentHysaApy = 0,
+  includeBusiness = false,
+  includeBrokerage = false,
 }: {
   availableBalance: number
   completedBonusIds?: string[]
   skippedBonusIds?: string[]
   userState?: string | null
   currentHysaApy?: number
+  includeBusiness?: boolean
+  includeBrokerage?: boolean
 }): SavingsSequencerResult {
   const skipped: { bank_name: string; reason: string }[] = []
   const candidates: {
@@ -100,6 +104,10 @@ export function runSavingsSequencer({
       skipped.push({ bank_name: bonus.bank_name, reason: "Skipped by user" })
       continue
     }
+    // Business/brokerage filter
+    if (bonus.business && !includeBusiness) continue
+    if (bonus.brokerage && !includeBrokerage) continue
+
     if (userState && bonus.eligibility?.state_restricted) {
       const allowed = bonus.eligibility.states_allowed ?? []
       if (allowed.length > 0 && !allowed.some(s => s === userState || s === "Nationwide (U.S.)")) {
