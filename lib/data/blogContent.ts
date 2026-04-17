@@ -1000,6 +1000,148 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: ["chase-400-checking-bonus", "fifth-third-400-checking-bonus"],
   },
 
+  "busey-bank-500-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "$2,000-$5,000+ total DD in 90 days plus 3 debit purchases." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed", notes: "Limited Busey-specific data." },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Busey Bank offers up to $500 for checking with $5,000+ in DD plus 3 debit card purchases. Available in IL, IN, MO, FL. No monthly fee.",
+    strategy: "Open checking, route $5,000+ in direct deposits within 90 days, and make 3 debit card purchases. The $200 tier at $2,000 DD is easier to hit.",
+    bestFor: "People in IL, IN, MO, or FL who can route $2,000-$5,000+ in direct deposits and use a debit card.",
+    pros: ["Up to $500 bonus", "No monthly fee", "Available in 4 states"],
+    cons: ["Requires 3 debit card purchases", "$5,000 DD for top tier", "State-restricted"],
+    comparison: "Similar to Wintrust ($500) but requires debit purchases. Fifth Third ($400 for $500 DD) is easier if you don't want the debit requirement.",
+    faqs: [{ q: "Which states have Busey Bank?", a: "IL, IN, MO, FL." }],
+    relatedSlugs: ["wintrust-500-checking-bonus", "fifth-third-400-checking-bonus"],
+  },
+
+  "first-bank-500-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "Tiered: $300 DD for $100 tier, $500 for $300 tier, $5,000 for $500 tier." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed" },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "First Bank offers a tiered checking bonus: $100/$300/$500 based on DD amount, plus 10 debit purchases. Available in IL, CA, MO. The $300 tier at $500 DD is the sweet spot.",
+    strategy: "Open checking, route your DD (as little as $300 for the $100 tier), and make 10 debit purchases within 60 days. The 60-day window is shorter than most.",
+    bestFor: "People in IL, CA, or MO. The $300 tier only needs $500 DD — very achievable with one paycheck.",
+    pros: ["Three tiers accommodate any income level", "No monthly fee", "$300 tier only needs $500 DD"],
+    cons: ["Requires 10 debit purchases", "60-day window is tight", "State-restricted"],
+    comparison: "The $300 tier at $500 DD + 10 debit purchases compares to Fifth Third ($400 for $500 DD, no debit). Fifth Third is better unless you can't get it in your state.",
+    faqs: [{ q: "Which states have First Bank?", a: "IL, CA, MO." }],
+    relatedSlugs: ["fifth-third-400-checking-bonus", "wintrust-500-checking-bonus"],
+  },
+
+  "old-national-bank-600-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "$3,500-$12,000 DD in 4 months." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed" },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Old National Bank offers up to $600 for $12,000+ in DD over 4 months. The $300 tier at $3,500 DD is more achievable. Available in 9 Midwest states.",
+    strategy: "Open checking and route $3,500-$12,000 in direct deposits over 4 months. The window is generous at 120 days. The $300 tier at $3,500 DD is about $875/month.",
+    bestFor: "Midwest residents who can route $875+/month in direct deposits for 4 months. The $600 tier requires $3,000/month.",
+    pros: ["Up to $600 bonus", "120-day window is generous", "No monthly fee", "Available in 9 states"],
+    cons: ["$12,000 DD for top tier is high", "State-restricted"],
+    comparison: "Similar to Associated Bank ($600) but based on DD volume rather than balance. Easier if you have high paycheck but not idle cash.",
+    faqs: [{ q: "Which states have Old National?", a: "IA, IL, IN, KY, MN, WI, TN, ND, MI." }],
+    relatedSlugs: ["associated-bank-600-checking-bonus", "huntington-400-checking-bonus"],
+  },
+
+  "central-bank-300-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "2+ DD totaling $500+ in 90 days." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity ACH push", works: "mixed" },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Central Bank of the Midwest offers $300 for just $500 in DD — one of the lowest requirements for a $300 bonus. Available in OK, IL, KS, MO, CO. No monthly fee.",
+    strategy: "Open checking and complete 2+ direct deposits totaling $500+ within 90 days. One or two paychecks handles it.",
+    bestFor: "People in OK, IL, KS, MO, or CO who want an easy $300 with minimal DD requirement.",
+    pros: ["$300 for just $500 DD — excellent ratio", "No monthly fee", "Available in 5 states"],
+    cons: ["State-restricted", "Lower bonus than some alternatives"],
+    comparison: "Better DD-to-bonus ratio than Capital One ($300 for $1,000 DD). Similar to Fifth Third ($400 for $500 DD) which is better if available in your state.",
+    faqs: [{ q: "Which states have Central Bank?", a: "OK, IL, KS, MO, CO." }],
+    relatedSlugs: ["fifth-third-400-checking-bonus", "capital-one-300-checking-bonus"],
+  },
+
+  "vantage-cu-250-checking-2026": {
+    ddMethods: [
+      { method: "No DD required", works: true, notes: "This bonus requires no direct deposit at all." },
+    ],
+    summary: "Vantage Credit Union offers $250 just for opening a checking account — no direct deposit required. Available in MO and IL only. One of the only high-value no-DD bonuses available.",
+    strategy: "Open a checking account. That's it. No DD, no debit purchases, no minimum balance. The $250 posts after account opening.",
+    bestFor: "Anyone in MO or IL who wants free money with zero effort. Stack this with DD-based bonuses at other banks since it doesn't require your paycheck.",
+    pros: ["$250 with zero requirements", "No monthly fee", "No DD required — can stack with other bonuses"],
+    cons: ["Only MO and IL", "Lower than DD-based alternatives", "Lifetime limit"],
+    comparison: "The only comparable no-DD bonus is Quad City B&T ($300 with 3 debit purchases). Vantage is easier but $50 less.",
+    faqs: [{ q: "Do I really not need direct deposit?", a: "Correct. Just open the account. No DD, no debit, no balance requirement." }],
+    relatedSlugs: ["quad-city-bank-300-checking-bonus", "chime-100-checking-bonus"],
+  },
+
+  "quad-city-bank-300-checking-2026": {
+    ddMethods: [
+      { method: "No DD required", works: true, notes: "Just 3 debit purchases + online banking enrollment in 90 days." },
+    ],
+    summary: "Quad City Bank & Trust offers $300 with no direct deposit — just 3 debit card purchases and online banking/eStatements enrollment. Available in IL and IA.",
+    strategy: "Open checking, make 3 debit purchases (any amount), and enroll in online banking with eStatements within 90 days. No DD required.",
+    bestFor: "People in IL or IA who want $300 without changing their direct deposit. Stack with DD-based bonuses at other banks.",
+    pros: ["$300 with no DD requirement", "Only 3 debit purchases needed", "No monthly fee"],
+    cons: ["Only IL and IA", "Lifetime limit"],
+    comparison: "Better than Vantage CU ($250, no requirements) because it's $50 more with just 3 debit purchases. Both great for stacking.",
+    faqs: [{ q: "Do I need direct deposit?", a: "No. Just 3 debit card purchases of any amount plus online banking enrollment." }],
+    relatedSlugs: ["vantage-cu-250-checking-bonus", "chime-100-checking-bonus"],
+  },
+
+  "cibc-200-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "ACH transfers", works: true, notes: "Terms say DD or ACH." },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "CIBC US offers $200 for opening checking with $500 deposit and setting up DD/ACH within 90 days. Available in IL, MI, MO, FL, CA, WI.",
+    strategy: "Open checking with $500 deposit, set up DD or ACH transfer, and enroll in eStatements within 90 days.",
+    bestFor: "People in the 6 covered states looking for an easy $200 filler bonus.",
+    pros: ["$200 bonus with low effort", "No monthly fee with eStatements", "Available in 6 states"],
+    cons: ["$500 opening deposit required", "Only $200 — lower than alternatives"],
+    comparison: "Lower than most alternatives. Do this after exhausting higher-value bonuses in your state.",
+    faqs: [{ q: "Which states have CIBC?", a: "IL, MI, MO, FL, CA, WI." }],
+    relatedSlugs: ["central-bank-300-checking-bonus", "fifth-third-400-checking-bonus"],
+  },
+
+  "dupaco-cu-300-checking-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "5-10 qualifying transactions", works: true, notes: "Can substitute DD with transaction count." },
+      { method: "PayPal ACH", works: false },
+      { method: "Venmo ACH", works: false },
+      { method: "Zelle", works: false },
+    ],
+    summary: "Dupaco Credit Union offers $300 with DD or 5-10 qualifying transactions in 90 days. No strict DD requirement. Available in IA, IL, WI.",
+    strategy: "Open checking and set up direct deposit OR make 5-10 qualifying transactions within 90 days. The transaction alternative makes this flexible.",
+    bestFor: "People in IA, IL, or WI who want $300 without necessarily changing their direct deposit.",
+    pros: ["$300 bonus", "DD not strictly required — transactions work too", "No monthly fee"],
+    cons: ["Only IA, IL, WI", "Lifetime limit"],
+    comparison: "Similar to Quad City B&T ($300, no DD) but with a slightly higher transaction requirement. Both good for stacking.",
+    faqs: [{ q: "Do I need direct deposit?", a: "No. You can qualify with 5-10 transactions instead of DD." }],
+    relatedSlugs: ["quad-city-bank-300-checking-bonus", "vantage-cu-250-checking-bonus"],
+  },
+
   // ─── SAVINGS BONUSES ──────────────────────────────────────────
 
   "capital-one-360-savings-2026": {

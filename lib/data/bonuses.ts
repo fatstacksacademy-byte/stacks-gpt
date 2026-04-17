@@ -1346,5 +1346,274 @@ export const bonuses: any[] = [
       "https://www.doctorofcredit.com/regions-bank-400-checking-bonus/"
     ],
     "raw_excerpt": "Open LifeGreen Checking in-branch, $1,000 deposits in 60 days. $400 bonus. $25 early closure fee if closed within 180 days."
+  },
+  {
+    "id": "busey-bank-500-checking-2026",
+    "bank_name": "Busey Bank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 200, "min_dd_total": 2000 },
+      { "bonus": 500, "min_dd_total": 5000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 5000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 3,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking, complete $2,000-$5,000+ in DD within 90 days, and make 3 debit card purchases. Expires May 1, 2026."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IL", "IN", "MO", "FL"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.busey.com/checking"],
+    "raw_excerpt": "Open checking with $2k-$5k DD + 3 debit purchases in 90 days for up to $500."
+  },
+  {
+    "id": "first-bank-500-checking-2026",
+    "bank_name": "First Bank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 100, "min_dd_total": 300 },
+      { "bonus": 300, "min_dd_total": 500 },
+      { "bonus": 500, "min_dd_total": 5000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 5000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 10,
+      "billpay_required": null,
+      "other_requirements_text": "Tiered: $100 for $300 DD, $300 for $500 DD, $500 for $5,000 DD — all within 60 days plus 10 debit purchases. Expires June 30, 2026."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IL", "CA", "MO"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only. Expires June 30, 2026."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.firstbanks.com/checking"],
+    "raw_excerpt": "Tiered checking bonus: $100/$300/$500 based on DD amount + 10 debit purchases in 60 days."
+  },
+  {
+    "id": "old-national-bank-600-checking-2026",
+    "bank_name": "Old National Bank",
+    "product_type": "checking",
+    "bonus_amount": 600,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 3500 },
+      { "bonus": 600, "min_dd_total": 12000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 12000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 120,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking with $3,500-$12,000 in DD within 4 months. Expires June 30, 2026."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IA", "IL", "IN", "KY", "MN", "WI", "TN", "ND", "MI"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
+    "source_links": ["https://www.oldnational.com/promotions"],
+    "raw_excerpt": "Open checking with $3.5k-$12k DD in 4 months for $300-$600 bonus."
+  },
+  {
+    "id": "central-bank-300-checking-2026",
+    "bank_name": "Central Bank of the Midwest",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": 2,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking with 2+ DD totaling $500+ in 90 days. Expires December 31, 2026."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["OK", "IL", "KS", "MO", "CO"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.centralbank.net/promotions"],
+    "raw_excerpt": "$300 checking bonus with $500+ DD in 90 days. No fees."
+  },
+  {
+    "id": "vantage-cu-250-checking-2026",
+    "bank_name": "Vantage Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 250,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking account — no direct deposit required. Expires December 31, 2026."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["MO", "IL"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New members only. MO and IL."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.vcu.com/promotions"],
+    "raw_excerpt": "$250 checking bonus — no DD required. MO & IL only."
+  },
+  {
+    "id": "quad-city-bank-300-checking-2026",
+    "bank_name": "Quad City Bank & Trust",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 3,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking, make 3 debit card purchases, enroll in online banking and eStatements within 90 days. No DD required."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IL", "IA"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only. IL & IA."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.qcbt.com/promotions"],
+    "raw_excerpt": "$300 checking bonus with 3 debit purchases + online banking in 90 days. No DD required."
+  },
+  {
+    "id": "cibc-200-checking-2026",
+    "bank_name": "CIBC US",
+    "product_type": "checking",
+    "bonus_amount": 200,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": 500,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open with $500 deposit, set up DD/ACH, enroll in eStatements within 90 days."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee with eStatements.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IL", "MI", "MO", "FL", "CA", "WI"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://us.cibc.com/en/personal-banking/checking.html"],
+    "raw_excerpt": "$200 checking bonus with $500 opening deposit + DD/ACH in 90 days."
+  },
+  {
+    "id": "dupaco-cu-300-checking-2026",
+    "bank_name": "Dupaco Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 5,
+      "billpay_required": null,
+      "other_requirements_text": "Open new checking with DD or 5-10 qualifying transactions within 90 days. DD not strictly required if you meet transaction count."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IA", "IL", "WI"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New members only. IA, IL, WI."
+    },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.dupaco.com/promotions"],
+    "raw_excerpt": "$300 checking bonus with DD or 5-10 transactions in 90 days. No strict DD requirement."
   }
 ]
