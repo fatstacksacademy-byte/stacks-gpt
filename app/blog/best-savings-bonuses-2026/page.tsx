@@ -204,7 +204,7 @@ export default function BestSavingsBonuses() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

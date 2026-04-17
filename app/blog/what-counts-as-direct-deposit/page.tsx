@@ -439,7 +439,7 @@ export default function WhatCountsAsDirectDeposit() {
 
         <h3 style={subHeading}>3. Track Your Progress</h3>
         <p style={para}>
-          Keep a spreadsheet or use <Link href="/" style={{ color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> to track which deposits have posted, how much you have deposited toward the minimum, and when your bonus window closes. Missing a deadline by even one day means losing the entire bonus.
+          Keep a spreadsheet or use <Link href="/stacksos" style={{ color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> to track which deposits have posted, how much you have deposited toward the minimum, and when your bonus window closes. Missing a deadline by even one day means losing the entire bonus.
         </p>
 
         <h3 style={subHeading}>4. Have a Backup Plan</h3>
@@ -494,11 +494,11 @@ export default function WhatCountsAsDirectDeposit() {
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: "0 0 16px" }}>
             Keep track of direct deposit requirements, bonus windows, and payouts across all your active bank bonuses. Stacks OS gives you a clear dashboard to manage your bonus pipeline so you never miss a deadline.
           </p>
-          <Link href="/" style={{
+          <Link href="/stacksos" style={{
             display: "inline-block", padding: "12px 24px", fontSize: 14, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
-            Try Stacks OS Free
+            Try Stacks OS
           </Link>
         </div>
 
@@ -529,7 +529,7 @@ export default function WhatCountsAsDirectDeposit() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

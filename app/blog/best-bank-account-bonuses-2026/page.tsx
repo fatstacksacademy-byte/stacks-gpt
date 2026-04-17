@@ -322,7 +322,7 @@ export default function BestBankBonuses() {
           <p style={{ fontSize: 15, color: "#999", marginBottom: 20, maxWidth: 500, margin: "0 auto 20px" }}>
             Stacks OS builds a personalized bonus sequence based on your paycheck, tracks your progress, and tells you exactly what to do next.
           </p>
-          <Link href="/" style={{
+          <Link href="/stacksos" style={{
             display: "inline-block", padding: "14px 32px", fontSize: 15, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 10, textDecoration: "none",
           }}>
@@ -377,7 +377,7 @@ export default function BestBankBonuses() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

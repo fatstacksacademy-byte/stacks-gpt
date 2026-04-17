@@ -534,7 +534,7 @@ export default function ChexSystemsGuide() {
             Keep track of which bonuses you are working on, what is next in your pipeline, and your total earnings across
             all banks. Stacks OS helps you stay organized as you work through checking and savings bonuses.
           </p>
-          <Link href="/" style={{
+          <Link href="/stacksos" style={{
             display: "inline-block", padding: "10px 20px", fontSize: 13, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
@@ -567,7 +567,7 @@ export default function ChexSystemsGuide() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

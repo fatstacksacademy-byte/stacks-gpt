@@ -160,7 +160,7 @@ export default function BestCheckingBonuses() {
               <strong style={{ color: "#111" }}>Split your direct deposit</strong> to work on multiple bonuses at once. Most employers allow you to send portions of your paycheck to different accounts.
             </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#111" }}>Track your bonuses.</strong> Use <Link href="/" style={{ color: "#0d7c5f", textDecoration: "none" }}>Stacks OS</Link> to keep track of which bonuses you{"'"}re working on, what{"'"}s next, and your total earnings.
+              <strong style={{ color: "#111" }}>Track your bonuses.</strong> Use <Link href="/stacksos" style={{ color: "#0d7c5f", textDecoration: "none" }}>Stacks OS</Link> to keep track of which bonuses you{"'"}re working on, what{"'"}s next, and your total earnings.
             </p>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function BestCheckingBonuses() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

@@ -513,7 +513,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
           <p style={{ fontSize: 14, color: "#777", lineHeight: 1.6, margin: "0 0 16px", maxWidth: 450, marginLeft: "auto", marginRight: "auto" }}>
             Get a personalized bonus sequence, requirement tracking, and deadline reminders — all in one place.
           </p>
-          <Link href="/" style={{
+          <Link href="/stacksos" style={{
             display: "inline-block", padding: "12px 28px", fontSize: 14, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
@@ -570,7 +570,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>

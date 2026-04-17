@@ -331,7 +331,7 @@ export default function BankBonusTaxGuide() {
           <li style={listItem}><strong style={{ color: "#111" }}>Keep records for at least 3 years.</strong> The IRS can audit returns up to 3 years after filing (6 years if income is substantially understated). Retain all 1099s, account statements, and bonus confirmation emails.</li>
         </ul>
         <p style={para}>
-          <Link href="/" style={{ color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> includes built-in tracking for bank bonuses with fields for bonus amount, post date, and tax status. Instead of managing a manual spreadsheet, you can track your entire bonus pipeline and export the data at tax time.
+          <Link href="/stacksos" style={{ color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Stacks OS</Link> includes built-in tracking for bank bonuses with fields for bonus amount, post date, and tax status. Instead of managing a manual spreadsheet, you can track your entire bonus pipeline and export the data at tax time.
         </p>
 
         {/* --- Section: Example Scenarios --- */}
@@ -396,11 +396,11 @@ export default function BankBonusTaxGuide() {
           <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: "0 0 16px" }}>
             Stop guessing which bonuses posted and which 1099s you are waiting for. Stacks OS tracks your entire bank bonus pipeline -- bonus amounts, post dates, and tax reporting status -- so you are fully prepared when tax season arrives.
           </p>
-          <Link href="/" style={{
+          <Link href="/stacksos" style={{
             display: "inline-block", padding: "12px 24px", fontSize: 14, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
-            Try Stacks OS Free
+            Try Stacks OS
           </Link>
         </div>
 
@@ -431,7 +431,7 @@ export default function BankBonusTaxGuide() {
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
-            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>
