@@ -203,6 +203,19 @@ function EditorialContent({ content, bonusType }: { content: BlogContent; bonusT
 function PromoScreenshot({ bonusId, link }: { bonusId: string; link: string | null }) {
   const screenshotMap: Record<string, string> = {
     "wells-fargo-400-everyday-checking-2026": "/screenshots/wells-fargo-checking-promo.png",
+    "chase-total-checking-400-2026": "/screenshots/chase-checking-promo.png",
+    "bank-of-america-500-tiered-checking-2026": "/screenshots/bofa-checking-promo.png",
+    "capital-one-360-checking-300-offer300": "/screenshots/capital-one-checking-promo.png",
+    "citi-regular-checking-325-edd-2026": "/screenshots/citi-checking-promo.png",
+    "sofi-checking-savings-300-dd-2026": "/screenshots/sofi-checking-promo.png",
+    "us-bank-smartly-checking-450-2026": "/screenshots/usbank-checking-promo.png",
+    "varo-money-100-referral-dd": "/screenshots/varo-checking-promo.png",
+    "psecu-300-checking-2026": "/screenshots/psecu-checking-promo.png",
+    "etrade-max-rate-checking-300-checking25": "/screenshots/etrade-checking-promo.png",
+    "keypoint-cu-300-money4me-nm26": "/screenshots/keypoint-checking-promo.png",
+    "figfcu-250-high-yield-checking-ghycheck": "/screenshots/figfcu-checking-promo.png",
+    "teachers-fcu-300-checking-smart26": "/screenshots/teachers-checking-promo.png",
+    "bcu-500-powerplus-checking-2026": "/screenshots/bcu-checking-promo.png",
   }
   const src = screenshotMap[bonusId]
   if (!src) return null
