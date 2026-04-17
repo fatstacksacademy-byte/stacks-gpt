@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Stacks OS",
-  description: "Optimize your bank account bonuses",
+  title: "Fat Stacks Academy — Bank Bonuses, Credit Card Strategy & Stacks OS",
+  description: "Earn thousands in bank bonuses and credit card rewards. Free guides, bonus rankings, and Stacks OS — your personal bonus tracking dashboard.",
 }
 
 export default async function RootLayout({

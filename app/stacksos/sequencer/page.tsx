@@ -13,7 +13,7 @@ export default async function SequencerPage() {
   return (
     <div style={{ padding: 32, maxWidth: 1100, margin: "0 auto" }}>
       <div style={{ marginBottom: 24 }}>
-        <a href="/roadmap" style={backLink}>← Back to Roadmap</a>
+        <a href="/stacksos" style={backLink}>← Back to Roadmap</a>
       </div>
 
       <h1 style={{ fontSize: 32, marginBottom: 8 }}>Paycheck Slot Sequencer</h1>

@@ -683,7 +683,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
           <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
-          <a href="/roadmap/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
+          <a href="/stacksos/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
           <button onClick={async () => {
             const res = await fetch("/api/stripe/portal", { method: "POST" })
             const data = await res.json()

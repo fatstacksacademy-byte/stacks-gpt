@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
     } else {
       setMessage("Password updated! Redirecting...")
       setTimeout(() => {
-        router.push("/roadmap")
+        router.push("/stacksos")
         router.refresh()
       }, 1500)
     }

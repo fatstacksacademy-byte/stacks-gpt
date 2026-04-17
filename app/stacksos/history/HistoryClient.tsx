@@ -39,7 +39,7 @@ export default function HistoryClient({ userId }: { userId: string }) {
       {/* Top Bar */}
       <div style={{ borderBottom: "1px solid #e8e8e8", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 900, margin: "0 auto", background: "#fff" }}>
         <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
-        <a href="/roadmap" style={{ fontSize: 13, color: "#999", textDecoration: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 14px" }}>← Back to dashboard</a>
+        <a href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 14px" }}>← Back to dashboard</a>
       </div>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 32px 80px" }}>
@@ -52,7 +52,7 @@ export default function HistoryClient({ userId }: { userId: string }) {
 
         {!loading && records.length === 0 && (
           <div style={{ color: "#999", fontSize: 14, padding: "40px 0", textAlign: "center" }}>
-            No bonus records yet. Start a bonus from the <a href="/roadmap" style={{ color: "#0d7c5f", textDecoration: "none" }}>dashboard</a>.
+            No bonus records yet. Start a bonus from the <a href="/stacksos" style={{ color: "#0d7c5f", textDecoration: "none" }}>dashboard</a>.
           </div>
         )}
 

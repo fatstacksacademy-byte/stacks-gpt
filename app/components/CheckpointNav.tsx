@@ -3,16 +3,16 @@
 import { usePathname } from "next/navigation"
 
 const tabs = [
-  { label: "Paycheck", href: "/roadmap" },
-  { label: "Spending", href: "/roadmap/spending" },
-  { label: "Savings", href: "/roadmap/savings" },
+  { label: "Paycheck", href: "/stacksos" },
+  { label: "Spending", href: "/stacksos/spending" },
+  { label: "Savings", href: "/stacksos/savings" },
 ] as const
 
 export default function CheckpointNav() {
   const pathname = usePathname()
 
   function isActive(href: string) {
-    if (href === "/roadmap") return pathname === "/roadmap"
+    if (href === "/stacksos") return pathname === "/stacksos"
     return pathname.startsWith(href)
   }
 

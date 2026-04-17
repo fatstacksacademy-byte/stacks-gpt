@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) { router.push("/roadmap"); router.refresh() }
+      if (data.user) { router.push("/stacksos"); router.refresh() }
     })
   }, [])
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) { setIsError(true); setMessage(error.message) }
-    else { router.push("/roadmap"); router.refresh() }
+    else { router.push("/stacksos"); router.refresh() }
   }
 
   return (

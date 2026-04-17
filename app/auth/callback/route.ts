@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get("code")
   const type = searchParams.get("type")
-  const next = searchParams.get("next") ?? "/roadmap"
+  const next = searchParams.get("next") ?? "/stacksos"
 
   if (code) {
     const supabase = await createClient()

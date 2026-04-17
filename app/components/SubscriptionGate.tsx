@@ -40,7 +40,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
   useEffect(() => {
     if (isSubscribed && checkoutSuccess) {
       setPolling(false)
-      router.replace("/roadmap")
+      router.replace("/stacksos")
     }
   }, [isSubscribed, checkoutSuccess])
 
