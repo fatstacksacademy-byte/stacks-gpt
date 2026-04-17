@@ -1033,7 +1033,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
                     {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
                   </div>
-                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>You qualify based on your paycheck</div>
+                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
+                    {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
+                  </div>
                   <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
                     <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
                     <div style={{ fontSize: 14, color: "#666" }}>

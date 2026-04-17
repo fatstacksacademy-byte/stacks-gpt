@@ -4,6 +4,37 @@ import type { IncomeSource } from "./profileServer"
 
 export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
+/**
+ * Estimate net bonus after fees.
+ * - If DD already waives the fee (user is routing DD anyway), fee = $0
+ * - Otherwise, calculate total fee over the hold period
+ */
+function calcNetBonus(bonus: (typeof allBonuses)[number], bonusAmount: number): { netBonus: number; totalFees: number; feeWaivedByDD: boolean } {
+  const fee = bonus.fees?.monthly_fee ?? 0
+  if (fee === 0) return { netBonus: bonusAmount, totalFees: 0, feeWaivedByDD: false }
+
+  const waiver = (bonus.fees?.monthly_fee_waiver_text ?? "").toLowerCase()
+  const hasDDRequirement = bonus.requirements?.direct_deposit_required
+
+  // If DD is required AND the waiver mentions DD/electronic deposits, fee is auto-waived
+  const ddWaivesFee = hasDDRequirement && (
+    waiver.includes("direct deposit") ||
+    waiver.includes("qualifying electronic") ||
+    waiver.includes("qualifying deposit") ||
+    waiver.includes("$500+ dd") ||
+    waiver.includes("dd")
+  )
+
+  if (ddWaivesFee) return { netBonus: bonusAmount, totalFees: 0, feeWaivedByDD: true }
+
+  // Calculate total fee cost over hold period
+  const holdDays = bonus.timeline?.must_remain_open_days ?? 180
+  const months = Math.max(1, Math.ceil(holdDays / 30))
+  const totalFees = fee * months
+
+  return { netBonus: bonusAmount - totalFees, totalFees, feeWaivedByDD: false }
+}
+
 export type SequencedBonus = {
   type?: "bonus"
   id: string
@@ -18,6 +49,9 @@ export type SequencedBonus = {
   monthly_fee: number | null
   chex_sensitive: string | null
   hard_pull: boolean | null
+  net_bonus: number
+  total_fees: number
+  fee_waived_by_dd: boolean
   source_links: string[]
   weeks_to_complete: number
   velocity: number
@@ -181,6 +215,9 @@ export function runSequencer({
     cooldownMonths: number | null
     cooldownWeeks: number
     isLifetime: boolean
+    netBonus?: number
+    totalFees?: number
+    feeWaivedByDD?: boolean
   }
 
   const pool: EvalBonus[] = []
@@ -206,15 +243,15 @@ export function runSequencer({
     // If bonus has tiers, evaluate each tier and pick the best velocity
     const tiers = (b as any).tiers as { bonus: number; min_dd_total: number }[] | undefined
     if (tiers && tiers.length > 0) {
-      let bestTier: EvalBonus | null = null
+      let bestTier: (EvalBonus & { netBonus: number; totalFees: number; feeWaivedByDD: boolean }) | null = null
       for (const tier of tiers) {
-        // Create a virtual bonus with this tier's requirements
         const virtualBonus = { ...b, bonus_amount: tier.bonus, requirements: { ...b.requirements, min_direct_deposit_total: tier.min_dd_total } }
         const result = evaluate(virtualBonus, sources)
         if (!result.feasible) continue
-        const velocity = tier.bonus / result.weeksToComplete
+        const { netBonus, totalFees, feeWaivedByDD } = calcNetBonus(b, tier.bonus)
+        const velocity = netBonus / result.weeksToComplete
         if (!bestTier || velocity > bestTier.velocity) {
-          bestTier = { bonus: virtualBonus, weeksToComplete: result.weeksToComplete, velocity, cooldownMonths, cooldownWeeks, isLifetime }
+          bestTier = { bonus: virtualBonus, weeksToComplete: result.weeksToComplete, velocity, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD }
         }
       }
       if (bestTier) {
@@ -225,7 +262,8 @@ export function runSequencer({
     } else {
       const result = evaluate(b, sources)
       if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
-      pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: b.bonus_amount / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime })
+      const { netBonus, totalFees, feeWaivedByDD } = calcNetBonus(b, b.bonus_amount)
+      pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: netBonus / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD })
     }
   }
 
@@ -327,6 +365,9 @@ export function runSequencer({
       chex_sensitive: b.screening?.chex_sensitive ?? null,
       hard_pull: b.screening?.hard_pull ?? null,
       source_links: b.source_links ?? [],
+      net_bonus: eb.netBonus ?? b.bonus_amount,
+      total_fees: eb.totalFees ?? 0,
+      fee_waived_by_dd: eb.feeWaivedByDD ?? false,
       weeks_to_complete: eb.weeksToComplete, velocity: eb.velocity,
       slot: bestSlot, start_week: startWeek, end_week: endWeek, payout_week: payoutWeek,
       cycle, cooldown_months: eb.cooldownMonths,
