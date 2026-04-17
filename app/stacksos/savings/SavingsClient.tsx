@@ -38,8 +38,14 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [expandedRec, setExpandedRec] = useState<string | null>(null)
   const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
   const [userState, setUserState] = useState<string | null>(null)
-  const [showBusiness, setShowBusiness] = useState(false)
-  const [showBrokerage, setShowBrokerage] = useState(false)
+  const [showBusiness, setShowBusiness] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("stacks_show_business") === "true"
+  })
+  const [showBrokerage, setShowBrokerage] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("stacks_show_brokerage") === "true"
+  })
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -281,12 +287,12 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
             {/* Bonus type toggles */}
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0", display: "flex", gap: 20 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
-                <input type="checkbox" checked={showBusiness} onChange={e => setShowBusiness(e.target.checked)}
+                <input type="checkbox" checked={showBusiness} onChange={e => { setShowBusiness(e.target.checked); localStorage.setItem("stacks_show_business", String(e.target.checked)) }}
                   style={{ accentColor: "#7c3aed" }} />
                 <span style={{ fontSize: 13, color: "#555" }}>I have a business entity</span>
               </label>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
-                <input type="checkbox" checked={showBrokerage} onChange={e => setShowBrokerage(e.target.checked)}
+                <input type="checkbox" checked={showBrokerage} onChange={e => { setShowBrokerage(e.target.checked); localStorage.setItem("stacks_show_brokerage", String(e.target.checked)) }}
                   style={{ accentColor: "#2563eb" }} />
                 <span style={{ fontSize: 13, color: "#555" }}>Include brokerage bonuses</span>
               </label>
