@@ -37,6 +37,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [editingId, setEditingId] = useState<string | null>(null)
   const [expandedRec, setExpandedRec] = useState<string | null>(null)
   const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
+  const [userState, setUserState] = useState<string | null>(null)
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -58,12 +59,15 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    const [e, p] = await Promise.all([
+    const supabaseClient = createClient()
+    const [e, p, { data: userProfile }] = await Promise.all([
       getSavingsEntries(userId),
       getSavingsProfile(userId),
+      supabaseClient.from("user_profiles").select("state").eq("user_id", userId).single(),
     ])
     setEntries(e)
     setProfile(p)
+    if (userProfile?.state) setUserState(userProfile.state)
     setLoading(false)
   }, [userId])
 
@@ -159,6 +163,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     availableBalance: currentBalance || 50000, // default to $50k if not set
     completedBonusIds,
     skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
+    userState,
   })
 
   // Start a recommended bonus — add it as a savings entry
@@ -442,6 +447,52 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{sequencerResult.entries.length}</div>
               </div>
             </div>
+
+            {/* Year 1 / Year 2 Projections */}
+            {sequencerResult.entries.length > 0 && (() => {
+              const balance = currentBalance || 50000
+              let year1Earnings = 0
+              let year1Days = 0
+              let year2Earnings = 0
+              let year2Days = 0
+              for (const e of sequencerResult.entries) {
+                if (e.start_day < 365) {
+                  const daysInYear1 = Math.min(e.end_day, 365) - e.start_day
+                  const frac = daysInYear1 / e.hold_days
+                  year1Earnings += Math.round(e.total_earnings * frac)
+                  year1Days += daysInYear1
+                }
+                if (e.end_day > 365) {
+                  const start = Math.max(e.start_day, 365)
+                  const end = Math.min(e.end_day, 730)
+                  const daysInYear2 = end - start
+                  const frac = daysInYear2 / e.hold_days
+                  year2Earnings += Math.round(e.total_earnings * frac)
+                  year2Days += daysInYear2
+                }
+              }
+              // If year 2 has no sequenced bonuses, assume HYSA at ~4%
+              const hysaYear2 = year2Days < 365 ? Math.round(balance * 0.04 * ((365 - year2Days) / 365)) : 0
+              return (
+                <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 160, padding: "14px 16px", background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 10 }}>
+                    <div style={{ fontSize: 10, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 1 projected</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 4 }}>{money(year1Earnings)}</div>
+                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                      {(year1Earnings / balance * 100).toFixed(1)}% return on {money(balance)}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 160, padding: "14px 16px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10 }}>
+                    <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 2 projected</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 4 }}>{money(year2Earnings + hysaYear2)}</div>
+                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                      {year2Earnings > 0 ? `${money(year2Earnings)} bonuses` : "No bonus rotations"}
+                      {hysaYear2 > 0 ? ` + ${money(hysaYear2)} HYSA interest` : ""}
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Skipped bonuses */}
             {sequencerResult.skipped.length > 0 && (

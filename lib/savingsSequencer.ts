@@ -69,10 +69,12 @@ export function runSavingsSequencer({
   availableBalance,
   completedBonusIds = [],
   skippedBonusIds = [],
+  userState,
 }: {
   availableBalance: number
   completedBonusIds?: string[]
   skippedBonusIds?: string[]
+  userState?: string | null
 }): SavingsSequencerResult {
   const skipped: { bank_name: string; reason: string }[] = []
   const candidates: {
@@ -95,6 +97,13 @@ export function runSavingsSequencer({
     if (skippedBonusIds.includes(bonus.id)) {
       skipped.push({ bank_name: bonus.bank_name, reason: "Skipped by user" })
       continue
+    }
+    if (userState && bonus.eligibility?.state_restricted) {
+      const allowed = bonus.eligibility.states_allowed ?? []
+      if (allowed.length > 0 && !allowed.some(s => s === userState || s === "Nationwide (U.S.)")) {
+        skipped.push({ bank_name: bonus.bank_name, reason: `Not available in ${userState}` })
+        continue
+      }
     }
 
     const tier = bestTier(bonus, availableBalance)
