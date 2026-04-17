@@ -162,10 +162,11 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     .filter(Boolean) as string[]
 
   const sequencerResult = runSavingsSequencer({
-    availableBalance: currentBalance || 50000, // default to $50k if not set
+    availableBalance: currentBalance || 50000,
     completedBonusIds,
     skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
     userState,
+    currentHysaApy: currentApy || 0,
   })
 
   // Start a recommended bonus — add it as a savings entry

@@ -246,7 +246,7 @@ export const savingsBonuses: SavingsBonus[] = [
     id: "citi-savings-2026",
     bank_name: "Citi",
     product_type: "savings",
-    base_apy: 0.0435,
+    base_apy: 0.01,
     funding_window_days: 45,
     maintenance_days: 90,
     total_hold_days: 120,
@@ -269,7 +269,7 @@ export const savingsBonuses: SavingsBonus[] = [
     id: "wells-fargo-platinum-savings-2026",
     bank_name: "Wells Fargo",
     product_type: "savings",
-    base_apy: 0.04,
+    base_apy: 0.0401,
     funding_window_days: 30,
     maintenance_days: 90,
     total_hold_days: 120,
@@ -291,6 +291,7 @@ export const savingsBonuses: SavingsBonus[] = [
   },
   {
     id: "raisin-savings-2026",
+    expired: true,
     bank_name: "Raisin (SaveBetter)",
     product_type: "savings",
     base_apy: 0.043,
@@ -409,5 +410,54 @@ export const savingsBonuses: SavingsBonus[] = [
     source_links: ["https://www.moomoo.com/"],
     raw_excerpt: "Moomoo $200-$1,000 cash account bonus. 4.1% APY. 60-day hold. SIPC protected.",
     notes: "This is a brokerage cash sweep, not a traditional savings account. SIPC protected, not FDIC insured."
+  },
+  {
+    id: "cit-bank-savings-300-2026",
+    bank_name: "CIT Bank",
+    product_type: "savings",
+    base_apy: 0.042,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 25000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 300 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New CIT Bank savings customers. Deposit within 30 days, maintain 90 days."
+    },
+    source_links: ["https://www.cit.com/cit-bank/"],
+    raw_excerpt: "CIT Bank up to $300 savings bonus. 4.2% APY. $25k for $100, $50k for $300. 30-day funding, 90-day maintenance.",
+  },
+  {
+    id: "raisin-savings-1500-2026",
+    bank_name: "Raisin",
+    product_type: "savings",
+    base_apy: 0.043,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 10000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 500 },
+      { min_deposit: 100000, bonus_amount: 1000 },
+      { min_deposit: 200000, bonus_amount: 1500 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New Raisin customers. Deposit within 30 days, maintain 90 days. Stackable with TopCashback."
+    },
+    source_links: ["https://www.raisin.com/"],
+    raw_excerpt: "Raisin up to $1,500 savings bonus. 4.3% APY. Tiered: $100/$500/$1,000/$1,500. Stackable with TopCashback.",
+    notes: "Stackable with TopCashback for additional cashback on deposit."
   },
 ]

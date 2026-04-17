@@ -2981,6 +2981,188 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: [],
   },
 
+  // ─── BUSINESS CHECKING BONUSES ─────────────────────────────────
+
+  "chase-business-checking-500-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Chase's $500 business checking bonus is the most accessible big-bank business bonus. Deposit $10,000 within 30 days, maintain for 60 days, and complete 5 qualifying transactions within 90 days. Tiered at $300 (for $2k) or $500 (for $10k).",
+    strategy: "Open a Chase Business Complete Checking account and deposit $10,000 within 30 days. Keep the balance for 60 days and make 5 qualifying transactions (debit card purchases, checks, ACH, wires) within 90 days. The lower $300 tier only requires $2,000 if you're short on capital.",
+    bestFor: "Small business owners or sole proprietors who can park $10,000 for 60 days and need a mainstream business banking relationship.",
+    pros: ["$500 bonus is strong for business checking", "Chase branch network for easy deposits", "Tiered — can still earn $300 with only $2,000"],
+    cons: ["$15/month fee unless $2,000 daily balance maintained", "5 transactions required within 90 days"],
+    comparison: "",
+    faqs: [{ q: "Can I open a Chase business account as a sole proprietor?", a: "Yes. Sole proprietors can open a Chase Business Complete Checking using their SSN. No EIN required." }],
+    relatedSlugs: [],
+  },
+
+  "bofa-business-advantage-750-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Bank of America's $750 Business Advantage checking bonus requires a $15,000 deposit maintained for 60 days. Tiered at $400 (for $5k) or $750 (for $15k). One of the higher-value business checking bonuses available nationwide.",
+    strategy: "Open a Business Advantage checking account, deposit $15,000 within 30 days, and maintain the balance for 60 days. The $400 tier at $5,000 is a solid option if you can't commit the full $15k. Expires Dec 31, 2026, so there's a long window to act.",
+    bestFor: "Business owners with $15,000 in idle cash looking for a top-tier business checking bonus from a major bank.",
+    pros: ["$750 is one of the highest business checking bonuses", "Long expiration (Dec 31, 2026)", "Nationwide availability"],
+    cons: ["$16/month fee unless $5,000 daily balance maintained", "Requires $15,000 deposit for top tier"],
+    comparison: "",
+    faqs: [{ q: "What type of business account qualifies?", a: "Business Advantage Fundamentals, Relationship, or Unlimited checking accounts all qualify for this bonus." }],
+    relatedSlugs: [],
+  },
+
+  "usbank-business-checking-1200-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "U.S. Bank's Platinum Business Checking bonus offers up to $1,200 for a $25,000 deposit maintained for 60 days plus 6 qualifying transactions. Use promo code Q2AFL26. This is one of the largest non-Citi business checking bonuses available.",
+    strategy: "Open a Platinum Business Checking account with promo code Q2AFL26. Deposit $25,000 within 30 days and maintain for 60 days. Complete 6 qualifying transactions to satisfy all requirements. The lower $400 tier requires only $5,000.",
+    bestFor: "Business owners with $25,000 to park for 60 days who want a premium business checking relationship with U.S. Bank.",
+    pros: ["$1,200 is among the highest business checking bonuses", "Nationwide availability", "Lower tier available at $5,000/$400"],
+    cons: ["$30/month fee unless $15,000 daily balance", "6 transactions required"],
+    comparison: "",
+    faqs: [{ q: "Where do I enter the promo code?", a: "Enter promo code Q2AFL26 during the online application process for the Platinum Business Checking account." }],
+    relatedSlugs: [],
+  },
+
+  "wells-fargo-business-checking-825-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Wells Fargo's $825 business checking bonus has unusually low balance requirements — just $2,500 ending daily balance on days 30 and 60. This makes it one of the most capital-efficient business checking bonuses available.",
+    strategy: "Open a Wells Fargo business checking account and ensure a $2,500 ending daily balance on both day 30 and day 60. That's it — no transaction requirements. The low capital requirement makes this an easy stacking play alongside other business bonuses.",
+    bestFor: "Business owners who want maximum bonus with minimal capital commitment. $825 on just $2,500 is excellent return on capital.",
+    pros: ["Only $2,500 balance required — very capital efficient", "$825 is a strong payout for the requirement", "Simple balance-only requirement"],
+    cons: ["Expires May 5, 2026 — tight deadline", "$10/month fee unless $500 daily balance maintained"],
+    comparison: "",
+    faqs: [{ q: "Do I need to make any transactions?", a: "No. The Wells Fargo business bonus only requires maintaining a $2,500 ending daily balance on days 30 and 60. No transaction requirements." }],
+    relatedSlugs: [],
+  },
+
+  "bmo-business-checking-1000-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "BMO's business checking bonus offers up to $1,000 across three tiers: $400 (for $4k), $750 (for $25k), or $1,000 (for $50k). Deposit within 30 days and maintain for 90 days. Expires Apr 30, 2026.",
+    strategy: "Open a BMO business checking account, deposit within 30 days, and maintain for 90 days. The $400 tier at $4,000 is the most accessible. The top $1,000 tier requires $50,000, which is significant capital commitment for 90 days.",
+    bestFor: "Business owners in BMO's footprint who can commit capital for 90 days. The $400 tier at $4k is the sweet spot for capital efficiency.",
+    pros: ["Three tiers offer flexibility", "$400 tier only requires $4,000", "Nationwide availability"],
+    cons: ["90-day maintenance is longer than most business bonuses", "Expires Apr 30, 2026 — act fast"],
+    comparison: "",
+    faqs: [{ q: "Does BMO operate nationwide for business accounts?", a: "Yes. BMO offers business checking accounts nationwide, though branch access is concentrated in the Midwest." }],
+    relatedSlugs: [],
+  },
+
+  "citi-business-checking-2000-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Citi's business checking bonus is the king of business bonuses at up to $2,000. Five tiers from $300 (at $5k) to $2,000 (at $200k). Deposit within 45 days, maintain 45 days. State restricted to CA, FL, IL, MD, NV, NY, DC.",
+    strategy: "Open a Citi business checking account in an eligible state. Deposit within 45 days and maintain for 45 days. The $1,000 tier at $50,000 offers good balance between capital and return. The top $2,000 tier requires $200,000 — only worth it if you have idle business cash.",
+    bestFor: "Business owners in eligible states (CA, FL, IL, MD, NV, NY, DC) with significant cash reserves. The $1,000 tier at $50k is the practical sweet spot.",
+    pros: ["$2,000 is the highest business checking bonus available", "Five tiers offer flexibility at every capital level", "Short 45-day maintenance period"],
+    cons: ["State restricted — only 7 states + DC", "Top tier requires $200,000 deposit"],
+    comparison: "",
+    faqs: [{ q: "Which states qualify for the Citi business bonus?", a: "California, Florida, Illinois, Maryland, Nevada, New York, and Washington DC. You must open the account in one of these markets." }],
+    relatedSlugs: [],
+  },
+
+  "huntington-business-checking-1000-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Huntington Bank offers up to $1,000 for business checking: $400 at $5k deposit or $1,000 at $20k. Deposit within 60 days and maintain for 60 days. Available in 13 states across the Midwest, Southeast, and Texas.",
+    strategy: "Open a Huntington business checking account and deposit $20,000 within 60 days for the full $1,000. Maintain for 60 days. The $400 tier at $5,000 is a solid alternative if you want to minimize capital commitment.",
+    bestFor: "Business owners in Huntington's 13-state footprint who can park $20,000 for 60 days.",
+    pros: ["$1,000 bonus is strong for regional bank", "60-day windows for both deposit and maintenance", "Lower $400 tier available at $5,000"],
+    cons: ["Limited to 13 states", "$20/month fee unless $5,000 daily balance maintained"],
+    comparison: "",
+    faqs: [{ q: "Which states have Huntington branches?", a: "OH, MI, IN, PA, KY, WV, IL, CO, MN, SC, WI, NC, and TX. You need to be in one of these states to open the account." }],
+    relatedSlugs: [],
+  },
+
+  "mt-bank-business-checking-1500-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "M&T Bank's business checking bonus offers up to $1,500 across four balance-based tiers, measured in the 3rd month. Available in the Northeast corridor from CT to WV. The top tier requires $100,000.",
+    strategy: "Open an M&T business checking account and build your balance to the target tier by the 3rd month. The $750 tier at $30,000 offers the best balance of capital commitment and return. The $1,500 tier requires $100,000 — significant but the payout is strong.",
+    bestFor: "Business owners in the Northeast (CT, DC, DE, MD, NJ, NY, PA, VA, WV) with substantial business cash reserves.",
+    pros: ["$1,500 top tier is among the highest business bonuses", "Four tiers offer flexibility", "Balance-based — no transaction requirements"],
+    cons: ["State restricted to 9 Northeast states", "Top tier requires $100,000 balance"],
+    comparison: "",
+    faqs: [{ q: "How is the balance measured?", a: "M&T measures your balance in the 3rd month after account opening. Make sure you hit your target tier balance by then." }],
+    relatedSlugs: [],
+  },
+
+  "pnc-business-checking-1000-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "PNC's business checking bonus goes up to $1,000 at the Enterprise tier ($100k balance for 3 billing cycles). The $400 tier at $2,000 is the most accessible entry point. Available nationwide.",
+    strategy: "Open a PNC business checking account. For the $400 tier, deposit $2,000. For the top $1,000 tier, maintain $100,000 for 3 billing cycles. The $400 tier is the capital-efficient play; the $1,000 tier is for businesses with large idle balances.",
+    bestFor: "Business owners looking for a nationwide option. The $400 tier at $2,000 is great for low-capital stacking alongside other business bonuses.",
+    pros: ["$400 tier only requires $2,000 — very accessible", "Nationwide availability", "Three tiers for different capital levels"],
+    cons: ["Top tier requires $100,000 for 3 billing cycles", "$25/month fee unless qualifying balance maintained"],
+    comparison: "",
+    faqs: [{ q: "What is the Enterprise tier?", a: "PNC's Enterprise Business Checking requires maintaining $100,000 for 3 billing cycles to earn the full $1,000 bonus." }],
+    relatedSlugs: [],
+  },
+
+  "fulton-bank-business-500-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Fulton Bank offers a $500 business checking bonus for a $5,000 deposit within 60 days. Available in the Mid-Atlantic region (DE, DC, MD, NJ, PA, VA). Simple deposit-only requirement.",
+    strategy: "Open a Fulton Bank business checking account and deposit $5,000 within 60 days. No transaction or direct deposit requirements — just fund and hold. Straightforward and low-effort.",
+    bestFor: "Business owners in the Mid-Atlantic region who want a simple deposit-only bonus without transaction requirements.",
+    pros: ["Simple $5,000 deposit requirement", "No transaction requirements", "60-day funding window is generous"],
+    cons: ["State restricted to 6 Mid-Atlantic states", "$10/month fee unless qualifying balance maintained"],
+    comparison: "",
+    faqs: [{ q: "Which states qualify for Fulton Bank business checking?", a: "Delaware, Washington DC, Maryland, New Jersey, Pennsylvania, and Virginia." }],
+    relatedSlugs: [],
+  },
+
+  "keybank-business-500-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "KeyBank offers a $500 business checking bonus available in 15 states. Requirements vary — check KeyBank's current offer terms for deposit and maintenance specifics.",
+    strategy: "Open a KeyBank business checking account in an eligible state. Check current terms for specific deposit and maintenance requirements as details may vary by market.",
+    bestFor: "Business owners in KeyBank's 15-state footprint looking for a $500 business checking bonus from a regional bank.",
+    pros: ["$500 bonus from established regional bank", "Available in 15 states", "Strong branch network in footprint states"],
+    cons: ["State restricted — 15 states only", "$15/month fee unless qualifying balance maintained"],
+    comparison: "",
+    faqs: [{ q: "Which states have KeyBank?", a: "AK, CO, CT, ID, IN, MA, ME, MI, NY, OH, OR, PA, UT, VT, and WA." }],
+    relatedSlugs: [],
+  },
+
+  "central-bank-business-500-2026": {
+    ddMethods: [
+      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
+      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    ],
+    summary: "Central Bank of the Midwest offers a $500 business checking bonus with a simple $3,000 balance at day 90. Use promo code 500BB18. Available in OK, IL, KS, MO, CO.",
+    strategy: "Open a Central Bank business checking account with promo code 500BB18. Maintain a $3,000 balance through day 90. Low capital requirement makes this an easy stacking play.",
+    bestFor: "Business owners in the central US (OK, IL, KS, MO, CO) looking for a low-capital business checking bonus.",
+    pros: ["Only $3,000 balance required", "Simple balance-only requirement", "Promo code makes qualification straightforward"],
+    cons: ["State restricted to 5 states", "$10/month fee unless qualifying balance maintained"],
+    comparison: "",
+    faqs: [{ q: "What is the promo code?", a: "Use promo code 500BB18 when opening the account to qualify for the $500 bonus." }],
+    relatedSlugs: [],
+  },
+
   // ─── SAVINGS BONUSES ──────────────────────────────────────────
 
   "capital-one-360-savings-2026": {
@@ -3118,5 +3300,27 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "Is Blue Foundry available nationwide?", a: "Blue Foundry is NJ-based, but many out-of-state applications have been approved according to community reports on Doctor of Credit." },
     ],
     relatedSlugs: ["chase-600-savings-bonus", "capital-one-1500-savings-bonus", "ally-100-savings-bonus"],
+  },
+
+  "cit-bank-savings-300-2026": {
+    summary: "CIT Bank's savings bonus pays up to $300 for depositing $50,000 and maintaining for 90 days. With a 4.2% base APY, your money earns competitive interest on top of the bonus. The $100 tier at $25,000 is more accessible.",
+    strategy: "Open a CIT Bank savings account and deposit within 30 days. Maintain the balance for 90 days. The $100 tier at $25,000 is the more capital-efficient option. At $50,000 for $300, the bonus adds meaningful value on top of the 4.2% APY.",
+    bestFor: "Savers with $25,000-$50,000 who want a competitive APY plus a bonus from an established online bank.",
+    pros: ["4.2% base APY is competitive", "No monthly fees", "Established online bank"],
+    cons: ["$25,000 minimum for lowest tier", "Only two tiers — limited flexibility"],
+    comparison: "",
+    faqs: [{ q: "Is CIT Bank FDIC insured?", a: "Yes. CIT Bank is a division of First Citizens BancShares and is FDIC insured." }],
+    relatedSlugs: [],
+  },
+
+  "raisin-savings-1500-2026": {
+    summary: "Raisin's savings bonus offers up to $1,500 across four tiers from $10,000 to $200,000. With a 4.3% base APY and the ability to stack with TopCashback, this can be one of the higher total-return savings plays available.",
+    strategy: "Open a Raisin savings account and deposit within 30 days. Maintain for 90 days. For maximum value, go through TopCashback first to stack an additional cashback bonus on top. The $100 tier at $10,000 is the most accessible entry point.",
+    bestFor: "Savers looking for a competitive APY plus stackable bonuses. Especially strong for those who use TopCashback for additional cashback.",
+    pros: ["4.3% base APY — among the highest", "Stackable with TopCashback for extra value", "Four tiers from $10k to $200k"],
+    cons: ["Raisin is a marketplace — your deposit goes to a partner bank", "Top tier requires $200,000"],
+    comparison: "",
+    faqs: [{ q: "What is Raisin?", a: "Raisin is a savings marketplace that partners with FDIC-insured banks. You open an account through Raisin and your deposit is held at a partner bank." }],
+    relatedSlugs: [],
   },
 }

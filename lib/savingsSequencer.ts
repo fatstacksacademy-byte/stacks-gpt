@@ -70,11 +70,13 @@ export function runSavingsSequencer({
   completedBonusIds = [],
   skippedBonusIds = [],
   userState,
+  currentHysaApy = 0,
 }: {
   availableBalance: number
   completedBonusIds?: string[]
   skippedBonusIds?: string[]
   userState?: string | null
+  currentHysaApy?: number
 }): SavingsSequencerResult {
   const skipped: { bank_name: string; reason: string }[] = []
   const candidates: {
@@ -106,8 +108,9 @@ export function runSavingsSequencer({
       }
     }
 
-    const tier = bestTier(bonus, availableBalance)
-    if (!tier) {
+    // Evaluate ALL affordable tiers and pick the one with the best effective APY
+    const affordableTiers = bonus.tiers.filter(t => availableBalance >= t.min_deposit)
+    if (affordableTiers.length === 0) {
       skipped.push({
         bank_name: bonus.bank_name,
         reason: `Need $${bonus.tiers[0].min_deposit.toLocaleString()} minimum (have $${availableBalance.toLocaleString()})`,
@@ -115,13 +118,26 @@ export function runSavingsSequencer({
       continue
     }
 
-    const { effectiveApy, interestEarned, totalEarnings } = calcEffectiveApy(
-      tier.min_deposit,
-      tier.bonus_amount,
-      bonus.base_apy,
-      bonus.total_hold_days,
-    )
+    let bestCandidate: { tier: SavingsBonusTier; effectiveApy: number; interestEarned: number; totalEarnings: number } | null = null
+    for (const tier of affordableTiers) {
+      const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+      if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
+        bestCandidate = { tier, ...result }
+      }
+    }
 
+    if (!bestCandidate) continue
+
+    // Skip if effective APY doesn't beat the user's current HYSA
+    if (currentHysaApy > 0 && bestCandidate.effectiveApy <= currentHysaApy) {
+      skipped.push({
+        bank_name: bonus.bank_name,
+        reason: `Effective APY ${(bestCandidate.effectiveApy * 100).toFixed(1)}% doesn't beat your ${(currentHysaApy * 100).toFixed(1)}% HYSA`,
+      })
+      continue
+    }
+
+    const { tier, effectiveApy, interestEarned, totalEarnings } = bestCandidate
     candidates.push({ bonus, tier, effectiveApy, interestEarned, totalEarnings })
   }
 

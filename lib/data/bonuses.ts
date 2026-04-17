@@ -4752,5 +4752,444 @@ export const bonuses: any[] = [
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
     "source_links": ["https://www.pecuonline.org/"],
     "raw_excerpt": "$200 checking bonus. 5 debit of $10+ in 60 days + online banking. Select TX counties."
+  },
+  {
+    "id": "chase-business-checking-500-2026",
+    "bank_name": "Chase",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 500,
+    "cooldown_months": 24,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 2000 },
+      { "bonus": 500, "min_dd_total": 10000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 60,
+      "min_opening_deposit": null,
+      "min_balance": 10000,
+      "debit_transactions_required": 5,
+      "billpay_required": null,
+      "other_requirements_text": "Deposit $10,000 in 30 days, maintain 60 days, 5 qualifying transactions in 90 days. Expires May 14, 2026."
+    },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with $2,000 minimum daily balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. Expires May 14, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.chase.com/business/banking"],
+    "raw_excerpt": "Chase $500 business checking bonus. $10k deposit in 30 days, maintain 60 days, 5 transactions in 90 days. Tiered: $300/$500. Expires May 14, 2026."
+  },
+  {
+    "id": "bofa-business-advantage-750-2026",
+    "bank_name": "Bank of America",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 750,
+    "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 5000 },
+      { "bonus": 750, "min_dd_total": 15000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 60,
+      "min_opening_deposit": null,
+      "min_balance": 15000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Deposit $15,000 in 30 days, maintain 60 days. Expires Dec 31, 2026."
+    },
+    "fees": { "monthly_fee": 16, "monthly_fee_waiver_text": "Waived with $5,000 minimum daily balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business Advantage checking. Expires Dec 31, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.bankofamerica.com/smallbusiness/"],
+    "raw_excerpt": "Bank of America $750 business checking bonus. $15k deposit in 30 days, maintain 60 days. Tiered: $400/$750. Expires Dec 31, 2026."
+  },
+  {
+    "id": "usbank-business-checking-1200-2026",
+    "bank_name": "U.S. Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 1200,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 5000 },
+      { "bonus": 1200, "min_dd_total": 25000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 60,
+      "min_opening_deposit": null,
+      "min_balance": 25000,
+      "debit_transactions_required": 6,
+      "billpay_required": null,
+      "other_requirements_text": "Platinum Business Checking. $25,000 deposit in 30 days, maintain 60 days, 6 qualifying transactions. Promo Q2AFL26. Expires June 30, 2026."
+    },
+    "fees": { "monthly_fee": 30, "monthly_fee_waiver_text": "Waived with $15,000 minimum daily balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. Promo code Q2AFL26. Expires June 30, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.usbank.com/business-banking/"],
+    "raw_excerpt": "U.S. Bank $1,200 Platinum business checking bonus. $25k deposit in 30 days, maintain 60 days, 6 transactions. Promo Q2AFL26. Tiered: $400/$1,200. Expires June 30, 2026."
+  },
+  {
+    "id": "wells-fargo-business-checking-825-2026",
+    "bank_name": "Wells Fargo",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 825,
+    "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 2500 },
+      { "bonus": 825, "min_dd_total": 2500 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 2500,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "$2,500 ending daily balance on days 30 and 60. Expires May 5, 2026."
+    },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $500 minimum daily balance or $1,000 average ledger balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. Expires May 5, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
+    "source_links": ["https://www.wellsfargo.com/biz/"],
+    "raw_excerpt": "Wells Fargo $825 business checking bonus. $2,500 ending daily balance on days 30 and 60. Tiered: $400/$825. Expires May 5, 2026."
+  },
+  {
+    "id": "bmo-business-checking-1000-2026",
+    "bank_name": "BMO",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 1000,
+    "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 4000 },
+      { "bonus": 750, "min_dd_total": 25000 },
+      { "bonus": 1000, "min_dd_total": 50000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 90,
+      "min_opening_deposit": null,
+      "min_balance": 50000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Deposit in 30 days, maintain 90 days. Expires Apr 30, 2026."
+    },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with $5,000 minimum daily balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. Expires Apr 30, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.bmo.com/main/business/"],
+    "raw_excerpt": "BMO $1,000 business checking bonus. Tiered: $400/$750/$1,000. Deposit in 30 days, maintain 90 days. Expires Apr 30, 2026."
+  },
+  {
+    "id": "citi-business-checking-2000-2026",
+    "bank_name": "Citi",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 2000,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 5000 },
+      { "bonus": 500, "min_dd_total": 20000 },
+      { "bonus": 1000, "min_dd_total": 50000 },
+      { "bonus": 1500, "min_dd_total": 100000 },
+      { "bonus": 2000, "min_dd_total": 200000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 45,
+      "holding_period_days": 45,
+      "min_opening_deposit": null,
+      "min_balance": 200000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Deposit in 45 days, maintain 45 days. Expires July 7, 2026."
+    },
+    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with $10,000 minimum combined balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["CA", "FL", "IL", "MD", "NV", "NY", "DC"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted: CA, FL, IL, MD, NV, NY, DC. Expires July 7, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.citi.com/business/"],
+    "raw_excerpt": "Citi $2,000 business checking bonus. Tiered: $300/$500/$1,000/$1,500/$2,000. Deposit in 45 days, maintain 45 days. State restricted. Expires July 7, 2026."
+  },
+  {
+    "id": "huntington-business-checking-1000-2026",
+    "bank_name": "Huntington Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 1000,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 5000 },
+      { "bonus": 1000, "min_dd_total": 20000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": 60,
+      "min_opening_deposit": null,
+      "min_balance": 20000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "$20,000 deposit in 60 days, maintain 60 days. Expires June 16, 2026."
+    },
+    "fees": { "monthly_fee": 20, "monthly_fee_waiver_text": "Waived with $5,000 minimum daily balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted. Expires June 16, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.huntington.com/business/"],
+    "raw_excerpt": "Huntington Bank $1,000 business checking bonus. $20k deposit in 60 days, maintain 60 days. Tiered: $400/$1,000. State restricted. Expires June 16, 2026."
+  },
+  {
+    "id": "mt-bank-business-checking-1500-2026",
+    "bank_name": "M&T Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 1500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 5000 },
+      { "bonus": 500, "min_dd_total": 15000 },
+      { "bonus": 750, "min_dd_total": 30000 },
+      { "bonus": 1500, "min_dd_total": 100000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 100000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Balance-based tiers in 3rd month. Expires June 30, 2026."
+    },
+    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["CT", "DC", "DE", "MD", "NJ", "NY", "PA", "VA", "WV"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted: CT, DC, DE, MD, NJ, NY, PA, VA, WV. Expires June 30, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.mtb.com/business/"],
+    "raw_excerpt": "M&T Bank $1,500 business checking bonus. Balance-based tiers in 3rd month. Tiered: $300/$500/$750/$1,500. State restricted. Expires June 30, 2026."
+  },
+  {
+    "id": "pnc-business-checking-1000-2026",
+    "bank_name": "PNC Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 1000,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 2000 },
+      { "bonus": 500, "min_dd_total": 30000 },
+      { "bonus": 1000, "min_dd_total": 100000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 100000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Enterprise tier: $100k balance for 3 billing cycles. Expires June 30, 2026."
+    },
+    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. Expires June 30, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.pnc.com/en/small-business.html"],
+    "raw_excerpt": "PNC Bank $1,000 business checking bonus. Enterprise: $100k balance for 3 cycles. Tiered: $400/$500/$1,000. Expires June 30, 2026."
+  },
+  {
+    "id": "fulton-bank-business-500-2026",
+    "bank_name": "Fulton Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 5000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "$5,000 deposit in 60 days. Expires July 15, 2026."
+    },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["DE", "DC", "MD", "NJ", "PA", "VA"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted: DE, DC, MD, NJ, PA, VA. Expires July 15, 2026. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
+    "source_links": ["https://www.fultonbank.com/Business/"],
+    "raw_excerpt": "Fulton Bank $500 business checking bonus. $5,000 deposit in 60 days. State restricted. Expires July 15, 2026."
+  },
+  {
+    "id": "keybank-business-500-2026",
+    "bank_name": "KeyBank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Business checking bonus. See KeyBank for full details."
+    },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["AK", "CO", "CT", "ID", "IN", "MA", "ME", "MI", "NY", "OH", "OR", "PA", "UT", "VT", "WA"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
+    "source_links": ["https://www.key.com/small-business/"],
+    "raw_excerpt": "KeyBank $500 business checking bonus. State restricted: AK, CO, CT, ID, IN, MA, ME, MI, NY, OH, OR, PA, UT, VT, WA."
+  },
+  {
+    "id": "central-bank-business-500-2026",
+    "bank_name": "Central Bank of the Midwest",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": null,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 3000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "$3,000 balance at day 90. Promo code 500BB18."
+    },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["OK", "IL", "KS", "MO", "CO"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Business checking. State restricted: OK, IL, KS, MO, CO. Promo code 500BB18. New business checking customers only."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "source_links": ["https://www.centralbank.com/"],
+    "raw_excerpt": "Central Bank of the Midwest $500 business checking bonus. $3,000 balance at day 90. Promo 500BB18. State restricted."
   }
 ]
