@@ -4,20 +4,25 @@ import { useState } from "react"
 
 export default function NewsletterCTA() {
   const [email, setEmail] = useState("")
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email) return
-    window.open(`https://fatstacksacademy.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, "_blank")
-    setSubmitted(true)
+    if (!email.includes("@")) return
+    setStatus("loading")
+    const res = await fetch("/api/newsletter/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+    setStatus(res.ok ? "done" : "error")
   }
 
-  if (submitted) {
+  if (status === "done") {
     return (
-      <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px", textAlign: "center" }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f", marginBottom: 4 }}>Check your inbox</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Confirm your subscription to get weekly bank bonus updates.</div>
+      <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12, padding: "24px", textAlign: "center" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f", marginBottom: 4 }}>You&apos;re subscribed!</div>
+        <div style={{ fontSize: 13, color: "#888" }}>You&apos;ll get notified when new bonuses drop.</div>
       </div>
     )
   }
@@ -41,14 +46,15 @@ export default function NewsletterCTA() {
             borderRadius: 8, outline: "none",
           }}
         />
-        <button type="submit" style={{
+        <button type="submit" disabled={status === "loading"} style={{
           padding: "10px 20px", fontSize: 13, fontWeight: 700,
           background: "#0d7c5f", color: "#fff", border: "none",
           borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap",
         }}>
-          Subscribe
+          {status === "loading" ? "..." : "Subscribe"}
         </button>
       </form>
+      {status === "error" && <div style={{ fontSize: 12, color: "#ef4444", marginTop: 6 }}>Something went wrong. Try again.</div>}
     </div>
   )
 }

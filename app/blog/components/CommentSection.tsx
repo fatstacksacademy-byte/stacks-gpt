@@ -30,6 +30,7 @@ export default function CommentSection({ slug }: { slug: string }) {
   const [guestEmail, setGuestEmail] = useState("")
   const [replyTo, setReplyTo] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [subscribeNewsletter, setSubscribeNewsletter] = useState(true)
 
   const loadComments = useCallback(async () => {
     const data = await getComments(slug)
@@ -64,6 +65,15 @@ export default function CommentSection({ slug }: { slug: string }) {
     setSubmitting(false)
 
     if (result) {
+      // Subscribe to newsletter if checked
+      const emailToSubscribe = userId ? userEmail : guestEmail.trim()
+      if (subscribeNewsletter && emailToSubscribe) {
+        fetch("/api/newsletter/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailToSubscribe }),
+        }).catch(() => {}) // fire and forget
+      }
       setBody("")
       setReplyTo(null)
       await loadComments()
@@ -165,7 +175,12 @@ export default function CommentSection({ slug }: { slug: string }) {
           )}
           <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Share your experience or ask a question..."
             style={{ width: "100%", padding: "12px 14px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", minHeight: 80, resize: "vertical", lineHeight: 1.6 }} />
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, flexWrap: "wrap", gap: 8 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+              <input type="checkbox" checked={subscribeNewsletter} onChange={e => setSubscribeNewsletter(e.target.checked)}
+                style={{ accentColor: "#0d7c5f" }} />
+              <span style={{ fontSize: 12, color: "#888" }}>Subscribe to the Fat Stacks newsletter</span>
+            </label>
             <button type="submit" disabled={submitting || !body.trim() || (!userId && (!guestName.trim() || !guestEmail.trim()))}
               style={{ padding: "10px 24px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", opacity: (!body.trim() || (!userId && (!guestName.trim() || !guestEmail.trim()))) ? 0.5 : 1 }}>
               {submitting ? "Posting..." : "Post Comment"}

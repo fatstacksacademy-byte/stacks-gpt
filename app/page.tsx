@@ -10,6 +10,8 @@ const NOTION_VIDEOS = "https://nathanielbooth.notion.site/Latest-Videos-1d2e0e2e
 export default function HomePage() {
   const supabase = createClient()
   const [loggedIn, setLoggedIn] = useState(false)
+  const [nlEmail, setNlEmail] = useState("")
+  const [nlStatus, setNlStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -217,12 +219,29 @@ export default function HomePage() {
           <p style={{ fontSize: 14, color: "#888", lineHeight: 1.6, margin: "0 0 14px" }}>
             Get notified when new bonuses drop or existing ones increase. No spam.
           </p>
-          <a href="https://fatstacksacademy.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" style={{
-            display: "inline-block", fontSize: 14, fontWeight: 700, color: "#fff", background: "#0d7c5f",
-            padding: "12px 24px", borderRadius: 8, textDecoration: "none",
-          }}>
-            Subscribe to newsletter
-          </a>
+          {nlStatus === "done" ? (
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f" }}>You&apos;re subscribed!</div>
+          ) : (
+            <form onSubmit={async (e) => {
+              e.preventDefault()
+              if (!nlEmail.includes("@")) return
+              setNlStatus("loading")
+              const res = await fetch("/api/newsletter/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: nlEmail }),
+              })
+              setNlStatus(res.ok ? "done" : "error")
+            }} style={{ display: "flex", gap: 8 }}>
+              <input type="email" value={nlEmail} onChange={e => setNlEmail(e.target.value)} placeholder="you@email.com" required
+                style={{ flex: 1, padding: "10px 14px", fontSize: 14, border: "1px solid #a7f3d0", borderRadius: 8, background: "#fff", color: "#111" }} />
+              <button type="submit" disabled={nlStatus === "loading"}
+                style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", flexShrink: 0 }}>
+                {nlStatus === "loading" ? "..." : "Subscribe"}
+              </button>
+            </form>
+          )}
+          {nlStatus === "error" && <div style={{ fontSize: 12, color: "#ef4444", marginTop: 6 }}>Something went wrong. Try again.</div>}
         </div>
       </section>
 
