@@ -178,6 +178,11 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 100, "min_dd_total": 2000 },
+      { "bonus": 300, "min_dd_total": 5000 },
+      { "bonus": 500, "min_dd_total": 10000 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 10000,
@@ -455,6 +460,11 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 600,
     "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 200, "min_dd_total": 2000 },
+      { "bonus": 400, "min_dd_total": 4000 },
+      { "bonus": 600, "min_dd_total": 8000 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 8000,
@@ -858,6 +868,10 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 400,
     "cooldown_months": null,
+    "tiers": [
+      { "bonus": 50, "min_dd_total": 1000 },
+      { "bonus": 400, "min_dd_total": 5000 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 5000,
@@ -974,6 +988,11 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 450,
     "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 250, "min_dd_total": 2000 },
+      { "bonus": 350, "min_dd_total": 5000 },
+      { "bonus": 450, "min_dd_total": 8000 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 8000,

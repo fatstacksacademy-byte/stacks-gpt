@@ -1025,7 +1025,56 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
                       <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
                     )}
+                    {hb.bonus.requirements?.debit_transactions_required && (
+                      <div style={{ fontSize: 14, color: "#555" }}>
+                        + {hb.bonus.requirements.debit_transactions_required} qualifying transactions required
+                      </div>
+                    )}
+                    {/* Show all tiers if this is a tiered bonus */}
+                    {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
+                      <div style={{ marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
+                          const isSelected = hb.bonus.bonus_amount === t.bonus
+                          return (
+                            <div key={t.bonus} style={{
+                              fontSize: 11, padding: "3px 8px", borderRadius: 6,
+                              border: isSelected ? "1.5px solid #0d7c5f" : "1px solid #e0e0e0",
+                              color: isSelected ? "#0d7c5f" : "#999",
+                              fontWeight: isSelected ? 700 : 400,
+                              background: isSelected ? "#f0faf5" : "transparent",
+                            }}>
+                              ${t.bonus} at ${t.min_dd_total.toLocaleString()} DD
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Key details: hold period, closure penalty, min opening deposit */}
+                  <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    {hb.bonus.timeline?.must_remain_open_days && (
+                      <div style={{ fontSize: 12, color: "#888", background: "#f5f5f5", padding: "4px 10px", borderRadius: 6 }}>
+                        Keep open {hb.bonus.timeline.must_remain_open_days} days
+                      </div>
+                    )}
+                    {hb.bonus.fees?.early_closure_fee > 0 && (
+                      <div style={{ fontSize: 12, color: "#d97706", background: "#fffbeb", padding: "4px 10px", borderRadius: 6, fontWeight: 600 }}>
+                        ${hb.bonus.fees.early_closure_fee} early closure fee
+                      </div>
+                    )}
+                    {hb.bonus.requirements?.min_opening_deposit > 0 && (
+                      <div style={{ fontSize: 12, color: "#888", background: "#f5f5f5", padding: "4px 10px", borderRadius: 6 }}>
+                        ${hb.bonus.requirements.min_opening_deposit} min to open
+                      </div>
+                    )}
+                    {hb.bonus.requirements?.min_balance > 0 && (
+                      <div style={{ fontSize: 12, color: "#d97706", background: "#fffbeb", padding: "4px 10px", borderRadius: 6, fontWeight: 600 }}>
+                        ${hb.bonus.requirements.min_balance.toLocaleString()} balance required
+                      </div>
+                    )}
+                  </div>
+
                   <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
                     <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
                       style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
@@ -2114,6 +2163,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <div><span style={{ color: "#bbb" }}>Bonus posts: </span><span style={{ color: "#666" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
                             <div><span style={{ color: "#bbb" }}>Cooldown: </span><span style={{ color: "#666" }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
                             <div><span style={{ color: "#bbb" }}>Fee: </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+                            <div><span style={{ color: "#bbb" }}>Keep open: </span><span style={{ color: "#666" }}>{numOrDash(b.timeline?.must_remain_open_days, "days")}</span></div>
+                            <div><span style={{ color: b.fees?.early_closure_fee > 0 ? "#d97706" : "#bbb" }}>Closure fee: </span><span style={{ color: b.fees?.early_closure_fee > 0 ? "#d97706" : "#666", fontWeight: b.fees?.early_closure_fee > 0 ? 600 : 400 }}>{b.fees?.early_closure_fee > 0 ? `$${b.fees.early_closure_fee}` : "$0"}</span></div>
+                            {b.requirements?.min_opening_deposit > 0 && (
+                              <div><span style={{ color: "#bbb" }}>Min to open: </span><span style={{ color: "#666" }}>${b.requirements.min_opening_deposit}</span></div>
+                            )}
+                            {b.requirements?.min_balance > 0 && (
+                              <div><span style={{ color: "#d97706" }}>Min balance: </span><span style={{ color: "#d97706", fontWeight: 600 }}>${b.requirements.min_balance.toLocaleString()}</span></div>
+                            )}
                           </div>
                           <details><summary style={{ fontSize: 11, color: "#bbb", cursor: "pointer" }}>Advanced details</summary>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginTop: 8 }}>

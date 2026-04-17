@@ -184,12 +184,35 @@ export function runSequencer({
   for (const b of allBonuses) {
     if ((b as any).expired) { skipped.push({ bank_name: b.bank_name, reason: "Offer expired" }); continue }
     if (skippedBonusIds.includes(b.id)) { skipped.push({ bank_name: b.bank_name, reason: "Skipped by user" }); continue }
-    const result = evaluate(b, sources)
-    if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
+
     const cooldownMonths = (b as any).cooldown_months ?? null
     const isLifetime = cooldownMonths === null
     const cooldownWeeks = isLifetime ? 0 : Math.ceil((cooldownMonths * 30.4) / 7)
-    pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: b.bonus_amount / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime })
+
+    // If bonus has tiers, evaluate each tier and pick the best velocity
+    const tiers = (b as any).tiers as { bonus: number; min_dd_total: number }[] | undefined
+    if (tiers && tiers.length > 0) {
+      let bestTier: EvalBonus | null = null
+      for (const tier of tiers) {
+        // Create a virtual bonus with this tier's requirements
+        const virtualBonus = { ...b, bonus_amount: tier.bonus, requirements: { ...b.requirements, min_direct_deposit_total: tier.min_dd_total } }
+        const result = evaluate(virtualBonus, sources)
+        if (!result.feasible) continue
+        const velocity = tier.bonus / result.weeksToComplete
+        if (!bestTier || velocity > bestTier.velocity) {
+          bestTier = { bonus: virtualBonus, weeksToComplete: result.weeksToComplete, velocity, cooldownMonths, cooldownWeeks, isLifetime }
+        }
+      }
+      if (bestTier) {
+        pool.push(bestTier)
+      } else {
+        skipped.push({ bank_name: b.bank_name, reason: "Cannot meet any tier requirement" })
+      }
+    } else {
+      const result = evaluate(b, sources)
+      if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
+      pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: b.bonus_amount / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime })
+    }
   }
 
   pool.sort((a, b) => b.velocity - a.velocity)
