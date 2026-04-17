@@ -1615,5 +1615,166 @@ export const bonuses: any[] = [
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": ["https://www.dupaco.com/promotions"],
     "raw_excerpt": "$300 checking bonus with DD or 5-10 transactions in 90 days. No strict DD requirement."
+  },
+  {
+    "id": "keybank-500-checking-2026",
+    "bank_name": "KeyBank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 2000 },
+      { "bonus": 500, "min_dd_total": 5000 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 5000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": 50, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Key Smart Checking $300 for $2k DD. Key Select Checking $500 for $5k DD. Expires May 22, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "Key Smart Checking has no monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["AK","CO","CT","ID","IN","MA","ME","MI","NY","OH","OR","PA","UT","VT","WA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Expires May 22, 2026." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.key.com/personal/checking/key-smart-checking.html"],
+    "raw_excerpt": "Key Smart $300 for $2k DD or Key Select $500 for $5k DD in 90 days. 15 states."
+  },
+  {
+    "id": "truist-400-checking-2026",
+    "bank_name": "Truist",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "cooldown_months": null,
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 2000, "min_direct_deposit_per_deposit": null, "dd_count_required": 2, "deposit_window_days": 120, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": 20, "billpay_required": null, "other_requirements_text": "Truist One Checking. 2 DD totaling $2,000+ AND 20+ debit purchases within 120 days. Promo code DC400TR1Q226. Expires July 9, 2026." },
+    "fees": { "monthly_fee": 12, "monthly_fee_waiver_text": "Waivable with $500+ DD or $500 min balance.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["AL","AR","GA","FL","IN","KY","MD","MS","NC","NJ","OH","PA","SC","TN","TX","VA","WV","DC"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New Truist checking customers only. Expires July 9, 2026." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.truist.com/checking"],
+    "raw_excerpt": "$400 for $2k DD + 20 debit purchases in 120 days. 18 states + DC."
+  },
+  {
+    "id": "td-bank-300-checking-2026",
+    "bank_name": "TD Bank",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 200, "min_dd_total": 500 },
+      { "bonus": 300, "min_dd_total": 2500 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 2500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Complete Checking $200 for $500 DD. Beyond Checking $300 for $2,500 DD. 60-day window. Expires April 30, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee with $100 min balance.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["CT","DC","DE","FL","MA","MD","ME","NC","NH","NJ","NY","PA","RI","SC","VT","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New TD checking customers only." },
+    "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
+    "source_links": ["https://www.td.com/us/en/personal-banking/checking-accounts/"],
+    "raw_excerpt": "Complete Checking $200 for $500 DD or Beyond Checking $300 for $2.5k DD in 60 days. 16 states."
+  },
+  {
+    "id": "flagstar-500-checking-2026",
+    "bank_name": "Flagstar Bank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 500 },
+      { "bonus": 500, "min_dd_total": 500 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": 500, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Ready Checking $300 or Elite Checking $500. $500 DD + $500 avg daily balance for 90 days. Expires May 31, 2026." },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Ready Checking $0/mo. Elite Checking $15/mo waived with $25k balance.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["AZ","CA","FL","IN","MI","NJ","NY","OH"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Expires May 31, 2026." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.flagstar.com/personal/checking.html"],
+    "raw_excerpt": "Ready Checking $300 or Elite Checking $500. $500 DD + $500 balance for 90 days. 8 states."
+  },
+  {
+    "id": "hancock-whitney-600-checking-2026",
+    "bank_name": "Hancock Whitney",
+    "product_type": "checking",
+    "bonus_amount": 600,
+    "cooldown_months": null,
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 3000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Freestyle Checking. $3,000 DD in 90 days. Enter email for promo code. Must keep open 6 months. Expires June 30, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["AL","FL","LA","MO","TX"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Must keep open 6 months." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": 180 },
+    "source_links": ["https://www.hancockwhitney.com/checking"],
+    "raw_excerpt": "$600 Freestyle Checking with $3k DD in 90 days. Keep open 6 months. 5 Southern states."
+  },
+  {
+    "id": "mt-bank-350-checking-2026",
+    "bank_name": "M&T Bank",
+    "product_type": "checking",
+    "bonus_amount": 350,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 200, "min_dd_total": 500 },
+      { "bonus": 350, "min_dd_total": 1000 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 1000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Personal Checking $200 for $500 DD. MyChoice Premium $350 for $1k DD. 90-day window." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee on MyWay Checking.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["CT","DC","DE","MD","NJ","NY","PA","VA","WV"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New M&T checking customers only." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.mtb.com/personal/checking"],
+    "raw_excerpt": "Personal $200 for $500 DD or MyChoice Premium $350 for $1k DD. 9 Mid-Atlantic states."
+  },
+  {
+    "id": "santander-400-checking-2026",
+    "bank_name": "Santander Bank",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "cooldown_months": null,
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 5000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "$5,000 DD in 90 days. Must keep open 90 days. Expires Sept 30, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["CT","DE","FL","MA","NH","NJ","NY","PA","RI"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New Santander checking customers only." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": 90 },
+    "source_links": ["https://www.santander.com/checking"],
+    "raw_excerpt": "$400 for $5k DD in 90 days. 9 Northeast states. Expires Sept 30, 2026."
+  },
+  {
+    "id": "fulton-bank-300-checking-2026",
+    "bank_name": "Fulton Bank",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "$500 recurring DD within 60 days. No monthly fees. Expires May 22, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["DE","DC","MD","NJ","PA","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.fultonbank.com/Personal/Checking"],
+    "raw_excerpt": "$300 for $500 DD in 60 days. No fees. 6 Mid-Atlantic states."
+  },
+  {
+    "id": "trustone-500-checking-2026",
+    "bank_name": "TruStone Financial",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 100, "min_dd_total": 1000 },
+      { "bonus": 300, "min_dd_total": 2500 },
+      { "bonus": 500, "min_dd_total": 4500 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 4500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Tiered: $100 for $1k DD, $300 for $2.5k DD, $500 for $4.5k DD in 60 days. +$50 for eStatements. Expires Dec 31, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["MN","WI"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New members only. MN and WI." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.trustonefinancial.org/checking"],
+    "raw_excerpt": "Tiered: $100/$300/$500 for $1k/$2.5k/$4.5k DD in 60 days. MN & WI only."
+  },
+  {
+    "id": "southstate-300-checking-2026",
+    "bank_name": "SouthState Bank",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 250, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": 15, "billpay_required": null, "other_requirements_text": "$250 DD or 1 auto draft of $25+ within 60 days. 15 debit purchases in 60 days. Promo code 300BONUS. Expires June 30, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["AL","CO","FL","GA","NC","SC","TX","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": ["https://www.southstatebank.com/checking"],
+    "raw_excerpt": "$300 for $250 DD + 15 debit purchases in 60 days. 8 Southern states."
   }
 ]
