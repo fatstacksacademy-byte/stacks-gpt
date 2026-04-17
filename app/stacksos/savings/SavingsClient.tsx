@@ -6,6 +6,7 @@ import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEn
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
+import { bonuses as allCheckingBonuses } from "../../../lib/data/bonuses"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -169,6 +170,13 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     currentHysaApy: currentApy || 0,
   })
 
+  // Filter brokerage bonuses based on toggle
+  const isBrokerage = (name: string) => name.includes("Brokerage") || name.includes("Invest")
+  const filteredEntries = sequencerResult.entries.filter(e => {
+    if (isBrokerage(e.bank_name) && !showBrokerage) return false
+    return true
+  })
+
   // Start a recommended bonus — add it as a savings entry
   async function handleStartRecommended(rec: SavingsSequencedEntry) {
     await addSavingsEntry(userId, {
@@ -272,6 +280,20 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
+
+            {/* Bonus type toggles */}
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0", display: "flex", gap: 20 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                <input type="checkbox" checked={showBusiness} onChange={e => setShowBusiness(e.target.checked)}
+                  style={{ accentColor: "#7c3aed" }} />
+                <span style={{ fontSize: 13, color: "#555" }}>I have a business entity</span>
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                <input type="checkbox" checked={showBrokerage} onChange={e => setShowBrokerage(e.target.checked)}
+                  style={{ accentColor: "#2563eb" }} />
+                <span style={{ fontSize: 13, color: "#555" }}>Include brokerage bonuses</span>
+              </label>
+            </div>
 
             {/* Optional: emergency fund / cash reserves */}
             <details style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
@@ -428,27 +450,15 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         })()}
 
         {/* ── Recommended Savings Bonuses ── */}
-        {sequencerResult.entries.length > 0 && (
+        {filteredEntries.length > 0 && (
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 Recommended — Ranked by Effective APY
               </div>
-              <div style={{ display: "flex", gap: 12 }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
-                  <input type="checkbox" checked={showBusiness} onChange={e => setShowBusiness(e.target.checked)}
-                    style={{ accentColor: "#7c3aed" }} />
-                  <span style={{ fontSize: 12, color: "#555" }}>Business</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
-                  <input type="checkbox" checked={showBrokerage} onChange={e => setShowBrokerage(e.target.checked)}
-                    style={{ accentColor: "#2563eb" }} />
-                  <span style={{ fontSize: 12, color: "#555" }}>Brokerage</span>
-                </label>
-              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {sequencerResult.entries.map((rec, idx) => {
+              {filteredEntries.map((rec, idx) => {
                 const isExpanded = expandedRec === rec.id
                 return (
                   <div key={rec.id} style={{
@@ -569,6 +579,43 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 )
               })}
             </div>
+
+            {/* Business checking bonuses */}
+            {showBusiness && (() => {
+              const bizBonuses = allCheckingBonuses
+                .filter(b => (b as any).business && !b.expired)
+                .filter(b => {
+                  if (!userState || !b.eligibility?.state_restricted) return true
+                  return (b.eligibility.states_allowed ?? []).includes(userState)
+                })
+                .sort((a, b) => b.bonus_amount - a.bonus_amount)
+              if (bizBonuses.length === 0) return null
+              return (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                    Business Checking Bonuses
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {bizBonuses.map(b => (
+                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderLeft: "3px solid #7c3aed", borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{b.bank_name}</span>
+                            <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
+                          </div>
+                          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                            {b.requirements?.min_balance ? `$${b.requirements.min_balance.toLocaleString()} deposit` : "Deposit required"}
+                            {b.requirements?.deposit_window_days ? ` in ${b.requirements.deposit_window_days} days` : ""}
+                            {b.eligibility?.state_restricted ? ` · ${(b.eligibility.states_allowed ?? []).join(", ")}` : " · Nationwide"}
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#7c3aed" }}>{money(b.bonus_amount)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Sequencer summary */}
             <div style={{ marginTop: 12, padding: "12px 16px", background: "#f9fafb", border: "1px solid #e8e8e8", borderRadius: 10, display: "flex", gap: 24, flexWrap: "wrap" }}>

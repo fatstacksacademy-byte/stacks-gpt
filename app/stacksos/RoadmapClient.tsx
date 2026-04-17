@@ -300,7 +300,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     }
     if (!projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state, includeBusiness: showBusinessBonuses })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -569,7 +569,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state, includeBusiness: showBusinessBonuses })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false })
       setProjectionResult(result)
     }
   }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
@@ -702,10 +702,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             ))}
           </select>
           <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
-          <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
-            <input type="checkbox" checked={showBusinessBonuses} onChange={e => setShowBusinessBonuses(e.target.checked)} style={{ accentColor: "#7c3aed" }} />
-            <span style={{ fontSize: 11, color: "#555" }}>Business</span>
-          </label>
           <a href="/stacksos/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
           <a href="/stacksos/taxes" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>Taxes</a>
           <button onClick={async () => {
