@@ -299,7 +299,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     }
     if (!projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -526,6 +526,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const inProgress = bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress")
   const available = bonusesWithMeta
     .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id) && !(b.bonus as any).expired)
+    .filter(b => {
+      if (!profile.state || !b.bonus.eligibility?.state_restricted) return true
+      const allowed = b.bonus.eligibility.states_allowed ?? []
+      return allowed.length === 0 || allowed.includes(profile.state)
+    })
     .sort((a, b) => {
       if (a.feasible && !b.feasible) return -1
       if (!a.feasible && b.feasible) return 1
@@ -682,6 +687,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
+          <select value={profile.state ?? ""} onChange={e => setProfile({ state: e.target.value || null })}
+            style={{ fontSize: 12, color: profile.state ? "#0d7c5f" : "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            <option value="">All states</option>
+            {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
           <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
           <a href="/stacksos/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
           <button onClick={async () => {
@@ -725,6 +737,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
                   <input type="number" value={profile.paycheck_amount} onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })} style={settingsInputLight} min={0} step={100} />
                 </div>
+              </div>
+              <div>
+                <div style={settingsLabel}>Your state</div>
+                <select value={profile.state ?? ""} onChange={e => setProfile({ state: e.target.value || null })} style={settingsSelectLight}>
+                  <option value="">All states</option>
+                  {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>

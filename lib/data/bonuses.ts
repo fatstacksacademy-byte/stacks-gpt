@@ -1776,5 +1776,249 @@ export const bonuses: any[] = [
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": ["https://www.southstatebank.com/checking"],
     "raw_excerpt": "$300 for $250 DD + 15 debit purchases in 60 days. 8 Southern states."
+  },
+  {
+    "id": "citizens-bank-400-checking-2026",
+    "bank_name": "Citizens Bank",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "cooldown_months": 12,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": 1,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open Citizens One Deposit Account or Citizens Quest Checking. Make at least one qualifying direct deposit of $500+ within 60 days of account opening."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "One Deposit Account has no monthly fee. Quest Checking $25/month waived with $25,000 combined balance.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Soft pull only. Citizens is generally lenient with ChexSystems."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["CT", "DC", "DE", "MA", "MI", "NH", "NJ", "NY", "OH", "PA", "RI", "VT"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Available in 11 states plus DC. Must not have had a Citizens checking account in the past 12 months."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 60,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.citizensbank.com/checking/",
+      "https://www.doctorofcredit.com/citizens-bank-400-checking-bonus/"
+    ],
+    "raw_excerpt": "Citizens Bank $400 checking bonus with one qualifying DD of $500+ within 60 days. Available in 11 East Coast states + DC."
+  },
+  {
+    "id": "secu-350-checking-2026",
+    "bank_name": "SECU (State Employees Credit Union)",
+    "product_type": "checking",
+    "bonus_amount": 350,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": 250,
+      "dd_count_required": 2,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": 25,
+      "min_balance": null,
+      "debit_transactions_required": 10,
+      "billpay_required": null,
+      "other_requirements_text": "Open SECU Share Draft (checking) account with $25 minimum deposit. Two direct deposits of $250+ within 60 days, plus 10 debit card transactions. Enroll in e-statements."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly service fee on Share Draft accounts.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems inquiry required. Soft pull on credit."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["MD", "NC", "SC", "VA"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Must be eligible for SECU membership (NC state employees, or family of existing members). Available primarily in NC with some branches in adjacent states."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 90,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.ncsecu.org/",
+      "https://www.doctorofcredit.com/secu-350-checking-bonus/"
+    ],
+    "raw_excerpt": "SECU $350 checking bonus with two $250+ DDs in 60 days plus 10 debit transactions. NC state employee membership required."
+  },
+  {
+    "id": "dedham-savings-750-checking-2026",
+    "bank_name": "Dedham Savings",
+    "product_type": "checking",
+    "bonus_amount": 750,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 250, "min_dd_total": 2500 },
+      { "bonus": 500, "min_dd_total": 10000 },
+      { "bonus": 750, "min_dd_total": 20000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 20000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 5,
+      "billpay_required": null,
+      "other_requirements_text": "Open Free and Easy Checking. Tiered bonus: $250 at $2,500 DD, $500 at $10,000 DD, $750 at $20,000+ DD in 90 days. Must also make 5 bill payments OR 5 debit card purchases of $5+."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "Free and Easy Checking has no monthly maintenance fee.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Standard ChexSystems inquiry."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["MA"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Massachusetts only. Community bank with branches in the Dedham area."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 90,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.dedhamsavings.com/",
+      "https://bankbonus.com/promotions-by-state/massachusetts/"
+    ],
+    "raw_excerpt": "Dedham Savings Free and Easy Checking up to $750 tiered bonus. $2,500 DD = $250, $10,000 DD = $500, $20,000+ DD = $750. Plus 5 bill payments or debit purchases. Expires December 31, 2026."
+  },
+  {
+    "id": "banner-bank-500-checking-2026",
+    "bank_name": "Banner Bank",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 250, "min_dd_total": 2500 },
+      { "bonus": 500, "min_dd_total": 5000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 5000,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 90,
+      "min_opening_deposit": null,
+      "min_balance": 5000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open Banner Bank checking with promo code 2026DP. Tiered: $250 bonus with $2,500 deposits + $2,500 min daily balance for 90 days. $500 bonus with $5,000 deposits + $5,000 min daily balance for 90 days. Deposits must be made within 30 days."
+    },
+    "fees": {
+      "monthly_fee": null,
+      "monthly_fee_waiver_text": "Monthly fee varies by account type.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Standard ChexSystems inquiry."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["CA", "ID", "OR", "WA"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Available in 4 Western states. Use promo code 2026DP."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 90,
+      "must_remain_open_days": 90
+    },
+    "source_links": [
+      "https://www.bannerbank.com/",
+      "https://bankbonus.com/promotions-by-state/washington/"
+    ],
+    "raw_excerpt": "Banner Bank up to $500 checking bonus. $2,500 deposits + $2,500 balance = $250. $5,000 deposits + $5,000 balance = $500. Promo code 2026DP. Expires June 30, 2026."
+  },
+  {
+    "id": "becu-500-checking-2026",
+    "bank_name": "BECU (Boeing Employees Credit Union)",
+    "product_type": "checking",
+    "bonus_amount": 150,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": 10,
+      "billpay_required": null,
+      "other_requirements_text": "Open BECU checking account with promo code WPNEW2026. Complete 10+ qualifying transactions (debit card, checks, deposits/withdrawals) within 30 days. No direct deposit required."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "No monthly maintenance fee.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Low ChexSystems sensitivity. Credit union membership required."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["ID", "OR", "SC", "WA"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Available in 4 states. BECU membership required. Use promo code WPNEW2026."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 30,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.becu.org/",
+      "https://bankbonus.com/promotions-by-state/washington/"
+    ],
+    "raw_excerpt": "BECU $150 checking bonus with 10+ qualifying transactions in 30 days. Promo code WPNEW2026. No DD required. Expires December 31, 2026."
   }
 ]

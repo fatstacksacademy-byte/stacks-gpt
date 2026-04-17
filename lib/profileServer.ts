@@ -9,6 +9,7 @@ export type UserProfile = {
   dd_slots: number
   pay_frequency: PayFrequency
   paycheck_amount: number
+  state?: string | null
   income_2_frequency?: PayFrequency | null
   income_2_amount?: number | null
   income_3_frequency?: PayFrequency | null
@@ -19,6 +20,7 @@ export const DEFAULT_PROFILE: Omit<UserProfile, "user_id"> = {
   dd_slots: 2,
   pay_frequency: "biweekly",
   paycheck_amount: 1500,
+  state: null,
   income_2_frequency: null,
   income_2_amount: null,
   income_3_frequency: null,

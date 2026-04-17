@@ -154,6 +154,7 @@ export function runSequencer({
   incomeSources,
   skippedBonusIds = [],
   slotBlockedUntilWeeks = [],
+  userState,
 }: {
   slots: number
   payFrequency: string
@@ -162,6 +163,7 @@ export function runSequencer({
   incomeSources?: IncomeSource[]
   skippedBonusIds?: string[]
   slotBlockedUntilWeeks?: number[]
+  userState?: string | null
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -184,6 +186,15 @@ export function runSequencer({
   for (const b of allBonuses) {
     if ((b as any).expired) { skipped.push({ bank_name: b.bank_name, reason: "Offer expired" }); continue }
     if (skippedBonusIds.includes(b.id)) { skipped.push({ bank_name: b.bank_name, reason: "Skipped by user" }); continue }
+
+    // State filter: skip state-restricted bonuses if user's state doesn't match
+    if (userState && b.eligibility?.state_restricted) {
+      const allowed = b.eligibility.states_allowed ?? []
+      if (allowed.length > 0 && !allowed.includes(userState)) {
+        skipped.push({ bank_name: b.bank_name, reason: `Not available in ${userState}` })
+        continue
+      }
+    }
 
     const cooldownMonths = (b as any).cooldown_months ?? null
     const isLifetime = cooldownMonths === null

@@ -41,6 +41,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<Step>("frequency")
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
   const [paycheck, setPaycheck] = useState<string>("1500")
+  const [userState, setUserState] = useState<string>("")
   const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
@@ -74,6 +75,7 @@ export default function OnboardingPage() {
       paycheckAmount: amt,
       completedRecords: [],
       incomeSources: [{ pay_frequency: frequency, paycheck_amount: amt }],
+      userState: userState || undefined,
     })
 
     const allBonusEntries = result.slots.flat().filter(
@@ -200,6 +202,16 @@ export default function OnboardingPage() {
                 min={0} step={100} autoFocus
                 onKeyDown={e => e.key === "Enter" && handleBuildPlan()}
               />
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(for state-specific bonuses)</span></div>
+              <select value={userState} onChange={e => setUserState(e.target.value)}
+                style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
+                <option value="">Show all bonuses (any state)</option>
+                {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
             <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0}
               style={{
