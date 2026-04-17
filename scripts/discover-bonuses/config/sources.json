@@ -1,0 +1,36 @@
+[
+  {
+    "name": "doctor-of-credit",
+    "type": "rss",
+    "url": "https://www.doctorofcredit.com/feed/",
+    "enabled": true,
+    "max_items": 40
+  },
+  {
+    "name": "r-churning",
+    "type": "reddit",
+    "url": "https://www.reddit.com/r/churning/new.json?limit=50",
+    "enabled": true,
+    "throttle_seconds": 2,
+    "max_items": 50
+  },
+  {
+    "name": "r-bankbonuses",
+    "type": "reddit",
+    "url": "https://www.reddit.com/r/bankbonuses/new.json?limit=50",
+    "enabled": false,
+    "throttle_seconds": 2
+  },
+  {
+    "name": "hustler-money-blog",
+    "type": "rss",
+    "url": "https://www.hustlermoneyblog.com/feed/",
+    "enabled": false
+  },
+  {
+    "name": "bankbonus",
+    "type": "sitemap",
+    "url": "https://bankbonus.com/sitemap.xml",
+    "enabled": false
+  }
+]

@@ -2,7 +2,7 @@
 import pLimit from "p-limit"
 import { bonuses } from "../../lib/data/bonuses"
 import { savingsBonuses } from "../../lib/data/savingsBonuses"
-import { fetchPage, closeBrowser } from "./fetch"
+import { fetchPage, closeBrowser } from "../_shared/playwright"
 import { extract } from "./extract"
 import { compareRecord } from "./compare"
 import { escalate, needsEscalation } from "./escalate"

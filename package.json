@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "verify:bonuses": "tsx scripts/verify-bonuses/run.ts"
+    "verify:bonuses": "tsx scripts/verify-bonuses/run.ts",
+    "discover:bonuses": "tsx scripts/discover-bonuses/run.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "fast-xml-parser": "^5.7.0",
     "p-limit": "^7.3.0",
     "playwright": "^1.59.1",
     "tailwindcss": "^4",

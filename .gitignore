@@ -42,3 +42,6 @@ next-env.d.ts
 .env*.local
 verification-output/
 .cache/
+review-queue/
+logs/
+lib/data/*.draft.ts
