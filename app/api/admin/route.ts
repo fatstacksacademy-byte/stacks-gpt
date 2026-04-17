@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
 const ADMIN_EMAIL = "booth.nathaniel@gmail.com"
 
-async function verifyAdmin(req: NextRequest) {
+function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
+async function verifyAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || user.email !== ADMIN_EMAIL) return null
@@ -11,14 +19,13 @@ async function verifyAdmin(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const admin = await verifyAdmin(req)
+  const admin = await verifyAdmin()
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const action = req.nextUrl.searchParams.get("action")
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   if (action === "users") {
-    // Get all users with their subscription status and bonus counts
     const { data: profiles } = await supabase
       .from("profiles")
       .select("user_id, pay_frequency, paycheck_amount, created_at")
@@ -36,8 +43,7 @@ export async function GET(req: NextRequest) {
       .from("custom_bonuses")
       .select("user_id, bank_name, bonus_amount, current_step")
 
-    // Get emails from auth (use service role or join)
-    // We'll get them from the profiles + auth mapping
+    // Get emails using service role admin API
     const { data: authUsers } = await supabase.auth.admin.listUsers()
 
     const emailMap: Record<string, string> = {}
