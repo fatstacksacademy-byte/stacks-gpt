@@ -200,6 +200,28 @@ function EditorialContent({ content, bonusType }: { content: BlogContent; bonusT
   )
 }
 
+function PromoScreenshot({ bonusId, link }: { bonusId: string; link: string | null }) {
+  const screenshotMap: Record<string, string> = {
+    "wells-fargo-400-everyday-checking-2026": "/screenshots/wells-fargo-checking-promo.png",
+  }
+  const src = screenshotMap[bonusId]
+  if (!src) return null
+  const img = (
+    <img
+      src={src}
+      alt="Bank promotional offer page"
+      style={{ width: "100%", borderRadius: 12, border: "1px solid #e8e8e8", display: "block" }}
+    />
+  )
+  return (
+    <div style={{ marginBottom: 28 }}>
+      {link ? (
+        <a href={link} target="_blank" rel="noopener noreferrer">{img}</a>
+      ) : img}
+    </div>
+  )
+}
+
 function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent }) {
   const req = bonus.requirements || {}
   const fees = bonus.fees || {}
@@ -210,6 +232,9 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
 
   return (
     <>
+      {/* Promo page screenshot */}
+      <PromoScreenshot bonusId={bonus.id} link={links[0] ?? null} />
+
       {/* Offer summary box */}
       <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px", marginBottom: 32 }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>
