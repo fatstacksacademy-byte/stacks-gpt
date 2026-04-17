@@ -726,6 +726,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
       <CheckpointNav />
 
+      {/* ── Urgency Alerts ── */}
+      {(() => {
+        const urgentBonuses = inProgress.filter(({ bonus: b }) => {
+          const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+          if (!record?.opened_date) return false
+          const windowDays = b.requirements?.deposit_window_days
+          if (!windowDays) return false
+          const startDate = new Date(record.opened_date + "T00:00:00")
+          const deadline = new Date(startDate.getTime() + windowDays * 86400000)
+          const daysLeft = Math.ceil((deadline.getTime() - Date.now()) / 86400000)
+          return daysLeft > 0 && daysLeft <= 14
+        })
+        if (urgentBonuses.length === 0) return null
+        return (
+          <div style={{ background: "#fffbeb", borderBottom: "1px solid #f0c040", padding: "10px 32px" }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 14 }}>&#x26A0;&#xFE0F;</span>
+              {urgentBonuses.map(({ bonus: b }) => {
+                const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)!
+                const windowDays = b.requirements?.deposit_window_days ?? 0
+                const startDate = new Date(record.opened_date + "T00:00:00")
+                const deadline = new Date(startDate.getTime() + windowDays * 86400000)
+                const daysLeft = Math.ceil((deadline.getTime() - Date.now()) / 86400000)
+                return (
+                  <span key={b.id} style={{ fontSize: 13, color: daysLeft <= 7 ? "#dc2626" : "#d97706", fontWeight: 600 }}>
+                    {b.bank_name}: {daysLeft} day{daysLeft !== 1 ? "s" : ""} left to meet deposit requirement
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
+
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
 
         {/* Settings Panel */}
@@ -1635,7 +1669,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           )}
                           {!milestoneDetail.bonusPosted && (
                             <div style={{ padding: "14px 24px 0" }}>
-                              <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
+                              <button onClick={() => {
+                                const ecf = b.fees?.early_closure_fee ?? 0
+                                const holdDays = b.timeline?.must_remain_open_days
+                                let msg = "Are you sure you want to close this account before the bonus posts?"
+                                if (ecf > 0) msg += `\n\nWarning: There is a $${ecf} early closure fee.`
+                                if (holdDays) msg += `\n\nThe account should remain open for ${holdDays} days.`
+                                if (!confirm(msg)) return
+                                setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("")
+                              }}
                                 style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
                                 Mark as closed
                               </button>
@@ -1850,7 +1892,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Eligible in ~{weeksUntil} weeks</div>
+                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                              Eligible in ~{weeksUntil} weeks
+                              {q.velocity ? <span style={{ color: "#0d7c5f", marginLeft: 8 }}>${Math.round(q.velocity)}/wk</span> : null}
+                            </div>
                           </div>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                         </div>
