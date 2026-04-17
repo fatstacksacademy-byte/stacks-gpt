@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/stacksos/", "/onboarding", "/reset-password"],
+        disallow: ["/api/", "/stacksos/", "/onboarding", "/reset-password", "/admin"],
       },
     ],
     sitemap: "https://fatstacksacademy.com/sitemap.xml",
