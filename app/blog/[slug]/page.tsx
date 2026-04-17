@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById } from "../../../lib/data/blogPosts"
 import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 import NewsletterCTA from "../components/NewsletterCTA"
+import CommentSection from "../components/CommentSection"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -578,6 +579,9 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
             Subscribe on YouTube &rarr;
           </a>
         </div>
+
+        {/* Comments */}
+        <CommentSection slug={post.slug} />
 
         {/* Disclaimer */}
         <div style={{ marginTop: 32, padding: "20px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12 }}>
