@@ -733,9 +733,88 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         {/* Active Entries */}
         {activeEntries.length > 0 && (
           <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeEntries.map(e => <EntryRow key={e.id} entry={e} onEdit={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }} onDelete={() => handleDelete(e.id)} onStatusChange={async (s) => { await updateSavingsEntry(e.id, { status: s }); await loadData() }} />)}
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently Working On</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {activeEntries.map(e => {
+                const deposit = e.deposit_required ?? 0
+                const holdDays = e.holding_period_days ?? 0
+                const openDate = e.opened_date ? new Date(e.opened_date + "T00:00:00") : null
+                const daysElapsed = openDate ? Math.floor((Date.now() - openDate.getTime()) / 86400000) : 0
+                const daysRemaining = holdDays > 0 ? Math.max(0, holdDays - daysElapsed) : 0
+                const progress = holdDays > 0 ? Math.min(100, Math.round((daysElapsed / holdDays) * 100)) : 0
+                const isDeposited = deposit > 0 // assume deposited if there's a deposit amount
+                const holdComplete = daysRemaining === 0 && holdDays > 0
+                const bonusReceived = e.actual_value != null && e.actual_value > 0
+
+                const steps = [
+                  { label: "Account opened", done: !!openDate },
+                  { label: `$${deposit.toLocaleString()} deposited`, done: isDeposited && !!openDate },
+                  { label: `Hold period (${holdDays} days)`, done: holdComplete },
+                  { label: "Bonus received", done: bonusReceived },
+                ]
+
+                return (
+                  <div key={e.id} style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
+                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(e.bonus_amount ?? 0)}</div>
+                        {daysRemaining > 0 && <div style={{ fontSize: 11, color: "#d97706" }}>{daysRemaining} days remaining</div>}
+                      </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    {holdDays > 0 && (
+                      <div style={{ background: "#e8e8e8", borderRadius: 4, height: 6, marginBottom: 14 }}>
+                        <div style={{ background: "#0d7c5f", borderRadius: 4, height: 6, width: `${progress}%`, transition: "width 0.3s" }} />
+                      </div>
+                    )}
+
+                    {/* Checklist */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {steps.map((step, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{
+                            width: 20, height: 20, borderRadius: 10, flexShrink: 0,
+                            background: step.done ? "#0d7c5f" : "#fff",
+                            border: step.done ? "none" : "2px solid #ddd",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 11, color: "#fff", fontWeight: 700,
+                          }}>
+                            {step.done && "✓"}
+                          </div>
+                          <span style={{ fontSize: 13, color: step.done ? "#111" : "#bbb", fontWeight: step.done ? 500 : 400 }}>{step.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+                      {holdComplete && !bonusReceived && (
+                        <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
+                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                          Mark bonus received
+                        </button>
+                      )}
+                      {bonusReceived && (
+                        <button onClick={async () => { await updateSavingsEntry(e.id, { status: "completed" }); await loadData() }}
+                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                          Complete &amp; withdraw
+                        </button>
+                      )}
+                      <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
+                        style={{ padding: "8px 16px", fontSize: 12, color: "#555", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
