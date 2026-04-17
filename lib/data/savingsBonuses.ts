@@ -512,7 +512,7 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "Brokerage or IRA. 12-month hold. Requires referral from existing Schwab member."
     },
-    source_links: ["https://www.schwab.com/refer-a-friend"],
+    source_links: ["https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK"],
     raw_excerpt: "Schwab up to $1,000 brokerage bonus via referral. 12-month hold.",
     notes: "Brokerage account. Requires referral link from existing Schwab customer."
   },

@@ -5358,7 +5358,7 @@ export const bonuses: any[] = [
       "eligibility_notes": "Referral required. New Schwab checking customers only. 12-month hold period."
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": 365 },
-    "source_links": ["https://www.schwab.com/"],
+    "source_links": ["https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK"],
     "raw_excerpt": "Charles Schwab $500 checking bonus via referral. Tiered: $100 at $25k, $300 at $50k, $500 at $100k. 12-month hold."
   },
   {
