@@ -242,4 +242,172 @@ export const savingsBonuses: SavingsBonus[] = [
     raw_excerpt: "Deposit $15,000+ in new money, maintain for 6 months (182 days). Bonus credited within 60 days after qualification. Blended APY: 3.73% on first $5k, 1.30% on $5k-$250k.",
     notes: "Weak standalone — long 182-day lockup with low blended APY. Only worth doing if stacked with the Blue Foundry checking bonus."
   },
+  {
+    id: "citi-savings-2026",
+    bank_name: "Citi",
+    product_type: "savings",
+    base_apy: 0.0435,
+    funding_window_days: 45,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 30000, bonus_amount: 750 },
+      { min_deposit: 200000, bonus_amount: 1500 },
+    ],
+    cooldown_months: 12,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Open savings within 45 days of checking. Fund within 10 business days. Maintain for 90 days."
+    },
+    source_links: ["https://banking.citi.com/cbol/OM/checking/choice/featured-offers/default.htm"],
+    raw_excerpt: "Citi savings bonus $750 for $30k or $1,500 for $200k. 4.35% APY. Fund within 10 business days, maintain 90 days.",
+  },
+  {
+    id: "wells-fargo-platinum-savings-2026",
+    bank_name: "Wells Fargo",
+    product_type: "savings",
+    base_apy: 0.04,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 25000, bonus_amount: 500 },
+      { min_deposit: 100000, bonus_amount: 1000 },
+      { min_deposit: 250000, bonus_amount: 2500 },
+    ],
+    cooldown_months: 12,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "In-branch for highest tiers. 4.00% promo APY for 6 months. New money required."
+    },
+    source_links: ["https://www.wellsfargo.com/savings-cds/platinum-savings/"],
+    raw_excerpt: "Wells Fargo Platinum Savings up to $2,500 bonus. 4.00% promo APY for 6 months. In-branch for $250k+ tier.",
+  },
+  {
+    id: "raisin-savings-2026",
+    bank_name: "Raisin (SaveBetter)",
+    product_type: "savings",
+    base_apy: 0.043,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 90,
+    tiers: [
+      { min_deposit: 5000, bonus_amount: 200 },
+      { min_deposit: 25000, bonus_amount: 400 },
+      { min_deposit: 50000, bonus_amount: 500 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New Raisin customers. Stackable with TopCashback bonus ($100 extra). Multiple partner banks available."
+    },
+    source_links: ["https://www.raisin.com/"],
+    raw_excerpt: "Raisin/SaveBetter $200-$500 savings bonus. Stackable with TopCashback $100. 4.3% APY via partner banks.",
+    notes: "Can stack additional $100 from TopCashback portal. Effectively $300-$600 total."
+  },
+  {
+    id: "td-bank-savings-2026",
+    bank_name: "TD Bank",
+    product_type: "savings",
+    base_apy: 0.02,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 10000, bonus_amount: 200 },
+    ],
+    cooldown_months: 12,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: true,
+      states_allowed: ["CT","DC","DE","FL","MA","MD","ME","NC","NH","NJ","NY","PA","RI","SC","VT","VA"],
+      lifetime_language: false,
+      eligibility_notes: "New TD savings customers only. East Coast states. Expires April 30, 2026."
+    },
+    source_links: ["https://www.td.com/us/en/personal-banking/savings-accounts/"],
+    raw_excerpt: "TD Bank $200 savings bonus for $10k deposit. East Coast 16 states. Expires April 30, 2026.",
+  },
+  {
+    id: "wintrust-savings-2026",
+    bank_name: "Wintrust Bank",
+    product_type: "savings",
+    base_apy: 0.01,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 15000, bonus_amount: 200 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: true,
+      states_allowed: ["IL", "FL", "WI", "IN", "MI"],
+      lifetime_language: true,
+      eligibility_notes: "Must open savings during same visit as checking. $15,000 deposit in opening month, maintain 3 months."
+    },
+    source_links: ["https://www.wintrust.com/solutions-and-services/community-banking/total-access-checking.html"],
+    raw_excerpt: "Wintrust $200 savings bonus for $15k deposit maintained 3 months. Stackable with $500 checking bonus.",
+    notes: "Best stacked with the $500 checking bonus. The $200 savings is gravy on top."
+  },
+  {
+    id: "hsbc-premier-savings-2026",
+    bank_name: "HSBC",
+    product_type: "savings",
+    base_apy: 0.041,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 120,
+    tiers: [
+      { min_deposit: 10000, bonus_amount: 350 },
+      { min_deposit: 25000, bonus_amount: 700 },
+      { min_deposit: 100000, bonus_amount: 1500 },
+      { min_deposit: 250000, bonus_amount: 3500 },
+      { min_deposit: 500000, bonus_amount: 7000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "HSBC Premier Savings. May require HSBC Premier relationship ($75k+ in deposits/investments or mortgage)."
+    },
+    source_links: ["https://www.us.hsbc.com/savings-accounts/"],
+    raw_excerpt: "HSBC up to $7,000 savings bonus. Tiered from $10k-$500k. 4.1% APY. Premier relationship may be required.",
+  },
+  {
+    id: "moomoo-cash-sweep-2026",
+    bank_name: "Moomoo",
+    product_type: "savings",
+    base_apy: 0.041,
+    funding_window_days: 30,
+    maintenance_days: 60,
+    total_hold_days: 90,
+    tiers: [
+      { min_deposit: 20000, bonus_amount: 200 },
+      { min_deposit: 50000, bonus_amount: 500 },
+      { min_deposit: 100000, bonus_amount: 1000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Cash account (brokerage cash sweep). SIPC protected, not FDIC insured. New customers."
+    },
+    source_links: ["https://www.moomoo.com/"],
+    raw_excerpt: "Moomoo $200-$1,000 cash account bonus. 4.1% APY. 60-day hold. SIPC protected.",
+    notes: "This is a brokerage cash sweep, not a traditional savings account. SIPC protected, not FDIC insured."
+  },
 ]
