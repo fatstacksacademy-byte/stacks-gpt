@@ -201,6 +201,17 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
         <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
+          <select value="" onChange={async e => {
+            if (!e.target.value) return
+            const sb = createClient()
+            await sb.from("user_profiles").update({ state: e.target.value }).eq("user_id", userId)
+          }}
+            style={{ fontSize: 12, color: "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            <option value="">State</option>
+            {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
           <button onClick={() => setShowProfile(s => !s)} style={topBtn}>{showProfile ? "Close" : "Spending Profile"}</button>
           <button onClick={async () => {
             const res = await fetch("/api/stripe/portal", { method: "POST" })

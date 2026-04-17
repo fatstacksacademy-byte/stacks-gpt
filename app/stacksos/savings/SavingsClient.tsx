@@ -216,6 +216,18 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
+          <select value={userState ?? ""} onChange={async e => {
+            const newState = e.target.value || null
+            setUserState(newState)
+            const sb = createClient()
+            await sb.from("user_profiles").update({ state: newState }).eq("user_id", userId)
+          }}
+            style={{ fontSize: 12, color: userState ? "#0d7c5f" : "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            <option value="">All states</option>
+            {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
           <button onClick={() => setShowProfile(s => !s)} style={topBtn}>{showProfile ? "Close" : "Savings Profile"}</button>
           <button onClick={async () => {
             const res = await fetch("/api/stripe/portal", { method: "POST" })
@@ -448,48 +460,131 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
               </div>
             </div>
 
-            {/* Year 1 / Year 2 Projections */}
+            {/* 12-Month Projection Table */}
             {sequencerResult.entries.length > 0 && (() => {
               const balance = currentBalance || 50000
-              let year1Earnings = 0
-              let year1Days = 0
-              let year2Earnings = 0
-              let year2Days = 0
-              for (const e of sequencerResult.entries) {
-                if (e.start_day < 365) {
-                  const daysInYear1 = Math.min(e.end_day, 365) - e.start_day
-                  const frac = daysInYear1 / e.hold_days
-                  year1Earnings += Math.round(e.total_earnings * frac)
-                  year1Days += daysInYear1
-                }
-                if (e.end_day > 365) {
-                  const start = Math.max(e.start_day, 365)
-                  const end = Math.min(e.end_day, 730)
-                  const daysInYear2 = end - start
-                  const frac = daysInYear2 / e.hold_days
-                  year2Earnings += Math.round(e.total_earnings * frac)
-                  year2Days += daysInYear2
-                }
-              }
-              // If year 2 has no sequenced bonuses, assume HYSA at ~4%
-              const hysaYear2 = year2Days < 365 ? Math.round(balance * 0.04 * ((365 - year2Days) / 365)) : 0
+              const today = new Date()
+              const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
+              const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
+              let year1TotalBonus = 0
+              let year1TotalInterest = 0
+              let year2TotalBonus = 0
+              let year2TotalInterest = 0
+              for (const e of year1Entries) { year1TotalBonus += e.bonus_amount; year1TotalInterest += e.interest_earned }
+              for (const e of year2Entries) { year2TotalBonus += e.bonus_amount; year2TotalInterest += e.interest_earned }
+              const year1Total = year1TotalBonus + year1TotalInterest
+              const year2Total = year2TotalBonus + year2TotalInterest
+
+              function addDays(d: Date, n: number) { const r = new Date(d); r.setDate(r.getDate() + n); return r }
+              function fmtDate(d: Date) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) }
+
               return (
-                <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  <div style={{ flex: 1, minWidth: 160, padding: "14px 16px", background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 10 }}>
-                    <div style={{ fontSize: 10, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 1 projected</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 4 }}>{money(year1Earnings)}</div>
-                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-                      {(year1Earnings / balance * 100).toFixed(1)}% return on {money(balance)}
+                <div style={{ marginTop: 16 }}>
+                  {/* Year 1 summary + table */}
+                  <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 10, padding: "16px 20px", marginBottom: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 10, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 1 — 12-Month Projection</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 4 }}>{money(year1Total)}</div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 11, color: "#888" }}>{(year1Total / balance * 100).toFixed(1)}% return on {money(balance)}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{year1Entries.length} rotation{year1Entries.length !== 1 ? "s" : ""}</div>
+                      </div>
+                    </div>
+                    {/* Table */}
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ borderBottom: "1px solid #a7f3d0" }}>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>#</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bank</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Open</th>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Close</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Deposit</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bonus</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Interest</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Total</th>
+                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Eff. APY</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {year1Entries.map((e, i) => (
+                            <tr key={e.id} style={{ borderBottom: "1px solid #e8f5e9" }}>
+                              <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
+                              <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
+                              <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.start_day))}</td>
+                              <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.end_day))}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.deposit)}</td>
+                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 600 }}>{money(e.bonus_amount)}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.interest_earned)}</td>
+                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(e.total_earnings)}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{(e.effective_apy * 100).toFixed(1)}%</td>
+                            </tr>
+                          ))}
+                          <tr style={{ background: "#e6f5f0" }}>
+                            <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Year 1 Total</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(year1TotalBonus)}</td>
+                            <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(year1TotalInterest)}</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 800 }}>{money(year1Total)}</td>
+                            <td style={{ padding: "8px" }}></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                  <div style={{ flex: 1, minWidth: 160, padding: "14px 16px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10 }}>
-                    <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 2 projected</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 4 }}>{money(year2Earnings + hysaYear2)}</div>
-                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-                      {year2Earnings > 0 ? `${money(year2Earnings)} bonuses` : "No bonus rotations"}
-                      {hysaYear2 > 0 ? ` + ${money(hysaYear2)} HYSA interest` : ""}
+
+                  {/* Year 2 */}
+                  {year2Entries.length > 0 && (
+                    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "16px 20px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                        <div>
+                          <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 2 Projection</div>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 4 }}>{money(year2Total)}</div>
+                        </div>
+                        <div style={{ fontSize: 11, color: "#888", textAlign: "right" }}>{year2Entries.length} rotation{year2Entries.length !== 1 ? "s" : ""}</div>
+                      </div>
+                      <div style={{ overflowX: "auto" }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid #e8e8e8" }}>
+                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>#</th>
+                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bank</th>
+                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Open</th>
+                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Close</th>
+                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Deposit</th>
+                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bonus</th>
+                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Interest</th>
+                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Total</th>
+                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Eff. APY</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {year2Entries.map((e, i) => (
+                              <tr key={e.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
+                                <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
+                                <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
+                                <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.start_day))}</td>
+                                <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.end_day))}</td>
+                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.deposit)}</td>
+                                <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 600 }}>{money(e.bonus_amount)}</td>
+                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.interest_earned)}</td>
+                                <td style={{ padding: "8px", color: "#111", textAlign: "right", fontWeight: 700 }}>{money(e.total_earnings)}</td>
+                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{(e.effective_apy * 100).toFixed(1)}%</td>
+                              </tr>
+                            ))}
+                            <tr style={{ background: "#f9f9f9" }}>
+                              <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Year 2 Total</td>
+                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(year2TotalBonus)}</td>
+                              <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(year2TotalInterest)}</td>
+                              <td style={{ padding: "8px", color: "#111", textAlign: "right", fontWeight: 800 }}>{money(year2Total)}</td>
+                              <td style={{ padding: "8px" }}></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )
             })()}
