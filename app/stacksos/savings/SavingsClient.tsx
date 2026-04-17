@@ -186,6 +186,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
       deadline: null,
       status: "active",
       notes: rec.bonus.notes || null,
+      source_type: "system",
       canonical_offer_id: rec.id,
     })
     await loadData()
