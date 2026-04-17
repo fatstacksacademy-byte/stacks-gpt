@@ -155,6 +155,7 @@ export function runSequencer({
   skippedBonusIds = [],
   slotBlockedUntilWeeks = [],
   userState,
+  includeBusiness = false,
 }: {
   slots: number
   payFrequency: string
@@ -164,6 +165,7 @@ export function runSequencer({
   skippedBonusIds?: string[]
   slotBlockedUntilWeeks?: number[]
   userState?: string | null
+  includeBusiness?: boolean
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -186,6 +188,7 @@ export function runSequencer({
   for (const b of allBonuses) {
     if ((b as any).expired) { skipped.push({ bank_name: b.bank_name, reason: "Offer expired" }); continue }
     if (skippedBonusIds.includes(b.id)) { skipped.push({ bank_name: b.bank_name, reason: "Skipped by user" }); continue }
+    if ((b as any).business && !includeBusiness) continue
 
     // State filter: skip state-restricted bonuses if user's state doesn't match
     if (userState && b.eligibility?.state_restricted) {

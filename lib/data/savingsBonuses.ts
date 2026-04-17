@@ -460,4 +460,138 @@ export const savingsBonuses: SavingsBonus[] = [
     raw_excerpt: "Raisin up to $1,500 savings bonus. 4.3% APY. Tiered: $100/$500/$1,000/$1,500. Stackable with TopCashback.",
     notes: "Stackable with TopCashback for additional cashback on deposit."
   },
+  // ─── BROKERAGE BONUSES ────────────────────────────────────────
+  {
+    id: "etrade-brokerage-2026",
+    bank_name: "E*TRADE (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.035,
+    funding_window_days: 60,
+    maintenance_days: 365,
+    total_hold_days: 365,
+    tiers: [
+      { min_deposit: 1000, bonus_amount: 50 },
+      { min_deposit: 10000, bonus_amount: 150 },
+      { min_deposit: 50000, bonus_amount: 500 },
+      { min_deposit: 100000, bonus_amount: 1000 },
+      { min_deposit: 250000, bonus_amount: 2500 },
+      { min_deposit: 500000, bonus_amount: 5000 },
+      { min_deposit: 1000000, bonus_amount: 6500 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Brokerage or IRA. 12-month hold. Funds must be net new to E*TRADE."
+    },
+    source_links: ["https://us.etrade.com/promo/brokerage"],
+    raw_excerpt: "E*TRADE up to $6,500 brokerage bonus. 12-month hold. Tiered from $1k-$1M deposits.",
+    notes: "Brokerage account. 12-month hold is long but tiers start at just $1,000."
+  },
+  {
+    id: "schwab-brokerage-2026",
+    bank_name: "Charles Schwab (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.035,
+    funding_window_days: 45,
+    maintenance_days: 365,
+    total_hold_days: 365,
+    tiers: [
+      { min_deposit: 25000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 300 },
+      { min_deposit: 100000, bonus_amount: 500 },
+      { min_deposit: 500000, bonus_amount: 1000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Brokerage or IRA. 12-month hold. Requires referral from existing Schwab member."
+    },
+    source_links: ["https://www.schwab.com/refer-a-friend"],
+    raw_excerpt: "Schwab up to $1,000 brokerage bonus via referral. 12-month hold.",
+    notes: "Brokerage account. Requires referral link from existing Schwab customer."
+  },
+  {
+    id: "merrill-edge-brokerage-2026",
+    bank_name: "Merrill Edge (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.035,
+    funding_window_days: 45,
+    maintenance_days: 90,
+    total_hold_days: 90,
+    tiers: [
+      { min_deposit: 20000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 150 },
+      { min_deposit: 100000, bonus_amount: 250 },
+      { min_deposit: 250000, bonus_amount: 1000 },
+      { min_deposit: 500000, bonus_amount: 1500 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Brokerage or IRA. 90-day hold. Linked to Bank of America Preferred Rewards."
+    },
+    source_links: ["https://www.merrilledge.com/offers"],
+    raw_excerpt: "Merrill Edge up to $1,500 brokerage bonus. 90-day hold. Stacks with BofA Preferred Rewards.",
+    notes: "Brokerage account. Short 90-day hold. Stacks with BofA relationship bonuses."
+  },
+  {
+    id: "tastytrade-brokerage-2026",
+    bank_name: "Tastytrade (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 60,
+    maintenance_days: 365,
+    total_hold_days: 365,
+    tiers: [
+      { min_deposit: 5000, bonus_amount: 100 },
+      { min_deposit: 10000, bonus_amount: 200 },
+      { min_deposit: 25000, bonus_amount: 500 },
+      { min_deposit: 50000, bonus_amount: 1000 },
+      { min_deposit: 100000, bonus_amount: 2000 },
+      { min_deposit: 250000, bonus_amount: 5000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Brokerage only. 12-month hold. Must be net new funds."
+    },
+    source_links: ["https://tastytrade.com/promotions"],
+    raw_excerpt: "Tastytrade up to $5,000 brokerage bonus. 12-month hold. Starts at $5k deposit.",
+    notes: "Brokerage account. No cash APY — funds must be invested or held as cash in brokerage."
+  },
+  {
+    id: "sofi-invest-150-2026",
+    bank_name: "SoFi Invest (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 30,
+    maintenance_days: 30,
+    total_hold_days: 30,
+    tiers: [
+      { min_deposit: 1000, bonus_amount: 150 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: true,
+      eligibility_notes: "New SoFi Invest customers. $1,000 deposit. Available via Finder portal."
+    },
+    source_links: ["https://www.sofi.com/invest/"],
+    raw_excerpt: "SoFi Invest $150 bonus for $1,000 deposit. 30-day hold. Quick and easy.",
+    notes: "Brokerage account. Very low barrier — $1,000 for $150 is 15% return in 30 days."
+  },
 ]

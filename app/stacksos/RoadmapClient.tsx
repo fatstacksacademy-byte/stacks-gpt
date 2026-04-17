@@ -192,6 +192,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [actualAmount, setActualAmount] = useState<string>("")
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showBusinessBonuses, setShowBusinessBonuses] = useState(false)
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
   const [showDisclaimer, setShowDisclaimer] = useState(false)
@@ -299,7 +300,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     }
     if (!projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state, includeBusiness: showBusinessBonuses })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -527,6 +528,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const available = bonusesWithMeta
     .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id) && !(b.bonus as any).expired)
     .filter(b => {
+      // Business filter
+      if ((b.bonus as any).business && !showBusinessBonuses) return false
+      if (!(b.bonus as any).business && false) return false // personal always shown
+      return true
+    })
+    .filter(b => {
       if (!profile.state || !b.bonus.eligibility?.state_restricted) return true
       const allowed = b.bonus.eligibility.states_allowed ?? []
       return allowed.length === 0 || allowed.includes(profile.state)
@@ -557,12 +564,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, showBusinessBonuses, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state, includeBusiness: showBusinessBonuses })
       setProjectionResult(result)
     }
   }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
@@ -695,6 +702,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             ))}
           </select>
           <button onClick={() => setShowSettings(s => !s)} style={topBtn}>{showSettings ? "Close" : "Pay Profile"}</button>
+          <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+            <input type="checkbox" checked={showBusinessBonuses} onChange={e => setShowBusinessBonuses(e.target.checked)} style={{ accentColor: "#7c3aed" }} />
+            <span style={{ fontSize: 11, color: "#555" }}>Business</span>
+          </label>
           <a href="/stacksos/history" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>History</a>
           <a href="/stacksos/taxes" style={{ ...topBtn, textDecoration: "none", display: "inline-block" }}>Taxes</a>
           <button onClick={async () => {
