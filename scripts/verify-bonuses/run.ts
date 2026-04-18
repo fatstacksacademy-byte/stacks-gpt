@@ -108,6 +108,19 @@ async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
   let fields: FieldResult[] = []
   if (extracted) fields = compareRecord(record, extracted)
 
+  // If every field came back "missing" AND the stored record has real values
+  // to compare against, the page we fetched almost certainly isn't the live
+  // offer page (it might be legal T&Cs, a generic product page, or a dead
+  // product). Escalate from silent "missing" to a loud page signal.
+  if (
+    pageSignal === "ok" &&
+    fields.length > 0 &&
+    fields.every((f) => f.status === "missing") &&
+    fields.some((f) => f.stored !== null && f.stored !== undefined)
+  ) {
+    pageSignal = "no_fields_extracted"
+  }
+
   // Escalate ambiguous fields (budget-limited)
   const escalations: VerificationResult["escalations"] = []
   if (ESCALATE && extracted) {

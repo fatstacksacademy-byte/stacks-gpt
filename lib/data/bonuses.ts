@@ -5444,6 +5444,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "penfed-300-checking-2026",
+    "expired": true,
     "bank_name": "PenFed",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -5459,7 +5460,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "YMMV/targeted. Direct deposit required."
+      "other_requirements_text": "MARKED EXPIRED: YMMV/targeted offer — no public signup page, not verifiable. Missed by original audit because the source link resolves 200 to PenFed's homepage with no visible $300 offer. Covered by the new no_fields_extracted verifier signal going forward."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5554,6 +5555,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "upgrade-200-checking-2026",
+    "expired": true,
     "bank_name": "Upgrade",
     "product_type": "checking",
     "bonus_amount": 200,
@@ -5585,7 +5587,7 @@ export const bonuses: any[] = [
       "https://www.upgrade.com/funnel/borrower-documents/PROMOTION_AGREEMENT",
       "https://www.upgrade.com/"
     ],
-    "raw_excerpt": "Upgrade $200 checking bonus. Referral bonus. Direct deposit required."
+    "raw_excerpt": "MARKED EXPIRED: Upgrade Checking was discontinued in 2024; the linked URL is only the refer-a-friend T&Cs PDF, not a live signup page. The verifier missed this originally because the page returns 200 with generic boilerplate and no regex field matches (silent 'missing' rather than 'mismatch'). See verifier patch flagging 'no_fields_extracted' as a loud signal."
   },
   {
     "id": "bluevine-business-500-2026",

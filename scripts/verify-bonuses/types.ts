@@ -62,6 +62,7 @@ export type VerificationResult = {
     | "ok"
     | "offer_dead"
     | "promo_removed"
+    | "no_fields_extracted"
     | "expired_text_on_page"
     | "fetch_error"
   escalations: {
