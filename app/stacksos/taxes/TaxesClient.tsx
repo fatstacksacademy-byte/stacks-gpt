@@ -107,6 +107,45 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
   const grandTotal = years.reduce((s, y) => s + yearData[y].checking + yearData[y].savings + yearData[y].creditCards, 0)
   const grandTax = Math.round(grandTotal * taxRate / 100)
 
+  function csvEscape(v: string | number): string {
+    const s = String(v)
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`
+    return s
+  }
+
+  function downloadCsv(year: number) {
+    const d = yearData[year]
+    if (!d) return
+    const lines: string[] = []
+    lines.push(`Stacks OS bonus income — ${year}`)
+    lines.push(`Estimate only — file with the bank's 1099-INT, not these figures.`)
+    lines.push("")
+    lines.push(["Date", "Source", "Type", "Amount (USD)", "Taxable as interest?"].map(csvEscape).join(","))
+    const sorted = d.items
+      .slice()
+      .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+    for (const it of sorted) {
+      const taxable = it.type === "Credit Card Bonus" ? "No (rebate)" : "Yes (1099-INT)"
+      lines.push([it.date ?? "", it.name, it.type, it.amount.toFixed(2), taxable].map(csvEscape).join(","))
+    }
+    lines.push("")
+    lines.push(["", "Checking bonus subtotal", "", d.checking.toFixed(2), "Yes"].map(csvEscape).join(","))
+    lines.push(["", "Savings bonus subtotal", "", d.savings.toFixed(2), "Yes"].map(csvEscape).join(","))
+    lines.push(["", "Credit card bonus subtotal", "", d.creditCards.toFixed(2), "No"].map(csvEscape).join(","))
+    const taxable = d.checking + d.savings
+    lines.push(["", "Estimated tax at " + taxRate + "%", "", Math.round(taxable * taxRate / 100).toFixed(2), ""].map(csvEscape).join(","))
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `stacks-os-bonuses-${year}.csv`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
   }
@@ -124,9 +163,29 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "28px 32px 80px" }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Tax Summary</h1>
-        <p style={{ fontSize: 14, color: "#888", margin: "0 0 24px" }}>
+        <p style={{ fontSize: 14, color: "#888", margin: "0 0 16px" }}>
           Bank bonuses are taxed as interest income (1099-INT). Credit card bonuses are generally not taxable. This page tracks what you should consider setting aside.
         </p>
+
+        {/* Accuracy caveat */}
+        <div
+          style={{
+            background: "#fff7ed",
+            border: "1px solid #fdba74",
+            borderRadius: 10,
+            padding: "12px 16px",
+            marginBottom: 24,
+            fontSize: 12,
+            color: "#9a3412",
+            lineHeight: 1.5,
+          }}
+        >
+          <strong>Estimate only — not tax advice.</strong> These numbers reflect what you've logged
+          in Stacks OS. They may differ from your actual 1099-INT because banks report using their
+          own calculations (sometimes including accrued interest, refunds, fee reversals, or
+          different posting dates). <strong>Always file with the figures on the 1099-INT the
+          bank mails you.</strong> Use this export as a cross-check, not as your return.
+        </div>
 
         {/* Tax rate control */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
@@ -164,6 +223,22 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
                       <div style={{ fontSize: 12, color: "#d97706", fontWeight: 600 }}>
                         Set aside: {money(taxOwed)}
                       </div>
+                      <button
+                        onClick={() => downloadCsv(year)}
+                        style={{
+                          fontSize: 11,
+                          marginTop: 6,
+                          padding: "4px 10px",
+                          border: "1px solid #0d7c5f",
+                          color: "#0d7c5f",
+                          background: "#fff",
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ⤓ Download CSV
+                      </button>
                     </div>
                   </div>
 
