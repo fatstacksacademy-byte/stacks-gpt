@@ -1,6 +1,16 @@
 import { createClient } from "./supabase/client"
 
-export type SpendingCard = {
+export const OWNED_CARD_ROLES = [
+  "sub-in-progress",
+  "daily-driver",
+  "sock-drawer",
+  "retention-pending",
+  "downgrade-candidate",
+] as const
+
+export type OwnedCardRole = (typeof OWNED_CARD_ROLES)[number]
+
+export type OwnedCard = {
   id: string
   user_id: string
   card_name: string
@@ -14,6 +24,7 @@ export type SpendingCard = {
   expected_value: number | null
   actual_value: number | null
   status: "planned" | "active" | "completed" | "canceled"
+  role: OwnedCardRole | null
   source_type: string
   canonical_offer_id: string | null
   notes: string | null
@@ -43,24 +54,24 @@ export const CATEGORY_LABELS: Record<SpendingCategory, string> = {
   other: "Other",
 }
 
-export async function getSpendingCards(userId: string): Promise<SpendingCard[]> {
+export async function getOwnedCards(userId: string): Promise<OwnedCard[]> {
   const supabase = createClient()
   const { data, error } = await supabase
-    .from("spending_cards")
+    .from("owned_cards")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-  if (error) { console.error("getSpendingCards error:", error); return [] }
+  if (error) { console.error("getOwnedCards error:", error); return [] }
   return data ?? []
 }
 
-export async function addSpendingCard(
+export async function addOwnedCard(
   userId: string,
-  card: Partial<Omit<SpendingCard, "id" | "user_id" | "created_at" | "updated_at">>
-): Promise<SpendingCard | null> {
+  card: Partial<Omit<OwnedCard, "id" | "user_id" | "created_at" | "updated_at">>
+): Promise<OwnedCard | null> {
   const supabase = createClient()
   const { data, error } = await supabase
-    .from("spending_cards")
+    .from("owned_cards")
     .insert({
       user_id: userId,
       card_name: card.card_name ?? "",
@@ -74,33 +85,34 @@ export async function addSpendingCard(
       expected_value: card.expected_value ?? null,
       actual_value: card.actual_value ?? null,
       status: card.status ?? "planned",
+      role: card.role ?? null,
       notes: card.notes ?? null,
     })
     .select()
     .single()
-  if (error) { console.error("addSpendingCard error:", error); return null }
+  if (error) { console.error("addOwnedCard error:", error); return null }
   return data
 }
 
-export async function updateSpendingCard(
+export async function updateOwnedCard(
   id: string,
-  updates: Partial<Omit<SpendingCard, "id" | "user_id" | "created_at">>
+  updates: Partial<Omit<OwnedCard, "id" | "user_id" | "created_at">>
 ): Promise<boolean> {
   const supabase = createClient()
   const { error } = await supabase
-    .from("spending_cards")
+    .from("owned_cards")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)
-  if (error) { console.error("updateSpendingCard error:", error); return false }
+  if (error) { console.error("updateOwnedCard error:", error); return false }
   return true
 }
 
-export async function deleteSpendingCard(id: string): Promise<boolean> {
+export async function deleteOwnedCard(id: string): Promise<boolean> {
   const supabase = createClient()
   const { error } = await supabase
-    .from("spending_cards")
+    .from("owned_cards")
     .delete()
     .eq("id", id)
-  if (error) { console.error("deleteSpendingCard error:", error); return false }
+  if (error) { console.error("deleteOwnedCard error:", error); return false }
   return true
 }

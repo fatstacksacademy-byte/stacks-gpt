@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
-import { getSpendingCards, addSpendingCard, updateSpendingCard, deleteSpendingCard, SpendingCard, SPENDING_CATEGORIES, CATEGORY_LABELS } from "../../../lib/spendingCards"
+import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard, SPENDING_CATEGORIES, CATEGORY_LABELS } from "../../../lib/ownedCards"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
@@ -20,7 +20,7 @@ const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, ba
 const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
 
 export default function SpendingClient({ userEmail, userId }: { userEmail: string; userId: string }) {
-  const [cards, setCards] = useState<SpendingCard[]>([])
+  const [cards, setCards] = useState<OwnedCard[]>([])
   const [profile, setProfile] = useState<SpendingProfile>({ user_id: userId, ...DEFAULT_SPENDING_PROFILE, updated_at: "" })
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
@@ -41,14 +41,14 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [fOpenedDate, setFOpenedDate] = useState(todayStr())
   const [fExpectedValue, setFExpectedValue] = useState("")
   const [fActualValue, setFActualValue] = useState("")
-  const [fStatus, setFStatus] = useState<SpendingCard["status"]>("planned")
+  const [fStatus, setFStatus] = useState<OwnedCard["status"]>("planned")
   const [fNotes, setFNotes] = useState("")
   const [fMultipliers, setFMultipliers] = useState<Record<string, string>>({})
 
   const loadData = useCallback(async () => {
     setLoading(true)
     const [c, p] = await Promise.all([
-      getSpendingCards(userId),
+      getOwnedCards(userId),
       getSpendingProfile(userId),
     ])
     setCards(c)
@@ -64,7 +64,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     setFStatus("planned"); setFNotes(""); setFMultipliers({}); setEditingId(null); setShowAdvancedModal(false)
   }
 
-  function populateForm(c: SpendingCard) {
+  function populateForm(c: OwnedCard) {
     setFCardName(c.card_name); setFIssuer(c.issuer ?? ""); setFSignupBonus(String(c.signup_bonus_value ?? ""))
     setFAnnualFee(String(c.annual_fee ?? "")); setFSpendReq(String(c.spend_requirement ?? ""))
     setFSpendDeadline(c.spend_deadline ?? ""); setFOpenedDate(c.opened_date ?? todayStr())
@@ -97,9 +97,9 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
       notes: fNotes || null,
     }
     if (editingId) {
-      await updateSpendingCard(editingId, payload)
+      await updateOwnedCard(editingId, payload)
     } else {
-      await addSpendingCard(userId, payload)
+      await addOwnedCard(userId, payload)
     }
     resetForm()
     setShowAdd(false)
@@ -107,7 +107,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   }
 
   async function handleDelete(id: string) {
-    await deleteSpendingCard(id)
+    await deleteOwnedCard(id)
     await loadData()
   }
 
@@ -162,7 +162,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   }
 
   // Can the user hit the spend requirement for active cards?
-  function canHitSpend(c: SpendingCard): { canHit: boolean; monthsNeeded: number } {
+  function canHitSpend(c: OwnedCard): { canHit: boolean; monthsNeeded: number } {
     if (!c.spend_requirement || monthlySpend <= 0) return { canHit: false, monthsNeeded: 0 }
     const months = Math.ceil(c.spend_requirement / monthlySpend)
     if (c.spend_deadline) {
@@ -459,7 +459,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -469,7 +469,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -485,7 +485,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Completed ({completedCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {completedCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {completedCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </details>
         )}
@@ -495,7 +495,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Canceled ({canceledCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {canceledCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {canceledCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </details>
         )}
@@ -521,7 +521,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={label}>Status</div>
-                    <select value={fStatus} onChange={e => setFStatus(e.target.value as SpendingCard["status"])} style={{ ...selectStyle, width: "100%" }}>
+                    <select value={fStatus} onChange={e => setFStatus(e.target.value as OwnedCard["status"])} style={{ ...selectStyle, width: "100%" }}>
                       {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>
                   </div>
@@ -602,12 +602,12 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
 }
 
 function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange }: {
-  card: SpendingCard
+  card: OwnedCard
   spendCheck?: { canHit: boolean; monthsNeeded: number }
   userId: string
   onEdit: () => void
   onDelete: () => void
-  onStatusChange: (s: SpendingCard["status"]) => void
+  onStatusChange: (s: OwnedCard["status"]) => void
 }) {
   const netValue = c.expected_value ?? ((c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0))
   const statusColors: Record<string, string> = { planned: "#7c3aed", active: "#2563eb", completed: "#0d7c5f", canceled: "#999" }

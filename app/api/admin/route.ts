@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
       { data: deposits },
       { data: notes },
       { data: spending },
-      { data: spendingCards },
+      { data: ownedCards },
     ] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", userId).single(),
       supabase.from("completed_bonuses").select("*").eq("user_id", userId).order("started_date", { ascending: false }),
@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
       supabase.from("bonus_deposits").select("*").eq("user_id", userId).order("deposit_date", { ascending: false }),
       supabase.from("bonus_notes").select("*").eq("user_id", userId),
       supabase.from("spending_profile").select("*").eq("user_id", userId).single(),
-      supabase.from("spending_cards").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      supabase.from("owned_cards").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
     ])
 
     return NextResponse.json({
@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
       deposits: deposits ?? [],
       notes: notes ?? [],
       spending_profile: spending,
-      spending_cards: spendingCards ?? [],
+      owned_cards: ownedCards ?? [],
     })
   }
 

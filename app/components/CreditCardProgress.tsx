@@ -11,7 +11,7 @@ import {
 /**
  * Spend-progress tracker for a single credit card bonus. Reuses the existing
  * bonus_deposits table (no schema migration) — each logged purchase is stored
- * with bonus_id = the spending_cards row ID.
+ * with bonus_id = the owned_cards row ID.
  *
  * Shown inside CardRow (SpendingClient) when a card is status=active.
  */

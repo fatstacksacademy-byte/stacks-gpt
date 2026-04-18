@@ -28,7 +28,7 @@ type SavingsRecord = {
   opened_date: string | null
 }
 
-type SpendingCard = {
+type OwnedCardRow = {
   id: string
   card_name: string
   signup_bonus_value: number | null
@@ -42,7 +42,7 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
   const [loading, setLoading] = useState(true)
   const [bonuses, setBonuses] = useState<BonusRecord[]>([])
   const [savings, setSavings] = useState<SavingsRecord[]>([])
-  const [spending, setSpending] = useState<SpendingCard[]>([])
+  const [spending, setSpending] = useState<OwnedCardRow[]>([])
   const [taxRate, setTaxRate] = useState(20)
 
   const loadData = useCallback(async () => {
@@ -50,11 +50,11 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
     const [{ data: b }, { data: s }, { data: sp }] = await Promise.all([
       supabase.from("completed_bonuses").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
       supabase.from("savings_entries").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
-      supabase.from("spending_cards").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
+      supabase.from("owned_cards").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
     ])
     setBonuses((b ?? []) as BonusRecord[])
     setSavings((s ?? []) as SavingsRecord[])
-    setSpending((sp ?? []) as SpendingCard[])
+    setSpending((sp ?? []) as OwnedCardRow[])
     setLoading(false)
   }, [userId])
 

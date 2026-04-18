@@ -23,7 +23,7 @@ type UserDetail = {
   deposits: any[]
   notes: any[]
   spending_profile: any
-  spending_cards: any[]
+  owned_cards: any[]
 }
 
 type CustomInsight = {
@@ -221,11 +221,11 @@ export default function AdminPage() {
                 )}
 
                 {/* Spending Cards */}
-                {userDetail.spending_cards.length > 0 && (
+                {userDetail.owned_cards.length > 0 && (
                   <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px" }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#2563eb", marginBottom: 12 }}>Spending Cards ({userDetail.spending_cards.length})</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#2563eb", marginBottom: 12 }}>Spending Cards ({userDetail.owned_cards.length})</div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {userDetail.spending_cards.map((c: any) => (
+                      {userDetail.owned_cards.map((c: any) => (
                         <div key={c.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "8px 0", borderBottom: "1px solid #f5f5f5" }}>
                           <div>
                             <span style={{ color: "#111", fontWeight: 600 }}>{c.card_name}</span>
