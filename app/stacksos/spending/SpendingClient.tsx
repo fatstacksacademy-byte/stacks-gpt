@@ -7,6 +7,7 @@ import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPE
 import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
+import CreditCardProgress from "../../components/CreditCardProgress"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const todayStr = () => new Date().toISOString().split("T")[0]
@@ -422,7 +423,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeCards.map(c => <CardRow key={c.id} card={c} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -432,7 +433,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {plannedCards.map(c => <CardRow key={c.id} card={c} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </div>
         )}
@@ -448,7 +449,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Completed ({completedCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {completedCards.map(c => <CardRow key={c.id} card={c} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {completedCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </details>
         )}
@@ -458,7 +459,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Canceled ({canceledCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {canceledCards.map(c => <CardRow key={c.id} card={c} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
+              {canceledCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateSpendingCard(c.id, { status: s }); await loadData() }} />)}
             </div>
           </details>
         )}
@@ -564,9 +565,10 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   )
 }
 
-function CardRow({ card: c, spendCheck, onEdit, onDelete, onStatusChange }: {
+function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange }: {
   card: SpendingCard
   spendCheck?: { canHit: boolean; monthsNeeded: number }
+  userId: string
   onEdit: () => void
   onDelete: () => void
   onStatusChange: (s: SpendingCard["status"]) => void
@@ -611,6 +613,15 @@ function CardRow({ card: c, spendCheck, onEdit, onDelete, onStatusChange }: {
           )}
         </div>
       </div>
+      {c.status === "active" && (
+        <CreditCardProgress
+          userId={userId}
+          cardId={c.id}
+          spendRequirement={c.spend_requirement}
+          spendDeadline={c.spend_deadline}
+          openedDate={c.opened_date}
+        />
+      )}
       <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center" }}>
         {c.status === "planned" && (
           <button onClick={() => onStatusChange("active")}
