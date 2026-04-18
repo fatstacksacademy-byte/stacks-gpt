@@ -17,6 +17,8 @@ import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from 
 import { markKeptOpen } from "../../lib/keptOpen"
 import { createClient } from "../../lib/supabase/client"
 import CheckpointNav from "../components/CheckpointNav"
+import BonusCommitCard from "../components/BonusCommitCard"
+import { getLinkedBonuses } from "../../lib/linkedBonuses"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -2375,46 +2377,60 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
       {/* Modal */}
       {actionBonus && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionBonus.bonus.bank_name}</div>
-            {actionBonus.mode === "start" && (
-              <>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you open this account?</div>
-                <label style={modalLabel}>Account opened date</label>
-                <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
-                <div style={modalActions}>
-                  <button onClick={() => setActionBonus(null)} style={cancelBtnLight}>Cancel</button>
-                  <button onClick={handleStart} style={confirmBtnLight}>Start Bonus</button>
-                </div>
-              </>
-            )}
-            {actionBonus.mode === "close" && (
-              <>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
-                <label style={modalLabel}>Account closed date</label>
-                <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
-                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
-                  <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
-                </div>
-                {bonusReceived && (
-                  <>
-                    <label style={modalLabel}>Amount received</label>
-                    <div style={{ position: "relative" }}>
-                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
-                      <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionBonus.bonus.bonus_amount)} />
-                    </div>
-                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
-                  </>
-                )}
-                <div style={modalActions}>
-                  <button onClick={() => setActionBonus(null)} style={cancelBtnLight}>Cancel</button>
-                  <button onClick={handleClose} style={confirmBtnLight}>Close Account</button>
-                </div>
-              </>
-            )}
-          </div>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
+          {actionBonus.mode === "start" && (() => {
+            const linked = getLinkedBonuses(actionBonus.bonus.id)
+            // Only checking-kind linked bonuses can pass through the commit card
+            // (savings entries route users to the savings module separately).
+            const linkedChecking = linked
+              .filter((lb) => lb.kind === "checking")
+              .map((lb) => lb.entry)
+            return (
+              <BonusCommitCard
+                bonus={actionBonus.bonus}
+                profile={{
+                  pay_frequency: profile.pay_frequency,
+                  paycheck_amount: profile.paycheck_amount,
+                  state: profile.state,
+                }}
+                openedDate={actionDate}
+                onChangeOpenedDate={setActionDate}
+                onConfirm={handleStart}
+                onCancel={() => setActionBonus(null)}
+                linkedBonuses={linkedChecking}
+                onStartLinked={(id) => {
+                  const lb = linkedChecking.find((x) => x.id === id)
+                  if (lb) setActionBonus({ bonus: lb, mode: "start" })
+                }}
+              />
+            )
+          })()}
+          {actionBonus.mode === "close" && (
+            <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionBonus.bonus.bank_name}</div>
+              <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
+              <label style={modalLabel}>Account closed date</label>
+              <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
+                <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+              </div>
+              {bonusReceived && (
+                <>
+                  <label style={modalLabel}>Amount received</label>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                    <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionBonus.bonus.bonus_amount)} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
+                </>
+              )}
+              <div style={modalActions}>
+                <button onClick={() => setActionBonus(null)} style={cancelBtnLight}>Cancel</button>
+                <button onClick={handleClose} style={confirmBtnLight}>Close Account</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

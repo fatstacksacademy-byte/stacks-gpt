@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import PortfolioCard from "../components/PortfolioCard"
 import ModuleSummaryCard from "../components/ModuleSummaryCard"
+import CombosStrip from "../components/CombosStrip"
 import CheckpointNav from "../components/CheckpointNav"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
 import { runSavingsSequencer } from "../../lib/savingsSequencer"
@@ -161,6 +162,8 @@ export default function HubClient({
             { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings" },
           ]}
         />
+
+        <CombosStrip />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
           <ModuleSummaryCard
