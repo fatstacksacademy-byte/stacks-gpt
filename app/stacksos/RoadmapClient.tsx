@@ -583,11 +583,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     }
   }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
-  const projected365 = projectionResult ? getProjectedBonuses(projectionResult) : []
-  const today365End = addDays(todayStr(), 365)
   const today730End = addDays(todayStr(), 730)
-  const yearBonuses365 = projected365.filter(p => new Date(p.start_date) <= today365End)
-
   // Project custom bonuses into the plan (active + future churnable cycles only — pending stay in queue until started)
   const customProjectedBonuses: ProjectedBonus[] = []
   // Active (open) custom bonuses — project current cycle
@@ -649,10 +645,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       nextStart.setMonth(nextStart.getMonth() + c.cooldown_months)
     }
   }
-
-  const customYear1Projected = customProjectedBonuses.filter(p => new Date(p.start_date) <= today365End)
-  const expectedThisYear = yearBonuses365.reduce((sum, p) => sum + p.bonus_amount, 0)
-    + customYear1Projected.reduce((sum, p) => sum + p.bonus_amount, 0)
 
   // Active bonuses that are actually being worked on (not kept open)
   const workingBonuses = inProgress.filter(({ bonus: b }) => !keptOpen.includes(b.id))
@@ -875,33 +867,6 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   )}
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Cross-Module Summary ── */}
-        {projectionResult && (
-          <div style={{ background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px", marginBottom: 20 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-              <div>
-                <div style={{ fontSize: 11, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>12-Month Total Portfolio</div>
-                <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", marginTop: 4, letterSpacing: "-0.02em" }}>
-                  {money(projected365.reduce((s, p) => s + p.net_bonus, 0))}
-                </div>
-                <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
-                  Paycheck bonuses · <a href="/stacksos/savings" style={{ color: "#0d7c5f", textDecoration: "none" }}>+ Savings</a> · <a href="/stacksos/spending" style={{ color: "#0d7c5f", textDecoration: "none" }}>+ Credit Cards</a>
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: 16 }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase" }}>Earned</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{money(totalEarned + customEarned)}</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase" }}>In Progress</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#2563eb" }}>{money(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress)}</div>
-                </div>
-              </div>
             </div>
           </div>
         )}
