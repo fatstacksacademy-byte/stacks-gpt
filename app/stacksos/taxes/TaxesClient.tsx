@@ -2,15 +2,19 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import { createClient } from "../../../lib/supabase/client"
+import { bonuses as allBonuses } from "../../../lib/data/bonuses"
 
 const money = (n: number) => `$${Math.round(n).toLocaleString()}`
 
+// `completed_bonuses` row shape. Note: the DB column is `opened_date`, not
+// `started_date` — the previous typing used the wrong name, which meant the
+// taxes page showed $0 for every closed checking bonus because getYear()
+// received undefined and the amount fallback never fired.
 type BonusRecord = {
   id: string
   bonus_id: string
-  bonus_amount: number
   actual_amount: number | null
-  started_date: string
+  opened_date: string
   closed_date: string | null
   bonus_received: boolean
 }
@@ -44,7 +48,7 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
   const loadData = useCallback(async () => {
     setLoading(true)
     const [{ data: b }, { data: s }, { data: sp }] = await Promise.all([
-      supabase.from("completed_bonuses").select("*").eq("user_id", userId).order("started_date", { ascending: false }),
+      supabase.from("completed_bonuses").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
       supabase.from("savings_entries").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
       supabase.from("spending_cards").select("*").eq("user_id", userId).order("opened_date", { ascending: false }),
     ])
@@ -73,12 +77,21 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
   // Checking bonuses
   for (const b of bonuses) {
     if (!b.bonus_received) continue
-    const amt = b.actual_amount ?? b.bonus_amount ?? 0
+    // actual_amount comes from the close modal when the user enters what
+    // they actually received. If that's null, fall back to the catalog's
+    // listed bonus_amount (lib/data/bonuses.ts) for the referenced bonus_id.
+    const catalogEntry = allBonuses.find((x: { id: string; bonus_amount?: number; bank_name?: string }) => x.id === b.bonus_id)
+    const amt = b.actual_amount ?? catalogEntry?.bonus_amount ?? 0
     if (amt <= 0) continue
-    const year = getYear(b.closed_date ?? b.started_date)
+    const dateStr = b.closed_date ?? b.opened_date
+    const year = getYear(dateStr)
     ensureYear(year)
     yearData[year].checking += amt
-    yearData[year].items.push({ name: b.bonus_id.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()), type: "Checking Bonus", amount: amt, date: b.closed_date ?? b.started_date })
+    // Display the bank name from the catalog when available; fall back to a
+    // humanized version of the bonus_id.
+    const displayName = catalogEntry?.bank_name
+      ?? b.bonus_id.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+    yearData[year].items.push({ name: displayName, type: "Checking Bonus", amount: amt, date: dateStr })
   }
 
   // Savings bonuses

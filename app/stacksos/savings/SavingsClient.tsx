@@ -6,6 +6,7 @@ import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEn
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
+import { savingsBonuses as savingsBonusesCatalog } from "../../../lib/data/savingsBonuses"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -559,9 +560,15 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 const openedConfirmed = getManualStep(e.id, "opened")
                 const depositedConfirmed = getManualStep(e.id, "deposited")
 
+                // Allow the catalog entry to override the generic "$X deposited"
+                // step label. Ally, for example, isn't a single $60 deposit — it's
+                // 3 recurring monthly transfers of $20+.
+                const catalogEntry = savingsBonusesCatalog.find(b => b.id === e.bonus_name)
+                const depositedLabel = catalogEntry?.deposit_action_label ?? `$${deposit.toLocaleString()} deposited`
+
                 const steps = [
                   { key: "opened" as const, label: "Account opened", done: openedConfirmed, clickable: true },
-                  { key: "deposited" as const, label: `$${deposit.toLocaleString()} deposited`, done: depositedConfirmed, clickable: true },
+                  { key: "deposited" as const, label: depositedLabel, done: depositedConfirmed, clickable: true },
                   { key: "hold" as const, label: `Hold period (${holdDays} days)`, done: holdComplete, clickable: false },
                   { key: "received" as const, label: "Bonus received", done: bonusReceived, clickable: false },
                 ]

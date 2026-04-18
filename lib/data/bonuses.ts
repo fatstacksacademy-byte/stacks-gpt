@@ -5377,40 +5377,42 @@ export const bonuses: any[] = [
     "id": "hsbc-premier-checking-2026",
     "bank_name": "HSBC",
     "product_type": "checking",
-    "bonus_amount": 1500,
+    "bonus_amount": 7000,
     "cooldown_months": null,
     "tiers": [
-      { "bonus": 600, "min_dd_total": 75000 },
-      { "bonus": 1500, "min_dd_total": 150000 }
+      { "bonus": 1500, "min_dd_total": 150000 },
+      { "bonus": 2500, "min_dd_total": 250000 },
+      { "bonus": 3500, "min_dd_total": 500000 },
+      { "bonus": 7000, "min_dd_total": 1000000 }
     ],
     "requirements": {
-      "direct_deposit_required": true,
-      "min_direct_deposit_total": 150000,
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": null,
       "holding_period_days": null,
       "min_opening_deposit": null,
-      "min_balance": null,
+      "min_balance": 150000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "High-balance offer. $600 at $75,000 in deposits, $1,500 at $150,000+ in deposits."
+      "other_requirements_text": "HSBC Premier Relationship offer — four tiers: $1,500 bonus for $150K-$249K new money deposited/invested, $2,500 for $250K-$499K, $3,500 for $500K-$999K, and $7,000 for $1M+. No direct deposit requirement; balance-based. Funds must be net-new to HSBC. Deposit by June 30, 2026 and hold through that date. Expires March 31, 2026."
     },
-    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
+    "fees": { "monthly_fee": 50, "monthly_fee_waiver_text": "Waived with $75,000+ in combined U.S. Dollar personal deposit + investment balances OR $5,000/mo in third-party recurring direct deposits.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Verified 2026-04 from DoC + us.hsbc.com Premier Relationship offer page. Previous entry was stale: had a non-existent $600 tier at $75K and incorrectly marked DD as required. HSBC Premier is balance-qualified, not DD-qualified." },
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "High-balance offer. New HSBC Premier checking customers only."
+      "eligibility_notes": "HSBC Premier Relationship required — typically $75,000+ combined balances or qualifying HSBC mortgage. High-balance offer, new Premier customers only. Expires March 31, 2026."
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.us.hsbc.com/checking-accounts/products/premier/",
-      "https://www.doctorofcredit.com/hsbc-premier-checking-bonus/"
+      "https://www.us.hsbc.com/checking-accounts/campaigns/premier-relationship/offer/",
+      "https://www.doctorofcredit.com/hsbc-1500-7000-checking-bonus/"
     ],
-    "raw_excerpt": "HSBC Premier checking bonus up to $1,500. Tiered: $600 at $75k deposits, $1,500 at $150k+ deposits."
+    "raw_excerpt": "HSBC Premier Relationship checking bonus up to $7,000. Four tiers by new-money deposited: $1,500 ($150K-$249K), $2,500 ($250K-$499K), $3,500 ($500K-$999K), $7,000 ($1M+). Fund by June 30, 2026; hold through that date. Expires March 31, 2026."
   },
   {
     "id": "usaa-300-checking-2026",

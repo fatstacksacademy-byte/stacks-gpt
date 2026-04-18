@@ -918,12 +918,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
               </div>
               <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Projected 12 months</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 2 }}>${expectedThisYear.toLocaleString()}</div>
+                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available bonuses</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length + inProgress.length}</div>
                 <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
                   {showProjection ? "Hide plan" : "View full bonus plan"}
                 </button>
-                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Based on {available.length + inProgress.length} available bonuses · Plan updates as offers change</div>
+                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Portfolio projection lives on the Dashboard.</div>
               </div>
             </div>
 

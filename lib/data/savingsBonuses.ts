@@ -29,6 +29,13 @@ export type SavingsBonus = {
   notes?: string
   business?: boolean
   brokerage?: boolean
+  /**
+   * Optional override for the "deposited" step label on the active-bonus card.
+   * Use when the real qualifying action isn't a one-time deposit — e.g.,
+   * Ally's referral requires 3 monthly recurring transfers, not a single
+   * $60 deposit. If unset, the UI shows the default "$X deposited".
+   */
+  deposit_action_label?: string
 }
 
 export const savingsBonuses: SavingsBonus[] = [
@@ -216,7 +223,8 @@ export const savingsBonuses: SavingsBonus[] = [
       "https://www.ally.com/referral?code=6J7N9D8R8T&CP=MobileAppReferFriend"
     ],
     raw_excerpt: "Open Ally Online Savings via referral link, set up automated recurring transfer ($20/mo minimum), complete 3 consecutive months. Bonus posts after requirements met.",
-    notes: "Extremely easy $100. No large deposit required. Set $20/mo recurring and forget it."
+    notes: "Extremely easy $100. No large deposit required. Set $20/mo recurring and forget it.",
+    deposit_action_label: "Set up $20+/mo recurring transfer for 3 months",
   },
   {
     id: "blue-foundry-savings-2026",
