@@ -163,6 +163,100 @@ export function checkCardNameOnPage(text: string, cardName: string): boolean {
   return hits >= Math.min(2, tokens.length)
 }
 
+// ────────── Rewards tiers ──────────
+
+export type ExtractedRewardsTier = {
+  categories: string[]
+  multiplier: number
+  unit: "points" | "miles" | "%" | "cashback"
+  annual_cap?: number
+  note?: string
+  raw: string
+}
+
+const CATEGORY_TOKENS: Record<string, string> = {
+  dining: "dining",
+  restaurants: "dining",
+  restaurant: "dining",
+  grocery: "groceries",
+  groceries: "groceries",
+  supermarket: "groceries",
+  supermarkets: "groceries",
+  gas: "gas",
+  travel: "travel",
+  flights: "travel",
+  airfare: "travel",
+  hotels: "travel",
+  rideshare: "travel",
+  uber: "travel",
+  lyft: "travel",
+  streaming: "streaming",
+  "online shopping": "online_shopping",
+  everything: "everything_else",
+  "all other": "everything_else",
+  "other purchases": "everything_else",
+}
+
+function normalizeCategory(raw: string): string | null {
+  const lc = raw.toLowerCase().trim()
+  for (const [k, v] of Object.entries(CATEGORY_TOKENS)) {
+    if (lc.includes(k)) return v
+  }
+  if (/\ball[\s-]*other\b|\bevery\s*thing\b/i.test(raw)) return "everything_else"
+  return null
+}
+
+/**
+ * Extract rewards-earning tiers from an offer page. Captures:
+ *   - "3X points on dining"
+ *   - "5x Ultimate Rewards on travel"
+ *   - "2% cash back on groceries"
+ *   - "1x on everything else"
+ *
+ * Aggressive by design — the spending optimizer will re-score after human review.
+ */
+export function extractRewardsTiers(text: string): ExtractedRewardsTier[] {
+  const results: ExtractedRewardsTier[] = []
+  const seen = new Set<string>()
+
+  const multRe = /(\d+(?:\.\d+)?)\s*[xX×]\s+(?:points|miles|[A-Z][A-Za-z ]+?\s+Rewards|total\s+points)?\s*(?:on|in|at|for)\s+([A-Za-z][A-Za-z ,&/-]{2,60}?)(?=[.,;(]|\s+(?:and|when|booked|up\s+to|on\s+the|\())/gi
+  let m: RegExpExecArray | null
+  while ((m = multRe.exec(text))) {
+    const mult = Number(m[1])
+    if (!Number.isFinite(mult) || mult < 1 || mult > 20) continue
+    const cat = normalizeCategory(m[2])
+    if (!cat) continue
+    const key = `${mult}:${cat}:pts`
+    if (seen.has(key)) continue
+    seen.add(key)
+    results.push({
+      categories: [cat],
+      multiplier: mult,
+      unit: /miles/i.test(m[0]) ? "miles" : "points",
+      raw: m[0].slice(0, 120),
+    })
+  }
+
+  const pctRe = /(\d+(?:\.\d+)?)\s*%\s+(?:cash\s+)?back\s+(?:on|in|at|for)\s+([A-Za-z][A-Za-z ,&/-]{2,60}?)(?=[.,;(]|\s+(?:and|when|booked|up\s+to|on\s+the|\())/gi
+  while ((m = pctRe.exec(text))) {
+    const pct = Number(m[1])
+    if (!Number.isFinite(pct) || pct <= 0 || pct > 20) continue
+    const cat = normalizeCategory(m[2])
+    if (!cat) continue
+    const key = `${pct}:${cat}:pct`
+    if (seen.has(key)) continue
+    seen.add(key)
+    results.push({
+      categories: [cat],
+      multiplier: pct,
+      unit: "%",
+      raw: m[0].slice(0, 120),
+    })
+  }
+
+  return results
+}
+
 export function extractAll(text: string, cardName: string): CardExtracted {
   const bonus = extractBonusAmount(text)
   const spend = extractMinSpend(text)

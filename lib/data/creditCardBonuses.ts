@@ -4,6 +4,31 @@
  * Point valuations: 1 cpp for general/airline, 0.5 cpp for hotel loyalty points.
  */
 
+/**
+ * A rewards-earning tier on a credit card.
+ *
+ * Example — Chase Sapphire Reserve (partial):
+ *   { categories: ["travel"], multiplier: 3, unit: "points", note: "booked through Chase Travel" }
+ *   { categories: ["dining"], multiplier: 3, unit: "points" }
+ *   { categories: ["everything_else"], multiplier: 1, unit: "points" }
+ *
+ * Kept flat + optional so existing catalog entries compile unchanged.
+ * The forthcoming spending optimizer reads this to match user spend
+ * categories to the best-earning card.
+ */
+export type RewardsTier = {
+  /** Category tokens — use lowercase_snake. "everything_else" is the fallback tier. */
+  categories: string[]
+  /** Points-per-dollar (3 = 3x) or percent (for cashback cards, unit = "%"). */
+  multiplier: number
+  /** Earning unit. Defaults to "points" for non-cashback cards. */
+  unit?: "points" | "miles" | "%" | "cashback"
+  /** Optional annual cap on category spend (in $). */
+  annual_cap?: number
+  /** Any activation / booking-channel caveat, e.g. "booked through Chase Travel". */
+  note?: string
+}
+
 export type CreditCardBonus = {
   id: string
   card_name: string
@@ -24,6 +49,8 @@ export type CreditCardBonus = {
   expired: boolean
   key_benefits: string[]
   state_restricted?: string[]
+  /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
+  rewards?: RewardsTier[]
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [
@@ -93,7 +120,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 100, // $100 airline credit
     offer_link: "https://creditcards.chase.com/marriott-bonvoy-credit-cards/boundless",
-    expired: false,
+    // Offer page returns 404. Chase has been rotating the Boundless offer URL; the 5-night
+    // certificate promo may be sunset. Verify before re-listing.
+    expired: true,
     key_benefits: [
       "5 free night certificates (up to 50k points each)",
       "$100 airline credit",
@@ -116,7 +145,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: true,
     statement_credits_year1: 0,
     offer_link: "https://creditcards.chase.com/marriott-bonvoy-credit-cards/bold",
-    expired: false,
+    // Offer page returns 404. Chase rotated the Bold URL; confirm new offer before re-enabling.
+    expired: true,
     key_benefits: [
       "No annual fee",
       "1 free night certificate on anniversary",
@@ -483,7 +513,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: true,
     statement_credits_year1: 0,
     offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-credit-card",
-    expired: false,
+    // Offer page 301s to citi.com/credit-cards/page-not-found. Offer was sunset or moved;
+    // find the replacement (AAdvantage Platinum Mastercard) URL before re-enabling.
+    expired: true,
     key_benefits: [
       "Annual fee waived first year",
       "Free checked bag on AA flights",
@@ -576,7 +608,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "https://www.alaskaair.com/atmosrewards/content/credit-cards?tier=summit",
-    expired: false,
+    // Alaska's Atmos Rewards page now renders as a JS SPA; the ?tier= query param doesn't
+    // produce a card-specific application URL anymore. Card name doesn't appear in the
+    // served HTML. Find the new direct Apply URL (likely under bankofamerica.com) before
+    // re-enabling.
+    expired: true,
     key_benefits: [
       "25,000-point Global Companion Award",
       "8 Alaska Lounge passes annually",
@@ -599,7 +635,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 99, // $99 companion fare
     offer_link: "https://www.alaskaair.com/atmosrewards/content/credit-cards?tier=ascent",
-    expired: false,
+    // Same issue as the Summit tier — Alaska's SPA doesn't expose a stable per-tier
+    // Apply URL. Find the BofA direct application page before re-enabling.
+    expired: true,
     key_benefits: [
       "$99 companion fare",
       "Free checked bag",

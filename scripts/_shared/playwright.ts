@@ -65,13 +65,42 @@ export async function fetchPage(
     const finalUrl = page.url()
     const redirected = new URL(finalUrl).href !== new URL(url).href
 
-    const textContent = await page.evaluate(() => {
-      const main =
-        document.querySelector("main") ||
-        document.querySelector("[role=main]") ||
-        document.body
-      return (main?.innerText || "").replace(/\s+/g, " ").trim()
-    })
+    // Prefer page.evaluate for clean innerText, but fall back to
+    // page.content() + strip for sites that block eval (AmEx's app.js
+    // monkey-patches eval and throws "eval is disabled" on every
+    // page.evaluate call, which surfaced 10 fetch errors in the first
+    // verify:cards run). page.content() returns raw HTML and is not
+    // blocked.
+    let textContent = ""
+    try {
+      textContent = await page.evaluate(() => {
+        const main =
+          document.querySelector("main") ||
+          document.querySelector("[role=main]") ||
+          document.body
+        return (main?.innerText || "").replace(/\s+/g, " ").trim()
+      })
+    } catch (evalErr) {
+      const msg = evalErr instanceof Error ? evalErr.message : String(evalErr)
+      if (/eval is disabled|Content Security Policy/i.test(msg)) {
+        const html = await page.content()
+        // Cheap HTML→text: drop scripts/styles, strip tags, collapse whitespace.
+        textContent = html
+          .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+          .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+          .replace(/\s+/g, " ")
+          .trim()
+      } else {
+        throw evalErr
+      }
+    }
 
     const htmlHash = createHash("sha256").update(textContent).digest("hex").slice(0, 16)
 

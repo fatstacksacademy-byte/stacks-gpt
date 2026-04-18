@@ -395,6 +395,42 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                           {isExpanded ? "Hide" : "Details"}
                         </button>
                       </div>
+                      {/* Rewards pills — shown inline on every card (not just expanded) so
+                          users can size up earning categories at a glance. Upcoming spending
+                          optimizer also reads sc.card.rewards for matching user spend. */}
+                      {sc.card.rewards && sc.card.rewards.length > 0 && (
+                        <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                          {sc.card.rewards
+                            .slice()
+                            .sort((a, b) => b.multiplier - a.multiplier)
+                            .slice(0, 5)
+                            .map((r, i) => {
+                              const cats = r.categories
+                                .map((c) => c.replace(/_/g, " "))
+                                .join(" + ")
+                              const suffix = r.unit === "%" ? "%" : r.unit === "miles" ? "x miles" : "x"
+                              return (
+                                <span
+                                  key={i}
+                                  title={r.note ?? undefined}
+                                  style={{
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    color: "#0d7c5f",
+                                    background: "#ecf7f1",
+                                    border: "1px solid #cce5d9",
+                                    padding: "2px 6px",
+                                    borderRadius: 4,
+                                    letterSpacing: "0.02em",
+                                  }}
+                                >
+                                  {r.multiplier}
+                                  {suffix} {cats}
+                                </span>
+                              )
+                            })}
+                        </div>
+                      )}
                       {isExpanded && (
                         <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f0f0f0", display: "flex", flexDirection: "column", gap: 2 }}>
                           {sc.card.key_benefits.map((b, i) => (
