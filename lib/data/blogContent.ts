@@ -3870,4 +3870,250 @@ export const blogContent: Record<string, BlogContent> = {
     faqs: [{ q: "What is Raisin?", a: "Raisin is a savings marketplace that partners with FDIC-insured banks. You open an account through Raisin and your deposit is held at a partner bank." }],
     relatedSlugs: [],
   },
+
+  // ─── SAVINGS (remaining coverage) ─────────────────────────────
+
+  "td-bank-savings-2026": {
+    summary: "TD Bank's $200 savings bonus is a straightforward East Coast offer: park $10,000 for about 4 months and walk away with a modest but reliable $200. The 0.02% base APY is uncompetitive, so this is purely a bonus play — move the money back to a real HYSA the day the bonus posts.",
+    strategy: "Open a TD savings account (one of the 16 eligible East Coast states), deposit $10,000 in new money within 30 days, and keep the balance above $10,000 for 90 days. Day 120 the bonus posts; close and redeploy. Effective APY on the bonus play alone is around 6% — not great versus Chase or Capital One's savings combos, but fine if you've already exhausted those.",
+    bestFor: "East Coast residents who've already done the big-bank savings bonuses (Chase, Capital One, Citi) and want another $200 to stack. Not worth the opportunity cost if you're in the middle of higher-APY plays.",
+    pros: ["Only $10k required — lower barrier than most savings bonuses", "Reliable, established bank", "No monthly fee on eligible accounts", "Simple requirements (no DD, no transactions)"],
+    cons: ["Only 0.02% base APY — useless outside the bonus window", "East Coast only (CT, DC, DE, FL, MA, MD, ME, NC, NH, NJ, NY, PA, RI, SC, VA, VT)", "$200 on $10k for 4 months = ~6% effective APY, middling for the space", "Expires April 30, 2026"],
+    comparison: "TD $200 on $10k sits below Chase's savings combo ($600 on $15k at ~16% effective APY) and Capital One's 360 Performance ($300 on $20k at ~9% APY with a strong base rate). Use TD as a follow-up after you've exhausted the top-tier plays.",
+    faqs: [
+      { q: "Can I open a TD savings bonus from outside the 16 East Coast states?", a: "No. TD requires a residential address in one of the eligible states. The branch network is East Coast only." },
+      { q: "Does TD count transfers from another TD account as new money?", a: "No. Only external deposits (from other banks) qualify as new money for the bonus." },
+      { q: "What happens if my balance dips below $10,000?", a: "The bonus is voided. Keep the balance above $10,000 for the full 90-day maintenance period to qualify." },
+    ],
+    relatedSlugs: ["capital-one-1500-savings-bonus", "chase-600-savings-bonus", "barclays-200-savings-bonus"],
+  },
+
+  "wintrust-savings-2026": {
+    summary: "Wintrust's $200 savings bonus is best understood as a sidecar to their $500 checking bonus — open both at the same visit, fund the savings with $15,000, and you collect both bonuses for $700 total. Alone, the savings bonus is unremarkable; stacked with the checking, it's one of the better combo plays in the IL/WI/FL footprint.",
+    strategy: "Open the Wintrust Total Access Checking and the savings account on the same day. Fund the savings with $15,000 of new money within the opening month and maintain for 3 months. While the savings bonus pays out, also meet the checking bonus requirements ($500 DD in 60 days). Target the combined $700 payout — the savings bonus alone doesn't justify the 3-month hold.",
+    bestFor: "Current or prospective Wintrust checking customers in IL, WI, or FL who can park $15,000 for three months. Don't do the savings without the checking — the math is much worse standalone.",
+    pros: ["Stacks cleanly with $500 Wintrust checking bonus for $700 combined", "No monthly fee on eligible accounts", "Relatively short 90-day maintenance window", "Straightforward balance-based bonus (no DD or transaction requirements on the savings side)"],
+    cons: ["$200 on $15k for 4 months = ~4% effective APY — weak standalone", "Must open savings during the same visit as checking", "IL/WI/FL only", "0.01% base APY is effectively zero"],
+    comparison: "As a standalone savings bonus, $200 on $15k is poor — Chase or Capital One pay 3-4x that effective APY. The value is entirely in the combo: $700 total on a $15k deposit + DD setup is competitive with top-tier single-bonus plays.",
+    faqs: [
+      { q: "Can I do the Wintrust savings bonus without the checking?", a: "The offer is designed to be opened with the checking account during the same visit. Wintrust may not open the savings separately for bonus purposes. Plan on doing both together." },
+      { q: "What counts as 'same visit'?", a: "Both accounts opened on the same day, either in-branch or online. If you open the checking first and come back later for the savings, you likely won't qualify." },
+      { q: "Does my $15,000 need to stay above that level the whole time?", a: "Yes. Maintain $15,000+ for three months after the opening deposit. Dipping below voids the bonus." },
+    ],
+    relatedSlugs: ["wintrust-500-checking-bonus", "chase-600-savings-bonus", "td-bank-200-savings-bonus"],
+  },
+
+  "hsbc-premier-savings-2026": {
+    summary: "HSBC's Premier savings bonus pays up to $5,000 on a $500,000 deposit — one of the largest savings bonuses available, but gated behind the Premier relationship ($75k+ combined balances or a qualifying mortgage). The 4.1% base APY is strong and the tiered structure ($1,500 at $100k, $2,500 at $250k, $5,000 at $500k) makes this worth considering at every tier.",
+    strategy: "First establish Premier eligibility — typically $75,000+ in combined HSBC deposits/investments or a qualifying HSBC mortgage. Then open a Premier Savings account and fund with net-new money within 30 days. Maintain the tier minimum for 90 days. Unlike many savings bonuses, the 4.1% base APY means your money still earns competitively after the bonus period, so you don't need to yank it immediately.",
+    bestFor: "High-net-worth individuals with $100k+ in liquid savings, especially anyone already holding an HSBC mortgage or planning to. Not worth pursuing if you'd have to shuffle accounts just to qualify for Premier status.",
+    pros: ["Up to $5,000 bonus — one of the largest savings offers", "Strong 4.1% base APY means money still works post-bonus", "Three tiers so it scales with what you can deposit", "HSBC's international presence is useful if you travel or bank globally"],
+    cons: ["Premier relationship requirement is a real barrier ($75k+ or mortgage)", "Complex account structure — Premier has its own rules and fees", "$500k top tier is out of reach for most retail savers", "HSBC's U.S. branch footprint is limited (primarily NY, CA, FL, D.C., WA)"],
+    comparison: "For $100k, HSBC Premier's $1,500 bonus at a 4.1% base APY beats Capital One's $1,500 (at 3.4% base APY) on both bonus size (tie) and long-term yield. At $500k the HSBC $5,000 is in a league of its own — no other savings bonus tops it at that tier. The Premier requirement, however, rules it out for most.",
+    faqs: [
+      { q: "What qualifies me for HSBC Premier?", a: "Typically $75,000+ in combined HSBC deposits and investments, or an HSBC residential mortgage with an original loan amount of $500,000+. Premier terms vary — confirm with HSBC before opening." },
+      { q: "Do my existing savings count as 'new money' for the bonus?", a: "No. Funds must come from outside HSBC. Moving money between HSBC accounts does not qualify." },
+      { q: "What's the catch with HSBC Premier?", a: "If you fall below the Premier balance threshold after opening, HSBC may downgrade you to Advance (or charge monthly fees). Confirm the ongoing balance requirement before committing." },
+    ],
+    relatedSlugs: ["capital-one-1500-savings-bonus", "chase-600-savings-bonus", "citi-2000-savings-bonus"],
+  },
+
+  // ─── BROKERAGE BONUSES ────────────────────────────────────────
+
+  "moomoo-cash-sweep-2026": {
+    summary: "Moomoo's cash account bonus pays up to $1,000 on a $100,000 deposit, with a 4.1% APY on idle cash and a surprisingly short 60-day hold. Bonus is paid in NVDA stock (sellable immediately), not cash — minor detail but worth knowing. At smaller tiers ($2k/$10k) this is one of the highest-return short-hold plays available.",
+    strategy: "Open a Moomoo cash account, fund with net-new money within 30 days, and hold for 60 days (120 for $50k tier, 180 for $100k tier). The $2,000 tier alone pays $100 — that's a 5% return in 60 days, or ~30% annualized. The $10,000 tier ($200 bonus) is nearly as efficient. Sell the NVDA shares the moment they post if you want cash.",
+    bestFor: "Churners who want a quick cash-account bonus without a DD setup or long lock-in. Also a solid parking spot for pre-tax quarterly savings or any cash you'd otherwise hold in a lower-APY HYSA.",
+    pros: ["4.1% APY on idle cash — competitive with top HYSAs", "Short 60-day hold at lower tiers", "Low entry bar — $2,000 for the base tier", "SIPC protected (up to $500k)", "Bonus is in NVDA stock but freely sellable"],
+    cons: ["SIPC-protected, NOT FDIC insured — important distinction for risk-averse savers", "Bonus is stock, not cash — you have to sell to realize USD", "Hold period extends to 180 days at the top tier", "Moomoo is primarily an active-trading platform; the cash-sweep feature is secondary"],
+    comparison: "At the $2k-$10k tiers, Moomoo's effective APY is excellent (20-30%+ annualized) and beats any comparable cash parking. At $100k, the effective APY is ~7% — still strong, but you'd earn more with Capital One's $1,500 on $100k played over 105 days. Use Moomoo for smaller deposits; use Capital One for the big bag.",
+    faqs: [
+      { q: "Is Moomoo FDIC insured?", a: "No. Moomoo is a brokerage, so your cash is held under SIPC protection (up to $500,000). This is not the same as FDIC — in a brokerage failure, SIPC covers securities and cash held at the broker, but it works differently than FDIC bank coverage." },
+      { q: "What stock is the bonus paid in?", a: "Historically Moomoo has paid the bonus in NVDA shares (NVIDIA stock). You can sell immediately for cash." },
+      { q: "How long do I have to hold the deposit?", a: "60 days for tiers up to $10,000. 120 days for the $50,000 tier. 180 days for the $100,000 tier." },
+    ],
+    relatedSlugs: ["e-trade-premium-savings-bonus", "sofi-invest-150-savings-bonus", "schwab-1000-savings-bonus"],
+  },
+
+  "etrade-brokerage-2026": {
+    summary: "E*TRADE's brokerage bonus pays up to $6,500 for depositing up to $1 million into a new brokerage or IRA account. Seven tiers from $1,000 (pays $50) to $1M (pays $6,500), with a 12-month hold. Long hold is the catch — but the base 3.5% APY on idle cash means your money still works while it waits.",
+    strategy: "Open an E*TRADE brokerage or IRA and transfer net-new funds within 60 days. Hold for 12 months. The bonus is tiered: pick the tier that matches what you can reasonably lock up for a year. At $50,000 ($500 bonus) the effective APY is about 1% — decent but only compelling if you'd have kept the money in a brokerage anyway. The $1M tier is meaningful: $6,500 + the 3.5% base yield on $1M = ~$41,500/year total.",
+    bestFor: "Investors who are consolidating brokerage accounts and would open E*TRADE anyway — stack the bonus on top of your normal account setup. Also good for anyone comfortable letting a chunk of savings sit invested for a full year.",
+    pros: ["Seven tiers — flexible sizing from $1k to $1M", "3.5% base APY on cash means money still earns", "Works for both brokerage and IRA (rare combination)", "Reputable, established broker"],
+    cons: ["12-month hold is long — longest of any bonus on the site", "Funds must be net-new to E*TRADE (no internal transfers)", "Effective bonus APY is modest at lower tiers (~1% at $50k)", "Better-APY plays exist at shorter holds"],
+    comparison: "E*TRADE's 12-month hold makes it a poor short-term churn play. At $50k for example, Capital One's $300 in 105 days ≈ 2.1% effective APY vs. E*TRADE's ~1%. But E*TRADE shines for brokerage consolidators: if your money was going to sit invested anyway, this is free money layered on top.",
+    faqs: [
+      { q: "Can I transfer from an existing E*TRADE account to qualify?", a: "No. Funds must be net-new — transferred from a different broker or deposited from an external bank. Internal E*TRADE transfers don't count." },
+      { q: "Does this work for IRAs?", a: "Yes. E*TRADE allows both brokerage and IRA accounts to qualify. If you're doing a rollover from a 401(k), this bonus can stack cleanly." },
+      { q: "What if I withdraw funds before 12 months?", a: "The bonus is forfeited. Plan to keep funds in the account for the full year — if you might need the money sooner, pick a shorter-hold offer like Moomoo or Merrill Edge." },
+    ],
+    relatedSlugs: ["schwab-1000-savings-bonus", "merrill-edge-1500-savings-bonus", "tastytrade-5000-savings-bonus"],
+  },
+
+  "schwab-brokerage-2026": {
+    summary: "Schwab's referral-based brokerage bonus pays up to $1,000 for moving $500,000 or more to a new Schwab brokerage or IRA, with a 12-month hold. The $100 tier at $25,000 is accessible and pairs well with Schwab's strong no-fee trading platform and ATM fee rebates — good starter account for travelers.",
+    strategy: "Get a referral link from an existing Schwab customer (without it, you don't qualify). Open a new brokerage or IRA and transfer net-new funds within 45 days. Hold for 12 months. At the $25k tier, $100 is modest but stacks with Schwab's worldwide ATM fee rebates and excellent trading platform — you likely wanted this account anyway.",
+    bestFor: "Anyone who was planning to open a Schwab account — the bonus is free money layered on. Also especially good for international travelers thanks to Schwab's unlimited ATM fee rebates globally.",
+    pros: ["Schwab is arguably the best travel-banking platform (ATM rebates worldwide)", "Low entry at $25,000", "Strong base platform (no commission trading, good research tools)", "Works for brokerage and IRA"],
+    cons: ["Referral-only — need a link from an existing Schwab customer", "12-month hold", "$1,000 max is modest versus E*TRADE's $6,500 at similar deposits", "Funds must be net-new"],
+    comparison: "Schwab's $1,000 at $500k is considerably below E*TRADE's $5,000 at the same deposit — if you're optimizing purely for bonus size, E*TRADE wins. But Schwab wins on platform quality, especially if you travel or want a checking + brokerage combo with unlimited ATM rebates.",
+    faqs: [
+      { q: "Where do I get a Schwab referral link?", a: "From any existing Schwab customer. Schwab's referral program is public and non-sensitive — you can ask on r/churning or social media if you don't know anyone." },
+      { q: "Does Schwab have a checking account?", a: "Yes. Schwab Bank Investor Checking is linked to the brokerage and offers unlimited ATM fee rebates worldwide. It's a popular combo for international travelers." },
+      { q: "Can I use this bonus for a 401(k) rollover?", a: "Yes — rolling a 401(k) into a Schwab IRA counts as net-new funds and qualifies." },
+    ],
+    relatedSlugs: ["e-trade-6500-savings-bonus", "merrill-edge-1500-savings-bonus"],
+  },
+
+  "merrill-edge-brokerage-2026": {
+    summary: "Merrill Edge's brokerage bonus pays up to $1,500 on $500,000, with a notably short 90-day hold — the shortest of the major brokerage bonuses. Especially powerful for Bank of America customers: this stacks with BofA's Preferred Rewards program, which multiplies credit card rewards and waives fees based on your combined BofA/Merrill balances.",
+    strategy: "Open a Merrill Edge brokerage or IRA and transfer net-new funds within 45 days. Hold for 90 days. The short hold makes this one of the best effective-APY brokerage plays. If you're a BofA customer, the deposit also boosts your Preferred Rewards tier: $100k gets you Platinum Honors, which is a 75% boost on BofA Travel Rewards and 3.5% cash back — that's significantly more value than the bonus itself over time.",
+    bestFor: "Bank of America customers — the Preferred Rewards synergy is huge. Also good for anyone wanting a shorter-hold brokerage bonus versus E*TRADE or Schwab's 12 months.",
+    pros: ["90-day hold is very short for a brokerage bonus", "Stacks with BofA Preferred Rewards (cumulative value grows over years)", "Up to $1,500 — solid standalone amount", "Five tiers for flexible sizing"],
+    cons: ["Merrill's platform is less polished than Schwab/E*TRADE", "Best value is locked behind BofA relationship", "$500k top tier out of reach for most", "Funds must be net-new"],
+    comparison: "For pure bonus economics at 90 days, Merrill Edge is the winner among brokerage bonuses. E*TRADE pays more total but over 12 months. The real play is Merrill + BofA combo: the lifetime Preferred Rewards uplift can easily exceed the one-time bonus.",
+    faqs: [
+      { q: "What is BofA Preferred Rewards?", a: "A tier-based rewards program that boosts BofA credit card rewards and waives banking fees based on your combined BofA + Merrill balances. Platinum Honors (the top tier) starts at $100k combined." },
+      { q: "Can I use this for a 401(k) rollover?", a: "Yes. Rollovers into a Merrill IRA count as net-new funds." },
+      { q: "Is Merrill Edge the same as Merrill Lynch?", a: "No — Merrill Edge is the self-directed brokerage platform. Merrill Lynch is the advisor-based wealth management arm. This bonus is for Merrill Edge self-directed accounts." },
+    ],
+    relatedSlugs: ["e-trade-6500-savings-bonus", "schwab-1000-savings-bonus"],
+  },
+
+  "tastytrade-brokerage-2026": {
+    summary: "Tastytrade's brokerage bonus pays up to $5,000 on $250,000, with a 12-month hold and a low $5,000 entry tier. Unlike other brokerage bonuses, Tastytrade pays no cash APY — funds either need to be actively invested (in options/futures/stocks) or they sit dead. The six-tier structure is generous but the hold is long.",
+    strategy: "Open a Tastytrade brokerage account (not available as an IRA for this bonus) and transfer net-new funds within 60 days. Hold for 12 months. Because there's no cash APY, plan to invest the funds — Tastytrade is built for active derivatives traders, so this is a natural fit only if you actually trade options or futures. If you're a buy-and-hold investor, the opportunity cost of zero cash yield may outweigh the bonus.",
+    bestFor: "Active options/futures traders who want a large broker-diversification bonus. Also fine for anyone willing to put the deposit into a simple buy-and-hold ETF position for the 12 months — that captures market returns + the bonus.",
+    pros: ["Low $5,000 entry tier — $100 bonus on $5k is a 2% boost", "Six tiers for flexible sizing up to $250k", "Tastytrade has strong options/futures tools", "Up to $5,000 top-tier payout"],
+    cons: ["0% cash APY — funds sit dead if you don't invest", "12-month hold", "Brokerage only (no IRA eligibility for this bonus)", "Platform is geared toward derivatives — overkill for passive investors"],
+    comparison: "At $50k, Tastytrade's $1,000 is higher than Schwab's $300 and matches E*TRADE's $500 at similar sizes — but E*TRADE's 3.5% cash APY makes it the better call for passive money. Use Tastytrade if you're already a derivatives trader; use E*TRADE or Schwab if your money will sit as cash.",
+    faqs: [
+      { q: "Can I do a Tastytrade bonus with an IRA rollover?", a: "This specific bonus is for brokerage accounts only. Tastytrade offers IRAs but they're not eligible for this promotion." },
+      { q: "Do I have to actively trade to qualify?", a: "No — the bonus only requires the deposit be held for 12 months. But because there's no cash APY, leaving the money idle has real opportunity cost." },
+      { q: "What happens if I close the account early?", a: "Bonus is forfeited and may be clawed back. Plan to hold for the full 12 months." },
+    ],
+    relatedSlugs: ["e-trade-6500-savings-bonus", "moomoo-1000-savings-bonus"],
+  },
+
+  "sofi-invest-150-2026": {
+    summary: "SoFi Invest's $150 bonus on a $1,000 deposit with a 30-day hold is one of the highest-ROI short-hold bonuses anywhere — a 15% return in one month. Limited tier structure (just one tier) but the entry bar is tiny and the hold is short enough that the math works even against a HYSA floor.",
+    strategy: "Open a SoFi Invest account (brokerage) through the Finder portal to qualify for the $150 referral bonus. Deposit $1,000 in net-new funds within 30 days. Hold for 30 days. Bonus posts ~1 week after. Total time to cash: ~40 days. Invest the funds in a broad-market ETF during the 30 days to avoid dead money.",
+    bestFor: "New churners looking for a quick, low-capital win. Also anyone who wants a starter brokerage account — SoFi's platform is decent for small-dollar investors and the bonus effectively makes the account open for free.",
+    pros: ["Tiny $1,000 barrier — accessible to almost everyone", "30-day hold is among the shortest brokerage bonuses", "15% effective return in a month is excellent", "SoFi Invest is a reasonable starter brokerage"],
+    cons: ["Only one tier — doesn't scale to larger deposits", "0% cash APY — must invest the funds to avoid dead money", "Bonus requires a specific portal (Finder)", "SoFi's brokerage platform is less polished than Schwab/Fidelity"],
+    comparison: "Dollar for dollar, SoFi Invest is the highest-yield short-hold bonus on the site — 15% in 30 days crushes any savings-bonus effective APY. The ceiling is low ($150 max) so it's not a wealth play, but as a starter bonus or portfolio filler it's hard to beat.",
+    faqs: [
+      { q: "Why do I need the Finder portal?", a: "SoFi's $150 bonus is specifically the Finder.com referral promotion. Opening directly through SoFi won't qualify for this amount. Check Finder.com for the active referral link before applying." },
+      { q: "Do I have to actively trade?", a: "No — the bonus only requires holding $1,000+ in the account for 30 days. But since SoFi Invest pays no cash APY, consider buying a broad-market ETF during the hold to avoid missing market returns." },
+      { q: "Can I withdraw my $1,000 after the bonus posts?", a: "Yes. Once the 30-day hold is met and the bonus posts (~1 week later), you can withdraw both your original deposit and the bonus." },
+    ],
+    relatedSlugs: ["moomoo-1000-savings-bonus", "e-trade-6500-savings-bonus"],
+  },
+
+  // ─── BUSINESS CHECKING BONUSES ────────────────────────────────
+
+  "chase-biz-savings-500": {
+    summary: "Chase Business Complete Checking pays $300, $500, or $750 depending on how much you deposit ($2k / $10k / $20k) within 30 days. Requires maintaining the balance for 60 days and making 5 qualifying transactions. The easiest business bonus to earn if you have real business cash flow.",
+    strategy: "Open Chase Business Complete Checking online or in-branch (online is faster). Deposit net-new funds within 30 days to hit your target tier. Make 5 qualifying transactions — these can be debit card purchases, ACH payments, or incoming wires. Maintain the tier balance for 60 days. The $2k tier is the easy win at $300; scale up if you have the cash.",
+    bestFor: "Small-business owners, freelancers, and sole proprietors with real business cash flow. Also anyone who's incorporated an LLC or sole prop — the bonus is more accessible than people assume.",
+    pros: ["Easy qualification for anyone with business income", "Chase's platform is the best among big-bank business checking", "Three tiers for flexible sizing", "QuickAccept + Chase Quick Deposit make transactions easy"],
+    cons: ["Requires a real business entity (EIN or sole prop documentation)", "$15 monthly fee on Business Complete, waivable with $2k balance", "5 transactions can be tricky if your business is low-volume", "Can't use this if you've had Chase business checking in the past"],
+    comparison: "Against other big-bank business bonuses: Chase's $750 at $20k is lower than U.S. Bank's $1,200 at $25k (better rate) and BofA's $750 at $15k (better rate). But Chase's platform and QuickAccept make daily use easier for actual business owners.",
+    faqs: [
+      { q: "Do I need an LLC to qualify?", a: "No. Sole proprietors can qualify with their SSN and a DBA, or with just their legal name + EIN. Chase's process accepts both." },
+      { q: "What counts as a qualifying transaction?", a: "Debit card purchases, ACH transactions (both directions), incoming wires, and QuickAccept payments. ATM withdrawals and internal transfers do NOT count." },
+      { q: "How do I avoid the $15 monthly fee?", a: "Keep an average daily balance of $2,000+. The bonus requirements (depositing $2k+ and maintaining) already meet this, so the fee is effectively waived during the bonus period." },
+    ],
+    relatedSlugs: ["bofa-business-advantage-750-savings-bonus", "u-s-bank-business-platinum-1200-savings-bonus"],
+  },
+
+  "bofa-biz-savings-750": {
+    summary: "Bank of America Business Advantage pays $400 or $750 depending on whether you deposit $5,000 or $15,000 within 30 days. Maintain for 60 days. Stacks beautifully with BofA Preferred Rewards — the combined BofA + Merrill balance from this deposit can push you into Platinum Honors tier (75% boost on travel rewards, 3.5% cash back on cards).",
+    strategy: "Open BofA Business Advantage Banking online. Deposit $15,000 in net-new funds within 30 days and maintain for 60 days. Make sure your business cards are BofA — the Preferred Rewards uplift on your personal cards is where the real long-term value lives. Target the $750 tier; the $400 tier is fine but leaves obvious money on the table if you have the cash.",
+    bestFor: "BofA customers (especially Preferred Rewards tier pursuers), and anyone with $15k+ in business funds who'd benefit from consolidating at BofA. Weak standalone play; strong if you care about Preferred Rewards.",
+    pros: ["Stacks with Preferred Rewards for lifetime cumulative value", "$750 is competitive among big-bank business bonuses", "BofA's business platform is reasonably capable", "Two tiers for flexible sizing"],
+    cons: ["$16 monthly fee on Business Advantage, waivable with $5k balance", "Requires business documentation (EIN, LLC paperwork)", "Best value is locked behind the BofA/Merrill ecosystem", "Ineligible if you've had BofA business checking recently"],
+    comparison: "BofA $750 at $15k is a tie with Chase $750 at $20k — BofA wins on deposit efficiency. But Chase's business platform features (QuickAccept, integration with Chase Ink cards) are stronger if you don't care about Preferred Rewards.",
+    faqs: [
+      { q: "What is Preferred Rewards?", a: "BofA's tiered loyalty program that boosts credit card rewards based on combined BofA + Merrill balances. $20k = Gold, $50k = Platinum, $100k = Platinum Honors (75% reward boost)." },
+      { q: "Does business checking count toward Preferred Rewards?", a: "Yes. Business Advantage Banking balances count toward your Preferred Rewards tier calculation, combined with personal BofA + Merrill balances." },
+      { q: "Do I need an LLC?", a: "No — sole proprietors can qualify. But LLCs and corporations have smoother account-opening experiences." },
+    ],
+    relatedSlugs: ["chase-business-checking-750-savings-bonus", "merrill-edge-1500-savings-bonus"],
+  },
+
+  "usbank-biz-savings-1200": {
+    summary: "U.S. Bank Platinum Business Checking pays $400 or $1,200 depending on deposit size ($5k or $25k). The $1,200 at $25k is the highest top-tier business checking bonus among the big banks. Requires promo code Q2DIG26 and 6 qualifying transactions during the qualification period.",
+    strategy: "Open U.S. Bank Platinum Business Checking online with promo code Q2DIG26. Deposit net-new funds within 30 days to hit the $25k tier. Make 6 qualifying transactions (debit purchases, ACH, wires). Maintain for 60 days. The $1,200 payout is best-in-class; the $400 tier is acceptable but leaves money on the table.",
+    bestFor: "Businesses with $25k+ in available working capital. Also decent for high-transaction-volume businesses that can hit the 6-transaction bar quickly.",
+    pros: ["$1,200 at $25k is the best big-bank business bonus", "Platinum Business Checking includes enhanced features (wire discounts, cash deposit allowances)", "U.S. Bank's footprint is strong in the Midwest and West", "Promo code entry process is straightforward"],
+    cons: ["Requires a specific promo code (Q2DIG26) — easy to miss", "6 transactions can be a stretch for low-volume businesses", "$30 monthly fee on Platinum, waivable with $25k balance", "U.S. Bank's online account opening is clunkier than Chase or BofA"],
+    comparison: "U.S. Bank's $1,200 at $25k beats Chase's $750 at $20k, BofA's $750 at $15k, and is in a league of its own at the top tier. The catch: the $25k balance maintenance during a 60-day period is a real capital commitment. If you have the cash, this is the best business bonus available.",
+    faqs: [
+      { q: "What is promo code Q2DIG26?", a: "U.S. Bank's Q2 2026 digital-acquisition promo code for Platinum Business Checking. Enter it when applying online to qualify for the tiered bonus." },
+      { q: "What counts as a qualifying transaction?", a: "Debit card purchases, ACH transfers (both directions), and incoming wires. ATM withdrawals and internal transfers do not count." },
+      { q: "Can I downgrade from Platinum after the bonus?", a: "Yes — U.S. Bank allows product changes. Most churners downgrade to Silver Business Checking after the bonus window ends to avoid the $30 monthly fee on Platinum." },
+    ],
+    relatedSlugs: ["chase-business-checking-750-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
+  },
+
+  "wells-fargo-biz-savings-825": {
+    summary: "Wells Fargo Initiate Business Checking pays $400 on a $2,500 deposit or $825 on a $25,000 deposit — but these are TWO SEPARATE OFFERS with different enrollment URLs, not tiers of one offer. The $400 tier is one of the highest-effective-APY business bonuses anywhere (~97% annualized). The $825 tier is better for anyone with real working capital.",
+    strategy: "Pick your tier first, then use the correct enrollment URL — /businesscheckinga for $400 or /businesscheckingb for $825. Open Initiate Business Checking, deposit the tier amount by day 30, and maintain the minimum daily collected balance through day 60. No transaction requirement. The effective APY math strongly favors the $400 tier if you can only afford one: $400 on $2,500 held 60 days is roughly 97% annualized.",
+    bestFor: "Anyone with a business entity. The $400 tier is perfect for side hustlers and new LLCs — $2,500 is a realistic amount to park. The $825 tier only makes sense if you already have $25k of working capital sitting somewhere.",
+    pros: ["$400 tier has exceptional effective APY (~97% annualized)", "No transaction requirements — just balance-based", "Short 60-day maintenance period", "Wells Fargo branches are ubiquitous"],
+    cons: ["$10/mo fee (rising to $15/mo in March 2026), waivable with $500 minimum daily balance", "Two separate URLs — easy to enroll in the wrong offer and get no bonus", "Expires May 5, 2026", "Wells Fargo's online business banking is clunky compared to Chase"],
+    comparison: "The $400 tier is the highest effective APY of any business bonus — it's a no-brainer if you can afford $2,500 for 60 days. The $825 tier at $25k is roughly 19.8% effective APY, which beats Chase's $750 at $20k (~22%) but loses to U.S. Bank's $1,200 at $25k (~29%).",
+    faqs: [
+      { q: "Which URL do I use?", a: "Use accountoffers.wellsfargo.com/businesscheckinga for the $400 tier ($2,500 balance) or accountoffers.wellsfargo.com/businesscheckingb for the $825 tier ($25,000 balance). Using the wrong URL means no bonus." },
+      { q: "Can I take both tiers?", a: "No — these are two variants of the same offer. You get one or the other, not both. Pick based on how much you're willing to park." },
+      { q: "Do I need to make any transactions?", a: "No. This bonus is purely balance-based — no debit card purchases or DD required." },
+    ],
+    relatedSlugs: ["chase-business-checking-750-savings-bonus", "u-s-bank-business-platinum-1200-savings-bonus"],
+  },
+
+  "citi-biz-savings-2000": {
+    summary: "Citi Business Checking pays $300 to $2,000 across five tiers, topping out at $2,000 on a $200,000 deposit. Available in only 7 states (NY, NJ, CA, DC, FL, IL, VA). The top tier is the largest business checking bonus on the site, but the 7-state footprint limits who can claim it.",
+    strategy: "Confirm you're in an eligible state. Open Citi Business Checking online or in-branch, deposit net-new funds within 45 days, and maintain the tier minimum for 45 days after funding. Pick the tier your working capital allows — each step up (e.g., $20k → $50k → $100k) roughly doubles the bonus, so scaling up is efficient if you have the cash.",
+    bestFor: "Businesses in the 7 eligible states with $20k+ in working capital. Especially strong for businesses with $100k+ — the $1,500 and $2,000 tiers are dramatically better than competitors at those deposit levels.",
+    pros: ["Up to $2,000 — largest business checking bonus available", "Five tiers for flexible sizing", "Citi's business platform includes good international wire support", "Short 45-day maintenance window"],
+    cons: ["Only 7 states (NY, NJ, CA, DC, FL, IL, VA)", "Top tier requires $200k — out of reach for most small businesses", "Business account opening requires in-person visit in some states", "Citi's online business banking is dated"],
+    comparison: "At $50k, Citi's $1,000 ties U.S. Bank's $1,200 at $25k on bonus size but requires 2x the deposit. Citi wins only at the top tiers ($100k+) where no other big bank matches. For the median small business, U.S. Bank or Chase are simpler options.",
+    faqs: [
+      { q: "Which states are eligible?", a: "NY, NJ, CA, DC, FL, IL, and VA. If your business address isn't in one of these, you can't qualify." },
+      { q: "Can I open online?", a: "Some states allow online opening; others require in-branch. Citi's application flow will route you accordingly based on your state." },
+      { q: "What's the monthly fee?", a: "$25/mo on Citi Business Checking, waivable with a $5,000 average daily balance. The bonus requirements already satisfy the waiver." },
+    ],
+    relatedSlugs: ["u-s-bank-business-platinum-1200-savings-bonus", "chase-business-checking-750-savings-bonus"],
+  },
+
+  "huntington-biz-savings-1000": {
+    summary: "Huntington Unlimited Plus Business Checking pays $200, $400, or $1,000 depending on deposit size ($2k, $10k, or $20k). Available in 13 states across the Midwest and Mid-Atlantic. The $1,000 at $20k tier is competitive, but Huntington is less well-known nationally so this bonus flies under the radar.",
+    strategy: "Confirm you're in an eligible state (OH, MI, IL, IN, PA, KY, WV, CO, MN, SC, WI, NC, SD). Open Unlimited Plus Business Checking online or in-branch. Deposit net-new funds within 60 days. The $20k tier's $1,000 bonus is the target — lower tiers have weaker effective rates.",
+    bestFor: "Businesses in Huntington's 13-state footprint, especially in Ohio and Michigan where Huntington's branch presence is strongest. Also good for anyone who wants a less-churned bonus (easier approval than Chase or BofA for repeat customers).",
+    pros: ["Less-churned bonus = easier approval for customers with many existing accounts", "Up to $1,000 is competitive", "60-day funding window is generous", "Huntington's mobile app is decent"],
+    cons: ["13-state footprint limits eligibility", "$20 monthly fee on Unlimited Plus, waivable with $10k balance", "Lower tiers have weak effective APY", "Requires real business documentation"],
+    comparison: "Huntington $1,000 at $20k is roughly comparable to BofA's $750 at $15k on effective APY. Huntington wins on geography if you're in OH/MI/IN where their presence is dense. BofA or Chase win if you want platform polish.",
+    faqs: [
+      { q: "Which states is Huntington in?", a: "OH, MI, IL, IN, PA, KY, WV, CO, MN, SC, WI, NC, SD. Strongest presence in Ohio and Michigan." },
+      { q: "Do I need 5+ transactions like Chase?", a: "No — Huntington's bonus is balance-based only. No transaction requirement." },
+      { q: "Can I downgrade after the bonus?", a: "Yes. Huntington allows product changes, so you can move to Business Checking 100 (no monthly fee) after the bonus window ends." },
+    ],
+    relatedSlugs: ["chase-business-checking-750-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
+  },
+
+  "mt-bank-biz-savings-1500": {
+    summary: "M&T Tailored Business Checking pays $300 to $1,500 across four tiers, topping out at $1,500 on a $100,000 deposit. The structure is unusual — the balance requirement is measured in the THIRD month after opening, not immediately. Available in 9 Mid-Atlantic states.",
+    strategy: "Open M&T Tailored Business Checking and fund within 90 days. Unlike most bonuses, M&T measures your balance in the THIRD month after account opening — so you can deposit late, as long as the tier amount is there when they check. Target the $100k tier for $1,500 if you have the working capital; otherwise $30k ($750) is a reasonable middle option.",
+    bestFor: "Mid-Atlantic businesses (NY, NJ, PA, MD, DC, DE, VA, CT, WV) with flexible cash flow. The delayed balance measurement means you don't have to commit the full deposit on day 1 — useful if your working capital fluctuates seasonally.",
+    pros: ["Up to $1,500 is strong", "Delayed balance measurement (month 3) gives flexibility", "Four tiers for sizing", "M&T's online banking is solid for the region"],
+    cons: ["9-state footprint (NY, NJ, PA, MD, DC, DE, VA, CT, WV)", "$25 monthly fee on Tailored, waivable with $10k balance", "Longer 90-day qualification window requires planning", "Limited national presence means fewer ATM/branch options if you travel"],
+    comparison: "M&T's $1,500 at $100k is below U.S. Bank's $1,200 at $25k and Citi's $1,500 at $100k — the bonus-to-deposit ratio is weaker here. But the delayed balance measurement makes the capital commitment less painful than a strict 30-day funding requirement.",
+    faqs: [
+      { q: "When does M&T check my balance?", a: "The balance is measured in the third calendar month after account opening. Open in March and they check your balance in June." },
+      { q: "What if my balance dips after the measurement month?", a: "Once the measurement month has passed, you've qualified for that tier's bonus. Withdrawing in the fourth month is fine — just don't withdraw early and re-deposit in time for the check." },
+      { q: "Which states?", a: "NY, NJ, PA, MD, DC, DE, VA, CT, WV. Strongest in the Mid-Atlantic corridor." },
+    ],
+    relatedSlugs: ["citi-business-2000-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
+  },
 }
