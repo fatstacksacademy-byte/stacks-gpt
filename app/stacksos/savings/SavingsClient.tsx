@@ -160,14 +160,17 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
 
   const delta = potentialFromOpportunities
 
-  // Savings sequencer — rank bonuses by effective APY
+  // Savings sequencer — rank bonuses by effective APY.
+  // We identify which catalog bonus each entry refers to via bonus_name
+  // (savings_entries.canonical_offer_id is a uuid column and our catalog
+  // IDs are strings, so the id is stored in bonus_name instead).
   const inProgressBonusIds = entries
     .filter(e => e.status === "active" || e.status === "planned")
-    .map(e => e.canonical_offer_id)
+    .map(e => e.bonus_name)
     .filter(Boolean) as string[]
   const completedBonusIds = entries
     .filter(e => e.status === "completed")
-    .map(e => e.canonical_offer_id)
+    .map(e => e.bonus_name)
     .filter(Boolean) as string[]
 
   const sequencerResult = runSavingsSequencer({
@@ -210,7 +213,12 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         status: "active",
         notes: rec.bonus.notes || null,
         source_type: "system",
-        canonical_offer_id: rec.id,
+        // canonical_offer_id is a uuid column in savings_entries; our string
+        // bonus IDs (e.g. "etrade-premium-savings-2026") are not UUIDs, so
+        // passing rec.id here makes Postgres reject the insert with a type
+        // cast error. Store the string identifier in bonus_name instead and
+        // leave canonical_offer_id null.
+        canonical_offer_id: null,
       })
       if (!result) throw new Error("Insert returned null — check RLS/schema. See browser console for detail.")
       await loadData()
