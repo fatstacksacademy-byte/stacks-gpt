@@ -58,13 +58,18 @@ export default function HubClient({
   }, [userId])
 
   useEffect(() => {
-    // First-visit wizard: show if the user hasn't completed onboarding AND
-    // hasn't already filled in their state + paycheck (covers users who were
-    // onboarded before the wizard existed).
-    const onboarded = typeof window !== "undefined" && localStorage.getItem("stacks:onboarded") === "1"
-    const looksLikeDefaultProfile =
-      !initialProfile.state || initialProfile.paycheck_amount === 1000 || initialProfile.paycheck_amount === 1500
-    if (!onboarded && looksLikeDefaultProfile) setShowWizard(true)
+    // First-visit wizard: show only when the user hasn't completed state
+    // selection (the wizard's step 1 requires it) AND hasn't dismissed it
+    // locally. The previous check also fired when paycheck_amount happened
+    // to equal the default values (1000 / 1500) — which meant anyone with
+    // a real $1,500 paycheck saw the wizard on every login.
+    //
+    // `state` starts null in DEFAULT_PROFILE, so it's the cleanest signal
+    // that onboarding hasn't been completed.
+    const onboarded =
+      typeof window !== "undefined" && localStorage.getItem("stacks:onboarded") === "1"
+    const hasCompletedOnboarding = !!initialProfile.state
+    if (!onboarded && !hasCompletedOnboarding) setShowWizard(true)
   }, [initialProfile])
 
   // ─── Paycheck projection (12 months) ─────────────────────────────

@@ -40,6 +40,26 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [startingId, setStartingId] = useState<string | null>(null)
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
+  // Manual milestone state for savings entries, persisted to localStorage so
+  // users can click checkboxes to advance their own progress. Previously
+  // "Account opened" and "$X deposited" were auto-checked on Start — but
+  // clicking Start only means "I'm committing to this plan," not "I've
+  // actually opened the account and deposited the money."
+  // Key shape: stacks:savings:{entryId}:{step}=1 where step ∈ opened|deposited
+  const [manualStepsVersion, setManualStepsVersion] = useState(0)
+  const getManualStep = (entryId: string, step: "opened" | "deposited"): boolean => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem(`stacks:savings:${entryId}:${step}`) === "1"
+  }
+  const toggleManualStep = (entryId: string, step: "opened" | "deposited") => {
+    if (typeof window === "undefined") return
+    const key = `stacks:savings:${entryId}:${step}`
+    const current = localStorage.getItem(key) === "1"
+    if (current) localStorage.removeItem(key)
+    else localStorage.setItem(key, "1")
+    setManualStepsVersion(v => v + 1) // trigger re-render
+  }
+  void manualStepsVersion // tracked so react knows to re-render when localStorage flips
   const [userState, setUserState] = useState<string | null>(null)
   const [showBusiness, setShowBusiness] = useState(() => {
     if (typeof window === "undefined") return false
@@ -522,6 +542,123 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
           )
         })()}
 
+        {/* Active Entries */}
+        {activeEntries.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently Working On</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {activeEntries.map(e => {
+                const deposit = e.deposit_required ?? 0
+                const holdDays = e.holding_period_days ?? 0
+                const openDate = e.opened_date ? new Date(e.opened_date + "T00:00:00") : null
+                const daysElapsed = openDate ? Math.floor((Date.now() - openDate.getTime()) / 86400000) : 0
+                const daysRemaining = holdDays > 0 ? Math.max(0, holdDays - daysElapsed) : 0
+                const progress = holdDays > 0 ? Math.min(100, Math.round((daysElapsed / holdDays) * 100)) : 0
+                const holdComplete = daysRemaining === 0 && holdDays > 0
+                const bonusReceived = e.actual_value != null && e.actual_value > 0
+                const openedConfirmed = getManualStep(e.id, "opened")
+                const depositedConfirmed = getManualStep(e.id, "deposited")
+
+                const steps = [
+                  { key: "opened" as const, label: "Account opened", done: openedConfirmed, clickable: true },
+                  { key: "deposited" as const, label: `$${deposit.toLocaleString()} deposited`, done: depositedConfirmed, clickable: true },
+                  { key: "hold" as const, label: `Hold period (${holdDays} days)`, done: holdComplete, clickable: false },
+                  { key: "received" as const, label: "Bonus received", done: bonusReceived, clickable: false },
+                ]
+
+                return (
+                  <div key={e.id} style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
+                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(e.bonus_amount ?? 0)}</div>
+                        {daysRemaining > 0 && <div style={{ fontSize: 11, color: "#d97706" }}>{daysRemaining} days remaining</div>}
+                      </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    {holdDays > 0 && (
+                      <div style={{ background: "#e8e8e8", borderRadius: 4, height: 6, marginBottom: 14 }}>
+                        <div style={{ background: "#0d7c5f", borderRadius: 4, height: 6, width: `${progress}%`, transition: "width 0.3s" }} />
+                      </div>
+                    )}
+
+                    {/* Checklist — opened + deposited are user-clickable,
+                        the latter two auto-compute from opened_date / actual_value. */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {steps.map((step) => {
+                        const interactive = step.clickable && !step.done
+                        return (
+                          <div
+                            key={step.key}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 10,
+                              cursor: step.clickable ? "pointer" : "default",
+                            }}
+                            onClick={step.clickable ? () => toggleManualStep(e.id, step.key as "opened" | "deposited") : undefined}
+                            title={
+                              step.clickable
+                                ? step.done
+                                  ? "Click to uncheck"
+                                  : "Click when you've done this step"
+                                : undefined
+                            }
+                          >
+                            <div style={{
+                              width: 20, height: 20, borderRadius: 10, flexShrink: 0,
+                              background: step.done ? "#0d7c5f" : "#fff",
+                              border: step.done ? "none" : interactive ? "2px solid #2563eb" : "2px solid #ddd",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 11, color: "#fff", fontWeight: 700,
+                            }}>
+                              {step.done && "✓"}
+                            </div>
+                            <span style={{
+                              fontSize: 13,
+                              color: step.done ? "#111" : interactive ? "#2563eb" : "#bbb",
+                              fontWeight: step.done ? 500 : 400,
+                            }}>
+                              {step.label}
+                              {interactive && <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>— click when done</span>}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+                      {holdComplete && !bonusReceived && (
+                        <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
+                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                          Mark bonus received
+                        </button>
+                      )}
+                      {bonusReceived && (
+                        <button onClick={async () => { await updateSavingsEntry(e.id, { status: "completed" }); await loadData() }}
+                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                          Complete &amp; withdraw
+                        </button>
+                      )}
+                      <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
+                        style={{ padding: "8px 16px", fontSize: 12, color: "#555", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ── Recommended Savings Bonuses ── */}
         {filteredEntries.length > 0 && (
           <div style={{ marginBottom: 28 }}>
@@ -824,95 +961,6 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                 </div>
               </details>
             )}
-          </div>
-        )}
-
-        {/* Active Entries */}
-        {activeEntries.length > 0 && (
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently Working On</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {activeEntries.map(e => {
-                const deposit = e.deposit_required ?? 0
-                const holdDays = e.holding_period_days ?? 0
-                const openDate = e.opened_date ? new Date(e.opened_date + "T00:00:00") : null
-                const daysElapsed = openDate ? Math.floor((Date.now() - openDate.getTime()) / 86400000) : 0
-                const daysRemaining = holdDays > 0 ? Math.max(0, holdDays - daysElapsed) : 0
-                const progress = holdDays > 0 ? Math.min(100, Math.round((daysElapsed / holdDays) * 100)) : 0
-                const isDeposited = deposit > 0 // assume deposited if there's a deposit amount
-                const holdComplete = daysRemaining === 0 && holdDays > 0
-                const bonusReceived = e.actual_value != null && e.actual_value > 0
-
-                const steps = [
-                  { label: "Account opened", done: !!openDate },
-                  { label: `$${deposit.toLocaleString()} deposited`, done: isDeposited && !!openDate },
-                  { label: `Hold period (${holdDays} days)`, done: holdComplete },
-                  { label: "Bonus received", done: bonusReceived },
-                ]
-
-                return (
-                  <div key={e.id} style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                      <div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
-                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
-                          {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
-                        </div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(e.bonus_amount ?? 0)}</div>
-                        {daysRemaining > 0 && <div style={{ fontSize: 11, color: "#d97706" }}>{daysRemaining} days remaining</div>}
-                      </div>
-                    </div>
-
-                    {/* Progress bar */}
-                    {holdDays > 0 && (
-                      <div style={{ background: "#e8e8e8", borderRadius: 4, height: 6, marginBottom: 14 }}>
-                        <div style={{ background: "#0d7c5f", borderRadius: 4, height: 6, width: `${progress}%`, transition: "width 0.3s" }} />
-                      </div>
-                    )}
-
-                    {/* Checklist */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {steps.map((step, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{
-                            width: 20, height: 20, borderRadius: 10, flexShrink: 0,
-                            background: step.done ? "#0d7c5f" : "#fff",
-                            border: step.done ? "none" : "2px solid #ddd",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 11, color: "#fff", fontWeight: 700,
-                          }}>
-                            {step.done && "✓"}
-                          </div>
-                          <span style={{ fontSize: 13, color: step.done ? "#111" : "#bbb", fontWeight: step.done ? 500 : 400 }}>{step.label}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Actions */}
-                    <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-                      {holdComplete && !bonusReceived && (
-                        <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
-                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                          Mark bonus received
-                        </button>
-                      )}
-                      {bonusReceived && (
-                        <button onClick={async () => { await updateSavingsEntry(e.id, { status: "completed" }); await loadData() }}
-                          style={{ padding: "8px 16px", fontSize: 12, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                          Complete &amp; withdraw
-                        </button>
-                      )}
-                      <button onClick={() => { populateForm(e); setEditingId(e.id); setShowAdd(true) }}
-                        style={{ padding: "8px 16px", fontSize: 12, color: "#555", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
           </div>
         )}
 
