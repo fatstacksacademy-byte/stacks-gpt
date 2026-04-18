@@ -126,11 +126,54 @@ export function runSavingsSequencer({
       continue
     }
 
+    // Tier selection strategy depends on whether this bonus is churnable.
+    //
+    // - CHURNABLE (cooldown_months set): we can redeploy capital to the SAME
+    //   bank again after the cooldown window. Picking the highest-APY tier
+    //   frees capital faster and stacks more rotations.
+    //
+    // - ONE-AND-DONE (cooldown_months == null OR lifetime_language = true):
+    //   we only get one shot at this bank ever. We should take the biggest
+    //   absolute payout as long as its effective APY still beats the user's
+    //   baseline HYSA. "Many of these aren't churnable" was the user's
+    //   explicit feedback; splitting into a smaller-tier play here leaves
+    //   real dollars on the table.
+    const isChurnable =
+      bonus.cooldown_months !== null &&
+      bonus.cooldown_months !== undefined &&
+      bonus.eligibility?.lifetime_language !== true
+
     let bestCandidate: { tier: SavingsBonusTier; effectiveApy: number; interestEarned: number; totalEarnings: number } | null = null
-    for (const tier of affordableTiers) {
-      const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
-      if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
+    if (isChurnable) {
+      // Max APY: feeds parallel redeployment math
+      for (const tier of affordableTiers) {
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+        if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
+          bestCandidate = { tier, ...result }
+        }
+      }
+    } else {
+      // One-and-done: take the highest tier we can afford whose APY still
+      // beats the user's HYSA. affordableTiers is ascending by min_deposit,
+      // so walk from the top down.
+      for (let i = affordableTiers.length - 1; i >= 0; i--) {
+        const tier = affordableTiers[i]
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+        if (currentHysaApy > 0 && result.effectiveApy <= currentHysaApy) continue
         bestCandidate = { tier, ...result }
+        break
+      }
+      // Fallback: if every tier fails the APY floor, take the highest-APY
+      // tier anyway (we'll filter it out below on the same threshold, but at
+      // least the candidate reflects what the user would actually do if they
+      // decided to take it).
+      if (!bestCandidate) {
+        for (const tier of affordableTiers) {
+          const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+          if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
+            bestCandidate = { tier, ...result }
+          }
+        }
       }
     }
 

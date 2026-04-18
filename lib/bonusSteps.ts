@@ -71,7 +71,7 @@ export type StepDetail = {
 
 const MILESTONE_DEFS: { key: MilestoneKey; level: number; label: string }[] = [
   { key: "account_opened", level: 1, label: "Account Opened" },
-  { key: "dd_confirmed", level: 2, label: "Direct Deposit Confirmed" },
+  { key: "dd_confirmed", level: 2, label: "Set Up Recurring Direct Deposit" },
   { key: "deposit_met", level: 3, label: "Deposit Requirement Met" },
   { key: "bonus_posted", level: 4, label: "Bonus Posted" },
   { key: "safe_to_close", level: 5, label: "Safe to Close" },
@@ -288,12 +288,12 @@ function buildMilestoneDetail(
 
       case "dd_confirmed":
         if (status === "completed") {
-          subtitle = "Direct deposit received"
+          subtitle = "Recurring DD confirmed with employer"
           completionNote = totalRequired > 0
-            ? `Direct deposit confirmed. ${Math.round((depositedSoFar / totalRequired) * 100)}% of deposit requirement met.`
-            : "Direct deposit confirmed."
+            ? `Recurring direct deposit confirmed. ${Math.round((depositedSoFar / totalRequired) * 100)}% of deposit requirement met.`
+            : "Recurring direct deposit confirmed."
         } else if (status === "active") {
-          subtitle = "Awaiting first direct deposit"
+          subtitle = "Route recurring payroll to this account"
         }
         break
 

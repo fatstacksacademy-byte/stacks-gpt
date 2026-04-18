@@ -1569,7 +1569,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                               {milestoneDetail.milestones
-                                .filter((m) => m.key !== "safe_to_close" && m.key !== "dd_confirmed")
+                                .filter((m) => m.key !== "safe_to_close")
                                 .map((m) => {
                                 const isCompleted = m.status === "completed"
                                 const isActive = m.status === "active"
@@ -1581,14 +1581,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                     handleMarkBonusReceived(b.id, b.bonus_amount)
                                     return
                                   }
-                                  // Skip dd_confirmed in the progression
-                                  const progression: MilestoneKey[] = ["account_opened", "deposit_met", "bonus_posted"]
+                                  // dd_confirmed is now a real user-visible step —
+                                  // the "Set up recurring direct deposit" action.
+                                  const progression: MilestoneKey[] = [
+                                    "account_opened",
+                                    "dd_confirmed",
+                                    "deposit_met",
+                                    "bonus_posted",
+                                  ]
                                   const clickedIdx = progression.indexOf(m.key as MilestoneKey)
                                   if (clickedIdx >= 0 && clickedIdx < progression.length - 1) {
-                                    // Map to actual milestone key (skip dd_confirmed)
-                                    const nextKey = progression[clickedIdx + 1]
-                                    const actualKey = nextKey === "deposit_met" ? "deposit_met" : nextKey
-                                    handleMilestoneOverride(b.id, actualKey)
+                                    handleMilestoneOverride(b.id, progression[clickedIdx + 1])
                                   }
                                 }
 

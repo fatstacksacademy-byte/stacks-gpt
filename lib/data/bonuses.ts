@@ -5026,34 +5026,39 @@ export const bonuses: any[] = [
     "business": true,
     "bonus_amount": 825,
     "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 400, "min_dd_total": 2500 },
+      { "bonus": 825, "min_dd_total": 25000 }
+    ],
     "requirements": {
       "direct_deposit_required": false,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 25000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
-      "holding_period_days": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 60,
       "min_opening_deposit": 25,
-      "min_balance": 2500,
+      "min_balance": 25000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open a new Wells Fargo business checking account (e.g., Initiate Business Checking). Maintain a $2,500 ending daily balance on both day 30 AND day 60 after account opening. Bonus is a single $825 — the $400 tier that appeared in DoC's historical title is no longer on the live Wells Fargo offer page. Expires May 5, 2026."
+      "other_requirements_text": "TWO SEPARATE OFFERS — choose one based on your deposit capacity: (A) $400 bonus: deposit $2,500 by day 30 AND maintain $2,500 minimum daily collected balance through day 60. (B) $825 bonus: deposit $25,000 by day 30 AND maintain $25,000 minimum daily collected balance through day 60. Product: Initiate Business Checking. Each tier has its own enrollment URL — use the correct one or you'll get no bonus. Expires May 5, 2026."
     },
-    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $500 minimum daily balance or $1,000 average ledger balance.", "early_closure_fee": null },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "$10/mo ($15/mo for fee periods starting March 1, 2026). Waived with $500 minimum daily balance OR $1,000 average ledger balance (or ownership of specific Wells Fargo premier accounts).", "early_closure_fee": null },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification. Effective APY math is very different across the two tiers: $400 on $2,500 held 60 days ≈ 97% annualized; $825 on $25,000 held 60 days ≈ 19.8%. Most churners take the $400." },
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Expires May 5, 2026. New business checking customers only."
+      "eligibility_notes": "Business checking. Expires May 5, 2026. New Wells Fargo business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
     "source_links": [
-      "https://www.wellsfargo.com/biz/checking/",
+      "https://accountoffers.wellsfargo.com/businesscheckingb",
+      "https://accountoffers.wellsfargo.com/businesscheckinga",
       "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
     ],
-    "raw_excerpt": "Wells Fargo $825 business checking bonus. $2,500 ending daily balance on days 30 and 60. Tiered: $400/$825. Expires May 5, 2026."
+    "raw_excerpt": "Wells Fargo Business Checking: $400 for $2,500 deposit+hold OR $825 for $25,000 deposit+hold. Initiate Business Checking. Two distinct enrollment URLs. Expires May 5, 2026."
   },
   {
     "id": "bmo-business-checking-1000-2026",
