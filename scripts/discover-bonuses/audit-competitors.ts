@@ -28,6 +28,8 @@ type CompetitorOffer = {
   availability?: string
   requirement?: string
   monthly_fee?: string
+  /** sitemap lastmod (profitablecontent) or null */
+  last_modified?: string | null
 }
 
 const OUT_DIR = join(process.cwd(), "verification-output")
@@ -195,10 +197,23 @@ async function pullProfitableContent(): Promise<CompetitorOffer[]> {
       bonus_amount: amount,
       bonus_text: slug,
       url: u.loc,
+      last_modified: u.lastmod ?? null,
     })
   }
-  console.log(`[profitablecontent] ${offers.length} bonus-relevant posts`)
+  console.log(`[profitablecontent] ${offers.length} bonus-relevant posts (pre-freshness-filter)`)
   return offers
+}
+
+/** Keep only posts updated within the last N months (current offers, not archive). */
+function filterFresh(offers: CompetitorOffer[], monthsBack = 12): CompetitorOffer[] {
+  const cutoff = Date.now() - monthsBack * 30.44 * 86400 * 1000
+  return offers.filter((o) => {
+    if (o.source !== "profitablecontent") return true
+    if (!o.last_modified) return false
+    const t = Date.parse(o.last_modified)
+    if (isNaN(t)) return false
+    return t >= cutoff
+  })
 }
 
 function parseAmountFromSlug(slug: string): number | null {
@@ -289,20 +304,34 @@ function findMatch(offer: CompetitorOffer, index: OurIndex[]): OurIndex | null {
   let candidates = index
   if (offer.product_type === "credit_card") {
     candidates = candidates.filter((c) => c.kind === "credit_card")
-  } else if (offer.product_type === "checking") {
+  } else if (offer.product_type === "checking" || offer.product_type === "business_bank") {
     candidates = candidates.filter((c) => c.kind === "checking")
   } else if (offer.product_type === "savings" || offer.product_type === "brokerage") {
     candidates = candidates.filter((c) => c.kind === "savings")
   }
 
+  const aTokens = offerBankNorm.split(" ").filter((t) => t.length >= 3)
+
+  // Tiered matching — pick the first threshold that fires.
+  // Tier A: any 4+ char token appears in a candidate's norm key.
+  // Tier B: token-level substring overlap (handles "Vally" vs. "Valley").
   for (const c of candidates) {
-    // Bank-name token overlap: one side contains the other or shares 2+ tokens
-    const aTokens = offerBankNorm.split(" ").filter((t) => t.length >= 3)
     const bTokens = c.normKey.split(" ").filter((t) => t.length >= 3)
-    const shared = aTokens.filter((t) => bTokens.includes(t)).length
-    const containment =
-      c.normKey.includes(offerBankNorm) || offerBankNorm.includes(c.bank.toLowerCase())
-    if (shared >= 2 || (shared >= 1 && containment)) return c
+    // A: exact token containment
+    if (aTokens.some((t) => t.length >= 4 && bTokens.includes(t))) return c
+    // B: any offer token is a substring of any candidate token (or vice versa)
+    for (const at of aTokens) {
+      for (const bt of bTokens) {
+        if (at.length >= 4 && bt.length >= 4 && (at.includes(bt) || bt.includes(at))) return c
+      }
+    }
+    // C: whole-string containment fallback
+    if (
+      offerBankNorm.length >= 5 &&
+      (c.normKey.includes(offerBankNorm) || offerBankNorm.includes(c.normKey))
+    ) {
+      return c
+    }
   }
   return null
 }
@@ -312,10 +341,14 @@ function findMatch(offer: CompetitorOffer, index: OurIndex[]): OurIndex | null {
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
 
-  const [br, pc] = await Promise.all([pullBankRewards(), pullProfitableContent()])
+  const [br, pcRaw] = await Promise.all([pullBankRewards(), pullProfitableContent()])
+  const pc = filterFresh(pcRaw, 12)
+  console.log(
+    `[profitablecontent] ${pc.length} posts after 12-month freshness filter (from ${pcRaw.length})`,
+  )
   const all = [...br, ...pc]
   console.log(
-    `\nTotal competitor offers pulled: ${all.length} (bankrewards=${br.length}, profitablecontent=${pc.length})`,
+    `\nTotal competitor offers considered: ${all.length} (bankrewards=${br.length}, profitablecontent=${pc.length})`,
   )
 
   const ourIndex = buildOurIndex()
@@ -359,17 +392,18 @@ async function main() {
   for (const [type, items] of Object.entries(missingByType)) {
     md.push(`## Missing: ${type} (${items.length})`)
     md.push(``)
-    md.push(`| Bank | Amount | Requirement | Monthly fee | Source | Link |`)
-    md.push(`|---|---|---|---|---|---|`)
-    for (const it of items.slice(0, 200)) {
+    md.push(`| Bank | Amount | Requirement | Monthly fee | Source | Updated | Link |`)
+    md.push(`|---|---|---|---|---|---|---|`)
+    for (const it of items.slice(0, 300)) {
       const amt = it.bonus_amount ? "$" + it.bonus_amount.toLocaleString() : "—"
       const req = (it.requirement || "").slice(0, 60)
       const fee = (it.monthly_fee || "").slice(0, 40)
+      const updated = it.last_modified ? it.last_modified.slice(0, 10) : ""
       md.push(
-        `| ${escapeMd(it.bank)} | ${amt} | ${escapeMd(req)} | ${escapeMd(fee)} | ${it.source} | ${it.url} |`,
+        `| ${escapeMd(it.bank)} | ${amt} | ${escapeMd(req)} | ${escapeMd(fee)} | ${it.source} | ${updated} | ${it.url} |`,
       )
     }
-    if (items.length > 200) md.push(`| ... | ${items.length - 200} more in competitor-offers.json | | | | |`)
+    if (items.length > 300) md.push(`| ... | ${items.length - 300} more in competitor-offers.json | | | | | |`)
     md.push(``)
   }
 
