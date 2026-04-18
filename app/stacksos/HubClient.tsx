@@ -5,6 +5,7 @@ import PortfolioCard from "../components/PortfolioCard"
 import ModuleSummaryCard from "../components/ModuleSummaryCard"
 import CombosStrip from "../components/CombosStrip"
 import CheckpointNav from "../components/CheckpointNav"
+import WelcomeWizard from "../components/WelcomeWizard"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
 import { runSavingsSequencer } from "../../lib/savingsSequencer"
 import { sequenceCards } from "../../lib/ccSequencer"
@@ -49,11 +50,22 @@ export default function HubClient({
   const [profile] = useState<UserProfile>(initialProfile)
   const [savingsProfile, setSavingsProfile] = useState<SavingsProfile | null>(null)
   const [spendingProfile, setSpendingProfile] = useState<SpendingProfile | null>(null)
+  const [showWizard, setShowWizard] = useState(false)
 
   useEffect(() => {
     getSavingsProfile(userId).then(setSavingsProfile).catch(() => setSavingsProfile(null))
     getSpendingProfile(userId).then(setSpendingProfile).catch(() => setSpendingProfile(null))
   }, [userId])
+
+  useEffect(() => {
+    // First-visit wizard: show if the user hasn't completed onboarding AND
+    // hasn't already filled in their state + paycheck (covers users who were
+    // onboarded before the wizard existed).
+    const onboarded = typeof window !== "undefined" && localStorage.getItem("stacks:onboarded") === "1"
+    const looksLikeDefaultProfile =
+      !initialProfile.state || initialProfile.paycheck_amount === 1000 || initialProfile.paycheck_amount === 1500
+    if (!onboarded && looksLikeDefaultProfile) setShowWizard(true)
+  }, [initialProfile])
 
   // ─── Paycheck projection (12 months) ─────────────────────────────
   const paycheckProjection = useMemo(() => {
@@ -129,6 +141,18 @@ export default function HubClient({
 
   return (
     <>
+      {showWizard && (
+        <WelcomeWizard
+          userId={userId}
+          initialProfile={profile}
+          onComplete={() => {
+            setShowWizard(false)
+            // Refresh savings + spending profiles so the hub cards update
+            getSavingsProfile(userId).then(setSavingsProfile).catch(() => {})
+            getSpendingProfile(userId).then(setSpendingProfile).catch(() => {})
+          }}
+        />
+      )}
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }} className="hub-inner">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 18 }}>
