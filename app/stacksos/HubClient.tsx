@@ -155,12 +155,21 @@ export default function HubClient({
       )}
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }} className="hub-inner">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 18 }}>
-          <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginBottom: 18,
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
             <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "#111" }}>
               Dashboard
             </h1>
-            <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+            <div style={{ fontSize: 13, color: "#888", marginTop: 2, overflowWrap: "anywhere" }}>
               {userEmail}
             </div>
           </div>
@@ -171,6 +180,7 @@ export default function HubClient({
               color: "#0d7c5f",
               textDecoration: "none",
               fontWeight: 600,
+              flexShrink: 0,
             }}
           >
             Edit profile →
@@ -278,7 +288,10 @@ export default function HubClient({
 
       <style>{`
         @media (max-width: 768px) {
-          .hub-inner { padding: 16px 16px 48px !important; }
+          .hub-inner { padding: 16px 14px 48px !important; }
+        }
+        @media (max-width: 520px) {
+          .hub-inner h1 { font-size: 20px !important; }
         }
       `}</style>
     </>

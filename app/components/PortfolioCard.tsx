@@ -30,17 +30,19 @@ export default function PortfolioCard({
         marginBottom: 24,
         boxShadow: "0 4px 18px rgba(13, 124, 95, 0.18)",
       }}
+      className="portfolio-card"
     >
       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.75 }}>
         Projected 12 Month Stack
       </div>
-      <div style={{ fontSize: 44, fontWeight: 800, marginTop: 4, letterSpacing: "-0.02em" }}>
+      <div className="portfolio-total" style={{ fontSize: 44, fontWeight: 800, marginTop: 4, letterSpacing: "-0.02em" }}>
         ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
       </div>
       {subtitle && (
         <div style={{ fontSize: 13, opacity: 0.85, marginTop: 2 }}>{subtitle}</div>
       )}
       <div
+        className="portfolio-breakdown"
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${breakdown.length}, 1fr)`,
@@ -70,6 +72,13 @@ export default function PortfolioCard({
           </a>
         ))}
       </div>
+      <style>{`
+        @media (max-width: 520px) {
+          .portfolio-card { padding: 20px 20px !important; border-radius: 12px !important; }
+          .portfolio-total { font-size: 34px !important; }
+          .portfolio-breakdown { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

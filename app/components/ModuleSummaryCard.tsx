@@ -65,13 +65,21 @@ export default function ModuleSummaryCard({
       </div>
       <div style={{ fontSize: 12, color: "#888", marginBottom: 14 }}>{tagline}</div>
 
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 14,
+          rowGap: 10,
+          flexWrap: "wrap",
+          marginBottom: 12,
+        }}
+      >
         {stats.map((s) => (
-          <div key={s.label}>
+          <div key={s.label} style={{ minWidth: 90 }}>
             <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
               {s.label}
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginTop: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: "#111", marginTop: 1 }}>{s.value}</div>
           </div>
         ))}
       </div>
