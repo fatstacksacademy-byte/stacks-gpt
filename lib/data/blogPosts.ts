@@ -79,6 +79,11 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
   return blogPosts.find(p => p.slug === slug)
 }
 
+/** Reverse lookup: find the blog post for a given bonus id. */
+export function getPostByBonusId(bonusId: string): BlogPost | undefined {
+  return blogPosts.find(p => p.bonusId === bonusId)
+}
+
 export function getCheckingBonusById(id: string) {
   return bonuses.find((b: any) => b.id === id)
 }

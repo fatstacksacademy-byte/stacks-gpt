@@ -6,6 +6,7 @@ import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { blogContent } from "../../lib/data/blogContent"
+import { getPostByBonusId } from "../../lib/data/blogPosts"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
 import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
@@ -1260,10 +1261,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       Not now
                     </button>
                   </div>
-                  <a href={`/blog/${hb.bonus.bank_name.split("(")[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-${hb.bonus.bonus_amount}-checking-bonus`}
-                    style={{ display: "block", marginTop: 10, fontSize: 12, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
-                    Read full review &rarr;
-                  </a>
+                  {getPostByBonusId(hb.bonus.id) && (
+                    <a href={`/blog/${getPostByBonusId(hb.bonus.id)!.slug}`}
+                      style={{ display: "block", marginTop: 10, fontSize: 12, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                      Read full review &rarr;
+                    </a>
+                  )}
                   {heroIdx === 0 && (
                     <div style={{ marginTop: 16 }}>
                       <button onClick={() => setShowDisclaimer(d => !d)}
@@ -1543,6 +1546,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                 <a href={bestLink(b.source_links)!} target="_blank" rel="noreferrer"
                                   style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
                                   View offer
+                                </a>
+                              )}
+                              {getPostByBonusId(b.id) && (
+                                <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
+                                  style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
+                                  Read review
                                 </a>
                               )}
                             </div>
@@ -1953,11 +1962,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           </div>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                         </div>
-                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                        <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
                           <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
                             style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Start now</button>
                           <button onClick={() => handleSkip(b.id)}
                             style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
+                          {getPostByBonusId(b.id) && (
+                            <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
+                              style={{ marginLeft: "auto", fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                              Read review &rarr;
+                            </a>
+                          )}
                         </div>
                         <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
                           <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
@@ -2325,6 +2340,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               </>
                             )}
                           </div>
+                          {getPostByBonusId(b.id) && (
+                            <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
+                              style={{ display: "block", marginTop: 10, fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                              Read full review &rarr;
+                            </a>
+                          )}
                         </div>
                       )}
                     </div>
