@@ -5498,10 +5498,10 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 45,
       "billpay_required": null,
-      "other_requirements_text": "Open new Premier eChecking; establish $500+ monthly recurring DD for 3 consecutive months AND 15 debit card purchases (PIN or signature) per month for 3 consecutive months, all within 120 days of account opening."
+      "other_requirements_text": "Open a new NASA Federal Checking account (Everyday Checking recommended — it's the only tier whose fee is waived by DD). Establish $500+ monthly recurring DD for 3 consecutive months AND 15 debit card purchases (PIN or signature) per month for 3 consecutive months, all within 120 days of account opening. Must be a member; membership available via NASA FCU partnerships."
     },
-    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $500+ monthly direct deposit or $200 average daily balance.", "early_closure_fee": 0 },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull reported. Verified from nasafcu.com: $10/mo fee (DoC was outdated at $8)." },
+    "fees": { "monthly_fee": 8, "monthly_fee_waiver_text": "Everyday Checking: $8/mo, waived with $500+ monthly direct deposit OR $200 average daily balance (the bonus DD requirement automatically meets the waiver). Elite ($10/mo) and Premium ($7/mo) tiers have NO fee waiver — avoid these if you're chasing the bonus.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull reported. Tier selection matters: Everyday Checking is the only tier whose $8/mo fee is waived by the bonus DD. Elite ($10/mo) and Premium ($7/mo) tiers will eat $21–30 of your bonus over the 3-month qualification window. Verified 2026-04 from nasafcu.com." },
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
