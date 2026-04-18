@@ -41,11 +41,60 @@ import {
 
 const args = process.argv.slice(2)
 const DRY_RUN = args.includes("--dry-run")
-const NO_APPLY = args.includes("--no-apply")
+// Auto-apply is opt-in. Extraction from issuer pages is brittle (SPAs, tiered
+// bonuses, rotating categories), so proposals need human review before they
+// land in the catalog. Pass --apply to actually append to creditCardBonuses.ts.
+const APPLY = args.includes("--apply")
 const LIMIT = Number(args.find(a => a.startsWith("--limit="))?.split("=")[1] ?? 40) || 40
 
 const ROOT = process.cwd()
-const LIST_URL = "https://www.richwithpoints.com/app/credit-cards"
+// /app/credit-cards is auth-gated; /credit-cards is the public SPA.
+const LIST_URL = "https://www.richwithpoints.com/credit-cards"
+
+/**
+ * Seed list of major churner-relevant cards. The richwithpoints list page
+ * is a SPA with no exposed anchors on the grid, so scraping it directly
+ * returned zero leads. Rather than fight the SPA, we seed the scraper with
+ * a curated set of well-known cards + their issuer URLs, and let the
+ * per-card scraper extract current bonus / spend / rewards from the
+ * issuer's live offer page.
+ *
+ * Add entries here to grow coverage. The scraper dedupes against the live
+ * catalog by normalized card name before applying, so re-running is safe.
+ */
+const SEED_CARDS: { card_name: string; issuer_link: string }[] = [
+  // Chase (cards we don't already have)
+  { card_name: "Chase Freedom Unlimited", issuer_link: "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited" },
+  { card_name: "Chase Freedom Flex", issuer_link: "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex" },
+  { card_name: "Chase Ink Business Cash", issuer_link: "https://creditcards.chase.com/business-credit-cards/ink/business-cash" },
+  { card_name: "Chase Ink Business Unlimited", issuer_link: "https://creditcards.chase.com/business-credit-cards/ink/business-unlimited" },
+  // Amex
+  { card_name: "American Express Gold", issuer_link: "https://www.americanexpress.com/us/credit-cards/card/gold-card/" },
+  { card_name: "American Express Green", issuer_link: "https://www.americanexpress.com/us/credit-cards/card/green-card/" },
+  { card_name: "American Express Blue Business Plus", issuer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-blue-business-plus-credit-card/" },
+  { card_name: "American Express Business Gold", issuer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-business-gold-card/" },
+  { card_name: "American Express Delta Gold", issuer_link: "https://www.americanexpress.com/us/credit-cards/card/delta-skymiles-gold/" },
+  // Capital One
+  { card_name: "Capital One Venture", issuer_link: "https://www.capitalone.com/credit-cards/venture/" },
+  { card_name: "Capital One Venture X", issuer_link: "https://www.capitalone.com/credit-cards/venture-x/" },
+  { card_name: "Capital One Savor", issuer_link: "https://www.capitalone.com/credit-cards/savor/" },
+  { card_name: "Capital One SavorOne", issuer_link: "https://www.capitalone.com/credit-cards/savor-one/" },
+  // Citi
+  { card_name: "Citi Double Cash", issuer_link: "https://www.citi.com/credit-cards/citi-double-cash-credit-card" },
+  { card_name: "Citi Strata Premier", issuer_link: "https://www.citi.com/credit-cards/citi-strata-premier-credit-card" },
+  // Wells Fargo
+  { card_name: "Wells Fargo Active Cash", issuer_link: "https://creditcards.wellsfargo.com/active-cash-credit-card" },
+  { card_name: "Wells Fargo Autograph", issuer_link: "https://creditcards.wellsfargo.com/autograph-credit-card" },
+  // Discover
+  { card_name: "Discover it Cash Back", issuer_link: "https://www.discover.com/credit-cards/cash-back/it-card.html" },
+  { card_name: "Discover it Miles", issuer_link: "https://www.discover.com/credit-cards/travel/miles-card.html" },
+  // US Bank
+  { card_name: "US Bank Altitude Go", issuer_link: "https://www.usbank.com/credit-cards/altitude-go-visa-signature-credit-card.html" },
+  { card_name: "US Bank Altitude Connect", issuer_link: "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card.html" },
+  { card_name: "US Bank Cash Plus", issuer_link: "https://www.usbank.com/credit-cards/cash-plus-visa-signature-credit-card.html" },
+  // Bilt
+  { card_name: "Bilt Mastercard", issuer_link: "https://www.biltrewards.com/card" },
+]
 const UA = process.env.BONUS_BOT_UA || "StackOS-BonusBot/1.0 (+https://fatstacksacademy.com/bot)"
 const OUT_DIR = join(ROOT, "verification-output")
 const CATALOG_PATH = join(ROOT, "lib", "data", "creditCardBonuses.ts")
@@ -114,15 +163,6 @@ const ISSUER_DOMAINS = [
   "alaskaair.com",
 ]
 
-function isIssuerLink(url: string): boolean {
-  try {
-    const h = new URL(url).host.toLowerCase()
-    return ISSUER_DOMAINS.some((d) => h.endsWith(d))
-  } catch {
-    return false
-  }
-}
-
 function inferIssuer(url: string, cardName: string): string {
   try {
     const h = new URL(url).host.toLowerCase()
@@ -160,61 +200,60 @@ async function loadRwpList(): Promise<Lead[]> {
       await page.waitForTimeout(700)
     }
 
-    // Gather all anchors, then cluster card-detail links (richwithpoints uses
-    // /app/credit-cards/<slug> for their card profile pages) and grab the outbound
-    // issuer link from each detail page.
-    const detailLinks: string[] = await page.evaluate(() => {
-      return Array.from(
-        new Set(
-          Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href*="/app/credit-cards/"]'))
-            .map((a) => a.href)
-            .filter((h) => h && !h.endsWith("/app/credit-cards/") && !h.endsWith("/app/credit-cards")),
-        ),
-      )
-    })
-    console.log(`[rwp] discovered ${detailLinks.length} card detail URLs`)
+    // richwithpoints renders cards as a grid. Each card's "Apply Now" button
+    // is an anchor that points directly to the issuer's domain (chase.com,
+    // americanexpress.com, etc). We walk every issuer-domain anchor and use
+    // its closest ancestor card element to find the card name heading.
+    const harvested: { card_name: string; issuer_link: string; detail_url: string }[] =
+      await page.evaluate((issuerDomains) => {
+        const out: { card_name: string; issuer_link: string; detail_url: string }[] = []
+        const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
+        for (const a of anchors) {
+          let host = ""
+          try {
+            host = new URL(a.href).host.toLowerCase()
+          } catch {
+            continue
+          }
+          if (!issuerDomains.some((d: string) => host.endsWith(d))) continue
+          // Walk up to find an ancestor with a card name (h2/h3/card-title).
+          let card: Element | null = a
+          let title = ""
+          for (let i = 0; i < 8 && card; i++) {
+            const heading =
+              card.querySelector("h1, h2, h3, h4, [data-card-name], [class*='title'], [class*='name']")
+            if (heading && heading.textContent) {
+              title = heading.textContent.trim().replace(/\s+/g, " ")
+              if (title.length >= 6 && title.length <= 80) break
+              title = ""
+            }
+            card = card.parentElement
+          }
+          // Fallback: use anchor's own text if it looks like a card name
+          if (!title) {
+            const t = (a.textContent || "").trim()
+            if (/credit\s*card/i.test(t) || /\d+X/i.test(t)) title = t
+          }
+          if (!title || title.length < 6) continue
+          out.push({ card_name: title, issuer_link: a.href, detail_url: location.href })
+        }
+        return out
+      }, ISSUER_DOMAINS)
 
     const leads: Lead[] = []
     const seen = new Set<string>()
-    let visited = 0
-    for (const detailUrl of detailLinks) {
-      if (visited >= LIMIT * 2) break
-      visited++
-      try {
-        await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 30000 })
-        await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => {})
-        await page.waitForTimeout(1200)
-        const data = await page.evaluate(() => {
-          const h1 = document.querySelector("h1")?.textContent?.trim() || ""
-          const outbound = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
-            .map((a) => a.href)
-            .filter((h) => {
-              try {
-                const u = new URL(h)
-                return u.host !== location.host
-              } catch {
-                return false
-              }
-            })
-          return { title: h1, outbound }
-        })
-        if (!data.title) continue
-        const issuerLink = data.outbound.find(isIssuerLink) ?? null
-        const key = normalizeName(data.title)
-        if (!key || seen.has(key)) continue
-        seen.add(key)
-        leads.push({
-          source: "richwithpoints",
-          source_url: detailUrl,
-          card_name: data.title,
-          issuer_link: issuerLink,
-        })
-      } catch (err) {
-        // Per-page failures are common with WAFs — skip quietly.
-        void err
-      }
+    for (const h of harvested) {
+      const key = normalizeName(h.card_name)
+      if (!key || seen.has(key)) continue
+      seen.add(key)
+      leads.push({
+        source: "richwithpoints",
+        source_url: h.detail_url,
+        card_name: h.card_name,
+        issuer_link: h.issuer_link,
+      })
     }
-    console.log(`[rwp] captured ${leads.length} unique card leads`)
+    console.log(`[rwp] captured ${leads.length} unique card leads from ${harvested.length} anchors`)
     return leads
   } finally {
     await browser.close()
@@ -352,9 +391,22 @@ function appendCatalog(entries: string[]): void {
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
 
-  const leads = await loadRwpList()
+  void LIST_URL
+  void loadRwpList
+
+  // Build leads from the curated seed list (richwithpoints SPA isn't scrapable
+  // without auth). Each seed entry already has the issuer URL, so we skip the
+  // lead-discovery step and go straight to per-card enrichment.
+  const leads: Lead[] = SEED_CARDS.map((c) => ({
+    source: "richwithpoints",
+    source_url: "seed://curated",
+    card_name: c.card_name,
+    issuer_link: c.issuer_link,
+  }))
   const newLeads = leads.filter((l) => !cardAlreadyInCatalog(l.card_name))
-  console.log(`[rwp] ${leads.length} leads total, ${leads.length - newLeads.length} already in catalog, ${newLeads.length} net-new`)
+  console.log(
+    `[seed] ${leads.length} cards in seed list, ${leads.length - newLeads.length} already in catalog, ${newLeads.length} net-new`,
+  )
 
   const capped = newLeads.slice(0, LIMIT)
   const proposals: Proposal[] = []
@@ -395,24 +447,23 @@ async function main() {
 
   await closeBrowser()
 
-  if (DRY_RUN || NO_APPLY) {
-    console.log(`\n(dry-run / --no-apply) Would have appended ${proposals.length} entries.`)
-    console.log(`Report: ${join(OUT_DIR, "cards-proposed.md")}`)
+  if (DRY_RUN || !APPLY) {
+    console.log(`\nProposals: ${proposals.length}. Review ${join(OUT_DIR, "cards-proposed.md")} and re-run with --apply to append clean entries to the catalog.`)
     return
   }
 
-  // Only auto-append proposals that have enough signal to be useful:
-  // an offer_link, a bonus amount, and a non-zero min_spend (or explicit 0 for no-AF cards).
+  // Only append proposals with no extraction flags — anything with a flag
+  // (e.g. no_bonus_amount_found, card_name_not_on_page) needs manual review.
   const worthApplying = proposals.filter(
-    (p) => p.offer_link && p.bonus_amount !== null && (p.min_spend !== null || p.annual_fee === 0),
+    (p) => p.offer_link && p.bonus_amount !== null && p.min_spend !== null && p.flags.length === 0,
   )
   const entries = worthApplying.map(renderCatalogEntry)
   appendCatalog(entries)
 
   console.log(``)
   console.log(`Wrote ${proposals.length} proposals to ${join(OUT_DIR, "cards-proposed.json")}`)
-  console.log(`Auto-applied ${entries.length} entries to ${CATALOG_PATH}`)
-  console.log(`Skipped ${proposals.length - entries.length} proposals missing critical fields (no offer_link / bonus_amount).`)
+  console.log(`Applied ${entries.length} clean entries to ${CATALOG_PATH}`)
+  console.log(`Skipped ${proposals.length - entries.length} proposals with extraction flags or missing fields — review cards-proposed.md.`)
 }
 
 main().catch(async (err) => {
