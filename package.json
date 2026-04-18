@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "verify:bonuses": "tsx scripts/verify-bonuses/run.ts",
+    "verify:cards": "tsx scripts/verify-cards/run.ts",
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts"
   },
   "dependencies": {

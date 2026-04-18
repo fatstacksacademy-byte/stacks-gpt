@@ -737,7 +737,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: true,
     statement_credits_year1: 0,
-    offer_link: "https://www.upromise.com/upromise-mastercard/",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/upromise-world-mastercard/",
     expired: false,
     key_benefits: [
       "No annual fee",
