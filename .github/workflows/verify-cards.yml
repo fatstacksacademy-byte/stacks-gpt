@@ -1,0 +1,48 @@
+name: Verify credit card offers
+
+# Weekly verification of every non-expired card in the catalog.
+# Hits each issuer's offer page, compares to stored bonus/spend/fee,
+# writes problem rows to Supabase.card_verifications. Admin reviews the
+# queue at /admin (Card Verifications tab).
+#
+# Required GitHub repo secrets:
+#   - NEXT_PUBLIC_SUPABASE_URL
+#   - SUPABASE_SERVICE_ROLE_KEY
+
+on:
+  schedule:
+    # Sundays 14:00 UTC (Sunday morning Hawaii / midday US Eastern).
+    - cron: "0 14 * * 0"
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run verify:cards
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run verify:cards -- --persist --no-cache
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-output
+          path: verification-output/
+          retention-days: 30

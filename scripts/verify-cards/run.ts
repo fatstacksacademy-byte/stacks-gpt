@@ -17,7 +17,9 @@
  */
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from "node:fs"
 import { join } from "node:path"
+import { randomUUID } from "node:crypto"
 import pLimit from "p-limit"
+import { createClient } from "@supabase/supabase-js"
 import { fetchPage, closeBrowser } from "../_shared/playwright"
 import { creditCardBonuses, type CreditCardBonus } from "../../lib/data/creditCardBonuses"
 import { extractAll, type CardExtracted } from "./extract"
@@ -30,6 +32,7 @@ const ONLY = flag("only")
 const LIMIT = Number(flag("limit") ?? 0) || 0
 const USE_CACHE = !args.includes("--no-cache")
 const INCLUDE_EXPIRED = args.includes("--include-expired")
+const PERSIST = args.includes("--persist")
 
 const OUT_DIR = join(process.cwd(), "verification-output")
 const CACHE_DIR = join(process.cwd(), ".cache", "verify-cards")
@@ -290,6 +293,61 @@ function buildReport(results: CardResult[], edits: ReturnType<typeof buildPropos
   return out.join("\n")
 }
 
+async function persistResults(
+  results: CardResult[],
+  edits: ReturnType<typeof buildProposedEdits>,
+): Promise<void> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    console.error("[persist] NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required for --persist")
+    process.exit(1)
+  }
+  const supabase = createClient(url, key, { auth: { persistSession: false } })
+
+  const runId = randomUUID()
+  const runAt = new Date().toISOString()
+
+  // Group proposed edits by card_id so each verification row carries its
+  // own proposals. Avoids storing the full edits array on every row.
+  const editsByCard = new Map<string, typeof edits>()
+  for (const e of edits) {
+    const arr = editsByCard.get(e.id) ?? []
+    arr.push(e)
+    editsByCard.set(e.id, arr)
+  }
+
+  // Only persist cards with issues. OK cards aren't worth the row.
+  const problemRows = results
+    .filter((r) => r.pageSignal !== "ok" || r.fields.some((f) => f.status === "mismatch"))
+    .map((r) => ({
+      run_id: runId,
+      run_at: runAt,
+      card_id: r.id,
+      card_name: r.card_name,
+      issuer: r.issuer,
+      url: r.url,
+      final_url: r.finalUrl,
+      status: r.status,
+      page_signal: r.pageSignal,
+      field_mismatches: r.fields.filter((f) => f.status === "mismatch"),
+      proposed_edits: editsByCard.get(r.id) ?? [],
+      error_message: r.error ?? null,
+    }))
+
+  if (problemRows.length === 0) {
+    console.log(`[persist] All cards OK — nothing to write.`)
+    return
+  }
+
+  const { error } = await supabase.from("card_verifications").insert(problemRows)
+  if (error) {
+    console.error(`[persist] insert failed:`, error.message)
+    process.exit(1)
+  }
+  console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+}
+
 async function main() {
   let targets: CreditCardBonus[] = creditCardBonuses as CreditCardBonus[]
   if (!INCLUDE_EXPIRED) targets = targets.filter((c) => !c.expired)
@@ -328,6 +386,10 @@ async function main() {
   writeFileSync(join(OUT_DIR, "cards-results.json"), JSON.stringify(results, null, 2))
   writeFileSync(join(OUT_DIR, "cards-proposed-edits.json"), JSON.stringify(edits, null, 2))
   writeFileSync(join(OUT_DIR, "cards-report.md"), buildReport(results, edits))
+
+  if (PERSIST) {
+    await persistResults(results, edits)
+  }
 
   console.log(``)
   console.log(`Done. Report: ${join(OUT_DIR, "cards-report.md")}`)

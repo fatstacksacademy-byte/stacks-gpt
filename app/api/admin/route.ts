@@ -154,5 +154,55 @@ export async function GET(req: NextRequest) {
     })
   }
 
+  if (action === "card-verifications") {
+    // Latest unreviewed row per card_id. Postgres DISTINCT ON keeps only
+    // the newest run for each card; reviewed=false filters out cleared issues.
+    const { data, error } = await supabase
+      .from("card_verifications")
+      .select("*")
+      .eq("reviewed", false)
+      .order("run_at", { ascending: false })
+    if (error) {
+      console.error("[admin] card_verifications query failed:", error.message)
+      return NextResponse.json({ error: error.message, verifications: [] })
+    }
+    // Dedupe to latest per card_id (data is already sorted by run_at desc)
+    const seen = new Set<string>()
+    const latest = (data ?? []).filter((r) => {
+      if (seen.has(r.card_id)) return false
+      seen.add(r.card_id)
+      return true
+    })
+    // Most recent run timestamp for the "last verified" header
+    const lastRunAt = data?.[0]?.run_at ?? null
+    return NextResponse.json({ verifications: latest, last_run_at: lastRunAt })
+  }
+
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 })
+}
+
+export async function POST(req: NextRequest) {
+  const admin = await verifyAdmin()
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+
+  const action = req.nextUrl.searchParams.get("action")
+  const supabase = createServiceClient()
+
+  if (action === "review-card-verification") {
+    const body = await req.json().catch(() => ({}))
+    const { id, notes } = body as { id?: string; notes?: string }
+    if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
+
+    const { error } = await supabase
+      .from("card_verifications")
+      .update({ reviewed: true, reviewed_at: new Date().toISOString(), reviewer_notes: notes ?? null })
+      .eq("id", id)
+    if (error) {
+      console.error("[admin] review-card-verification failed:", error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 })
 }
