@@ -23,6 +23,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const description = rawDesc.length > 155 ? rawDesc.slice(0, 155) + "..." : rawDesc
   const url = `${BASE}/blog/${post.slug}`
 
+  // Dynamic social card: derive bank + amount + kind from the bonus record.
+  // The /api/og endpoint renders a 1200x630 branded PNG per request.
+  const bonus = post.bonusType === "checking"
+    ? getCheckingBonusById(post.bonusId)
+    : getSavingsBonusById(post.bonusId)
+  const bank = (bonus as { bank_name?: string } | undefined)?.bank_name
+  let amount: string | undefined
+  if (bonus && post.bonusType === "checking" && (bonus as { bonus_amount?: number }).bonus_amount) {
+    amount = `$${(bonus as { bonus_amount: number }).bonus_amount.toLocaleString()}`
+  } else if (bonus && post.bonusType === "savings") {
+    const tiers = (bonus as { tiers?: { bonus_amount: number }[] }).tiers
+    const top = tiers?.[tiers.length - 1]?.bonus_amount
+    if (top) amount = `$${top.toLocaleString()}`
+  }
+  const ogParams = new URLSearchParams({
+    title: post.title.replace(/\s*\|.*$/, "").slice(0, 90),
+    kind: post.bonusType === "checking" ? "checking" : "savings",
+    ...(bank ? { bank } : {}),
+    ...(amount ? { amount } : {}),
+  })
+  const ogImage = `${BASE}/api/og?${ogParams.toString()}`
+
   return {
     title,
     description,
@@ -38,11 +60,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       modifiedTime: post.date,
       section: post.category,
       tags: post.tags,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
-      card: "summary" as const,
+      card: "summary_large_image" as const,
       title,
       description,
+      images: [ogImage],
     },
   }
 }

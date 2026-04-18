@@ -18,6 +18,53 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Fat Stacks Academy — Bank Bonuses, Credit Card Strategy & Stacks OS",
   description: "Earn thousands in bank bonuses and credit card rewards. Free guides, bonus rankings, and Stacks OS — your personal bonus tracking dashboard.",
+  metadataBase: new URL("https://fatstacksacademy.com"),
+}
+
+// Site-wide structured data. Organization enables the knowledge panel +
+// publisher metadata on every indexed page; WebSite enables the sitelinks
+// search box in Google SERPs.
+const ORGANIZATION_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://fatstacksacademy.com/#organization",
+      name: "Fat Stacks Academy",
+      url: "https://fatstacksacademy.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://fatstacksacademy.com/api/og?title=Fat%20Stacks%20Academy&kind=guide",
+        width: 1200,
+        height: 630,
+      },
+      sameAs: [
+        "https://www.youtube.com/@nathanielbooth",
+      ],
+      founder: {
+        "@type": "Person",
+        name: "Nathaniel Booth",
+        url: "https://www.youtube.com/@nathanielbooth",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://fatstacksacademy.com/#website",
+      url: "https://fatstacksacademy.com",
+      name: "Fat Stacks Academy",
+      description: "Bank bonuses, credit card strategy, and Stacks OS.",
+      publisher: { "@id": "https://fatstacksacademy.com/#organization" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://fatstacksacademy.com/blog?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+      inLanguage: "en-US",
+    },
+  ],
 }
 
 export default async function RootLayout({
@@ -38,6 +85,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ProfileProvider serverProfile={serverProfile}>
           {children}

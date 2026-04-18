@@ -17,11 +17,20 @@ export const metadata: Metadata = {
     url: `${BASE}/blog`,
     title: "Fat Stacks Academy - Bank Bonus Reviews & Credit Card Offers",
     description: "Expert reviews of the best bank account bonuses, credit card sign-up offers, and high-yield savings promotions. Updated daily.",
+    images: [
+      {
+        url: `${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Reviews & Credit Card Strategy")}&kind=guide`,
+        width: 1200,
+        height: 630,
+        alt: "Fat Stacks Academy",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Fat Stacks Academy - Bank Bonus Reviews",
     description: "Expert reviews of the best bank account bonuses and savings promotions.",
+    images: [`${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Reviews & Credit Card Strategy")}&kind=guide`],
   },
   keywords: [
     "bank bonus", "bank account bonus", "checking bonus", "savings bonus",
