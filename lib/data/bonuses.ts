@@ -5026,10 +5026,6 @@ export const bonuses: any[] = [
     "business": true,
     "bonus_amount": 825,
     "cooldown_months": 12,
-    "tiers": [
-      { "bonus": 400, "min_dd_total": 2500 },
-      { "bonus": 825, "min_dd_total": 2500 }
-    ],
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
@@ -5037,11 +5033,11 @@ export const bonuses: any[] = [
       "dd_count_required": null,
       "deposit_window_days": null,
       "holding_period_days": null,
-      "min_opening_deposit": null,
+      "min_opening_deposit": 25,
       "min_balance": 2500,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "$2,500 ending daily balance on days 30 and 60. Expires May 5, 2026."
+      "other_requirements_text": "Open a new Wells Fargo business checking account (e.g., Initiate Business Checking). Maintain a $2,500 ending daily balance on both day 30 AND day 60 after account opening. Bonus is a single $825 — the $400 tier that appeared in DoC's historical title is no longer on the live Wells Fargo offer page. Expires May 5, 2026."
     },
     "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $500 minimum daily balance or $1,000 average ledger balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },

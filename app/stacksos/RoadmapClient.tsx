@@ -2384,7 +2384,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             // (savings entries route users to the savings module separately).
             const linkedChecking = linked
               .filter((lb) => lb.kind === "checking")
-              .map((lb) => lb.entry)
+              .map((lb) => ({
+                bonus: lb.entry,
+                effective_amount: lb.effective_bonus_amount,
+                note: lb.override_note,
+              }))
             return (
               <BonusCommitCard
                 bonus={actionBonus.bonus}
@@ -2399,8 +2403,8 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 onCancel={() => setActionBonus(null)}
                 linkedBonuses={linkedChecking}
                 onStartLinked={(id) => {
-                  const lb = linkedChecking.find((x) => x.id === id)
-                  if (lb) setActionBonus({ bonus: lb, mode: "start" })
+                  const lb = linkedChecking.find((x) => x.bonus.id === id)
+                  if (lb) setActionBonus({ bonus: lb.bonus, mode: "start" })
                 }}
               />
             )

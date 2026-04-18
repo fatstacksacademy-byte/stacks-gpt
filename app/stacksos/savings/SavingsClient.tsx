@@ -37,6 +37,9 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [editingId, setEditingId] = useState<string | null>(null)
   const [expandedRec, setExpandedRec] = useState<string | null>(null)
   const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
+  const [startingId, setStartingId] = useState<string | null>(null)
+  const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
+  const [startError, setStartError] = useState<string | null>(null)
   const [userState, setUserState] = useState<string | null>(null)
   const [showBusiness, setShowBusiness] = useState(() => {
     if (typeof window === "undefined") return false
@@ -177,30 +180,53 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     includeBrokerage: showBrokerage,
   })
 
-  // Sequencer now handles business/brokerage filtering
-  const filteredEntries = sequencerResult.entries
+  // Sequencer now handles business/brokerage filtering.
+  // Also hide anything the user *just* clicked start on — the DB write is
+  // still in-flight, and we don't want the card to sit there looking unresponsive.
+  const filteredEntries = sequencerResult.entries.filter(
+    (e) => !justStartedIds.has(e.id),
+  )
 
   // Start a recommended bonus — add it as a savings entry
   async function handleStartRecommended(rec: SavingsSequencedEntry) {
-    await addSavingsEntry(userId, {
-      institution_name: rec.bank_name,
-      bonus_name: rec.bonus.id,
-      bonus_amount: rec.bonus_amount,
-      deposit_required: rec.deposit,
-      holding_period_days: rec.hold_days,
-      offer_apy: rec.base_apy,
-      promo_apy: null,
-      estimated_yield: rec.interest_earned,
-      expected_total_value: rec.total_earnings,
-      actual_value: null,
-      opened_date: todayStr(),
-      deadline: null,
-      status: "active",
-      notes: rec.bonus.notes || null,
-      source_type: "system",
-      canonical_offer_id: rec.id,
-    })
-    await loadData()
+    setStartError(null)
+    setStartingId(rec.id)
+    // Optimistic: hide this card immediately so the click feels responsive
+    setJustStartedIds((prev) => new Set(prev).add(rec.id))
+    try {
+      const result = await addSavingsEntry(userId, {
+        institution_name: rec.bank_name,
+        bonus_name: rec.bonus.id,
+        bonus_amount: rec.bonus_amount,
+        deposit_required: rec.deposit,
+        holding_period_days: rec.hold_days,
+        offer_apy: rec.base_apy,
+        promo_apy: null,
+        estimated_yield: rec.interest_earned,
+        expected_total_value: rec.total_earnings,
+        actual_value: null,
+        opened_date: todayStr(),
+        deadline: null,
+        status: "active",
+        notes: rec.bonus.notes || null,
+        source_type: "system",
+        canonical_offer_id: rec.id,
+      })
+      if (!result) throw new Error("Insert returned null — check RLS/schema. See browser console for detail.")
+      await loadData()
+    } catch (err) {
+      // Roll back the optimistic hide so the user can retry
+      setJustStartedIds((prev) => {
+        const next = new Set(prev)
+        next.delete(rec.id)
+        return next
+      })
+      const msg = err instanceof Error ? err.message : String(err)
+      setStartError(`Couldn't start "${rec.bank_name}": ${msg}`)
+      console.error("[savings] handleStartRecommended failed:", err)
+    } finally {
+      setStartingId(null)
+    }
   }
 
   async function handleLogout() {
@@ -256,6 +282,42 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
       <CheckpointNav />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
+
+        {/* Start-bonus error banner */}
+        {startError && (
+          <div
+            role="alert"
+            style={{
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+              color: "#991b1b",
+              borderRadius: 8,
+              padding: "10px 14px",
+              marginBottom: 16,
+              fontSize: 13,
+              lineHeight: 1.4,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <span>{startError}</span>
+            <button
+              onClick={() => setStartError(null)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#991b1b",
+                cursor: "pointer",
+                fontWeight: 700,
+                padding: 0,
+              }}
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Savings Profile Panel */}
         {showProfile && (
@@ -569,9 +631,22 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
 
                     {/* Actions */}
                     <div style={{ padding: "8px 24px 16px", display: "flex", gap: 8 }}>
-                      <button onClick={() => handleStartRecommended(rec)}
-                        style={{ padding: "8px 18px", fontSize: 13, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                        Start this bonus
+                      <button
+                        onClick={() => handleStartRecommended(rec)}
+                        disabled={startingId === rec.id}
+                        style={{
+                          padding: "8px 18px",
+                          fontSize: 13,
+                          fontWeight: 700,
+                          background: startingId === rec.id ? "#5aaa8a" : "#0d7c5f",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 8,
+                          cursor: startingId === rec.id ? "wait" : "pointer",
+                          opacity: startingId === rec.id ? 0.75 : 1,
+                        }}
+                      >
+                        {startingId === rec.id ? "Adding…" : "Start this bonus"}
                       </button>
                       <button onClick={() => setSkippedSavingsIds(prev => [...prev, rec.id])}
                         style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>

@@ -246,6 +246,7 @@ export const savingsBonuses: SavingsBonus[] = [
   },
   {
     id: "citi-savings-2026",
+    expired: true,
     bank_name: "Citi",
     product_type: "savings",
     base_apy: 0.01,
@@ -262,10 +263,10 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "Open savings within 45 days of checking. Fund within 10 business days. Maintain for 90 days."
+      eligibility_notes: "This entry is not a separate savings product — it points to the same Citi checking tiered offer. Disabled to avoid double-counting with citi-regular-checking-325-edd-2026."
     },
     source_links: ["https://banking.citi.com/cbol/OM/checking/choice/featured-offers/default.htm"],
-    raw_excerpt: "Citi savings bonus $750 for $30k or $1,500 for $200k. 4.35% APY. Fund within 10 business days, maintain 90 days.",
+    raw_excerpt: "MARKED EXPIRED: this was miscategorized as a savings product. The source URL is a /checking/ path and the tiered bonus is tied to the Citi checking relationship, not a distinct savings account. APY (1% stored, 4.35% in old excerpt) was also unverified and likely stale.",
   },
   {
     id: "wells-fargo-platinum-savings-2026",

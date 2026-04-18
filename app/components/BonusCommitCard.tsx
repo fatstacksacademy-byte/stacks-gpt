@@ -72,7 +72,12 @@ export default function BonusCommitCard({
   onConfirm: () => void
   onCancel: () => void
   confirmLabel?: string
-  linkedBonuses?: Bonus[]
+  /**
+   * Linked offers surfaced as an "Also start" option. `effective_amount`
+   * takes precedence over the bonus's stored bonus_amount so combo-only
+   * pricing (e.g., Chase $300 checking portion) displays correctly.
+   */
+  linkedBonuses?: { bonus: Bonus; effective_amount?: number; note?: string }[]
   onStartLinked?: (id: string) => void
 }) {
   const summary = useMemo(() => {
@@ -274,49 +279,57 @@ export default function BonusCommitCard({
           <div style={{ fontSize: 12, color: "#555", marginBottom: 8, lineHeight: 1.5 }}>
             This bank has linked bonuses you can open at the same time:
           </div>
-          {linkedBonuses.map((lb) => (
-            <div
-              key={lb.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                background: "#f7faf9",
-                border: "1px solid #d9ece5",
-                borderRadius: 8,
-                padding: "10px 12px",
-                marginBottom: 6,
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>
-                  +${lb.bonus_amount.toLocaleString()} · {lb.product_type}
+          {linkedBonuses.map((lb) => {
+            const displayAmount = lb.effective_amount ?? lb.bonus.bonus_amount
+            return (
+              <div
+                key={lb.bonus.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "#f7faf9",
+                  border: "1px solid #d9ece5",
+                  borderRadius: 8,
+                  padding: "10px 12px",
+                  marginBottom: 6,
+                  gap: 10,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>
+                    +${displayAmount.toLocaleString()} · {lb.bonus.product_type}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#888" }}>
+                    {lb.note
+                      ? lb.note
+                      : lb.bonus.requirements?.other_requirements_text
+                        ? lb.bonus.requirements.other_requirements_text.slice(0, 80) + "…"
+                        : "Same bank — start together"}
+                  </div>
                 </div>
-                <div style={{ fontSize: 11, color: "#888" }}>
-                  {lb.requirements?.other_requirements_text
-                    ? lb.requirements.other_requirements_text.slice(0, 80) + "…"
-                    : "Same bank — start together"}
-                </div>
+                {onStartLinked && (
+                  <button
+                    onClick={() => onStartLinked(lb.bonus.id)}
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: "#0d7c5f",
+                      background: "#fff",
+                      border: "1px solid #0d7c5f",
+                      borderRadius: 6,
+                      padding: "6px 10px",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Also start
+                  </button>
+                )}
               </div>
-              {onStartLinked && (
-                <button
-                  onClick={() => onStartLinked(lb.id)}
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: "#0d7c5f",
-                    background: "#fff",
-                    border: "1px solid #0d7c5f",
-                    borderRadius: 6,
-                    padding: "6px 10px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Also start
-                </button>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </Section>
       )}
 

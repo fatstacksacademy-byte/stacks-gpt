@@ -3,78 +3,125 @@ import { savingsBonuses } from "./data/savingsBonuses"
 
 /**
  * Curated list of bonuses that can be opened at the same institution at
- * the same time for extra earnings. The pairs are bidirectional — if you
- * look up either ID, the helper returns the other(s).
+ * the same time for extra earnings. Each entry is a combo group.
  *
- * Keep this list small and high-quality. Each entry here means "yes, Chase
- * lets you open checking and savings simultaneously with both bonuses,"
- * not "Chase has a checking and a savings offer." The distinction matters
- * for UX — we're only surfacing these when they truly stack.
+ * `overrides` lets us capture combo-only pricing: e.g., Chase's standalone
+ * checking pays $400, but when opened via the checking+savings combo URL
+ * the checking portion is only $300 (the combo URL has a different offer
+ * structure). Without overrides, the combo UI would show "$1,000 combo"
+ * when the real combo total is $900.
+ *
+ * Keep this list small and high-quality — only add a group when both
+ * offers can genuinely be opened together and credited together.
  */
-export const LINKED_BONUS_GROUPS: string[][] = [
-  // Chase Total Checking + Chase Savings combo — explicit combo offer
-  ["chase-total-checking-400-2026", "chase-savings-combo-2026"],
+export type LinkedBonusGroup = {
+  ids: string[]
+  /** Per-member combo-specific pricing. Keyed by bonus id. */
+  overrides?: Record<string, { bonus_amount?: number; note?: string }>
+  /** URL the user should actually visit to start the combo (overrides member source_links for CombosStrip). */
+  combo_url?: string
+}
+
+export const LINKED_BONUS_GROUPS: LinkedBonusGroup[] = [
+  // Chase checking+savings combo — opened via the combo URL, the CHECKING
+  // portion pays $300 (not the $400 standalone). Savings pays $200 base
+  // plus a $400 combo-completion bonus (already reflected in the savings
+  // entry's top tier at $600).
+  {
+    ids: ["chase-total-checking-400-2026", "chase-savings-combo-2026"],
+    overrides: {
+      "chase-total-checking-400-2026": {
+        bonus_amount: 300,
+        note: "Combo pricing: $300 checking (vs. $400 standalone). Opened via the combo URL.",
+      },
+    },
+    combo_url: "https://account.chase.com/consumer/banking/checkingandsavingsoffer",
+  },
   // Capital One 360 Checking + 360 Savings — dual-product account opening
-  ["capital-one-360-checking-300-offer300", "capital-one-360-savings-2026"],
-  // Citi checking + savings — dual relationship with bonuses on each
-  ["citi-regular-checking-325-edd-2026", "citi-savings-2026"],
+  { ids: ["capital-one-360-checking-300-offer300", "capital-one-360-savings-2026"] },
+  // (Citi combo removed — "citi-savings-2026" is actually the same checking
+  // offer as citi-regular-checking-325-edd-2026, so pairing them double-counts.)
   // HSBC Premier checking + savings — Premier relationship bundles them
-  ["hsbc-premier-checking-2026", "hsbc-premier-savings-2026"],
+  { ids: ["hsbc-premier-checking-2026", "hsbc-premier-savings-2026"] },
   // Wells Fargo Everyday Checking + Platinum Savings — common branch bundle
-  ["wells-fargo-400-everyday-checking-2026", "wells-fargo-platinum-savings-2026"],
+  { ids: ["wells-fargo-400-everyday-checking-2026", "wells-fargo-platinum-savings-2026"] },
 ]
 
 export type LinkedBonus =
-  | { kind: "checking"; entry: (typeof bonuses)[number] }
-  | { kind: "savings"; entry: (typeof savingsBonuses)[number] }
+  | {
+      kind: "checking"
+      entry: (typeof bonuses)[number]
+      effective_bonus_amount: number
+      override_note?: string
+    }
+  | {
+      kind: "savings"
+      entry: (typeof savingsBonuses)[number]
+      effective_bonus_amount: number
+      override_note?: string
+    }
 
-function findEntry(id: string): LinkedBonus | null {
+function materialize(
+  id: string,
+  group: LinkedBonusGroup,
+): LinkedBonus | null {
+  const override = group.overrides?.[id]
   const cc = bonuses.find((b) => b.id === id)
-  if (cc) return { kind: "checking", entry: cc }
+  if (cc) {
+    return {
+      kind: "checking",
+      entry: cc,
+      effective_bonus_amount: override?.bonus_amount ?? cc.bonus_amount ?? 0,
+      override_note: override?.note,
+    }
+  }
   const sv = savingsBonuses.find((b) => b.id === id)
-  if (sv) return { kind: "savings", entry: sv }
+  if (sv) {
+    const topTier = (sv.tiers ?? [])[sv.tiers?.length ? sv.tiers.length - 1 : 0]
+    return {
+      kind: "savings",
+      entry: sv,
+      effective_bonus_amount: override?.bonus_amount ?? topTier?.bonus_amount ?? 0,
+      override_note: override?.note,
+    }
+  }
   return null
 }
 
 /**
- * Returns all linked bonuses for a given bonus ID (excluding the source bonus itself).
- * Filters out expired linked bonuses.
+ * Returns all linked bonuses for a given bonus ID (excluding the source).
+ * Filters out expired members. Each returned lead carries the effective
+ * combo pricing (`effective_bonus_amount`) so the UI can show the right
+ * number without recomputing overrides.
  */
 export function getLinkedBonuses(id: string): LinkedBonus[] {
-  const group = LINKED_BONUS_GROUPS.find((g) => g.includes(id))
+  const group = LINKED_BONUS_GROUPS.find((g) => g.ids.includes(id))
   if (!group) return []
-  return group
+  return group.ids
     .filter((lid) => lid !== id)
-    .map(findEntry)
+    .map((lid) => materialize(lid, group))
     .filter((x): x is LinkedBonus => x !== null)
-    .filter((lb) => {
-      const expired = (lb.entry as { expired?: boolean }).expired
-      return !expired
-    })
+    .filter((lb) => !(lb.entry as { expired?: boolean }).expired)
 }
 
-/**
- * Returns all linked-bonus groups where at least one member is non-expired.
- * Used on the hub to surface "best combos available now."
- */
-export function getActiveCombos(): { ids: string[]; members: LinkedBonus[] }[] {
+/** All groups where at least 2 members are non-expired. */
+export function getActiveCombos(): {
+  group: LinkedBonusGroup
+  members: LinkedBonus[]
+}[] {
   return LINKED_BONUS_GROUPS.map((group) => {
-    const members = group
-      .map(findEntry)
+    const members = group.ids
+      .map((id) => materialize(id, group))
       .filter((x): x is LinkedBonus => x !== null)
       .filter((lb) => !(lb.entry as { expired?: boolean }).expired)
-    return { ids: group, members }
+    return { group, members }
   }).filter((g) => g.members.length >= 2)
 }
 
 /**
- * Sum bonus amounts across all members of a combo group.
+ * Sum effective (override-aware) bonus amounts across all members.
+ * This is what the user will actually be paid if they complete the combo.
  */
 export function getComboTotal(members: LinkedBonus[]): number {
-  return members.reduce((sum, m) => {
-    if (m.kind === "checking") return sum + (m.entry.bonus_amount ?? 0)
-    // savings bonus has tiers; we report the top tier as the upside
-    const top = (m.entry.tiers ?? [])[m.entry.tiers?.length ? m.entry.tiers.length - 1 : 0]
-    return sum + (top?.bonus_amount ?? 0)
-  }, 0)
+  return members.reduce((sum, m) => sum + m.effective_bonus_amount, 0)
 }

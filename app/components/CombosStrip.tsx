@@ -27,23 +27,42 @@ export default function CombosStrip() {
         }}
       >
         {combos.map((combo, idx) => (
-          <ComboCard key={idx} members={combo.members} />
+          <ComboCard
+            key={idx}
+            members={combo.members}
+            comboUrl={combo.group.combo_url}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function ComboCard({ members }: { members: LinkedBonus[] }) {
+function ComboCard({
+  members,
+  comboUrl,
+}: {
+  members: LinkedBonus[]
+  comboUrl?: string
+}) {
   const bank = members[0]?.entry.bank_name ?? "Bank"
   const total = getComboTotal(members)
-  // Find the checking member to link to — paycheck page is where you start a checking bonus.
-  const checkingMember = members.find((m) => m.kind === "checking")
-  const href = checkingMember ? "/stacksos/paycheck" : "/stacksos/savings"
+  // Prefer the curated combo URL (e.g. Chase's combo-only landing page)
+  // over the hub route when present, since the bonus math only applies
+  // via that URL.
+  const href = comboUrl
+    ? comboUrl
+    : members.find((m) => m.kind === "checking")
+      ? "/stacksos/paycheck"
+      : "/stacksos/savings"
+  const external = Boolean(comboUrl)
+  const hasOverride = members.some((m) => m.override_note)
 
   return (
     <a
       href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       style={{
         display: "block",
         background: "#fff",
@@ -66,12 +85,16 @@ function ComboCard({ members }: { members: LinkedBonus[] }) {
       <div style={{ fontSize: 11, color: "#666", lineHeight: 1.5 }}>
         {members
           .map((m) => {
-            if (m.kind === "checking") return `Checking $${m.entry.bonus_amount}`
-            const top = m.entry.tiers?.[m.entry.tiers.length - 1]
-            return top ? `Savings up to $${top.bonus_amount}` : "Savings"
+            const label = m.kind === "checking" ? "Checking" : "Savings"
+            return `${label} $${m.effective_bonus_amount.toLocaleString()}`
           })
           .join(" + ")}
       </div>
+      {hasOverride && (
+        <div style={{ fontSize: 10, color: "#888", marginTop: 4, lineHeight: 1.4 }}>
+          Combo pricing differs from the standalone offer — use the combo link.
+        </div>
+      )}
       <div style={{ fontSize: 11, color: "#0d7c5f", marginTop: 6, fontWeight: 600 }}>
         Start this combo →
       </div>
