@@ -1,0 +1,194 @@
+/*
+ * The Stackhouse — scoped theme.
+ *
+ * All rules are nested under .stackhouse-root so nothing escapes into
+ * Stacks OS pages. Mode toggle flips between .mode-stackhouse (committed
+ * dark) and .mode-clean (Stacks OS-adjacent light).
+ *
+ * Fonts are injected via next/font in app/stackhouse/layout.tsx as
+ * --font-stackhouse-serif (Lora) and --font-stackhouse-mono (IBM Plex Mono).
+ * Mono is intentionally scoped to .sh-eyebrow (section headers) only —
+ * body text uses the serif for readability.
+ */
+
+.stackhouse-root {
+  /* Default: Stackhouse mode */
+  --sh-bg-outer: #1a1816;
+  --sh-bg-card: #0f0d0b;
+  --sh-bg-card-elev: #17140f;
+  --sh-divider: #2a241e;
+  --sh-amber: #d4a017;
+  --sh-red: #c73e3a;
+  --sh-teal: #4fc3a1;
+  --sh-purple: #a06ce4;
+  --sh-text-primary: #e8dcc4;
+  --sh-text-secondary: #a89983; /* spec's #8a8071 failed AA (3.9:1); a89983 = 5.1:1 */
+  --sh-text-muted: #78695a;
+  --sh-radius: 3px;
+  --sh-border: 1px solid var(--sh-divider);
+  --sh-font-serif: var(--font-stackhouse-serif), ui-serif, Georgia, serif;
+  --sh-font-mono: var(--font-stackhouse-mono), ui-monospace, Menlo, monospace;
+
+  background: var(--sh-bg-outer);
+  color: var(--sh-text-primary);
+  font-family: var(--sh-font-serif);
+  min-height: 100vh;
+  font-feature-settings: "lnum", "ss01";
+}
+
+/* Clean mode: snap to Stacks OS's light aesthetic */
+.stackhouse-root.mode-clean {
+  --sh-bg-outer: #fafafa;
+  --sh-bg-card: #ffffff;
+  --sh-bg-card-elev: #ffffff;
+  --sh-divider: #e8e8e8;
+  --sh-amber: #0d7c5f; /* Stacks OS primary teal */
+  --sh-red: #dc2626;
+  --sh-teal: #0d7c5f;
+  --sh-purple: #7c3aed;
+  --sh-text-primary: #111111;
+  --sh-text-secondary: #666666;
+  --sh-text-muted: #999999;
+  --sh-radius: 10px;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Typography helpers used across section components */
+.stackhouse-root .sh-eyebrow {
+  font-family: var(--sh-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sh-text-secondary);
+  font-weight: 500;
+}
+.stackhouse-root.mode-clean .sh-eyebrow {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.stackhouse-root .sh-numeric {
+  font-family: var(--sh-font-serif);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.stackhouse-root .sh-card {
+  background: var(--sh-bg-card);
+  border: var(--sh-border);
+  border-radius: var(--sh-radius);
+  padding: 18px 22px;
+}
+.stackhouse-root.mode-clean .sh-card {
+  background: var(--sh-bg-card);
+  border: 1px solid var(--sh-divider);
+  border-radius: var(--sh-radius);
+  padding: 18px 22px;
+}
+
+.stackhouse-root .sh-divider {
+  height: 1px;
+  background: var(--sh-divider);
+  border: none;
+  margin: 16px 0;
+}
+
+.stackhouse-root a {
+  color: var(--sh-amber);
+  text-decoration: none;
+}
+.stackhouse-root a:hover {
+  text-decoration: underline;
+}
+
+.stackhouse-root button {
+  font-family: inherit;
+}
+
+/* Pill chip for modifiers and status badges */
+.stackhouse-root .sh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: var(--sh-radius);
+  border: 1px solid var(--sh-divider);
+  color: var(--sh-text-secondary);
+  background: transparent;
+}
+
+/* Progress bars */
+.stackhouse-root .sh-progress {
+  height: 4px;
+  background: var(--sh-divider);
+  border-radius: 0;
+  overflow: hidden;
+}
+.stackhouse-root.mode-clean .sh-progress {
+  height: 6px;
+  border-radius: 3px;
+}
+.stackhouse-root .sh-progress > div {
+  height: 100%;
+  background: var(--sh-amber);
+  transition: width 0.3s ease;
+}
+
+/* Status badge colors */
+.stackhouse-root .sh-badge-good { color: var(--sh-teal); border-color: color-mix(in srgb, var(--sh-teal) 40%, transparent); }
+.stackhouse-root .sh-badge-neutral { color: var(--sh-text-secondary); }
+.stackhouse-root .sh-badge-warning { color: var(--sh-amber); border-color: color-mix(in srgb, var(--sh-amber) 40%, transparent); }
+.stackhouse-root .sh-badge-banned { color: var(--sh-red); border-color: color-mix(in srgb, var(--sh-red) 40%, transparent); }
+
+/* Daily round banner — gradient is explicitly permitted on this one element */
+.stackhouse-root .sh-daily-round {
+  background: linear-gradient(135deg, #3a2d10 0%, #5a4318 50%, #3a2d10 100%);
+  border: 1px solid var(--sh-amber);
+  border-radius: var(--sh-radius);
+  padding: 16px 22px;
+  color: var(--sh-text-primary);
+}
+.stackhouse-root.mode-clean .sh-daily-round {
+  background: linear-gradient(135deg, #e6f7f0 0%, #d9efe5 100%);
+  border: 1px solid var(--sh-amber);
+  color: var(--sh-text-primary);
+}
+
+/* Header gradient (also explicitly permitted) */
+.stackhouse-root .sh-header {
+  background: linear-gradient(180deg, #1f1c18 0%, var(--sh-bg-outer) 100%);
+  border-bottom: 1px solid var(--sh-divider);
+}
+.stackhouse-root.mode-clean .sh-header {
+  background: #fff;
+}
+
+/* Badge: periodic-table-style Au/79 branding */
+.stackhouse-root .sh-atom-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--sh-amber);
+  border-radius: var(--sh-radius);
+  color: var(--sh-amber);
+  font-family: var(--sh-font-mono);
+  line-height: 1;
+}
+.stackhouse-root .sh-atom-badge .sh-atom-symbol { font-size: 15px; font-weight: 700; letter-spacing: 0.04em; }
+.stackhouse-root .sh-atom-badge .sh-atom-num { font-size: 9px; margin-top: 1px; }
+
+/* Mobile — stack columns */
+@media (max-width: 900px) {
+  .stackhouse-root .sh-two-col { grid-template-columns: 1fr !important; }
+  .stackhouse-root .sh-four-col { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 520px) {
+  .stackhouse-root .sh-four-col { grid-template-columns: 1fr !important; }
+  .stackhouse-root .sh-card { padding: 14px 16px; }
+}
