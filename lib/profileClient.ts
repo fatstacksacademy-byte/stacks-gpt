@@ -1,5 +1,5 @@
 import { createClient } from "./supabase/client"
-import type { UserProfile } from "./profileServer"
+import type { UserProfile } from "./profileTypes"
 
 export async function upsertProfileClient(
   profile: Partial<UserProfile> & { user_id: string }

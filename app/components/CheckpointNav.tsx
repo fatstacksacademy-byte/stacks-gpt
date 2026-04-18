@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation"
 
 const tabs = [
-  { label: "Paycheck", href: "/stacksos" },
+  { label: "Dashboard", href: "/stacksos", exact: true },
+  { label: "Paycheck", href: "/stacksos/paycheck" },
   { label: "Spending", href: "/stacksos/spending" },
   { label: "Savings", href: "/stacksos/savings" },
 ] as const
@@ -11,8 +12,8 @@ const tabs = [
 export default function CheckpointNav() {
   const pathname = usePathname()
 
-  function isActive(href: string) {
-    if (href === "/stacksos") return pathname === "/stacksos"
+  function isActive(href: string, exact?: boolean) {
+    if (exact) return pathname === href
     return pathname.startsWith(href)
   }
 
@@ -20,7 +21,7 @@ export default function CheckpointNav() {
     <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e8e8e8", background: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", display: "flex", gap: 0, padding: "0 32px" }} className="cpnav-inner">
         {tabs.map(tab => {
-          const active = isActive(tab.href)
+          const active = isActive(tab.href, "exact" in tab ? tab.exact : undefined)
           return (
             <a
               key={tab.href}

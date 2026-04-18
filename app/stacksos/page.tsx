@@ -1,8 +1,9 @@
 import { createClient } from "../../lib/supabase/server"
 import { hasActiveSubscription } from "../../lib/stripe"
-import RoadmapClient from "./RoadmapClient"
-import SubscriptionGate from "../components/SubscriptionGate"
+import { getProfileServer } from "../../lib/profileServer"
+import HubClient from "./HubClient"
 import StacksOSLanding from "./StacksOSLanding"
+import SubscriptionGate from "../components/SubscriptionGate"
 
 export default async function StacksOSPage({
   searchParams,
@@ -12,7 +13,7 @@ export default async function StacksOSPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Not logged in → show marketing landing page
+  // Not logged in → marketing landing
   if (!user) return <StacksOSLanding loggedInEmail={null} />
 
   const isSubscribed = await hasActiveSubscription(user.id)
@@ -20,15 +21,16 @@ export default async function StacksOSPage({
   if (!isSubscribed) {
     const params = await searchParams
     if (params.checkout === "success") {
+      const profile = await getProfileServer(user.id)
       return (
         <SubscriptionGate isSubscribed={false}>
-          <RoadmapClient userEmail={user.email!} userId={user.id} />
+          <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} />
         </SubscriptionGate>
       )
     }
-    // Logged in but not subscribed → show marketing page with their email
     return <StacksOSLanding loggedInEmail={user.email ?? null} />
   }
 
-  return <RoadmapClient userEmail={user.email!} userId={user.id} />
+  const profile = await getProfileServer(user.id)
+  return <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} />
 }
