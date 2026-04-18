@@ -32,7 +32,7 @@ export default function PortfolioCard({
       }}
     >
       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.75 }}>
-        12-month total portfolio
+        Projected 12 Month Stack
       </div>
       <div style={{ fontSize: 44, fontWeight: 800, marginTop: 4, letterSpacing: "-0.02em" }}>
         ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
