@@ -237,7 +237,37 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
 
+  // Per-bonus "qualifying transactions met" flag. Stored in localStorage
+  // (user-side checklist, not worth a DB roundtrip). Only surfaced for
+  // bonuses whose requirements include debit_transactions_required > 0.
+  const [transactionsMet, setTransactionsMet] = useState<Record<string, boolean>>({})
+
   useEffect(() => { setMounted(true) }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const prefix = "stacks:transactions-met:"
+    const next: Record<string, boolean> = {}
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith(prefix) && localStorage.getItem(k) === "1") {
+        next[k.slice(prefix.length)] = true
+      }
+    }
+    setTransactionsMet(next)
+  }, [])
+
+  function toggleTransactionsMet(bonusId: string) {
+    setTransactionsMet(prev => {
+      const next = { ...prev, [bonusId]: !prev[bonusId] }
+      if (typeof window !== "undefined") {
+        const key = `stacks:transactions-met:${bonusId}`
+        if (next[bonusId]) localStorage.setItem(key, "1")
+        else localStorage.removeItem(key)
+      }
+      return next
+    })
+  }
 
   // Helper to build income sources from current profile
   function buildIncomeSources(): IncomeSourceLocal[] {
@@ -1654,12 +1684,41 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             </div>
                           )}
 
-                          {/* ── Transaction requirement ── */}
-                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (
-                            <div style={{ padding: "10px 24px 0", fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>
-                              Also required: {req.debit_transactions_required} qualifying transactions within {windowDays || "the"} {windowDays ? "days" : "qualification window"}
-                            </div>
-                          )}
+                          {/* ── Qualifying transactions checkbox ──
+                              Only renders when the bonus's requirements actually
+                              include debit_transactions_required. State persists
+                              in localStorage. */}
+                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (() => {
+                            const txMet = !!transactionsMet[b.id]
+                            return (
+                              <div
+                                onClick={() => toggleTransactionsMet(b.id)}
+                                style={{ padding: "10px 24px 0", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
+                                title={txMet ? "Click to uncheck" : "Click when you've completed the qualifying transactions"}
+                              >
+                                <div style={{
+                                  width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                  border: txMet ? "none" : "2px solid #7c3aed",
+                                  background: txMet ? "#0d7c5f" : "transparent",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                }}>
+                                  {txMet && (
+                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span style={{ fontSize: 12, color: txMet ? "#888" : "#7c3aed", fontWeight: 600, textDecoration: txMet ? "line-through" : "none" }}>
+                                  {req.debit_transactions_required} qualifying transactions met
+                                  {!txMet && windowDays > 0 && (
+                                    <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>
+                                      (within {windowDays} days)
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            )
+                          })()}
 
                           {/* ── Urgency ── */}
                           {!milestoneDetail.bonusPosted && windowDays > 0 && (

@@ -573,11 +573,21 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                   { key: "received" as const, label: "Bonus received", done: bonusReceived, clickable: false },
                 ]
 
+                const offerLink = catalogEntry?.source_links?.[0] ?? null
+
                 return (
                   <div key={e.id} style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                       <div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                          <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
+                          {offerLink && (
+                            <a href={offerLink} target="_blank" rel="noreferrer"
+                              style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                              View offer ↗
+                            </a>
+                          )}
+                        </div>
                         <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
                           {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
                         </div>
