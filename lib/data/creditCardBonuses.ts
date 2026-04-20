@@ -3147,7 +3147,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     ],
   },
   {
-    id: "wells-fargo-expedia-group-one-key-rwp",
+    id: "wells-fargo-expedia-group-one-key-rwp-2",
     card_name: "Expedia Group One Key",
     issuer: "wells-fargo",
     card_type: "personal",
@@ -5912,7 +5912,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     ],
   },
   {
-    id: "barclays-wyndham-earner-rwp",
+    id: "barclays-wyndham-earner-rwp-2",
     card_name: "Wyndham Earner+",
     issuer: "barclays",
     card_type: "personal",
