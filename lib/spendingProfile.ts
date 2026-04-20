@@ -7,7 +7,13 @@ export type SpendingProfile = {
   current_cards: Record<string, string>
   current_multipliers: Record<string, number>
   rewards_valuation: "cashback" | "points"
+  /** Legacy single-number cpp placeholder. Unused by the sequencer; kept
+   *  for compatibility with the existing profile form inputs. */
   cpp_valuation: number | null
+  /** Per-currency cpp overrides used by Travel Mode. Keyed by the card's
+   *  bonus_currency value (e.g. "Ultimate Rewards", "Hilton Honors").
+   *  Decimals: 0.022 = 2.2¢ per point. Empty / null = use TRAVEL_CPP defaults. */
+  cpp_overrides: Record<string, number> | null
   updated_at: string
 }
 
@@ -18,6 +24,7 @@ export const DEFAULT_SPENDING_PROFILE: Omit<SpendingProfile, "user_id" | "update
   current_multipliers: {},
   rewards_valuation: "cashback",
   cpp_valuation: null,
+  cpp_overrides: null,
 }
 
 export async function getSpendingProfile(userId: string): Promise<SpendingProfile> {

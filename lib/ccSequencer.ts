@@ -8,6 +8,7 @@
  */
 
 import { CreditCardBonus } from "./data/creditCardBonuses"
+import { getTravelCpp } from "./travelCpp"
 
 export type SequencedCard = {
   card: CreditCardBonus
@@ -29,6 +30,12 @@ export function sequenceCards(
   monthlyBudget: number,
   userState?: string | null,
   maxCardsPerYear: number = DEFAULT_MAX_CARDS_PER_YEAR,
+  /** Travel Mode: when true, use TRAVEL_CPP valuations (with optional
+   *  per-currency overrides) instead of the catalog's cash-floor cpp.
+   *  Affects net_value + return_per_month only — sort, spacing, and
+   *  feasibility math unchanged so Cash Mode is bit-for-bit untouched. */
+  useTravelCpp: boolean = false,
+  cppOverrides?: Record<string, number> | null,
 ): SequencedCard[] {
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
@@ -65,9 +72,14 @@ export function sequenceCards(
   })
 
   const scored = feasible.map(card => {
+    // In Travel Mode, swap the per-card cpp for a redemption-ceiling
+    // cpp from TRAVEL_CPP (or the user's per-currency override). Cash
+    // currency keeps its 1:1 short-circuit because TRAVEL_CPP["cash"]
+    // is 0.01 anyway and bonus_amount is already in dollars.
+    const effective_cpp = useTravelCpp ? getTravelCpp(card, cppOverrides) : card.cpp_value
     const bonus_value = card.cpp_value >= 1
-      ? card.bonus_amount * 1         // cash cards: bonus_amount IS the dollar value
-      : card.bonus_amount * card.cpp_value  // points cards
+      ? card.bonus_amount * 1                  // cash cards: bonus_amount IS the dollar value
+      : card.bonus_amount * effective_cpp      // points cards
 
     const net_value = bonus_value + card.statement_credits_year1
       - (card.annual_fee_waived_first_year ? 0 : card.annual_fee)

@@ -119,15 +119,19 @@ export default function HubClient({
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
     if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number }[] }
-    // Read the user's chosen application pace from localStorage so the
-    // dashboard's spending projection matches what they see on the
-    // Spending tab. Falls back to the sequencer default (4/yr).
+    // Mirror the Spending tab's controls: pace from localStorage,
+    // rewards mode from localStorage, per-currency overrides from
+    // spending_profile. So the dashboard's spending projection always
+    // matches what the user sees inside Spending.
     let pace = DEFAULT_MAX_CARDS_PER_YEAR
+    let useTravel = false
     if (typeof window !== "undefined") {
       const v = Number(localStorage.getItem("stacks_cc_pace") ?? "")
       if (Number.isFinite(v) && v > 0) pace = v
+      useTravel = localStorage.getItem("stacks_cc_rewards_mode") === "travel"
     }
-    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace)
+    const overrides = spendingProfile?.cpp_overrides ?? null
+    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace, useTravel, overrides)
     const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
     const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
     const items = [...year1List]

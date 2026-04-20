@@ -12,6 +12,7 @@ import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
+import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
 const money = (n: number) => `$${n.toLocaleString()}`
@@ -43,6 +44,15 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     const v = Number(localStorage.getItem("stacks_cc_pace") ?? "")
     return Number.isFinite(v) && v > 0 ? v : DEFAULT_MAX_CARDS_PER_YEAR
   })
+  // Rewards Mode (Cash | Travel). Default Cash. Travel mode swaps the
+  // sequencer's cpp valuations to TRAVEL_CPP (with optional per-currency
+  // overrides from spendingProfile.cpp_overrides).
+  const [rewardsMode, setRewardsMode] = useState<"cash" | "travel">(() => {
+    if (typeof window === "undefined") return "cash"
+    const v = localStorage.getItem("stacks_cc_rewards_mode")
+    return v === "travel" ? "travel" : "cash"
+  })
+  const [showCppOverrides, setShowCppOverrides] = useState(false)
   const [recSearch, setRecSearch] = useState("")
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
@@ -164,9 +174,13 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear)
+  const isTravel = rewardsMode === "travel"
+  const cppOverrides = profile?.cpp_overrides ?? null
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
-    .filter(sc => includeHotelAirline || !isAirlineOrHotelCard(sc.card))
+    // Travel mode is opinionated about hotel/airline cards — that's the
+    // whole point — so the includeHotelAirline filter is ignored there.
+    .filter(sc => isTravel || includeHotelAirline || !isAirlineOrHotelCard(sc.card))
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
 
   function addFromRecommendation(sc: (typeof ccSequence)[0]) {
@@ -386,6 +400,99 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                   </button>
                 )}
               </div>
+              {/* Rewards Mode — Cash uses cash-floor cpp from the catalog,
+                  Travel swaps in TRAVEL_CPP redemption ceilings (with optional
+                  per-currency overrides). Travel mode auto-includes hotel +
+                  airline cards regardless of the airline-toggle below. */}
+              <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>
+                    Rewards Mode
+                    {isTravel && (
+                      <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 6px", borderRadius: 99, fontWeight: 700, marginLeft: 6, letterSpacing: "0.05em" }}>
+                        BETA
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
+                    {isTravel
+                      ? "Valuing points at travel-redemption ceilings. Estimates only — your mileage will vary."
+                      : "Cash-floor valuation: 1¢ per point, 0.5¢ per hotel point."}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 4, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: 2 }}>
+                  {(["cash", "travel"] as const).map(mode => {
+                    const active = rewardsMode === mode
+                    return (
+                      <button
+                        key={mode}
+                        onClick={() => {
+                          setRewardsMode(mode)
+                          if (typeof window !== "undefined") localStorage.setItem("stacks_cc_rewards_mode", mode)
+                        }}
+                        style={{
+                          padding: "5px 14px", fontSize: 12, fontWeight: active ? 700 : 500,
+                          color: active ? "#fff" : "#666",
+                          background: active ? "#0d7c5f" : "transparent",
+                          border: "none", borderRadius: 4, cursor: "pointer",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {mode}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              {isTravel && (
+                <div style={{ marginBottom: 10 }}>
+                  <button
+                    onClick={() => setShowCppOverrides(s => !s)}
+                    style={{ fontSize: 11, color: "#7c3aed", background: "none", border: "none", cursor: "pointer", padding: "2px 0", fontWeight: 600 }}
+                  >
+                    {showCppOverrides ? "− Hide" : "+ Advanced"} valuation setup
+                  </button>
+                  {showCppOverrides && (
+                    <div style={{ marginTop: 8, padding: "12px 14px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 8 }}>
+                      <div style={{ fontSize: 11, color: "#666", marginBottom: 10, lineHeight: 1.5 }}>
+                        Override our default travel-cpp estimates per currency. Enter cents-per-point (e.g. <code>2.2</code> for 2.2¢). Leave blank to use the default.
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                        {Object.keys(TRAVEL_CPP).filter(c => c !== "cash").map(currency => {
+                          const def = TRAVEL_CPP[currency]
+                          const override = profile?.cpp_overrides?.[currency]
+                          const value = override != null ? (override * 100).toString() : ""
+                          return (
+                            <label key={currency} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#555" }}>
+                              <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{currency}</span>
+                              <input
+                                type="number"
+                                step="0.1"
+                                value={value}
+                                placeholder={(def * 100).toFixed(1)}
+                                onChange={async (e) => {
+                                  const next = { ...(profile?.cpp_overrides ?? {}) }
+                                  if (e.target.value === "") {
+                                    delete next[currency]
+                                  } else {
+                                    const cents = parseFloat(e.target.value)
+                                    if (Number.isFinite(cents) && cents > 0) {
+                                      next[currency] = cents / 100
+                                    }
+                                  }
+                                  await updateProfile({ cpp_overrides: Object.keys(next).length ? next : null })
+                                }}
+                                style={{ width: 60, padding: "4px 6px", fontSize: 11, border: "1px solid #e0e0e0", borderRadius: 4, color: "#111" }}
+                              />
+                              <span style={{ color: "#bbb", fontSize: 10 }}>¢</span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               {/* Application pace — caps how many cards land in the active
                   sequence and enforces 90-day spacing between applications. */}
               <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -476,6 +583,11 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                         </div>
                         <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{formatCurrency(sc.net_value)}</div>
+                          {isTravel && sc.card.bonus_currency !== "cash" && (
+                            <div style={{ fontSize: 10, color: "#7c3aed", fontWeight: 600 }}>
+                              = {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
+                            </div>
+                          )}
                           <div style={{ fontSize: 10, color: "#999" }}>{formatCurrency(sc.return_per_month)}/mo · {sc.months_to_complete.toFixed(1)}mo</div>
                         </div>
                       </div>
