@@ -12,7 +12,8 @@
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts",
     "discover:cards": "tsx scripts/discover-cards/run.ts",
     "generate:card-blog": "tsx scripts/generate-card-blog/run.ts",
-    "ingest:rwp-cards": "tsx scripts/ingest-rwp-cards/run.ts"
+    "ingest:rwp-cards": "tsx scripts/ingest-rwp-cards/run.ts",
+    "find:offer-links": "tsx scripts/find-offer-links/run.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

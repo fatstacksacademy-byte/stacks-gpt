@@ -1028,7 +1028,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/avios/aer-lingus?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1074,7 +1074,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/aircanada/aeroplan?iCELL=6C1Y",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1117,7 +1117,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 59,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/allegiant-credit-card/",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -1163,7 +1163,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 89,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/air-france-credit-card/?campaign=4079102~8S~en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1207,7 +1207,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/amazon-rewards?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1294,7 +1294,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 350,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-globe-mastercard?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1362,7 +1362,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 595,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-executive-world-elite-mastercard?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1407,7 +1407,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-world-elite-mastercard?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1746,7 +1746,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-att-pointsplus-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -1880,7 +1880,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/cash-back-credit-card/?campaign=4079538~DY~en_US",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -1903,7 +1903,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/premium-rewards-credit-card/?campaign=4079485~UN~en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1925,7 +1925,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/travel-rewards-credit-card/?campaign=4079333~75~en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1947,7 +1947,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 550,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/premium-rewards-credit-card/?campaign=4079485~UN~en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1969,7 +1969,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/unlimited-cash-back-credit-card/?campaign=4079262~G6~en_US",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -2215,7 +2215,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/avios/british-airways?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -2371,7 +2371,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/carnival-world-mastercard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available"],
     rewards: [
@@ -2459,7 +2459,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -2482,7 +2482,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -2505,7 +2505,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/freedom/rise?iCELL=61FY",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -2526,7 +2526,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -2596,7 +2596,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-strata-elite-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -2621,7 +2621,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-strata-premier-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -2842,7 +2842,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-costco-anywhere-visa-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -2977,7 +2977,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/disney/inspire?iCELL=61FY",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -2999,7 +2999,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 149,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/disney/inspire?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -3023,7 +3023,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/doordash?iCELL=6C1Y",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -3046,7 +3046,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 49,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/disney/premier?iCELL=61FY",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -3092,7 +3092,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 499,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/emirates-skywards-premium-world-elite-mastercard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3115,7 +3115,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/emirates-skywards-rewards-world-elite-mastercard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3400,7 +3400,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/spirit-airlines-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3422,7 +3422,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 89,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/frontier-airlines-world-mastercard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3445,7 +3445,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 79,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/spirit-airlines-credit-card/",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -3492,7 +3492,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/general-motors-business/",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -3583,7 +3583,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Hilton",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3606,7 +3606,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 550,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Hilton",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3629,7 +3629,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Hilton",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3742,7 +3742,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/avios/iberia?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3765,7 +3765,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/premier?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3788,7 +3788,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/traveler?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3811,7 +3811,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/instacart?iCELL=6C1Y",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -3834,7 +3834,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/jetblue-business-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3857,7 +3857,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 499,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/jetblue-premier-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3880,7 +3880,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/jetblue-plus-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4040,7 +4040,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 250,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Marriott",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -4063,7 +4063,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/bold?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -4086,7 +4086,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/boundless?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -4109,7 +4109,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 250,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/bountiful?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -4132,7 +4132,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 650,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Marriott",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -4402,7 +4402,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/norwegian-cruise-lines-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4986,7 +4986,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/southwest/plus?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -5008,7 +5008,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 149,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/southwest/premier?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5031,7 +5031,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 229,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/southwest/priority?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5523,7 +5523,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/upromise-world-mastercard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5544,7 +5544,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/altitude-go-visa-signature-credit-card",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -5567,7 +5567,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/shield-visa-credit-card.html",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5611,7 +5611,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/shopper-cash-rewards-visa-signature-credit-card",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5635,7 +5635,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/bank-smartly-visa-signature-credit-card.html",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5879,7 +5879,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/world-of-hyatt-credit-card?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5902,7 +5902,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-business-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6017,7 +6017,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-world-elite-mastercard?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6039,7 +6039,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-business-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6061,7 +6061,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-blue-business-plus-credit-card-amex/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-BlueForBusinessPlus",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -6082,7 +6082,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-blue-business-plus-credit-card-amex/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-BlueForBusinessPlus",
     expired: false,
     key_benefits: ["Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6104,7 +6104,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-green-card-amex/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Green",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6126,7 +6126,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 375,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-gold-card-amex/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Gold",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6149,7 +6149,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 895,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/?inav=en_us_menu_cards_business_credit_cards_business_platinum_card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6215,7 +6215,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 250,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/graphite-business-cash-unlimited-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Graphite",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -6237,7 +6237,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/cash-back-credit-card/?campaign=4079538~DY~en_US",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -6260,7 +6260,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/travel-rewards-credit-card/?campaign=4079333~75~en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6282,7 +6282,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/unlimited-cash-back-credit-card/?campaign=4079262~G6~en_US",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -6303,7 +6303,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-cash-select/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -6325,7 +6325,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-cash-select/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -6346,7 +6346,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-cash-select/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -6454,7 +6454,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 195,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/premier?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6476,7 +6476,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/cash?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -6499,7 +6499,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/unlimited?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -6520,7 +6520,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 795,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6545,7 +6545,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/citi-costco-anywhere-visa-business-credit-card?category=rewards-credit-cards&afc=162",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -6570,7 +6570,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-gold-card-amex/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Gold",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6592,7 +6592,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 350,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/?inav=en_us_menu_cards_business_credit_cards_business_platinum_card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6680,7 +6680,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 195,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Hilton",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6703,7 +6703,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/IHG/business-premier?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6748,7 +6748,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/jetblue-business-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6793,7 +6793,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 125,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Marriott",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -6858,7 +6858,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 299,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/southwest/performance-business?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6882,7 +6882,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 149,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/southwest/premier-business?iCELL=61FY",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -6971,7 +6971,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/united/united-club-business?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7015,7 +7015,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 695,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/united/united-club-business?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7038,7 +7038,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7085,7 +7085,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/shopper-cash-rewards-visa-signature-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -7108,7 +7108,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 195,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usbank.com/credit-cards/altitude-go-visa-signature-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7152,7 +7152,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 199,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/world-of-hyatt/hyatt-business-card?iCELL=61FY",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7175,7 +7175,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-business-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
