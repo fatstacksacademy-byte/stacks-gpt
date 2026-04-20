@@ -291,37 +291,11 @@ async function fetchCardDetail(url: string): Promise<RwpCard | { error: string; 
       annualFee = moneyToNum(data.annualFee) ?? 0
     }
 
-    // CPP valuation — RWP exposes a "Travel Value" (often 1.5-2.0¢ via
-    // aspirational transfer redemptions) and a "Cash Value" (typically
-    // 1.0¢ as statement credit). The spending sequencer uses cpp_value to
-    // compute net SUB worth, so we need a CASH FLOOR — the realistic
-    // dollar value the user could actually pull out without chasing a
-    // specific transfer-partner sweet spot.
-    //
-    // Rules:
-    //   1. Prefer cashValue when present.
-    //   2. Fall back to travelValue but cap it at 1.0¢ for non-cash
-    //      currencies (Citi Strata Premier shows 1.7¢ Travel Value but
-    //      ThankYou points only redeem at 1¢ for cash).
-    //   3. For currency === "cash", cpp is always 1.0 (the bonus_amount
-    //      already IS the dollar value).
-    const isCash = (data.pointSystem ?? "").toLowerCase().includes("cash")
-    let cppRaw: number | null
-    if (isCash) {
-      cppRaw = 1
-    } else if (data.cashValue) {
-      cppRaw = (moneyToNum(data.cashValue) ?? 1) / 100
-    } else if (data.travelValue) {
-      const raw = (moneyToNum(data.travelValue) ?? 1) / 100
-      cppRaw = Math.min(raw, 0.01)   // cap aspirational travel value
-    } else {
-      cppRaw = null
-    }
-    // Round to 4 decimals — avoids IEEE 754 artifacts like 0.006999999999999999
-    // when rendering back to the catalog source file.
-    const cpp = cppRaw !== null ? Math.round(cppRaw * 10000) / 10000 : null
-
-    // Bonus amount + currency from headline
+    // Bonus amount + currency from headline. Resolve this BEFORE cpp
+    // so cpp can key on the final currency — Chase's cash-back cards
+    // list their point_system as "Ultimate Rewards" on RWP even when
+    // the offer pays out in dollars, so trusting pointSystem alone was
+    // what caused every cash card to land with cpp = 0.01.
     let bonusAmount: number | null = null
     let bonusCurrency = inferBonusCurrency(data.pointSystem, data.bonusHeadline)
     if (data.bonusHeadline) {
@@ -330,6 +304,25 @@ async function fetchCardDetail(url: string): Promise<RwpCard | { error: string; 
       if (/\bcash\s*back\b/i.test(data.bonusHeadline)) bonusCurrency = "cash"
       if (/\bmiles?\b/i.test(data.bonusHeadline)) bonusCurrency = "miles"
     }
+
+    // CPP valuation. Cash cards always 1:1 (bonus_amount IS dollars).
+    // Points/miles prefer the Cash Value field, fall back to Travel
+    // Value capped at 1.0¢ (aspirational transfer rates shouldn't
+    // inflate sequencer math).
+    const isCashCurrency = bonusCurrency === "cash" ||
+      (data.pointSystem ?? "").toLowerCase().includes("cash")
+    let cppRaw: number | null
+    if (isCashCurrency) {
+      cppRaw = 1
+    } else if (data.cashValue) {
+      cppRaw = (moneyToNum(data.cashValue) ?? 1) / 100
+    } else if (data.travelValue) {
+      const raw = (moneyToNum(data.travelValue) ?? 1) / 100
+      cppRaw = Math.min(raw, 0.01)
+    } else {
+      cppRaw = null
+    }
+    const cpp = cppRaw !== null ? Math.round(cppRaw * 10000) / 10000 : null
 
     // Spend req + window from description. RWP wording varies a lot:
     //   "spend $1,000 within the first 90 days"       (AAA)
