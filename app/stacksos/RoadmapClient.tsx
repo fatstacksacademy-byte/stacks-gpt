@@ -1205,29 +1205,36 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     )}
                   </div>
 
-                  {/* Key details: hold period, closure penalty, min opening deposit */}
-                  <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                    {hb.bonus.timeline?.must_remain_open_days && (
-                      <div style={{ fontSize: 12, color: "#888", background: "#f5f5f5", padding: "4px 10px", borderRadius: 6 }}>
-                        Keep open {hb.bonus.timeline.must_remain_open_days} days
-                      </div>
-                    )}
-                    {hb.bonus.fees?.early_closure_fee > 0 && (
-                      <div style={{ fontSize: 12, color: "#d97706", background: "#fffbeb", padding: "4px 10px", borderRadius: 6, fontWeight: 600 }}>
-                        ${hb.bonus.fees.early_closure_fee} early closure fee
-                      </div>
-                    )}
-                    {hb.bonus.requirements?.min_opening_deposit > 0 && (
+                  {/* Min opening deposit pill — separate concept from min_balance,
+                      this is what you have to put in on day 1, not maintain. */}
+                  {hb.bonus.requirements?.min_opening_deposit > 0 && (
+                    <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
                       <div style={{ fontSize: 12, color: "#888", background: "#f5f5f5", padding: "4px 10px", borderRadius: 6 }}>
                         ${hb.bonus.requirements.min_opening_deposit} min to open
                       </div>
-                    )}
-                    {hb.bonus.requirements?.min_balance > 0 && (
-                      <div style={{ fontSize: 12, color: "#d97706", background: "#fffbeb", padding: "4px 10px", borderRadius: 6, fontWeight: 600 }}>
-                        ${hb.bonus.requirements.min_balance.toLocaleString()} balance required
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+
+                  {/* Hold-period warning — combine must_remain_open_days +
+                      early_closure_fee into one amber line so users see both
+                      constraints at once instead of two separate gray pills. */}
+                  {hb.bonus.timeline?.must_remain_open_days && (
+                    <div style={{ marginTop: 12, fontSize: 13, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
+                      Must keep open {hb.bonus.timeline.must_remain_open_days} days
+                      {(hb.bonus.fees?.early_closure_fee ?? 0) > 0 && (
+                        <> · ${hb.bonus.fees.early_closure_fee} early closure fee</>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Average-daily-balance warning — David's specific
+                      flag: users were confused that "$15k bonus" required
+                      MAINTAINING $15k, not just depositing it once. */}
+                  {hb.bonus.requirements?.min_balance > 0 && (
+                    <div style={{ marginTop: 8, fontSize: 13, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
+                      Bonus based on average daily balance (not total deposits) — ${hb.bonus.requirements.min_balance.toLocaleString()} required
+                    </div>
+                  )}
 
                   <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
                     <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
@@ -2483,6 +2490,21 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                         <span><span style={{ color: "#bbb" }}>Fee </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></span>
                         {velocity && <span><span style={{ color: "#bbb" }}>$/wk </span><span style={{ color: "#0d7c5f" }}>${velocity.toFixed(0)}</span></span>}
                       </div>
+                      {/* Hold + closure warning — always visible on the card face. */}
+                      {b.timeline?.must_remain_open_days && (
+                        <div style={{ marginTop: 8, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px" }}>
+                          Must keep open {b.timeline.must_remain_open_days} days
+                          {(b.fees?.early_closure_fee ?? 0) > 0 && (
+                            <> · ${b.fees.early_closure_fee} early closure fee</>
+                          )}
+                        </div>
+                      )}
+                      {/* Average-daily-balance warning — surface up front. */}
+                      {b.requirements?.min_balance > 0 && (
+                        <div style={{ marginTop: 6, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px" }}>
+                          Bonus based on average daily balance (not total deposits) — ${b.requirements.min_balance.toLocaleString()} required
+                        </div>
+                      )}
                       {isExpanded && (
                         <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }} onClick={e => e.stopPropagation()}>
                           <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6, marginBottom: 10 }}>
