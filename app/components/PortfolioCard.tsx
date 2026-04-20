@@ -1,9 +1,15 @@
 "use client"
 
+import { useState } from "react"
+
+export type BreakdownItem = { label: string; amount: number }
+
 type Breakdown = {
   label: string
   amount: number
   href: string
+  /** Top items making up this number — shown when the user expands the breakdown row. */
+  items?: BreakdownItem[]
 }
 
 /**
@@ -11,15 +17,13 @@ type Breakdown = {
  *
  * Layout:
  *   PROJECTED 12 MONTH STACK
- *   $12,500  (Paycheck $5,000 · Spending $4,000 · Savings $3,500)
+ *   $12,500
+ *     Paycheck   $5,165  [Show breakdown →]  → expands to top 5 bonuses
+ *     Spending   $11,887 [Show breakdown →]
+ *     Savings    $11,150 [Show breakdown →]
  *
  *   LIFETIME EARNED                    IN PROGRESS
  *   $3,200                             $1,450
- *
- * The parenthetical breakdown each deep-links into its module. Lifetime
- * earned reflects all completed bonuses across paycheck / custom /
- * spending / savings tables; in-progress sums started-but-not-yet-closed
- * bonus amounts.
  */
 export default function PortfolioCard({
   total,
@@ -32,6 +36,8 @@ export default function PortfolioCard({
   lifetimeEarned: number
   inProgress: number
 }) {
+  const [expandedLabel, setExpandedLabel] = useState<string | null>(null)
+
   return (
     <div
       style={{
@@ -48,42 +54,81 @@ export default function PortfolioCard({
         Projected 12 Month Stack
       </div>
       <div
-        className="portfolio-total-row"
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 14,
-          marginTop: 4,
-          flexWrap: "wrap",
-        }}
+        className="portfolio-total"
+        style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 4 }}
       >
-        <div
-          className="portfolio-total"
-          style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1 }}
-        >
-          ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-        </div>
-        {breakdown.length > 0 && (
-          <div
-            className="portfolio-breakdown"
-            style={{ fontSize: 13, opacity: 0.85, lineHeight: 1.4 }}
-          >
-            (
-            {breakdown.map((b, i) => (
-              <span key={b.label}>
-                <a
-                  href={b.href}
-                  style={{ color: "#fff", textDecoration: "none", borderBottom: "1px dotted rgba(255,255,255,0.4)" }}
-                >
-                  {b.label} ${b.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </a>
-                {i < breakdown.length - 1 && <span style={{ opacity: 0.6 }}> · </span>}
-              </span>
-            ))}
-            )
-          </div>
-        )}
+        ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
       </div>
+
+      {breakdown.length > 0 && (
+        <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 4 }}>
+          {breakdown.map(b => {
+            const isExpanded = expandedLabel === b.label
+            const hasItems = (b.items?.length ?? 0) > 0
+            return (
+              <div key={b.label} style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                  <a
+                    href={b.href}
+                    style={{
+                      color: "#fff",
+                      textDecoration: "none",
+                      fontSize: 13,
+                      opacity: 0.85,
+                      minWidth: 90,
+                      borderBottom: "1px dotted rgba(255,255,255,0.35)",
+                    }}
+                  >
+                    {b.label}
+                  </a>
+                  <span style={{ fontSize: 15, fontWeight: 700 }}>
+                    ${b.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </span>
+                  {hasItems && (
+                    <button
+                      onClick={() => setExpandedLabel(isExpanded ? null : b.label)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "rgba(255,255,255,0.75)",
+                        fontSize: 11,
+                        padding: 0,
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        textDecorationStyle: "dotted",
+                      }}
+                    >
+                      {isExpanded ? "Hide breakdown ↑" : "Show breakdown →"}
+                    </button>
+                  )}
+                </div>
+                {isExpanded && hasItems && (
+                  <div style={{ marginTop: 6, marginLeft: 100, display: "flex", flexDirection: "column", gap: 3 }}>
+                    {b.items!.slice(0, 5).map((it, i) => (
+                      <div
+                        key={i}
+                        style={{ display: "flex", justifyContent: "space-between", fontSize: 12, opacity: 0.85, gap: 10 }}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {it.label}
+                        </span>
+                        <span style={{ fontWeight: 600, flexShrink: 0 }}>
+                          ${it.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+                    ))}
+                    {(b.items!.length > 5) && (
+                      <div style={{ fontSize: 11, opacity: 0.55, marginTop: 2 }}>
+                        + {b.items!.length - 5} more
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <div
         className="portfolio-stats"
@@ -117,7 +162,6 @@ export default function PortfolioCard({
         @media (max-width: 520px) {
           .portfolio-card { padding: 20px 20px !important; border-radius: 12px !important; }
           .portfolio-total { font-size: 32px !important; }
-          .portfolio-breakdown { font-size: 12px !important; width: 100%; }
         }
       `}</style>
     </div>

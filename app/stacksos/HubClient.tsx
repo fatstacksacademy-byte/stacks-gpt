@@ -95,30 +95,38 @@ export default function HubClient({
       .filter((e) => e.type === "bonus") as SequencedBonus[]
     const bonuses12mo = allBonuses.filter((b) => b.start_week * 7 <= 365)
     const total = bonuses12mo.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount ?? 0), 0)
-    return { total, monthlyIncome: Math.round(getTotalMonthlyIncome(profile)) }
+    const items = [...bonuses12mo]
+      .sort((a, b) => (b.net_bonus ?? b.bonus_amount ?? 0) - (a.net_bonus ?? a.bonus_amount ?? 0))
+      .map((b) => ({ label: b.bank_name, amount: b.net_bonus ?? b.bonus_amount ?? 0 }))
+    return { total, monthlyIncome: Math.round(getTotalMonthlyIncome(profile)), items }
   }, [profile])
 
   const savingsProjection = useMemo(() => {
-    if (!savingsProfile) return { total: 0 }
+    if (!savingsProfile) return { total: 0, items: [] as { label: string; amount: number }[] }
     const balance = savingsProfile.current_balance ?? 0
-    if (balance <= 0) return { total: 0 }
+    if (balance <= 0) return { total: 0, items: [] }
     const result = runSavingsSequencer({
       availableBalance: balance,
       userState: profile.state,
       currentHysaApy: savingsProfile.current_apy ?? 0,
     })
-    return { total: Math.round(result.total_earnings ?? 0) }
+    const items = [...(result.entries ?? [])]
+      .sort((a, b) => (b.total_earnings ?? 0) - (a.total_earnings ?? 0))
+      .map((e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) }))
+    return { total: Math.round(result.total_earnings ?? 0), items }
   }, [savingsProfile, profile.state])
 
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
-    if (monthlySpend <= 0) return { total: 0 }
+    if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number }[] }
     const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null)
-    const year1 = sequenced
-      .filter((s) => s.cumulative_months <= 12)
-      .reduce((sum, s) => sum + s.net_value, 0)
-    return { total: Math.round(year1) }
-  }, [spendingProfile])
+    const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
+    const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
+    const items = [...year1List]
+      .sort((a, b) => b.net_value - a.net_value)
+      .map((s) => ({ label: s.card.card_name, amount: Math.round(s.net_value) }))
+    return { total: Math.round(year1), items }
+  }, [spendingProfile, profile.state])
 
   const portfolio12mo =
     paycheckProjection.total + savingsProjection.total + spendingProjection.total
@@ -277,9 +285,9 @@ export default function HubClient({
           lifetimeEarned={lifetimeEarned}
           inProgress={inProgressValue}
           breakdown={[
-            { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck" },
-            { label: "Spending", amount: spendingProjection.total, href: "/stacksos/spending" },
-            { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings" },
+            { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
+            { label: "Spending", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
+            { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
           ]}
         />
 
