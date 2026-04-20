@@ -52,15 +52,21 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [fStatus, setFStatus] = useState<OwnedCard["status"]>("planned")
   const [fNotes, setFNotes] = useState("")
   const [fMultipliers, setFMultipliers] = useState<Record<string, string>>({})
+  // User's state (from user_profiles, not spending_profile) — used to filter
+  // cards with state_restricted lists. Fetched alongside spending profile.
+  const [userState, setUserState] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    const [c, p] = await Promise.all([
+    const sb = createClient()
+    const [c, p, userProfile] = await Promise.all([
       getOwnedCards(userId),
       getSpendingProfile(userId),
+      sb.from("user_profiles").select("state").eq("user_id", userId).maybeSingle(),
     ])
     setCards(c)
     setProfile(p)
+    setUserState((userProfile.data as { state?: string | null } | null)?.state ?? null)
     setLoading(false)
   }, [userId])
 
@@ -150,7 +156,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000)
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => includeHotelAirline || !isAirlineOrHotelCard(sc.card))
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))

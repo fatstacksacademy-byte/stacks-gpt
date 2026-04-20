@@ -21,12 +21,28 @@ export type SequencedCard = {
 export function sequenceCards(
   cards: CreditCardBonus[],
   monthlyBudget: number,
+  userState?: string | null,
 ): SequencedCard[] {
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
   // ships with offer_link === "" until issuer URLs are filled in via
   // follow-up; the verify:cards admin queue will surface them.
-  const available = cards.filter(c => !c.expired && c.offer_link && c.offer_link.length > 0)
+  //
+  // Also respect state_restricted when userState is provided. The CC
+  // catalog schema uses a single state_restricted string[] as the
+  // allow-list (mirrors checking-bonus filter semantics but with the
+  // opposite shape — checking uses eligibility.states_allowed alongside
+  // a boolean gate). Card-level state restriction is currently unused
+  // in the catalog but wired here so adding region-locked cards later
+  // doesn't require an additional code change.
+  const available = cards.filter(c => {
+    if (c.expired) return false
+    if (!c.offer_link || c.offer_link.length === 0) return false
+    if (userState && c.state_restricted && c.state_restricted.length > 0) {
+      if (!c.state_restricted.includes(userState)) return false
+    }
+    return true
+  })
 
   // Step 1: filter to feasible cards. A card is infeasible if the user
   // cannot realistically hit its min_spend within the bank's deadline at

@@ -113,7 +113,7 @@ export default function HubClient({
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
     if (monthlySpend <= 0) return { total: 0 }
-    const sequenced = sequenceCards(creditCardBonuses, monthlySpend)
+    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null)
     const year1 = sequenced
       .filter((s) => s.cumulative_months <= 12)
       .reduce((sum, s) => sum + s.net_value, 0)
