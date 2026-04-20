@@ -11,7 +11,7 @@ import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
-import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
+import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
 const money = (n: number) => `$${n.toLocaleString()}`
@@ -35,6 +35,14 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [showRecommendations, setShowRecommendations] = useState(true)
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
   const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
+  // Application pace cap. Defaults to 4 cards/yr (≈90-day spacing).
+  // Persisted to localStorage so the chosen pace survives reloads and
+  // stays in sync with the dashboard's spending projection.
+  const [maxCardsPerYear, setMaxCardsPerYear] = useState<number>(() => {
+    if (typeof window === "undefined") return DEFAULT_MAX_CARDS_PER_YEAR
+    const v = Number(localStorage.getItem("stacks_cc_pace") ?? "")
+    return Number.isFinite(v) && v > 0 ? v : DEFAULT_MAX_CARDS_PER_YEAR
+  })
   const [recSearch, setRecSearch] = useState("")
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
@@ -156,7 +164,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState)
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => includeHotelAirline || !isAirlineOrHotelCard(sc.card))
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
@@ -377,6 +385,38 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                     ✕
                   </button>
                 )}
+              </div>
+              {/* Application pace — caps how many cards land in the active
+                  sequence and enforces 90-day spacing between applications. */}
+              <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Application pace</div>
+                  <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
+                    Applying too frequently can temporarily lower your credit score.
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 4, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: 2 }}>
+                  {[2, 3, 4, 6, 8].map(n => {
+                    const active = maxCardsPerYear === n
+                    return (
+                      <button
+                        key={n}
+                        onClick={() => {
+                          setMaxCardsPerYear(n)
+                          if (typeof window !== "undefined") localStorage.setItem("stacks_cc_pace", String(n))
+                        }}
+                        style={{
+                          padding: "5px 10px", fontSize: 12, fontWeight: active ? 700 : 500,
+                          color: active ? "#fff" : "#666",
+                          background: active ? "#0d7c5f" : "transparent",
+                          border: "none", borderRadius: 4, cursor: "pointer",
+                        }}
+                      >
+                        {n}/yr
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
                 <div style={{ fontSize: 12, color: "#999" }}>

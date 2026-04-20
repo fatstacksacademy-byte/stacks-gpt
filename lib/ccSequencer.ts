@@ -18,10 +18,17 @@ export type SequencedCard = {
   cumulative_months: number
 }
 
+/** Default cap on credit card applications per year. 4 ≈ one every 90 days,
+ *  the rough churning consensus for keeping new-account inquiries under
+ *  control without tripping issuer velocity rules. Each card application
+ *  also dings the credit score temporarily, so spreading them out matters. */
+export const DEFAULT_MAX_CARDS_PER_YEAR = 4
+
 export function sequenceCards(
   cards: CreditCardBonus[],
   monthlyBudget: number,
   userState?: string | null,
+  maxCardsPerYear: number = DEFAULT_MAX_CARDS_PER_YEAR,
 ): SequencedCard[] {
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
@@ -88,15 +95,34 @@ export function sequenceCards(
   // Filter to only positive-value cards
   const positive = scored.filter(s => s.net_value > 0)
 
-  // Build cumulative timeline
-  let cumMonths = 0
+  // Build cumulative timeline with application-pace spacing.
+  //
+  // Each card needs at least `minGapMonths` between its application date
+  // and the previous card's application date (12/maxCardsPerYear → e.g.
+  // 4 cards/year = 3-month gap). If the previous card needed longer than
+  // that gap to complete its min_spend, the next card waits until the
+  // previous one is done (so the user isn't juggling two open SUBs).
+  //
+  //   nextStart = prevStart + max(minGapMonths, prevMonthsToComplete)
+  //   completion = nextStart + currentMonthsToComplete
+  //
+  // cumulative_months therefore = the month at which this card's spend
+  // is complete; cumulative_value = total net value through this card.
+  // The 12-month projection upstream filters by cumulative_months <= 12,
+  // which falls out to ≤ maxCardsPerYear cards by construction.
+  const minGapMonths = 12 / Math.max(1, maxCardsPerYear)
+  let prevStart = 0
+  let prevMonths = 0
   let cumValue = 0
-  for (const s of positive) {
-    cumMonths += s.months_to_complete
+  positive.forEach((s, i) => {
+    const startMonth = i === 0 ? 0 : prevStart + Math.max(minGapMonths, prevMonths)
+    const completionMonth = startMonth + s.months_to_complete
     cumValue += s.net_value
-    s.cumulative_months = Math.round(cumMonths * 10) / 10
+    s.cumulative_months = Math.round(completionMonth * 10) / 10
     s.cumulative_value = Math.round(cumValue)
-  }
+    prevStart = startMonth
+    prevMonths = s.months_to_complete
+  })
 
   return positive
 }

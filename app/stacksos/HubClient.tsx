@@ -7,7 +7,7 @@ import CheckpointNav from "../components/CheckpointNav"
 import WelcomeWizard from "../components/WelcomeWizard"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
 import { runSavingsSequencer } from "../../lib/savingsSequencer"
-import { sequenceCards } from "../../lib/ccSequencer"
+import { sequenceCards, DEFAULT_MAX_CARDS_PER_YEAR } from "../../lib/ccSequencer"
 import { creditCardBonuses } from "../../lib/data/creditCardBonuses"
 import { bonuses } from "../../lib/data/bonuses"
 import type { UserProfile, IncomeSource } from "../../lib/profileTypes"
@@ -119,7 +119,15 @@ export default function HubClient({
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
     if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number }[] }
-    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null)
+    // Read the user's chosen application pace from localStorage so the
+    // dashboard's spending projection matches what they see on the
+    // Spending tab. Falls back to the sequencer default (4/yr).
+    let pace = DEFAULT_MAX_CARDS_PER_YEAR
+    if (typeof window !== "undefined") {
+      const v = Number(localStorage.getItem("stacks_cc_pace") ?? "")
+      if (Number.isFinite(v) && v > 0) pace = v
+    }
+    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace)
     const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
     const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
     const items = [...year1List]
