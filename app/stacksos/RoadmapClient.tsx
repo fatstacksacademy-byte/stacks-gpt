@@ -2505,6 +2505,14 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                           Bonus based on average daily balance (not total deposits) — ${b.requirements.min_balance.toLocaleString()} required
                         </div>
                       )}
+                      {/* Top-level notes — usually a user-flagged caveat
+                          (e.g. CIBC's in-branch-only application). Same amber
+                          treatment so it's impossible to miss. */}
+                      {(b as { notes?: string }).notes && (
+                        <div style={{ marginTop: 6, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px", lineHeight: 1.5 }}>
+                          {(b as { notes?: string }).notes}
+                        </div>
+                      )}
                       {isExpanded && (
                         <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }} onClick={e => e.stopPropagation()}>
                           <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6, marginBottom: 10 }}>
