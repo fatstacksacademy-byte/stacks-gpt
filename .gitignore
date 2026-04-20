@@ -45,3 +45,6 @@ verification-output/
 review-queue/
 logs/
 lib/data/*.draft.ts
+
+# claude code internal
+.claude/scheduled_tasks.lock
