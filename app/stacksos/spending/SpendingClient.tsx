@@ -8,6 +8,8 @@ import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
+import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
+import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
@@ -33,6 +35,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
   const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
   const [recSearch, setRecSearch] = useState("")
+  const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -506,7 +509,15 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
+              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
             </div>
           </div>
         )}
@@ -516,7 +527,15 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
+              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
             </div>
           </div>
         )}
@@ -532,7 +551,15 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Completed ({completedCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {completedCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
+              {completedCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
             </div>
           </details>
         )}
@@ -542,7 +569,15 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           <details style={{ marginBottom: 24 }}>
             <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Canceled ({canceledCards.length})</summary>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {canceledCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }} />)}
+              {canceledCards.map(c => <CardRow key={c.id} card={c} userId={userId} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
             </div>
           </details>
         )}
@@ -648,16 +683,20 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   )
 }
 
-function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange }: {
+function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange, isMatching, onMatchToggle, onMatchSelect }: {
   card: OwnedCard
   spendCheck?: { canHit: boolean; monthsNeeded: number }
   userId: string
   onEdit: () => void
   onDelete: () => void
   onStatusChange: (s: OwnedCard["status"]) => void
+  isMatching: boolean
+  onMatchToggle: () => void
+  onMatchSelect: (catalogCardName: string) => Promise<void>
 }) {
   const netValue = c.expected_value ?? ((c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0))
   const statusColors: Record<string, string> = { planned: "#7c3aed", active: "#2563eb", completed: "#0d7c5f", canceled: "#999" }
+  const catalogExact = creditCardBonuses.find(cc => cc.card_name.toLowerCase() === c.card_name.toLowerCase())
 
   return (
     <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
@@ -670,8 +709,7 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
               {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
             </span>
             {(() => {
-              const catalog = creditCardBonuses.find(cc => cc.card_name.toLowerCase() === c.card_name.toLowerCase())
-              const post = catalog ? getPostByBonusId(catalog.id) : null
+              const post = catalogExact ? getPostByBonusId(catalogExact.id) : null
               if (!post) return null
               return (
                 <a href={`/blog/${post.slug}`} style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
@@ -679,6 +717,15 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
                 </a>
               )
             })()}
+            {!catalogExact && (
+              <button
+                onClick={onMatchToggle}
+                title="Link this card to its official catalog entry to unlock rewards, apply link, and review"
+                style={{ fontSize: 10, padding: "2px 8px", border: "1px solid #a7f3d0", color: "#0d7c5f", background: "#f0faf5", borderRadius: 99, cursor: "pointer", fontWeight: 700 }}
+              >
+                {isMatching ? "Cancel" : "Match catalog"}
+              </button>
+            )}
           </div>
           <div style={{ fontSize: 12, color: "#555", marginTop: 4, display: "flex", gap: 16, flexWrap: "wrap" }}>
             {c.signup_bonus_value != null && <span>Bonus: <strong>${c.signup_bonus_value.toLocaleString()}</strong></span>}
@@ -737,6 +784,18 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
           Remove
         </button>
       </div>
+      {isMatching && (
+        <CatalogMatchPicker
+          sourceName={c.card_name}
+          topCandidates={matchOwnedCardCandidates(c.card_name)}
+          allCandidates={creditCardBonuses.filter(cc => !cc.expired).map(cc => ({ id: cc.id, name: cc.card_name }))}
+          onMatch={async (_id, name) => {
+            await onMatchSelect(name)
+          }}
+          onCancel={onMatchToggle}
+          actionLabel="Match card"
+        />
+      )}
     </div>
   )
 }

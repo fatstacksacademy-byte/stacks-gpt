@@ -20,6 +20,10 @@ import { createClient } from "../../lib/supabase/client"
 import CheckpointNav from "../components/CheckpointNav"
 import BonusCommitCard from "../components/BonusCommitCard"
 import { getLinkedBonuses, getComboFor } from "../../lib/linkedBonuses"
+import { matchCustomBonusCandidates } from "../../lib/catalogMatching"
+import { migrateCustomToCompleted } from "../../lib/completedBonuses"
+import CatalogMatchPicker from "../components/CatalogMatchPicker"
+import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -248,6 +252,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   // apply CTA to the combo-specific URL instead of the standalone offer.
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [bonusSearch, setBonusSearch] = useState("")
+  const [matchingCustomId, setMatchingCustomId] = useState<string | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -2290,6 +2295,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   {customBonuses.filter(c => !c.closed_date).map(c => {
                     const statusLabel = c.current_step === "pending" ? "In queue" : c.current_step === "skipped" ? "Skipped" : c.current_step === "kept_open" ? "Account open" : "In progress"
                     const statusColor = c.current_step === "pending" ? "#999" : c.current_step === "skipped" ? "#bbb" : "#7c3aed"
+                    const isMatching = matchingCustomId === c.id
                     return (
                       <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2301,12 +2307,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             <div style={{ fontSize: 11, marginTop: 2, color: statusColor }}>{statusLabel} · {money(c.bonus_amount)}</div>
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <button onClick={() => setMatchingCustomId(isMatching ? null : c.id)}
+                              title="Promote this custom bonus to a catalog-tracked bonus"
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #a7f3d0", color: "#0d7c5f", background: "#f0faf5", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
+                              {isMatching ? "Cancel match" : "Match to catalog"}
+                            </button>
                             <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : "") }}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
                             <button onClick={() => handleDeleteCustom(c.id)}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
                           </div>
                         </div>
+                        {isMatching && (
+                          <CatalogMatchPicker
+                            sourceName={c.bank_name}
+                            topCandidates={matchCustomBonusCandidates(c.bank_name)}
+                            allCandidates={(bonusesCatalog as { id: string; bank_name: string; expired?: boolean }[])
+                              .filter(b => !b.expired)
+                              .map(b => ({ id: b.id, name: b.bank_name }))}
+                            onMatch={async (id) => {
+                              const ok = await migrateCustomToCompleted(userId, c, id)
+                              if (ok) {
+                                setMatchingCustomId(null)
+                                // Refresh both lists so the row moves to the catalog-tracked view.
+                                const [newCompleted, newCustom] = await Promise.all([
+                                  getCompletedBonuses(userId),
+                                  getCustomBonuses(userId),
+                                ])
+                                setCompletedRecords(newCompleted)
+                                setCustomBonuses(newCustom)
+                              }
+                            }}
+                            onCancel={() => setMatchingCustomId(null)}
+                          />
+                        )}
                       </div>
                     )
                   })}
