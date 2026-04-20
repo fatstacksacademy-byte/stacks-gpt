@@ -22,7 +22,11 @@ export function sequenceCards(
   cards: CreditCardBonus[],
   monthlyBudget: number,
 ): SequencedCard[] {
-  const available = cards.filter(c => !c.expired)
+  // Exclude cards with no actionable apply link — recommending them would
+  // be misleading (the user has nowhere to click). The RWP-imported batch
+  // ships with offer_link === "" until issuer URLs are filled in via
+  // follow-up; the verify:cards admin queue will surface them.
+  const available = cards.filter(c => !c.expired && c.offer_link && c.offer_link.length > 0)
 
   const scored = available.map(card => {
     const bonus_value = card.cpp_value >= 1
