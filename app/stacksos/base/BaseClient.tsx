@@ -528,7 +528,10 @@ function BaseOptimizerPanel({ opps }: { opps: BaseOpportunity[] }) {
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Potential gain</div>
             <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>
-              ${totalImpact.toLocaleString()}/yr
+              ${totalImpact.toLocaleString()}
+            </div>
+            <div style={{ fontSize: 9, color: "#bbb", marginTop: 1 }}>
+              mixed: savings is one-time, fees + cards are annual
             </div>
           </div>
         )}

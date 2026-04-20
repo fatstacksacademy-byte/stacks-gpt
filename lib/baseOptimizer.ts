@@ -48,49 +48,75 @@ const MIN_CATEGORY_SPEND = 50
  * bonuses by effective APY. Flag any bonus whose effective APY beats the
  * user's current by more than 0.5%.
  *
- * Effective APY is computed the same way the savings sequencer does:
- *   effectiveApy = (bonus + interest) / deposit × (365 / hold_days)
+ * Earnings model is one-time, NOT annualized — the elevated APY only
+ * applies during the hold period:
+ *   interest_during_hold = current_balance × bonus.base_apy × (hold_days / 365)
+ *   total_earnings       = bonus_amount + interest_during_hold
  *
- * Annual impact estimate: (effective_apy − current_apy) × balance,
- * assuming the user moves their whole balance into the offer.
+ * total_earnings flows through the BaseOpportunity.dollarImpact field;
+ * fee + card opportunities continue to populate it with annualized
+ * values. The Base UI sums the field as a rough "potential gain"
+ * summary and per-line copy makes the time period explicit.
+ *
+ * Skip rules:
+ *   - current_balance null/0 → return [] (no money to deposit)
+ *   - current_apy null       → treated as 0% (still surface opportunities)
  */
 export function recommendSavingsRateGaps(
   savingsProfile: SavingsProfile | null,
 ): BaseOpportunity[] {
   if (!savingsProfile) return []
-  const currentApy = savingsProfile.current_apy ?? 0
-  const balance = savingsProfile.current_balance ?? 0
-  if (balance <= 0) return []
+  const balance = savingsProfile.current_balance
+  if (balance == null || balance <= 0) return []
+  const currentApy = savingsProfile.current_apy ?? 0  // null → 0% (don't skip)
 
   // Compute effective APY for every non-expired savings bonus, using the
   // top tier (biggest bonus) whose min_deposit the user can afford.
-  type Candidate = { bonus: typeof savingsBonuses[number]; effectiveApy: number; bonusAmount: number; deposit: number }
+  // Effective APY is just the comparator for ranking + threshold gate;
+  // the dollar value the user sees is one-time total earnings.
+  type Candidate = {
+    bonus: typeof savingsBonuses[number]
+    effectiveApy: number
+    bonusAmount: number
+    deposit: number
+    interestDuringHold: number
+    totalEarnings: number
+  }
   const candidates: Candidate[] = []
   for (const b of savingsBonuses) {
     if ((b as { expired?: boolean }).expired) continue
-    // Pick the highest tier the user's balance can cover.
     const affordable = b.tiers.filter(t => t.min_deposit <= balance)
     if (affordable.length === 0) continue
     const tier = affordable.reduce((best, t) => t.bonus_amount > best.bonus_amount ? t : best)
-    const interest = tier.min_deposit * b.base_apy * (b.total_hold_days / 365)
-    const totalEarnings = tier.bonus_amount + interest
-    const effectiveApy = (totalEarnings / tier.min_deposit) * (365 / b.total_hold_days)
-    candidates.push({ bonus: b, effectiveApy, bonusAmount: tier.bonus_amount, deposit: tier.min_deposit })
+    const interestForRanking = tier.min_deposit * b.base_apy * (b.total_hold_days / 365)
+    const effectiveApy = (tier.bonus_amount + interestForRanking) / tier.min_deposit * (365 / b.total_hold_days)
+    // The user-facing dollar figure assumes their whole balance flows
+    // into the bonus account (capped by tier.min_deposit only when the
+    // tier itself caps deposits — most bonuses don't, so use balance).
+    const interestDuringHold = balance * b.base_apy * (b.total_hold_days / 365)
+    const totalEarnings = tier.bonus_amount + interestDuringHold
+    candidates.push({
+      bonus: b,
+      effectiveApy,
+      bonusAmount: tier.bonus_amount,
+      deposit: tier.min_deposit,
+      interestDuringHold: Math.round(interestDuringHold),
+      totalEarnings: Math.round(totalEarnings),
+    })
   }
 
-  // Top 3 by effective APY.
   const top3 = candidates.sort((a, b) => b.effectiveApy - a.effectiveApy).slice(0, 3)
   const out: BaseOpportunity[] = []
   for (const c of top3) {
     const gap = c.effectiveApy - currentApy
     if (gap < SAVINGS_APY_GAP) continue
-    const annualImpact = Math.round(balance * gap)
+    const days = c.bonus.total_hold_days
     out.push({
       id: `savings-rate:${c.bonus.id}`,
       kind: "savings-rate",
-      title: `You could earn $${annualImpact.toLocaleString()}/yr more in savings`,
-      detail: `${c.bonus.bank_name} — ${(c.effectiveApy * 100).toFixed(2)}% effective APY (vs. your ${(currentApy * 100).toFixed(2)}%). Includes a $${c.bonusAmount.toLocaleString()} bonus on $${c.deposit.toLocaleString()} over ${c.bonus.total_hold_days} days.`,
-      annualImpact,
+      title: `You could earn $${c.totalEarnings.toLocaleString()} in ${days} days`,
+      detail: `${c.bonus.bank_name} — $${c.bonusAmount.toLocaleString()} bonus on a $${c.deposit.toLocaleString()} minimum deposit, plus ~$${c.interestDuringHold.toLocaleString()} interest at ${(c.bonus.base_apy * 100).toFixed(2)}% APY over the hold. Effective APY ${(c.effectiveApy * 100).toFixed(2)}% vs. your ${(currentApy * 100).toFixed(2)}%.`,
+      annualImpact: c.totalEarnings,  // one-time, not annualized — see file header
       cta: { label: "Open in Savings", href: "/stacksos/savings" },
     })
   }
