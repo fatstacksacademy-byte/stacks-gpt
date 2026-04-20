@@ -20,8 +20,10 @@ import {
   ACCOUNT_TYPE_LABELS,
 } from "../../../lib/ownedAccounts"
 import { getSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
+import { getSavingsProfile, type SavingsProfile } from "../../../lib/savingsProfile"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 import { recommendApyMoves, recommendCards, Recommendation } from "../../../lib/baseRecommendations"
+import { runBaseOptimizer, type BaseOpportunity } from "../../../lib/baseOptimizer"
 
 type RoleOrUnassigned = OwnedCardRole | "unassigned"
 
@@ -81,18 +83,21 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
   const [cards, setCards] = useState<OwnedCard[]>([])
   const [accounts, setAccounts] = useState<OwnedAccount[]>([])
   const [spendProfile, setSpendProfile] = useState<SpendingProfile | null>(null)
+  const [savingsProfile, setSavingsProfile] = useState<SavingsProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    const [cardRows, acctRows, profile] = await Promise.all([
+    const [cardRows, acctRows, profile, savings] = await Promise.all([
       getOwnedCards(userId),
       getOwnedAccounts(userId),
       getSpendingProfile(userId),
+      getSavingsProfile(userId),
     ])
     setCards(cardRows.filter(c => c.status !== "canceled"))
     setAccounts(acctRows)
     setSpendProfile(profile ?? { user_id: userId, ...DEFAULT_SPENDING_PROFILE, updated_at: "" })
+    setSavingsProfile(savings)
     setLoading(false)
   }, [userId])
 
@@ -133,6 +138,14 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
     return [...apy, ...card]
   }, [accounts, cards, spendProfile])
 
+  const optimizerOpportunities = useMemo<BaseOpportunity[]>(() => {
+    return runBaseOptimizer({
+      accounts,
+      savingsProfile,
+      spendingProfile: spendProfile,
+    })
+  }, [accounts, savingsProfile, spendProfile])
+
   return (
     <div style={{ minHeight: "100vh", background: "#fafafa" }}>
       <CheckpointNav />
@@ -153,6 +166,7 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
           <>
             <SnapshotPanel accounts={accounts} cards={cards} />
             <StandingPanel count524={chase524} />
+            <BaseOptimizerPanel opps={optimizerOpportunities} />
             <RecommendationsPanel recs={recommendations} />
             <AccountsPanel accounts={accounts} userId={userId} onChange={loadData} />
 
@@ -483,6 +497,62 @@ function InventoryCardRow({ card, onRoleChange }: {
           <option key={r} value={r}>{ROLE_LABELS[r]}</option>
         ))}
       </select>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Base Optimizer — static "you could earn $X more" list
+// ─────────────────────────────────────────────────────────────────────────
+function BaseOptimizerPanel({ opps }: { opps: BaseOpportunity[] }) {
+  if (opps.length === 0) return null
+  const kindColor: Record<BaseOpportunity["kind"], { fg: string; bg: string; label: string }> = {
+    "savings-rate":  { fg: "#0d7c5f", bg: "#e6f5f0", label: "SAVINGS" },
+    "checking-fee":  { fg: "#d97706", bg: "#fef3c7", label: "FEE" },
+    "card-category": { fg: "#2563eb", bg: "#eff6ff", label: "CARD" },
+  }
+  const totalImpact = opps.reduce((s, o) => s + o.annualImpact, 0)
+
+  return (
+    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+            Base Optimizer
+          </div>
+          <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>
+            Static "set and forget" opportunities based on what you already have.
+          </div>
+        </div>
+        {totalImpact > 0 && (
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Potential gain</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>
+              ${totalImpact.toLocaleString()}/yr
+            </div>
+          </div>
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {opps.map(o => {
+          const c = kindColor[o.kind]
+          return (
+            <div key={o.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 12px", background: "#fafafa", borderRadius: 10 }}>
+              <span style={{ fontSize: 9, fontWeight: 700, color: c.fg, background: c.bg, padding: "3px 8px", borderRadius: 99, letterSpacing: "0.05em", flexShrink: 0, marginTop: 2 }}>
+                {c.label}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{o.title}</div>
+                <div style={{ fontSize: 12, color: "#666", marginTop: 3, lineHeight: 1.5 }}>{o.detail}</div>
+              </div>
+              <a href={o.cta.href}
+                style={{ fontSize: 11, color: c.fg, fontWeight: 700, textDecoration: "none", flexShrink: 0, alignSelf: "center" }}>
+                {o.cta.label} →
+              </a>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
