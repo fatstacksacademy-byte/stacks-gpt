@@ -186,30 +186,45 @@ export default function HubClient({
   }, [completedRecords, customBonuses, ownedCards, savingsEntries])
 
   // ─── Lifetime earned (completed across all modules) ───────────────
+  // Mirror the per-module logic so the dashboard number matches what each
+  // tab shows. Key subtlety: a bonus counts as "earned" the moment it
+  // posts (bonus_received = true) — the account may still be open. Also
+  // custom bonuses in "kept_open" / "bonus_posted" steps count even
+  // without a closed_date.
   const lifetimeEarned = useMemo(() => {
     let sum = 0
+
+    // Checking bonuses: r.bonus_received === true (closed_date not required)
     for (const r of completedRecords) {
-      if (r.closed_date && r.bonus_received) {
-        const b = bonuses.find((x) => (x as { id?: string }).id === r.bonus_id)
-        const fallback = b ? ((b as { bonus_amount?: number }).bonus_amount ?? 0) : 0
-        sum += r.actual_amount ?? fallback
-      }
+      if (!r.bonus_received) continue
+      const b = bonuses.find((x) => (x as { id?: string }).id === r.bonus_id)
+      const fallback = b ? ((b as { bonus_amount?: number }).bonus_amount ?? 0) : 0
+      sum += r.actual_amount ?? fallback
     }
+
+    // Custom bonuses: closed+received OR still-open with a "posted" step
     for (const c of customBonuses) {
-      if (c.closed_date && c.bonus_received) {
+      const closedAndReceived = c.closed_date && c.bonus_received
+      const keptOpenPosted = !c.closed_date && (c.current_step === "kept_open" || c.current_step === "bonus_posted")
+      if (closedAndReceived || keptOpenPosted) {
         sum += c.actual_amount ?? c.bonus_amount
       }
     }
+
+    // Spending cards: status === "completed"
     for (const c of ownedCards) {
       if (c.status === "completed") {
         sum += c.actual_value ?? c.expected_value ?? 0
       }
     }
+
+    // Savings entries: status === "completed"
     for (const e of savingsEntries) {
       if (e.status === "completed") {
         sum += e.actual_value ?? e.expected_total_value ?? 0
       }
     }
+
     return Math.round(sum)
   }, [completedRecords, customBonuses, ownedCards, savingsEntries])
 
