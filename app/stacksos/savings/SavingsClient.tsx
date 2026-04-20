@@ -43,6 +43,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   // Per-bonus "open as combo" toggle. Only shown on recommended cards whose
   // savings bonus is paired with a checking bonus in the curated combo list.
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
+  const [recSearch, setRecSearch] = useState("")
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
   // Manual milestone state for savings entries, persisted to localStorage so
@@ -211,9 +212,10 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   // Sequencer now handles business/brokerage filtering.
   // Also hide anything the user *just* clicked start on — the DB write is
   // still in-flight, and we don't want the card to sit there looking unresponsive.
-  const filteredEntries = sequencerResult.entries.filter(
-    (e) => !justStartedIds.has(e.id),
-  )
+  const recSearchQ = recSearch.trim().toLowerCase()
+  const filteredEntries = sequencerResult.entries
+    .filter((e) => !justStartedIds.has(e.id))
+    .filter((e) => !recSearchQ || e.bank_name.toLowerCase().includes(recSearchQ))
 
   // Start a recommended bonus — add it as a savings entry
   async function handleStartRecommended(rec: SavingsSequencedEntry) {
@@ -681,12 +683,31 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         )}
 
         {/* ── Recommended Savings Bonuses ── */}
-        {filteredEntries.length > 0 && (
+        {(sequencerResult.entries.length > 0 || recSearchQ) && (
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 Recommended — Ranked by Effective APY
               </div>
+            </div>
+            <div style={{ marginBottom: 10, position: "relative" }}>
+              <input
+                type="search"
+                value={recSearch}
+                onChange={e => setRecSearch(e.target.value)}
+                placeholder="Search banks…"
+                style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+              />
+              {recSearch && (
+                <button onClick={() => setRecSearch("")}
+                  style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                  aria-label="Clear search">✕</button>
+              )}
+              {recSearchQ && (
+                <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>
+                  {filteredEntries.length} match{filteredEntries.length !== 1 ? "es" : ""} for &ldquo;{recSearch}&rdquo;
+                </div>
+              )}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {filteredEntries.map((rec, idx) => {

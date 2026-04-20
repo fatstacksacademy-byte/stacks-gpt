@@ -247,6 +247,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   // Wells Fargo). When on, the hero shows the combo total + routes the
   // apply CTA to the combo-specific URL instead of the standalone offer.
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
+  const [bonusSearch, setBonusSearch] = useState("")
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -2354,8 +2355,26 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             </div>
 
             {showAdvanced && (
+              <>
+              <div style={{ marginBottom: 12, position: "relative" }}>
+                <input
+                  type="search"
+                  value={bonusSearch}
+                  onChange={e => setBonusSearch(e.target.value)}
+                  placeholder="Search banks…"
+                  style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+                />
+                {bonusSearch && (
+                  <button onClick={() => setBonusSearch("")}
+                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                    aria-label="Clear search">✕</button>
+                )}
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
-                {[...inProgress, ...available].map(({ bonus: b, velocity, weeksToComplete, feasible, churnStatus }) => {
+                {[...inProgress, ...available].filter(({ bonus: b }) => {
+                  const q = bonusSearch.trim().toLowerCase()
+                  return !q || ((b as { bank_name?: string }).bank_name ?? "").toLowerCase().includes(q)
+                }).map(({ bonus: b, velocity, weeksToComplete, feasible, churnStatus }) => {
                   const isActive = churnStatus.status === "in_progress"
                   const link = bestLink(b.source_links)
                   const isExpanded = expandedCard === b.id
@@ -2474,6 +2493,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   )
                 })}
               </div>
+              </>
             )}
 
         {/* ── Page disclaimer ── */}

@@ -32,6 +32,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [showRecommendations, setShowRecommendations] = useState(true)
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
   const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
+  const [recSearch, setRecSearch] = useState("")
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -143,9 +144,11 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   // straightforwardly redeemable for cash. Detection lives in lib/cardCategorization
   // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
+  const recSearchQ = recSearch.trim().toLowerCase()
   const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => includeHotelAirline || !isAirlineOrHotelCard(sc.card))
+    .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
 
   function addFromRecommendation(sc: (typeof ccSequence)[0]) {
     const c = sc.card
@@ -333,9 +336,41 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
 
           {showRecommendations && (
             <>
+              <div style={{ marginBottom: 10, position: "relative" }}>
+                <input
+                  type="search"
+                  value={recSearch}
+                  onChange={e => setRecSearch(e.target.value)}
+                  placeholder="Search cards by name or issuer…"
+                  style={{
+                    width: "100%",
+                    padding: "9px 34px 9px 12px",
+                    fontSize: 13,
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 8,
+                    background: "#fff",
+                    color: "#111",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {recSearch && (
+                  <button
+                    onClick={() => setRecSearch("")}
+                    style={{
+                      position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                      fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px",
+                    }}
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
                 <div style={{ fontSize: 12, color: "#999" }}>
                   Ranked by return per month at {money(monthlySpend || 2000)}/mo spend. Points at 1&cent; (0.5&cent; hotel). Net = bonus - fee + year-1 credits.
+                  {recSearchQ && <> · <strong>{ccSequence.length}</strong> match{ccSequence.length !== 1 ? "es" : ""} for &ldquo;{recSearch}&rdquo;</>}
                 </div>
                 <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
                   <div onClick={() => setIncludeHotelAirline(!includeHotelAirline)}
