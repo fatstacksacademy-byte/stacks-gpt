@@ -125,3 +125,40 @@ export function getActiveCombos(): {
 export function getComboTotal(members: LinkedBonus[]): number {
   return members.reduce((sum, m) => sum + m.effective_bonus_amount, 0)
 }
+
+/**
+ * Get full combo context for a single bonus id — useful for the combo
+ * toggle on paycheck + savings hero cards. Returns null when the bonus
+ * isn't part of any combo (or when its partners are expired).
+ */
+export function getComboFor(id: string): {
+  combo_url?: string
+  partners: LinkedBonus[]           // the OTHER members, not including `id`
+  selfOverride?: { bonus_amount?: number; note?: string }
+  selfEffectiveAmount: number       // what the `id` member is worth in combo pricing
+  comboTotal: number                // sum across all members (incl. self)
+} | null {
+  const group = LINKED_BONUS_GROUPS.find((g) => g.ids.includes(id))
+  if (!group) return null
+  const allMembers = group.ids
+    .map((lid) => materialize(lid, group))
+    .filter((x): x is LinkedBonus => x !== null)
+    .filter((lb) => !(lb.entry as { expired?: boolean }).expired)
+  if (allMembers.length < 2) return null
+  const self = allMembers.find((m) => {
+    const entryId = (m.entry as { id?: string }).id
+    return entryId === id
+  })
+  if (!self) return null
+  const partners = allMembers.filter((m) => {
+    const entryId = (m.entry as { id?: string }).id
+    return entryId !== id
+  })
+  return {
+    combo_url: group.combo_url,
+    partners,
+    selfOverride: group.overrides?.[id],
+    selfEffectiveAmount: self.effective_bonus_amount,
+    comboTotal: getComboTotal(allMembers),
+  }
+}

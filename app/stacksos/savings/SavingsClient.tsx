@@ -7,6 +7,7 @@ import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVING
 import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
 import { savingsBonuses as savingsBonusesCatalog } from "../../../lib/data/savingsBonuses"
+import { getComboFor } from "../../../lib/linkedBonuses"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -39,6 +40,9 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [expandedRec, setExpandedRec] = useState<string | null>(null)
   const [skippedSavingsIds, setSkippedSavingsIds] = useState<string[]>([])
   const [startingId, setStartingId] = useState<string | null>(null)
+  // Per-bonus "open as combo" toggle. Only shown on recommended cards whose
+  // savings bonus is paired with a checking bonus in the curated combo list.
+  const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
   // Manual milestone state for savings entries, persisted to localStorage so
@@ -696,21 +700,63 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                     boxShadow: idx === 0 ? "0 2px 12px rgba(37,99,235,0.05)" : "none",
                   }}>
                     {/* Header */}
-                    <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{rec.bank_name}</div>
-                        {rec.bonus.source_links?.[0] && (
-                          <a href={rec.bonus.source_links[0]} target="_blank" rel="noreferrer"
-                            style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
-                            View offer
-                          </a>
-                        )}
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>+{money(rec.total_earnings)}</div>
-                        <div style={{ fontSize: 11, color: "#999" }}>bonus + yield</div>
-                      </div>
-                    </div>
+                    {(() => {
+                      const combo = getComboFor(rec.bonus.id)
+                      const isCombo = !!combo && !!comboMode[rec.id]
+                      const offerUrl = isCombo && combo?.combo_url ? combo.combo_url : rec.bonus.source_links?.[0]
+                      const headlineTotal = isCombo ? rec.total_earnings + (combo!.comboTotal - combo!.selfEffectiveAmount) : rec.total_earnings
+                      return (
+                        <>
+                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{rec.bank_name}</div>
+                              {offerUrl && (
+                                <a href={offerUrl} target="_blank" rel="noreferrer"
+                                  style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                                  {isCombo ? "View combo offer" : "View offer"}
+                                </a>
+                              )}
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>+{money(headlineTotal)}</div>
+                              <div style={{ fontSize: 11, color: "#999" }}>{isCombo ? "combo total" : "bonus + yield"}</div>
+                            </div>
+                          </div>
+                          {combo && (
+                            <div style={{ padding: "10px 24px 0" }}>
+                              <label
+                                onClick={() => setComboMode(prev => ({ ...prev, [rec.id]: !prev[rec.id] }))}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  padding: "6px 10px",
+                                  background: isCombo ? "#e6f5f0" : "#f8f8f8",
+                                  border: `1px solid ${isCombo ? "#a7f3d0" : "#e8e8e8"}`,
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                  fontSize: 11,
+                                  color: isCombo ? "#0d7c5f" : "#555",
+                                  fontWeight: isCombo ? 600 : 500,
+                                }}
+                              >
+                                <input type="checkbox" checked={isCombo} onChange={() => {}} style={{ accentColor: "#0d7c5f", cursor: "pointer" }} />
+                                <span>
+                                  Open as combo with{" "}
+                                  {combo.partners.map((p, i) => (
+                                    <span key={i}>
+                                      <strong>{(p.entry as { bank_name?: string }).bank_name ?? "partner"}</strong>
+                                      {i < combo.partners.length - 1 && " + "}
+                                    </span>
+                                  ))}
+                                  {" "}(+${(combo.comboTotal - combo.selfEffectiveAmount).toLocaleString()} extra)
+                                </span>
+                              </label>
+                            </div>
+                          )}
+                        </>
+                      )
+                    })()}
 
                     {/* Key metrics */}
                     <div style={{ padding: "12px 24px 0", display: "flex", gap: 20, flexWrap: "wrap" }}>

@@ -19,7 +19,7 @@ import { markKeptOpen } from "../../lib/keptOpen"
 import { createClient } from "../../lib/supabase/client"
 import CheckpointNav from "../components/CheckpointNav"
 import BonusCommitCard from "../components/BonusCommitCard"
-import { getLinkedBonuses } from "../../lib/linkedBonuses"
+import { getLinkedBonuses, getComboFor } from "../../lib/linkedBonuses"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -241,6 +241,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   // (user-side checklist, not worth a DB roundtrip). Only surfaced for
   // bonuses whose requirements include debit_transactions_required > 0.
   const [transactionsMet, setTransactionsMet] = useState<Record<string, boolean>>({})
+
+  // Per-bonus "open as combo" toggle. Only surfaced on hero cards whose
+  // bonus is part of a curated combo group (Chase, Capital One, HSBC,
+  // Wells Fargo). When on, the hero shows the combo total + routes the
+  // apply CTA to the combo-specific URL instead of the standalone offer.
+  const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -1240,22 +1246,77 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                       </div>
                     )
                   })()}
-                  <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
-                    {bestLink(hb.bonus.source_links) && (
-                      <a href={bestLink(hb.bonus.source_links)!} target="_blank" rel="noreferrer"
-                        style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
-                        Open your account
-                      </a>
-                    )}
-                    <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
-                      style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
-                      I already opened it
-                    </button>
-                    <button onClick={() => handleSkip(hb.bonus.id)}
-                      style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
-                      Not now
-                    </button>
-                  </div>
+                  {(() => {
+                    // Combo toggle — only shown when this bonus is part of a
+                    // curated combo group. Flipping it routes the CTA to the
+                    // combo URL and annotates the headline with the combo total.
+                    const combo = getComboFor(hb.bonus.id)
+                    const isCombo = !!combo && !!comboMode[hb.bonus.id]
+                    const standaloneLink = bestLink(hb.bonus.source_links)
+                    const ctaLink = isCombo && combo?.combo_url ? combo.combo_url : standaloneLink
+                    const ctaLabel = isCombo ? `Open combo ($${combo!.comboTotal.toLocaleString()} total)` : "Open your account"
+                    return (
+                      <>
+                        {combo && (
+                          <label
+                            onClick={() => setComboMode(prev => ({ ...prev, [hb.bonus.id]: !prev[hb.bonus.id] }))}
+                            style={{
+                              marginTop: 14,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 10,
+                              padding: "8px 12px",
+                              background: isCombo ? "#e6f5f0" : "#f8f8f8",
+                              border: `1px solid ${isCombo ? "#a7f3d0" : "#e8e8e8"}`,
+                              borderRadius: 10,
+                              cursor: "pointer",
+                              fontSize: 12,
+                              color: isCombo ? "#0d7c5f" : "#555",
+                              fontWeight: isCombo ? 600 : 500,
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isCombo}
+                              onChange={() => {}}
+                              style={{ accentColor: "#0d7c5f", cursor: "pointer" }}
+                            />
+                            <span>
+                              Open as combo with{" "}
+                              {combo.partners.map((p, i) => (
+                                <span key={i}>
+                                  <strong>{(p.entry as { bank_name?: string; institution_name?: string }).bank_name ?? (p.entry as { institution_name?: string }).institution_name ?? "partner"}</strong>
+                                  {i < combo.partners.length - 1 && " + "}
+                                </span>
+                              ))}
+                              {" "}(+${(combo.comboTotal - combo.selfEffectiveAmount).toLocaleString()} extra)
+                            </span>
+                          </label>
+                        )}
+                        {combo?.selfOverride?.note && isCombo && (
+                          <div style={{ marginTop: 8, fontSize: 11, color: "#d97706", lineHeight: 1.5 }}>
+                            {combo.selfOverride.note}
+                          </div>
+                        )}
+                        <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                          {ctaLink && (
+                            <a href={ctaLink} target="_blank" rel="noreferrer"
+                              style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                              {ctaLabel}
+                            </a>
+                          )}
+                          <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                            style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                            I already opened it
+                          </button>
+                          <button onClick={() => handleSkip(hb.bonus.id)}
+                            style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                            Not now
+                          </button>
+                        </div>
+                      </>
+                    )
+                  })()}
                   {getPostByBonusId(hb.bonus.id) && (
                     <a href={`/blog/${getPostByBonusId(hb.bonus.id)!.slug}`}
                       style={{ display: "block", marginTop: 10, fontSize: 12, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
