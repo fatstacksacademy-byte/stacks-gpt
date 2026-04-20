@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById } from "../../../lib/data/blogPosts"
+import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById, getCardById } from "../../../lib/data/blogPosts"
 import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
+import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
 
@@ -17,29 +18,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPostBySlug(slug)
   if (!post) return { title: "Not Found" }
 
-  const content = blogContent[post.bonusId]
+  const cardContent = post.bonusType === "card" ? cardBlogContent[post.bonusId] : undefined
+  const content = post.bonusType !== "card" ? blogContent[post.bonusId] : undefined
   const title = post.title
-  const rawDesc = content?.summary || post.excerpt
+  const rawDesc = (cardContent?.summary || content?.summary || post.excerpt) ?? ""
   const description = rawDesc.length > 155 ? rawDesc.slice(0, 155) + "..." : rawDesc
   const url = `${BASE}/blog/${post.slug}`
 
-  // Dynamic social card: derive bank + amount + kind from the bonus record.
-  // The /api/og endpoint renders a 1200x630 branded PNG per request.
-  const bonus = post.bonusType === "checking"
-    ? getCheckingBonusById(post.bonusId)
-    : getSavingsBonusById(post.bonusId)
-  const bank = (bonus as { bank_name?: string } | undefined)?.bank_name
+  // Dynamic social card: derive bank + amount + kind from the bonus or card record.
+  let bank: string | undefined
   let amount: string | undefined
-  if (bonus && post.bonusType === "checking" && (bonus as { bonus_amount?: number }).bonus_amount) {
-    amount = `$${(bonus as { bonus_amount: number }).bonus_amount.toLocaleString()}`
-  } else if (bonus && post.bonusType === "savings") {
-    const tiers = (bonus as { tiers?: { bonus_amount: number }[] }).tiers
-    const top = tiers?.[tiers.length - 1]?.bonus_amount
+  if (post.bonusType === "checking") {
+    const b = getCheckingBonusById(post.bonusId) as { bank_name?: string; bonus_amount?: number } | undefined
+    bank = b?.bank_name
+    if (b?.bonus_amount) amount = `$${b.bonus_amount.toLocaleString()}`
+  } else if (post.bonusType === "savings") {
+    const b = getSavingsBonusById(post.bonusId) as { bank_name?: string; tiers?: { bonus_amount: number }[] } | undefined
+    bank = b?.bank_name
+    const top = b?.tiers?.[b.tiers.length - 1]?.bonus_amount
     if (top) amount = `$${top.toLocaleString()}`
+  } else if (post.bonusType === "card") {
+    const c = getCardById(post.bonusId)
+    bank = c?.card_name
+    if (c) amount = c.bonus_currency === "cash" ? `$${c.bonus_amount.toLocaleString()}` : `${c.bonus_amount.toLocaleString()} ${c.bonus_currency}`
   }
   const ogParams = new URLSearchParams({
     title: post.title.replace(/\s*\|.*$/, "").slice(0, 90),
-    kind: post.bonusType === "checking" ? "checking" : "savings",
+    kind: post.bonusType,
     ...(bank ? { bank } : {}),
     ...(amount ? { amount } : {}),
   })
@@ -73,7 +78,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 function buildJsonLd(post: NonNullable<ReturnType<typeof getPostBySlug>>) {
   const url = `${BASE}/blog/${post.slug}`
-  const content = blogContent[post.bonusId]
+  const content = post.bonusType === "card" ? cardBlogContent[post.bonusId] : blogContent[post.bonusId]
 
   const graph: any[] = [
     {
@@ -500,6 +505,160 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
   )
 }
 
+function CardArticle({ card, content }: { card: any; content?: CardBlogContent }) {
+  const bonusLabel = card.bonus_currency === "cash"
+    ? `$${card.bonus_amount.toLocaleString()}`
+    : `${card.bonus_amount.toLocaleString()} ${card.bonus_currency}`
+  const subValue = card.bonus_currency === "cash"
+    ? card.bonus_amount
+    : Math.round(card.bonus_amount * (card.cpp_value ?? 0.01))
+  const netYear1 = subValue + (card.statement_credits_year1 ?? 0) - (card.annual_fee ?? 0)
+
+  return (
+    <>
+      {/* Offer card */}
+      <div style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "24px", marginBottom: 32 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>The Offer</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", letterSpacing: "-0.02em", marginTop: 4 }}>{bonusLabel}</div>
+            <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>after ${card.min_spend.toLocaleString()} spend in {card.spend_months} months</div>
+          </div>
+          {card.offer_link && (
+            <a href={card.offer_link} target="_blank" rel="noopener noreferrer"
+              style={{ padding: "10px 20px", fontSize: 13, fontWeight: 700, background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none", flexShrink: 0 }}>
+              View official offer →
+            </a>
+          )}
+        </div>
+        <InfoRow label="Issuer" value={card.issuer.charAt(0).toUpperCase() + card.issuer.slice(1)} />
+        <InfoRow label="Card type" value={card.card_type === "business" ? "Business" : "Personal"} />
+        <InfoRow label="Annual fee" value={card.annual_fee === 0 ? "$0" : `$${card.annual_fee}${card.annual_fee_waived_first_year ? " (waived year 1)" : ""}`} />
+        {card.statement_credits_year1 > 0 && (
+          <InfoRow label="Year-1 statement credits" value={`$${card.statement_credits_year1.toLocaleString()}`} accent />
+        )}
+        <InfoRow label="Estimated SUB value" value={`$${subValue.toLocaleString()}`} accent />
+        <InfoRow label="Net year-1 value" value={`$${netYear1.toLocaleString()}`} accent />
+      </div>
+
+      {/* Rewards tiers */}
+      {card.rewards && card.rewards.length > 0 && (
+        <Section title="Rewards Earning">
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px" }}>
+            {card.rewards.map((r: any, i: number) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < card.rewards.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+                <span style={{ fontSize: 13, color: "#555" }}>
+                  {r.categories.join(", ")}
+                  {r.note && <span style={{ color: "#999", marginLeft: 6 }}>({r.note})</span>}
+                  {r.annual_cap && <span style={{ color: "#999", marginLeft: 6 }}>· cap ${r.annual_cap.toLocaleString()}/yr</span>}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>
+                  {r.unit === "%" ? `${r.multiplier}%` : `${r.multiplier}x`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Key benefits */}
+      {card.key_benefits && card.key_benefits.length > 0 && (
+        <Section title="Key Benefits">
+          <ul style={{ margin: 0, paddingLeft: 20, color: "#555", lineHeight: 1.8, fontSize: 14 }}>
+            {card.key_benefits.map((kb: string, i: number) => <li key={i}>{kb}</li>)}
+          </ul>
+        </Section>
+      )}
+
+      {/* Editorial — only if we have a CardBlogContent entry */}
+      {content && (
+        <>
+          <Section title="Overview">
+            <p style={{ fontSize: 15, color: "#555", lineHeight: 1.8, margin: 0 }}>{content.summary}</p>
+          </Section>
+
+          <Section title="Who This Card Is For">
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>{content.bestFor}</p>
+          </Section>
+
+          <Section title="How to Maximize the Sign-Up Bonus">
+            <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12, padding: "20px" }}>
+              <p style={{ fontSize: 14, color: "#555", lineHeight: 1.8, margin: 0 }}>{content.strategy}</p>
+            </div>
+          </Section>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 36 }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f", margin: "0 0 12px" }}>Pros</h2>
+              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px" }}>
+                {content.pros.map((p, i) => (
+                  <div key={i} style={{ display: "flex", gap: 10, marginBottom: i < content.pros.length - 1 ? 10 : 0 }}>
+                    <span style={{ color: "#0d7c5f", fontSize: 13, marginTop: 2 }}>+</span>
+                    <span style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>{p}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#ff6b6b", margin: "0 0 12px" }}>Cons</h2>
+              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px" }}>
+                {content.cons.map((c, i) => (
+                  <div key={i} style={{ display: "flex", gap: 10, marginBottom: i < content.cons.length - 1 ? 10 : 0 }}>
+                    <span style={{ color: "#ff6b6b", fontSize: 13, marginTop: 2 }}>-</span>
+                    <span style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>{c}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {content.comparison && (
+            <Section title="How This Compares">
+              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>{content.comparison}</p>
+            </Section>
+          )}
+
+          {content.faqs.length > 0 && (
+            <Section title="Frequently Asked Questions">
+              {content.faqs.map((faq, i) => (
+                <div key={i} style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: "0 0 8px" }}>{faq.q}</h3>
+                  <p style={{ fontSize: 14, color: "#999", lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {content.relatedSlugs.length > 0 && (
+            <Section title="Related Cards">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {content.relatedSlugs.map(slug => {
+                  const related = blogPosts.find(p => p.slug === slug)
+                  if (!related) return null
+                  return (
+                    <Link key={slug} href={`/blog/${slug}`} style={{
+                      display: "block", padding: "14px 16px", background: "#fff", border: "1px solid #e8e8e8",
+                      borderRadius: 8, textDecoration: "none", fontSize: 14, color: "#0d7c5f", fontWeight: 600,
+                    }}>
+                      {related.title} →
+                    </Link>
+                  )
+                })}
+              </div>
+            </Section>
+          )}
+
+          {content.verifiedAt && (
+            <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>
+              Offer terms verified {new Date(content.verifiedAt).toLocaleDateString()} via Playwright fetch of the issuer page.
+            </div>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
 export default async function BlogArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const post = getPostBySlug(slug)
@@ -507,9 +666,11 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
 
   const checkingBonus = post.bonusType === "checking" ? getCheckingBonusById(post.bonusId) : null
   const savingsBonus = post.bonusType === "savings" ? getSavingsBonusById(post.bonusId) : null
-  const content = blogContent[post.bonusId]
+  const card = post.bonusType === "card" ? getCardById(post.bonusId) : null
+  const content = post.bonusType !== "card" ? blogContent[post.bonusId] : undefined
+  const cardContent = post.bonusType === "card" ? cardBlogContent[post.bonusId] : undefined
 
-  if (!checkingBonus && !savingsBonus) notFound()
+  if (!checkingBonus && !savingsBonus && !card) notFound()
 
   const jsonLd = buildJsonLd(post)
 
@@ -538,8 +699,8 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         <div style={{ fontSize: 13, color: "#999", marginBottom: 24 }}>
           <Link href="/blog" style={{ color: "#0d7c5f", textDecoration: "none" }}>Blog</Link>
           <span style={{ margin: "0 8px" }}>/</span>
-          <Link href={post.bonusType === "checking" ? "/blog/best-checking-bonuses-2026" : "/blog/best-savings-bonuses-2026"} style={{ color: "#0d7c5f", textDecoration: "none" }}>
-            {post.bonusType === "checking" ? "Best Checking Bonuses" : "Best Savings Bonuses"}
+          <Link href={post.bonusType === "checking" ? "/blog/best-checking-bonuses-2026" : post.bonusType === "savings" ? "/blog/best-savings-bonuses-2026" : "/blog"} style={{ color: "#0d7c5f", textDecoration: "none" }}>
+            {post.bonusType === "checking" ? "Best Checking Bonuses" : post.bonusType === "savings" ? "Best Savings Bonuses" : "Credit Cards"}
           </Link>
           <span style={{ margin: "0 8px" }}>/</span>
           <span style={{ color: "#777" }}>{post.title}</span>
@@ -569,6 +730,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         {/* Content */}
         {checkingBonus && <CheckingArticle bonus={checkingBonus} content={content} />}
         {savingsBonus && <SavingsArticle bonus={savingsBonus} content={content} />}
+        {card && <CardArticle card={card} content={cardContent} />}
 
         {/* Stacks OS CTA */}
         <div style={{ marginTop: 48, padding: "28px", background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "1px solid #a7f3d0", borderRadius: 12, textAlign: "center" }}>

@@ -10,7 +10,8 @@
     "verify:bonuses": "tsx scripts/verify-bonuses/run.ts",
     "verify:cards": "tsx scripts/verify-cards/run.ts",
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts",
-    "discover:cards": "tsx scripts/discover-cards/run.ts"
+    "discover:cards": "tsx scripts/discover-cards/run.ts",
+    "generate:card-blog": "tsx scripts/generate-card-blog/run.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

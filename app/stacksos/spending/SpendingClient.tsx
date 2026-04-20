@@ -6,6 +6,7 @@ import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCar
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
+import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
@@ -359,12 +360,21 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
                         <div style={{ flex: 1, minWidth: 180 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2, flexWrap: "wrap" }}>
                             <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700 }}>#{idx + 1}</span>
                             <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{sc.card.card_name}</span>
                             {sc.card.card_type === "business" && (
                               <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
                             )}
+                            {(() => {
+                              const post = getPostByBonusId(sc.card.id)
+                              if (!post) return null
+                              return (
+                                <a href={`/blog/${post.slug}`} style={{ fontSize: 10, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                                  Read review ↗
+                                </a>
+                              )
+                            })()}
                           </div>
                           <div style={{ fontSize: 12, color: "#555" }}>
                             {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
@@ -622,6 +632,16 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
             <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: statusColors[c.status] ?? "#999", background: c.status === "active" ? "#eff6ff" : c.status === "completed" ? "#e6f5f0" : c.status === "planned" ? "#ede9fe" : "#f5f5f5" }}>
               {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
             </span>
+            {(() => {
+              const catalog = creditCardBonuses.find(cc => cc.card_name.toLowerCase() === c.card_name.toLowerCase())
+              const post = catalog ? getPostByBonusId(catalog.id) : null
+              if (!post) return null
+              return (
+                <a href={`/blog/${post.slug}`} style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
+                  Read review ↗
+                </a>
+              )
+            })()}
           </div>
           <div style={{ fontSize: 12, color: "#555", marginTop: 4, display: "flex", gap: 16, flexWrap: "wrap" }}>
             {c.signup_bonus_value != null && <span>Bonus: <strong>${c.signup_bonus_value.toLocaleString()}</strong></span>}

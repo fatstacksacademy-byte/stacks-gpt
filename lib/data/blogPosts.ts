@@ -1,5 +1,6 @@
 import { bonuses } from "./bonuses"
 import { savingsBonuses } from "./savingsBonuses"
+import { creditCardBonuses } from "./creditCardBonuses"
 
 export type BlogPost = {
   slug: string
@@ -8,8 +9,8 @@ export type BlogPost = {
   category: "Bank Bonuses" | "Savings Bonuses" | "Credit Cards" | "News"
   tags: string[]
   date: string // ISO date
-  bonusId: string // references either bonuses or savingsBonuses
-  bonusType: "checking" | "savings"
+  bonusId: string // references bonuses, savingsBonuses, or creditCardBonuses
+  bonusType: "checking" | "savings" | "card"
 }
 
 function slugify(s: string): string {
@@ -73,13 +74,38 @@ const savingsPosts: BlogPost[] = savingsBonuses
     }
   })
 
-export const blogPosts: BlogPost[] = [...checkingPosts, ...savingsPosts]
+// Generate credit card posts from creditCardBonuses.ts (active only).
+const cardPosts: BlogPost[] = creditCardBonuses
+  .filter(c => !c.expired)
+  .map(c => {
+    const tags: string[] = ["Credit Card", c.issuer.charAt(0).toUpperCase() + c.issuer.slice(1)]
+    if (c.card_type === "business") tags.push("Business")
+    else tags.push("Personal")
+    if ((c.annual_fee ?? 0) === 0) tags.push("No Annual Fee")
+    if ((c.statement_credits_year1 ?? 0) > 0) tags.push("Statement Credits")
+    if (c.is_hotel_card) tags.push("Hotel")
+    const bonusLabel = c.bonus_currency === "cash"
+      ? `$${c.bonus_amount.toLocaleString()}`
+      : `${c.bonus_amount.toLocaleString()} ${c.bonus_currency}`
+    return {
+      slug: slugify(`${c.card_name}-${c.bonus_amount}-${c.bonus_currency}`),
+      title: `${c.card_name} — ${bonusLabel} Sign-Up Bonus (2026 Review)`,
+      excerpt: c.key_benefits?.[0] || `Earn ${bonusLabel} after $${c.min_spend.toLocaleString()} in ${c.spend_months} months.`,
+      category: "Credit Cards" as const,
+      tags,
+      date: "2026-04-19",
+      bonusId: c.id,
+      bonusType: "card" as const,
+    }
+  })
+
+export const blogPosts: BlogPost[] = [...checkingPosts, ...savingsPosts, ...cardPosts]
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return blogPosts.find(p => p.slug === slug)
 }
 
-/** Reverse lookup: find the blog post for a given bonus id. */
+/** Reverse lookup: find the blog post for a given bonus or card id. */
 export function getPostByBonusId(bonusId: string): BlogPost | undefined {
   return blogPosts.find(p => p.bonusId === bonusId)
 }
@@ -90,4 +116,8 @@ export function getCheckingBonusById(id: string) {
 
 export function getSavingsBonusById(id: string) {
   return savingsBonuses.find(b => b.id === id)
+}
+
+export function getCardById(id: string) {
+  return creditCardBonuses.find(c => c.id === id)
 }
