@@ -1465,6 +1465,8 @@ export const bonuses: any[] = [
   },
   {
     "id": "central-bank-300-checking-2026",
+    "expired": true,
+    "expired_reason": "Offer page returns 404; Central Bank's homepage no longer mentions a $300 checking promo. Flagged in user comments April 2026.",
     "bank_name": "Central Bank of the Midwest",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -1581,7 +1583,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open with $500 deposit, set up DD/ACH, enroll in eStatements within 90 days."
+      "other_requirements_text": "Open with $500 deposit, set up DD/ACH, enroll in eStatements within 90 days. IN-BRANCH ONLY — there is no online application path. Visit your nearest CIBC US branch, ask about the Smart Account checking promotion, and reference the bonus when you apply."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee with eStatements.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -1590,14 +1592,15 @@ export const bonuses: any[] = [
       "states_allowed": ["IL", "MI", "MO", "FL", "CA", "WI"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New checking customers only."
+      "eligibility_notes": "New checking customers only. Bonus is only obtainable by opening in-branch — the online product page does not advertise a promo code."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
       "https://us.cibc.com/en/personal-banking/checking/smart-account.html",
       "https://www.doctorofcredit.com/cibc-bank-usa-200-checking-bonus/"
     ],
-    "raw_excerpt": "$200 checking bonus with $500 opening deposit + DD/ACH in 90 days."
+    "raw_excerpt": "$200 checking bonus with $500 opening deposit + DD/ACH in 90 days. Account must be opened in-branch (no online application).",
+    "notes": "User feedback (April 2026): the Open Account link goes to the generic product page, not a promotion landing. The $200 bonus is real but you have to walk into a branch and reference it when applying."
   },
   {
     "id": "dupaco-cu-300-checking-2026",
