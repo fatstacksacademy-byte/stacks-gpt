@@ -10,6 +10,7 @@ import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
+import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
@@ -36,6 +37,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
   const [recSearch, setRecSearch] = useState("")
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
+  const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -440,11 +442,39 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                           style={{ padding: "5px 14px", fontSize: 12, fontWeight: 600, color: "#0d7c5f", background: "none", border: "1px solid #0d7c5f", borderRadius: 6, cursor: "pointer" }}>
                           + Add to planned
                         </button>
+                        <button onClick={() => setAlreadyHaveCardId(alreadyHaveCardId === sc.card.id ? null : sc.card.id)}
+                          title="Record this card as already held so we stop recommending it"
+                          style={{ padding: "5px 14px", fontSize: 12, fontWeight: 600, color: "#555", background: "none", border: "1px solid #d0d0d0", borderRadius: 6, cursor: "pointer" }}>
+                          {alreadyHaveCardId === sc.card.id ? "Cancel" : "Already have"}
+                        </button>
                         <button onClick={() => setExpandedRecCard(isExpanded ? null : sc.card.id)}
                           style={{ padding: "5px 12px", fontSize: 11, color: "#999", background: "none", border: "1px solid #e8e8e8", borderRadius: 6, cursor: "pointer" }}>
                           {isExpanded ? "Hide" : "Details"}
                         </button>
                       </div>
+                      {alreadyHaveCardId === sc.card.id && (
+                        <AlreadyHaveForm
+                          itemLabel={sc.card.card_name}
+                          onSave={async (payload) => {
+                            await addOwnedCard(userId, {
+                              card_name: sc.card.card_name,
+                              issuer: sc.card.issuer,
+                              signup_bonus_value: payload.actual_amount ?? null,
+                              annual_fee: sc.card.annual_fee,
+                              opened_date: payload.opened_date,
+                              spend_deadline: null,
+                              expected_value: sc.card.bonus_amount,
+                              actual_value: payload.bonus_received ? payload.actual_amount ?? null : null,
+                              status: "completed",
+                              notes: payload.incomplete_info ? "Added via 'Already have' — dates unknown" : null,
+                              incomplete_info: payload.incomplete_info,
+                            })
+                            setAlreadyHaveCardId(null)
+                            await loadData()
+                          }}
+                          onCancel={() => setAlreadyHaveCardId(null)}
+                        />
+                      )}
                       {/* Rewards pills — shown inline on every card (not just expanded) so
                           users can size up earning categories at a glance. Upcoming spending
                           optimizer also reads sc.card.rewards for matching user spend. */}
@@ -708,6 +738,12 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
             <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: statusColors[c.status] ?? "#999", background: c.status === "active" ? "#eff6ff" : c.status === "completed" ? "#e6f5f0" : c.status === "planned" ? "#ede9fe" : "#f5f5f5" }}>
               {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
             </span>
+            {c.incomplete_info && (
+              <span title="Dates weren't filled in — click Edit to complete, or this card will be excluded from cooldown/churn math"
+                style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: "#d97706", background: "#fffbeb", border: "1px solid #fed7aa", cursor: "help" }}>
+                ⚠ Needs info
+              </span>
+            )}
             {(() => {
               const post = catalogExact ? getPostByBonusId(catalogExact.id) : null
               if (!post) return null

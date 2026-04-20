@@ -19,6 +19,8 @@ export type SavingsEntry = {
   source_type: string
   canonical_offer_id: string | null
   notes: string | null
+  /** User said "already have" but skipped entering dates. */
+  incomplete_info: boolean
   created_at: string
   updated_at: string
 }
@@ -59,6 +61,7 @@ export async function addSavingsEntry(
       source_type: entry.source_type ?? "system",
       canonical_offer_id: entry.canonical_offer_id ?? null,
       notes: entry.notes ?? null,
+      incomplete_info: entry.incomplete_info ?? false,
     })
     .select()
     .single()

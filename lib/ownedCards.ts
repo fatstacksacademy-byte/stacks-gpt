@@ -28,6 +28,9 @@ export type OwnedCard = {
   source_type: string
   canonical_offer_id: string | null
   notes: string | null
+  /** User said "already have" but skipped entering dates. Exclude from any
+   *  logic that depends on opened_date / closed_date (cooldown, lifetime earnings). */
+  incomplete_info: boolean
   created_at: string
   updated_at: string
 }
@@ -87,6 +90,7 @@ export async function addOwnedCard(
       status: card.status ?? "planned",
       role: card.role ?? null,
       notes: card.notes ?? null,
+      incomplete_info: card.incomplete_info ?? false,
     })
     .select()
     .single()

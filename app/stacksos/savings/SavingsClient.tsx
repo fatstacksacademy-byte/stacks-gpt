@@ -8,6 +8,7 @@ import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
 import { savingsBonuses as savingsBonusesCatalog } from "../../../lib/data/savingsBonuses"
 import { getComboFor } from "../../../lib/linkedBonuses"
+import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -44,6 +45,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   // savings bonus is paired with a checking bonus in the curated combo list.
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [recSearch, setRecSearch] = useState("")
+  const [alreadyHaveRecId, setAlreadyHaveRecId] = useState<string | null>(null)
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
   // Manual milestone state for savings entries, persisted to localStorage so
@@ -859,7 +861,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                     )}
 
                     {/* Actions */}
-                    <div style={{ padding: "8px 24px 16px", display: "flex", gap: 8 }}>
+                    <div style={{ padding: "8px 24px 16px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                       <button
                         onClick={() => handleStartRecommended(rec)}
                         disabled={startingId === rec.id}
@@ -877,11 +879,46 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                       >
                         {startingId === rec.id ? "Adding…" : "Start this bonus"}
                       </button>
+                      <button
+                        onClick={() => setAlreadyHaveRecId(alreadyHaveRecId === rec.id ? null : rec.id)}
+                        title="Record as already held so we stop recommending it"
+                        style={{ padding: "8px 14px", fontSize: 12, color: "#555", background: "none", border: "1px solid #d0d0d0", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}
+                      >
+                        {alreadyHaveRecId === rec.id ? "Cancel" : "Already have"}
+                      </button>
                       <button onClick={() => setSkippedSavingsIds(prev => [...prev, rec.id])}
                         style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
                         Skip
                       </button>
                     </div>
+                    {alreadyHaveRecId === rec.id && (
+                      <div style={{ padding: "0 24px 16px" }}>
+                        <AlreadyHaveForm
+                          itemLabel={`${rec.bank_name} bonus`}
+                          onSave={async (payload) => {
+                            await addSavingsEntry(userId, {
+                              institution_name: rec.bank_name,
+                              bonus_name: rec.bonus.id,
+                              bonus_amount: rec.bonus_amount,
+                              deposit_required: rec.deposit,
+                              holding_period_days: rec.hold_days,
+                              offer_apy: rec.bonus.base_apy ?? null,
+                              expected_total_value: rec.total_earnings,
+                              actual_value: payload.bonus_received ? payload.actual_amount ?? null : null,
+                              opened_date: payload.opened_date,
+                              deadline: null,
+                              status: "completed",
+                              source_type: "system",
+                              notes: payload.incomplete_info ? "Added via 'Already have' — dates unknown" : null,
+                              incomplete_info: payload.incomplete_info,
+                            })
+                            setAlreadyHaveRecId(null)
+                            await loadData()
+                          }}
+                          onCancel={() => setAlreadyHaveRecId(null)}
+                        />
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -1221,6 +1258,12 @@ function EntryRow({ entry: e, onEdit, onDelete, onStatusChange }: {
             <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: statusColors[e.status] ?? "#999", background: e.status === "active" ? "#eff6ff" : e.status === "completed" ? "#e6f5f0" : e.status === "planned" ? "#ede9fe" : "#f5f5f5" }}>
               {e.status.charAt(0).toUpperCase() + e.status.slice(1)}
             </span>
+            {e.incomplete_info && (
+              <span title="Dates weren't filled in — click Edit to complete. Excluded from cooldown/churn math until filled."
+                style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, color: "#d97706", background: "#fffbeb", border: "1px solid #fed7aa", cursor: "help" }}>
+                ⚠ Needs info
+              </span>
+            )}
           </div>
           <div style={{ fontSize: 12, color: "#555", marginTop: 4, display: "flex", gap: 16, flexWrap: "wrap" }}>
             {e.bonus_amount != null && <span>Bonus: <strong>${e.bonus_amount.toLocaleString()}</strong></span>}
