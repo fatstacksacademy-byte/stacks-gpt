@@ -31,7 +31,11 @@ import { creditCardBonuses, type CreditCardBonus, type RewardsTier } from "../..
 
 const args = process.argv.slice(2)
 const LIMIT = Number(args.find(a => a.startsWith("--limit="))?.split("=")[1] ?? 0) || 0
-const DRY_RUN = args.includes("--dry-run") || !args.includes("--apply")
+const DRY_RUN = args.includes("--dry-run") || (!args.includes("--apply") && !args.includes("--refresh"))
+// --refresh re-fetches RWP for existing -rwp catalog cards and patches their
+// min_spend / spend_months / cpp_value / annual_fee / bonus_amount in place.
+// Use this when the parser improves and we want existing cards to benefit.
+const REFRESH = args.includes("--refresh")
 
 const ROOT = process.cwd()
 const OUT_DIR = join(ROOT, "verification-output")
@@ -287,12 +291,35 @@ async function fetchCardDetail(url: string): Promise<RwpCard | { error: string; 
       annualFee = moneyToNum(data.annualFee) ?? 0
     }
 
-    // CPP — "1.0¢ per point" → 0.01, "1.5¢ per point" → 0.015
-    const cpp = data.travelValue
-      ? (moneyToNum(data.travelValue) ?? 1) / 100
-      : data.cashValue
-        ? (moneyToNum(data.cashValue) ?? 1) / 100
-        : null
+    // CPP valuation — RWP exposes a "Travel Value" (often 1.5-2.0¢ via
+    // aspirational transfer redemptions) and a "Cash Value" (typically
+    // 1.0¢ as statement credit). The spending sequencer uses cpp_value to
+    // compute net SUB worth, so we need a CASH FLOOR — the realistic
+    // dollar value the user could actually pull out without chasing a
+    // specific transfer-partner sweet spot.
+    //
+    // Rules:
+    //   1. Prefer cashValue when present.
+    //   2. Fall back to travelValue but cap it at 1.0¢ for non-cash
+    //      currencies (Citi Strata Premier shows 1.7¢ Travel Value but
+    //      ThankYou points only redeem at 1¢ for cash).
+    //   3. For currency === "cash", cpp is always 1.0 (the bonus_amount
+    //      already IS the dollar value).
+    const isCash = (data.pointSystem ?? "").toLowerCase().includes("cash")
+    let cppRaw: number | null
+    if (isCash) {
+      cppRaw = 1
+    } else if (data.cashValue) {
+      cppRaw = (moneyToNum(data.cashValue) ?? 1) / 100
+    } else if (data.travelValue) {
+      const raw = (moneyToNum(data.travelValue) ?? 1) / 100
+      cppRaw = Math.min(raw, 0.01)   // cap aspirational travel value
+    } else {
+      cppRaw = null
+    }
+    // Round to 4 decimals — avoids IEEE 754 artifacts like 0.006999999999999999
+    // when rendering back to the catalog source file.
+    const cpp = cppRaw !== null ? Math.round(cppRaw * 10000) / 10000 : null
 
     // Bonus amount + currency from headline
     let bonusAmount: number | null = null
@@ -312,7 +339,10 @@ async function fetchCardDetail(url: string): Promise<RwpCard | { error: string; 
     let minSpend: number | null = null
     let spendMonths: number | null = null
     if (data.bonusDescription) {
-      const sm = data.bonusDescription.match(/spend\s*\$?\s*([\d,]+)/i)
+      // \w* lets "spend" continue into "spending"/"spent" before whitespace.
+      // Citi's wording "after spending $4,000 in the first 3 months" was
+      // slipping past the previous /spend\s*\$?/ pattern.
+      const sm = data.bonusDescription.match(/spend\w*\s+\$?\s*([\d,]+)/i)
       if (sm) minSpend = Number(sm[1].replace(/,/g, ""))
       // Match any "(within|in)? (the)? (first|your first)? N (days|months|years)"
       const dm = data.bonusDescription.match(/(?:within|in)\s+(?:the\s+first\s+|your\s+first\s+|first\s+)?(\d+|three|six|twelve)\s*(day|month|year)/i)
@@ -455,16 +485,25 @@ async function main() {
   const successes = results.filter((r): r is RwpCard => !("error" in r))
   const failures = results.filter((r): r is { error: string; url: string } => "error" in r)
 
-  // Dedupe vs existing catalog by normalized card name.
+  console.log(``)
+  console.log(`Parsed: ${successes.length} | Failed: ${failures.length}`)
+
+  if (REFRESH) {
+    // For each parsed card, find the matching catalog entry by normalized
+    // name and update its parser-derived fields in place. Don't touch
+    // offer_link, expired, or hand-curated fields.
+    const updates = refreshCatalogInPlace(successes)
+    console.log(`Refreshed ${updates} existing catalog entries (cpp_value / min_spend / spend_months / annual_fee / bonus_amount).`)
+    return
+  }
+
+  // Default mode: dedupe and append net-new only.
   const existingNames = new Set(creditCardBonuses.map(c => normalizeName(c.card_name)))
   const newCards = successes.filter(c => !existingNames.has(normalizeName(c.card_name)))
   const duplicates = successes.filter(c => existingNames.has(normalizeName(c.card_name)))
 
-  console.log(``)
-  console.log(`Parsed: ${successes.length} | Failed: ${failures.length}`)
   console.log(`Net-new: ${newCards.length} | Already in catalog: ${duplicates.length}`)
 
-  // Always write the proposals file.
   const proposalsPath = join(OUT_DIR, "rwp-cards-proposed.json")
   writeFileSync(proposalsPath, JSON.stringify({ newCards, duplicates: duplicates.map(c => c.card_name), failures }, null, 2))
   console.log(`Proposals written to ${proposalsPath}`)
@@ -482,6 +521,51 @@ async function main() {
   const entries = newCards.map(buildCatalogEntry)
   appendToCatalog(entries)
   console.log(`Appended ${entries.length} new entries to ${CATALOG_PATH}`)
+}
+
+// ─── Refresh mode ──────────────────────────────────────────────────
+
+function refreshCatalogInPlace(parsed: RwpCard[]): number {
+  let src = readFileSync(CATALOG_PATH, "utf8")
+  let updated = 0
+  // Build map: normalized card_name → freshly-parsed RWP card
+  const byName = new Map<string, RwpCard>()
+  for (const p of parsed) byName.set(normalizeName(p.card_name), p)
+
+  for (const cat of creditCardBonuses) {
+    const fresh = byName.get(normalizeName(cat.card_name))
+    if (!fresh) continue
+    // Find the catalog object literal by id.
+    const idLine = `id: ${JSON.stringify(cat.id)},`
+    const idIdx = src.indexOf(idLine)
+    if (idIdx < 0) continue
+    // Update each parser-derived field within the next ~1500 chars (the
+    // object literal body). offer_link, expired, key_benefits, rewards,
+    // statement_credits_year1, annual_fee_waived_first_year, card_type,
+    // is_hotel_card are left alone.
+    const window = src.slice(idIdx, idIdx + 1800)
+    let next = window
+    if (fresh.bonus_amount !== null) {
+      next = next.replace(/bonus_amount:\s*\d+,/, `bonus_amount: ${fresh.bonus_amount},`)
+    }
+    if (fresh.cpp_value !== null) {
+      next = next.replace(/cpp_value:\s*[\d.]+,/, `cpp_value: ${fresh.cpp_value},`)
+    }
+    if (fresh.min_spend !== null) {
+      next = next.replace(/min_spend:\s*\d+,/, `min_spend: ${fresh.min_spend},`)
+    }
+    if (fresh.spend_months !== null) {
+      next = next.replace(/spend_months:\s*\d+,/, `spend_months: ${fresh.spend_months},`)
+    }
+    if (fresh.annual_fee !== undefined) {
+      next = next.replace(/annual_fee:\s*\d+,/, `annual_fee: ${fresh.annual_fee},`)
+    }
+    if (next === window) continue
+    src = src.slice(0, idIdx) + next + src.slice(idIdx + 1800)
+    updated++
+  }
+  writeFileSync(CATALOG_PATH, src)
+  return updated
 }
 
 main().catch(async err => {
