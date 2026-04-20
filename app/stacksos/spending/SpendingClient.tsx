@@ -53,6 +53,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     return v === "travel" ? "travel" : "cash"
   })
   const [showCppOverrides, setShowCppOverrides] = useState(false)
+  const [cppResetFlash, setCppResetFlash] = useState(false)
   const [recSearch, setRecSearch] = useState("")
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
@@ -488,6 +489,32 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                             </label>
                           )
                         })}
+                      </div>
+                      {/* Reset link — clears cpp_overrides to null. Inputs all
+                          read from profile.cpp_overrides, so they fall back to
+                          placeholder defaults automatically once cleared. */}
+                      <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 10 }}>
+                        <button
+                          onClick={async () => {
+                            await updateProfile({ cpp_overrides: null })
+                            setCppResetFlash(true)
+                            setTimeout(() => setCppResetFlash(false), 2500)
+                          }}
+                          disabled={!profile?.cpp_overrides || Object.keys(profile.cpp_overrides).length === 0}
+                          style={{
+                            fontSize: 11, color: "#7c3aed", background: "none", border: "none",
+                            padding: 0, cursor: profile?.cpp_overrides && Object.keys(profile.cpp_overrides).length > 0 ? "pointer" : "not-allowed",
+                            fontWeight: 600, opacity: profile?.cpp_overrides && Object.keys(profile.cpp_overrides).length > 0 ? 1 : 0.4,
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Reset to defaults
+                        </button>
+                        {cppResetFlash && (
+                          <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>
+                            ✓ Valuations reset
+                          </span>
+                        )}
                       </div>
                     </div>
                   )}
