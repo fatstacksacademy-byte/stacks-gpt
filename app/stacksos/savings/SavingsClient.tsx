@@ -687,6 +687,28 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                         style={{ padding: "8px 16px", fontSize: 12, color: "#555", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
                         Edit
                       </button>
+                      {/* Undo for genuinely-untouched entries — visible only when
+                          no manual steps logged + no actual_value posted. Hides
+                          itself the moment the user makes any progress so we
+                          can't blow away a real in-flight bonus by accident. */}
+                      {!openedConfirmed && !depositedConfirmed && !bonusReceived && (
+                        <button
+                          onClick={async () => {
+                            if (!confirm(`Undo "${e.institution_name}"? This removes the entry — only do this if you didn't actually start the bonus.`)) return
+                            // Cleanup any stray localStorage flags too.
+                            if (typeof window !== "undefined") {
+                              localStorage.removeItem(`stacks:savings:${e.id}:opened`)
+                              localStorage.removeItem(`stacks:savings:${e.id}:deposited`)
+                            }
+                            await deleteSavingsEntry(e.id)
+                            await loadData()
+                          }}
+                          style={{ marginLeft: "auto", padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}
+                          title="Remove this entry — for accidental Start clicks before any actual progress"
+                        >
+                          Undo (didn&apos;t start)
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
