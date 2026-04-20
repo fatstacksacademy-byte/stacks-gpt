@@ -18,7 +18,10 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # First run took 30+ min on a full uncached fetch (Amex CSP fallback +
+    # IHG/issuer retries push real fetch latency to 10-30s/page). Give it
+    # plenty of headroom — the cron runs once a week, runtime cost is fine.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +40,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npm run verify:cards -- --persist --no-cache
+        # Drop --no-cache: each Actions run starts with an empty .cache
+        # directory anyway, so it's a no-op that just signals intent.
+        run: npm run verify:cards -- --persist
 
       - name: Upload report artifact
         if: always()
