@@ -538,11 +538,29 @@ function refreshCatalogInPlace(parsed: RwpCard[]): number {
     // is_hotel_card are left alone.
     const window = src.slice(idIdx, idIdx + 1800)
     let next = window
+    // Treat null bonus_amount as 0 — previous ingests ran before the
+    // Signup-Bonus-section regex was hardened, so some cards absorbed
+    // junk numbers from the sidebar nav text. If RWP now shows no
+    // parseable bonus, zero out bonus_amount + reset currency/cpp to
+    // neutral defaults so the sequencer doesn't multiply stale values
+    // by the new cpp=1 cash rule.
     if (fresh.bonus_amount !== null) {
       next = next.replace(/bonus_amount:\s*\d+,/, `bonus_amount: ${fresh.bonus_amount},`)
+    } else {
+      next = next.replace(/bonus_amount:\s*\d+,/, `bonus_amount: 0,`)
+      next = next.replace(/cpp_value:\s*[\d.]+,/, `cpp_value: 0.01,`)
     }
-    if (fresh.cpp_value !== null) {
+    if (fresh.cpp_value !== null && fresh.bonus_amount !== null) {
       next = next.replace(/cpp_value:\s*[\d.]+,/, `cpp_value: ${fresh.cpp_value},`)
+    }
+    // Extra guardrail: bonus amounts >=2,000 with currency "cash" are
+    // almost always points that got mislabeled as cash (HSBC "50,000",
+    // GM "30,000", TD "25,000" — those are point totals, not dollars).
+    // Real cashback SUBs max out around \$1,500. Reclassify as points at
+    // 1¢ so the sequencer gets the right dollar value.
+    if (fresh.bonus_amount !== null && fresh.bonus_amount >= 2000 && fresh.bonus_currency === "cash") {
+      next = next.replace(/cpp_value:\s*[\d.]+,/, `cpp_value: 0.01,`)
+      next = next.replace(/bonus_currency:\s*"[^"]*",/, `bonus_currency: "Points",`)
     }
     if (fresh.min_spend !== null) {
       next = next.replace(/min_spend:\s*\d+,/, `min_spend: ${fresh.min_spend},`)
