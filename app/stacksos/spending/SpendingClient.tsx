@@ -263,6 +263,17 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
         </div>
       </div>
 
+      {/* System status strip — mirrors the paycheck/savings status header */}
+      <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12, color: "#555" }}>
+            Tracking <strong>{creditCardBonuses.filter(c => !c.expired).length}</strong> credit cards
+          </span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+          <span style={{ fontSize: 12, color: "#555" }}>Sequenced by return per month for your spend</span>
+        </div>
+      </div>
+
       <CheckpointNav />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">

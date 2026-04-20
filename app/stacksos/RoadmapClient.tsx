@@ -772,7 +772,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       {/* System status strip */}
       <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 12, color: "#555" }}>Tracking nationwide bonus offers</span>
+          <span style={{ fontSize: 12, color: "#555" }}>
+            Tracking <strong>{(allBonuses as { expired?: boolean }[]).filter(b => !b.expired).length}</strong> bank bonuses
+          </span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
           <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>

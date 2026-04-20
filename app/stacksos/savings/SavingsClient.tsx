@@ -316,6 +316,17 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         </div>
       </div>
 
+      {/* System status strip — mirrors the paycheck/spending status header */}
+      <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12, color: "#555" }}>
+            Tracking <strong>{savingsBonusesCatalog.filter(b => !b.expired).length}</strong> savings bonuses
+          </span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+          <span style={{ fontSize: 12, color: "#555" }}>Ranked by effective APY for your balance</span>
+        </div>
+      </div>
+
       <CheckpointNav />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
