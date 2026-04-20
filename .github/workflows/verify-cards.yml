@@ -1,9 +1,9 @@
-name: Verify credit card offers
+name: Verify credit card + checking/savings offers
 
-# Weekly verification of every non-expired card in the catalog.
+# Weekly verification of every non-expired entry in both catalogs.
 # Hits each issuer's offer page, compares to stored bonus/spend/fee,
-# writes problem rows to Supabase.card_verifications. Admin reviews the
-# queue at /admin (Card Verifications tab).
+# writes problem rows to Supabase. Admin reviews the queue at
+# /admin (Card Verifications tab).
 #
 # Required GitHub repo secrets:
 #   - NEXT_PUBLIC_SUPABASE_URL
@@ -18,10 +18,12 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    # First run took 30+ min on a full uncached fetch (Amex CSP fallback +
-    # IHG/issuer retries push real fetch latency to 10-30s/page). Give it
-    # plenty of headroom — the cron runs once a week, runtime cost is fine.
-    timeout-minutes: 90
+    # verify:cards alone took 30+ min on its first full uncached fetch
+    # (Amex CSP fallback + IHG/issuer retries push real latency to 10-30s
+    # per page). Adding verify:bonuses roughly doubles the surface area,
+    # so bump headroom to 150 min. Cron runs weekly — runtime cost is
+    # irrelevant compared to catching a stale-link regression early.
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +45,13 @@ jobs:
         # Drop --no-cache: each Actions run starts with an empty .cache
         # directory anyway, so it's a no-op that just signals intent.
         run: npm run verify:cards -- --persist
+
+      - name: Run verify:bonuses
+        if: always()
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run verify:bonuses -- --persist
 
       - name: Upload report artifact
         if: always()

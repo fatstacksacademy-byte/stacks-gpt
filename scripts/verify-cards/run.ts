@@ -44,6 +44,7 @@ type CardPageSignal =
   | "offer_dead"
   | "redirected_to_generic"
   | "card_name_mismatch"
+  | "no_fields_extracted"
   | "fetch_error"
 
 type FieldResult = {
@@ -197,10 +198,29 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
   } else {
     // Redirected to a clearly-generic URL (issuer's card catalog homepage)?
     try {
-      const orig = new URL(url).pathname
-      const final = new URL(finalUrl).pathname
+      const origUrl = new URL(url)
+      const finalUrlObj = new URL(finalUrl)
+      const origPath = origUrl.pathname
+      const finalPath = finalUrlObj.pathname
+
+      // 1. Exact match against a known catalog-root / homepage path.
       const genericPaths = ["/", "/credit-cards", "/credit-cards/", "/cards", "/cards/"]
-      if (orig.length > 3 && genericPaths.includes(final)) {
+      const landedOnCatalogRoot = origPath.length > 3 && genericPaths.includes(finalPath)
+
+      // 2. Path that clearly reads as a 404 / not-found page.
+      const landedOnNotFoundPath = /(?:^|\/)(?:page-not-found|404|not-found|notfound|error)(?:\/|$|\.html?)/i.test(finalPath)
+
+      // 3. Host changed (e.g. creditcards.chase.com → chase.com). Issuer
+      //    apply URLs almost always stay on the subdomain they started on;
+      //    a cross-host redirect usually means the apply page is gone.
+      //    Normalize by stripping a leading "www." on both sides so
+      //    chase.com vs www.chase.com doesn't false-positive.
+      const norm = (h: string) => h.toLowerCase().replace(/^www\./, "")
+      const origHost = norm(origUrl.host)
+      const finalHost = norm(finalUrlObj.host)
+      const landedOnDifferentHost = origHost !== finalHost
+
+      if (landedOnCatalogRoot || landedOnNotFoundPath || landedOnDifferentHost) {
         pageSignal = "redirected_to_generic"
       }
     } catch {}
@@ -215,6 +235,20 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
     pageSignal = "card_name_mismatch"
   }
 
+  // If the card name IS on the page but the extractor found no bonus_amount
+  // AND no min_spend AND no annual_fee, the page almost certainly changed
+  // shape (issuer redesign, card deprecated, different layout). Surface as
+  // loudly as card_name_mismatch so the admin queue can triage it.
+  if (
+    extracted &&
+    pageSignal === "ok" &&
+    extracted.bonusAmount === null &&
+    extracted.minSpend === null &&
+    extracted.annualFee === null
+  ) {
+    pageSignal = "no_fields_extracted"
+  }
+
   const fields = extracted ? compareCard(card, extracted) : []
   return {
     id: card.id, card_name: card.card_name, issuer: card.issuer,
@@ -226,7 +260,12 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
 function buildProposedEdits(results: CardResult[]): { id: string; path: string; from: unknown; to: unknown; reason: string }[] {
   const edits: { id: string; path: string; from: unknown; to: unknown; reason: string }[] = []
   for (const r of results) {
-    if (r.pageSignal === "offer_dead" || r.pageSignal === "redirected_to_generic" || r.pageSignal === "card_name_mismatch") {
+    if (
+      r.pageSignal === "offer_dead" ||
+      r.pageSignal === "redirected_to_generic" ||
+      r.pageSignal === "card_name_mismatch" ||
+      r.pageSignal === "no_fields_extracted"
+    ) {
       edits.push({
         id: r.id, path: "expired or offer_link",
         from: false, to: true,
@@ -253,6 +292,7 @@ function buildReport(results: CardResult[], edits: ReturnType<typeof buildPropos
   const dead = results.filter((r) => r.pageSignal === "offer_dead").length
   const redirected = results.filter((r) => r.pageSignal === "redirected_to_generic").length
   const wrongPage = results.filter((r) => r.pageSignal === "card_name_mismatch").length
+  const noFields = results.filter((r) => r.pageSignal === "no_fields_extracted").length
   const fetchErrors = results.filter((r) => r.pageSignal === "fetch_error").length
 
   const out: string[] = []
@@ -268,6 +308,7 @@ function buildReport(results: CardResult[], edits: ReturnType<typeof buildPropos
   out.push(`- 🪦 Dead link (4xx): ${dead}`)
   out.push(`- ↪️ Redirected to generic cards page: ${redirected}`)
   out.push(`- 🚩 Wrong page (card name not found): ${wrongPage}`)
+  out.push(`- 🧩 No fields extracted (layout likely changed): ${noFields}`)
   out.push(`- 🚨 Fetch error: ${fetchErrors}`)
   out.push(`- 📝 Proposed edits: **${edits.length}**`)
   out.push(``)
@@ -371,7 +412,10 @@ async function main() {
             ? r.fields.some((f) => f.status === "mismatch")
               ? "⚠️"
               : "✅"
-            : r.pageSignal === "offer_dead" || r.pageSignal === "redirected_to_generic" || r.pageSignal === "card_name_mismatch"
+            : r.pageSignal === "offer_dead" ||
+                r.pageSignal === "redirected_to_generic" ||
+                r.pageSignal === "card_name_mismatch" ||
+                r.pageSignal === "no_fields_extracted"
               ? "🚩"
               : "🚨"
         console.log(`[${done}/${targets.length}] ${tag} ${r.card_name} (${r.pageSignal})${r.cacheHit ? " ·cached" : ""}`)
@@ -400,6 +444,7 @@ async function main() {
     dead: results.filter((r) => r.pageSignal === "offer_dead").length,
     redirected: results.filter((r) => r.pageSignal === "redirected_to_generic").length,
     wrongPage: results.filter((r) => r.pageSignal === "card_name_mismatch").length,
+    noFields: results.filter((r) => r.pageSignal === "no_fields_extracted").length,
     fetchErrors: results.filter((r) => r.pageSignal === "fetch_error").length,
   }
   console.log(`Summary:`, summary, `| proposed edits: ${edits.length}`)

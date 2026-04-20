@@ -72,11 +72,13 @@ export function extractBonusAmount(text: string): {
     }
   }
 
-  // Cash bonus — "$300 cash back bonus", "earn $200"
+  // Cash bonus — "$300 cash back bonus", "earn $200", "$1,000 welcome bonus"
+  // Allow any number of digits (with optional comma groups) so $1,000 and
+  // $10,000+ don't silently fail. cleanAmount strips commas before parsing.
   const dollarPatterns: RegExp[] = [
-    /\bearn\s+\$(\d{2,4}(?:,\d{3})?)\s+(?:cash\s+)?(?:back\s+)?bonus/i,
-    /\$(\d{2,4}(?:,\d{3})?)\s+(?:cash\s+)?(?:back\s+)?(?:welcome\s+)?bonus/i,
-    /\bearn\s+\$(\d{2,4}(?:,\d{3})?)\s+when\s+you\s+spend/i,
+    /\bearn\s+\$(\d+(?:,\d{3})*)\s+(?:cash\s+)?(?:back\s+)?bonus/i,
+    /\$(\d+(?:,\d{3})*)\s+(?:cash\s+)?(?:back\s+)?(?:welcome\s+)?bonus/i,
+    /\bearn\s+\$(\d+(?:,\d{3})*)\s+when\s+you\s+spend/i,
   ]
   for (const re of dollarPatterns) {
     const m = text.match(re)
@@ -131,11 +133,11 @@ export function extractAnnualFee(text: string): {
     return { annualFee: 0, snippet: snippet(text, idx) }
   }
 
-  // $N annual fee / annual fee of $N / annual fee: $N
+  // $N annual fee / annual fee of $N / annual fee: $N — same digit-cap fix.
   const feePatterns: RegExp[] = [
-    /\$(\d{1,4})\s+annual\s+fee/i,
-    /annual\s+fee\s*(?:of|:)\s*\$(\d{1,4})/i,
-    /annual\s+fee\s+is\s+\$(\d{1,4})/i,
+    /\$(\d+(?:,\d{3})*)\s+annual\s+fee/i,
+    /annual\s+fee\s*(?:of|:)\s*\$(\d+(?:,\d{3})*)/i,
+    /annual\s+fee\s+is\s+\$(\d+(?:,\d{3})*)/i,
   ]
   for (const re of feePatterns) {
     const m = text.match(re)

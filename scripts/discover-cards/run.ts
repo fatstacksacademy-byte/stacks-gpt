@@ -48,8 +48,6 @@ const APPLY = args.includes("--apply")
 const LIMIT = Number(args.find(a => a.startsWith("--limit="))?.split("=")[1] ?? 40) || 40
 
 const ROOT = process.cwd()
-// /app/credit-cards is auth-gated; /credit-cards is the public SPA.
-const LIST_URL = "https://www.richwithpoints.com/credit-cards"
 
 /**
  * Seed list of major churner-relevant cards. The richwithpoints list page
@@ -144,25 +142,6 @@ function cardAlreadyInCatalog(cardName: string): boolean {
   return false
 }
 
-// Issuer domains we'll trust as direct offer pages.
-const ISSUER_DOMAINS = [
-  "chase.com",
-  "creditcards.chase.com",
-  "americanexpress.com",
-  "aexp.com",
-  "citi.com",
-  "banking.citi.com",
-  "capitalone.com",
-  "discover.com",
-  "wellsfargo.com",
-  "barclaycardus.com",
-  "cards.barclaycardus.com",
-  "bankofamerica.com",
-  "usbank.com",
-  "ihg.com",
-  "alaskaair.com",
-]
-
 function inferIssuer(url: string, cardName: string): string {
   try {
     const h = new URL(url).host.toLowerCase()
@@ -178,86 +157,6 @@ function inferIssuer(url: string, cardName: string): string {
   } catch {}
   // Fallback: first token of card name
   return cardName.split(/\s+/)[0].toLowerCase()
-}
-
-// ─────────────────────────── richwithpoints scrape ───────────────────────────
-
-import { chromium } from "playwright"
-
-async function loadRwpList(): Promise<Lead[]> {
-  console.log(`[rwp] fetching ${LIST_URL}`)
-  const browser = await chromium.launch({ headless: true })
-  const ctx = await browser.newContext({ userAgent: UA, viewport: { width: 1280, height: 1800 } })
-  const page = await ctx.newPage()
-  try {
-    await page.goto(LIST_URL, { waitUntil: "domcontentloaded", timeout: 45000 })
-    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {})
-    await page.waitForTimeout(4000)
-
-    // Scroll to trigger lazy-loaded content
-    for (let i = 0; i < 12; i++) {
-      await page.evaluate(() => window.scrollBy(0, 2000))
-      await page.waitForTimeout(700)
-    }
-
-    // richwithpoints renders cards as a grid. Each card's "Apply Now" button
-    // is an anchor that points directly to the issuer's domain (chase.com,
-    // americanexpress.com, etc). We walk every issuer-domain anchor and use
-    // its closest ancestor card element to find the card name heading.
-    const harvested: { card_name: string; issuer_link: string; detail_url: string }[] =
-      await page.evaluate((issuerDomains) => {
-        const out: { card_name: string; issuer_link: string; detail_url: string }[] = []
-        const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
-        for (const a of anchors) {
-          let host = ""
-          try {
-            host = new URL(a.href).host.toLowerCase()
-          } catch {
-            continue
-          }
-          if (!issuerDomains.some((d: string) => host.endsWith(d))) continue
-          // Walk up to find an ancestor with a card name (h2/h3/card-title).
-          let card: Element | null = a
-          let title = ""
-          for (let i = 0; i < 8 && card; i++) {
-            const heading =
-              card.querySelector("h1, h2, h3, h4, [data-card-name], [class*='title'], [class*='name']")
-            if (heading && heading.textContent) {
-              title = heading.textContent.trim().replace(/\s+/g, " ")
-              if (title.length >= 6 && title.length <= 80) break
-              title = ""
-            }
-            card = card.parentElement
-          }
-          // Fallback: use anchor's own text if it looks like a card name
-          if (!title) {
-            const t = (a.textContent || "").trim()
-            if (/credit\s*card/i.test(t) || /\d+X/i.test(t)) title = t
-          }
-          if (!title || title.length < 6) continue
-          out.push({ card_name: title, issuer_link: a.href, detail_url: location.href })
-        }
-        return out
-      }, ISSUER_DOMAINS)
-
-    const leads: Lead[] = []
-    const seen = new Set<string>()
-    for (const h of harvested) {
-      const key = normalizeName(h.card_name)
-      if (!key || seen.has(key)) continue
-      seen.add(key)
-      leads.push({
-        source: "richwithpoints",
-        source_url: h.detail_url,
-        card_name: h.card_name,
-        issuer_link: h.issuer_link,
-      })
-    }
-    console.log(`[rwp] captured ${leads.length} unique card leads from ${harvested.length} anchors`)
-    return leads
-  } finally {
-    await browser.close()
-  }
 }
 
 // ─────────────────────────── issuer-page enrichment ───────────────────────────
@@ -390,9 +289,6 @@ function appendCatalog(entries: string[]): void {
 
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
-
-  void LIST_URL
-  void loadRwpList
 
   // Build leads from the curated seed list (richwithpoints SPA isn't scrapable
   // without auth). Each seed entry already has the issuer URL, so we skip the
