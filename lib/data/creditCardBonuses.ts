@@ -939,7 +939,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.comenity.net/dailyadvantagesig",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -962,7 +962,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.aboundcu.com/cards/credit-cards/visa-credit-cards/platinum-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -984,7 +984,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://d.comenity.net/ac/traveladvantagesig/public/home",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1007,7 +1007,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://militarytimecharts.com/star-card-guide/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1051,7 +1051,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.affinityfcu.com/personal-banking/banking/credit-card/cash-rewards-visa",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1096,7 +1096,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.affinityfcu.com/personal-banking/banking/credit-card/pure-rewards-visa",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1140,7 +1140,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1185,7 +1185,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 395,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -1230,7 +1230,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://secure.alliantcreditunion.org/credit-cards",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1273,7 +1273,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.ally.com/go/credit-card-update/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1318,7 +1318,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/cash-back-credit-cards/amazon-prime-rewards",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1341,7 +1341,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.amazon.com/Synchrony-Bank-Amazon-com-Store-Card/dp/B008A0GNA8",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1385,7 +1385,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.citi.com/credit-cards/aadvantage-mile-up-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1429,7 +1429,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/blue-cash-everyday/",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -1451,7 +1451,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/blue-cash-preferred/",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -1474,7 +1474,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 5000,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/?filter=personal",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -1496,7 +1496,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 325,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -1521,7 +1521,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/green/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -1566,7 +1566,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.card.fnbo.com/amtrakguestrewards/apply",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1588,7 +1588,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.card.fnbo.com/amtrakguestrewards/apply",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1611,7 +1611,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.aodfcu.com/credit-cards/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1633,7 +1633,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://card.apple.com/apply/start",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1656,7 +1656,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-rewards-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1679,7 +1679,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-max-cash-credit-card",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -1702,7 +1702,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.aven.com/rewards-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1724,7 +1724,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 390,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-reserve-rewards-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1769,7 +1769,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-travel-rewards-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1791,7 +1791,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.aven.com/flex",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1813,7 +1813,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.aven.com/rewards-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -1835,7 +1835,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.cardless.com/cards/avianca/lifemiles",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1857,7 +1857,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 249,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.cardless.com/cards/avianca/lifemiles-elite",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -1990,7 +1990,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 699,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://cards.barclaycardus.com/banking/credit-card/luxury/landing-pages/luxury-black-landing-page/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -2036,7 +2036,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/bass-pro-shops/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -2058,7 +2058,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bilt.com/card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -2079,7 +2079,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bilt.com/card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -2102,7 +2102,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 495,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bilt.com/card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -2124,7 +2124,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.booking.com/co_brand_card.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -2149,7 +2149,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.breadfinancial.com/en/bread-rewards-credit-card.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -2171,7 +2171,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.breadfinancial.com/en/bread-financial-cashback-card.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -2192,7 +2192,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://c.comenity.net/caesarsrewardsvisa/pub/apply/ApplyRewardsRedirect.xhtml",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -2238,7 +2238,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/quicksilver/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Cash to Travel Conversion"],
     rewards: [
@@ -2259,7 +2259,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 39,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/quicksilverone/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Cash to Travel Conversion"],
     rewards: [
@@ -3676,7 +3676,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankcheckingsavings.com/hsbc-premier-checking-bonus/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3699,7 +3699,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.huntington.com/Personal/credit-card/voice-rewards-credit-card",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -3721,7 +3721,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.huntington.com/Personal/credit-card/cash-back-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -3903,7 +3903,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.koreanair.com/contents/skypass/earn-miles/credit-card/overseas?hl=en",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3925,7 +3925,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/kohls/",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -3949,7 +3949,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.skypassvisa.com/credit/welcome.do",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -3971,7 +3971,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 450,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.skypassvisa.com/credit/visaSelectCard.do",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -3994,7 +3994,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.langleyfcu.org/personal-credit-cards/signature-cashback",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4018,7 +4018,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.krogermastercard.com/credit/aboutOnlineBanking.do",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4155,7 +4155,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.card.fnbo.com/mgmrewards",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4178,7 +4178,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://apply.americanexpress.com/amex-morgan-stanley-credit-cards/?page_url=38",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4201,7 +4201,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://citiretailservices.citibankonline.com/RSauth/signon?pageName=signon&siteId=PLCN_BESTBUY&langId=en_US",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4225,7 +4225,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.synchrony.com/downloads/walgreens-launches-first-mywalgreens-credit-card.pdf",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4249,7 +4249,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://employeeinfo.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/cashrewards_brochure.pdf",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4270,7 +4270,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.navyfederal.org/loans-cards/credit-cards/cash-rewards.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4291,7 +4291,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 49,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.navyfederal.org/loans-cards/credit-cards/flagship-visa-signature.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4313,7 +4313,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.navyfederal.org/loans-cards/credit-cards/go-rewards.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4336,7 +4336,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.navyfederal.org/loans-cards/credit-cards/more-rewards.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4358,7 +4358,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://nibbles.com/card-rewards/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4380,7 +4380,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.paypal.com/us/digital-wallet/manage-money/paypal-cashback-mastercard",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4425,7 +4425,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.paypal.com/us/digital-wallet/manage-money/paypal-debit-card",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4448,7 +4448,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.penfed.org/credit-cards/pathfinder-rewards-visa",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4471,7 +4471,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.penfed.org/credit-cards/platinum-rewards-visa",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4494,7 +4494,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.penfed.org/credit-cards/power-cash-rewards-visa",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4515,7 +4515,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.pnc.com/en/personal-banking/banking/credit-cards/pnc-cash-rewards-visa-credit-card.html",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4539,7 +4539,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.pnc.com/en/personal-banking/banking/credit-cards/pnc-cash-unlimited-visa-credit-card.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4560,7 +4560,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.pnc.com/en/personal-banking/banking/credit-cards.html",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -4581,7 +4581,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://help.priceline.com/priceline-rewards-visa-card-SkA69k8p_",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4604,7 +4604,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 499,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.cardless.com/cards/qatar/premium",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4627,7 +4627,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.qatarairways.com/en-us/Privilege-Club/our-partners/qatar-airways-privilege-club-credit-cards.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4650,7 +4650,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.rakuten.com/american-express-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4674,7 +4674,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://redstone.bank/personal-banking/credit-cards/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4697,7 +4697,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.regions.com/personal-banking/rewards/cash-rewards",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4718,7 +4718,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.regions.com/personal-banking/credit-cards/prestige-credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4741,7 +4741,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/rei/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4763,7 +4763,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://robinhood.com/creditcard/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4785,7 +4785,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 645,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://robinhood.com/us/en/creditcard/platinum/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4808,7 +4808,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.rocketcard.com/offer-details",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4829,7 +4829,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www-darkpod.bankofamerica.com/credit-cards/products/royal-caribbean-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -4851,7 +4851,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.synchrony.com/accounts/?client=sams&clientId=sams",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4874,7 +4874,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.synchrony.com/partner/sams-club",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4897,7 +4897,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.card.fnbo.com/scheels",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -4919,7 +4919,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.signaturefcu.org/Products/Credit-Cards/Visa-Signature.aspx",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4941,7 +4941,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.sofi.com/credit-card/everyday-cash/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -4964,7 +4964,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 120,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.sofi.com/credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5054,7 +5054,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.starone.org/borrow/credit-cards",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5075,7 +5075,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.statefarm.com/finances/banking/credit-cards",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5098,7 +5098,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.synchrony.com/financing/synchrony-mastercards",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5119,7 +5119,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.capitalone.com/credit-cards/t-mobile/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5141,7 +5141,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.target.com/circlecard",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5228,7 +5228,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://citiretailservices.citibankonline.com/RSnextgen/svc/launch/index.action?siteId=PLCN_TRACTORSUPPLY&lang",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5251,7 +5251,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.truist.com/credit-cards/enjoy-beyond",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5274,7 +5274,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.truist.com/credit-cards/enjoy-cash",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5297,7 +5297,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.truist.com/credit-cards/enjoy-cash",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5318,7 +5318,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 650,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.ubs.com/us/en/wealth-management/our-solutions/banking/cards/personal.html",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5341,7 +5341,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.truist.com/credit-cards/enjoy-travel",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5363,7 +5363,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.unfcu.org/credit-cards/azure/",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -5386,7 +5386,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 695,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/club-infinite",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5410,7 +5410,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 150,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/united-explorer",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5432,7 +5432,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 50,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.unfcu.org/credit-cards/elite/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5455,7 +5455,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/united-gateway",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5477,7 +5477,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 350,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/united-quest",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5501,7 +5501,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.upgrade.com/upgrade-card/triple-cash/",
     expired: false,
     key_benefits: [],
     rewards: [
@@ -5588,7 +5588,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usaa.com/banking/credit-cards-public/cash-back/rewards-plus/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5656,7 +5656,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usaa.com/banking/credit-cards-public/rewards/travel-eagle-navigator/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5678,7 +5678,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usaa.com/banking/credit-cards-public/cash-back/preferred-cash/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5699,7 +5699,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usaa.com/banking/credit-cards-public/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5721,7 +5721,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.usaa.com/banking/credit-cards-public/rewards/american-express/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5744,7 +5744,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://venmo.com/about/creditcard",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5767,7 +5767,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.synchrony.com/partner/verizon",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5789,7 +5789,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.walmart.com/cp/onepay-card/9435689",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees"],
     rewards: [
@@ -5811,7 +5811,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.virginatlantic.com/flying-club/credit-card",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available"],
     rewards: [
@@ -5834,7 +5834,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.wellsfargo.com/attune-credit-card/",
     expired: false,
     key_benefits: ["Travel Portal Redemption","Cash to Travel Conversion"],
     rewards: [
@@ -5857,7 +5857,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://creditcards.wellsfargo.com/autograph-visa-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
@@ -5925,7 +5925,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 75,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.wyndhamrewardscreditcard.com/earner-plus-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -5948,7 +5948,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "",
+    offer_link: "https://www.bankofamerica.com/smallbusiness/credit-cards/products/alaska-airlines-business-credit-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
