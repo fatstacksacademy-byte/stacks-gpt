@@ -1465,24 +1465,22 @@ export const bonuses: any[] = [
   },
   {
     "id": "central-bank-300-checking-2026",
-    "expired": true,
-    "expired_reason": "Offer page returns 404; Central Bank's homepage no longer mentions a $300 checking promo. Flagged in user comments April 2026.",
     "bank_name": "Central Bank of the Midwest",
     "product_type": "checking",
-    "bonus_amount": 300,
+    "bonus_amount": 500,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": 500,
+      "min_direct_deposit_total": 5000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": 2,
       "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
-      "min_balance": null,
+      "min_balance": 50,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open new checking with 2+ DD totaling $500+ in 90 days. Expires December 31, 2026."
+      "other_requirements_text": "Open eligible checking with promo code PARKPIRATES. Set up one direct deposit covering 2+ deposits totaling $5,000+ within 90 days. Maintain $50 minimum balance 90 days after opening. Offer expires December 31, 2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -1491,14 +1489,15 @@ export const bonuses: any[] = [
       "states_allowed": ["OK", "IL", "KS", "MO", "CO"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New checking customers only."
+      "eligibility_notes": "New checking customers only. Use promo code PARKPIRATES at account opening."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://www.centralbank.net/personal/bank/checking-accounts/",
+      "https://www.centralbank.net/parkpirates/",
       "https://www.doctorofcredit.com/central-bank-300-checking-bonus/"
     ],
-    "raw_excerpt": "$300 checking bonus with $500+ DD in 90 days. No fees."
+    "raw_excerpt": "$500 checking bonus with promo code PARKPIRATES. Two direct deposits totaling $5,000+ within 90 days, $50 minimum balance maintained 90 days after opening.",
+    "notes": "April 2026 update: refreshed to the current $500 ParkPirates promotion (was previously a $300 offer that 404'd). Headline bonus is $500 with promo code PARKPIRATES — the bank's FAQ also mentions a fallback $300 tier at a lower DD threshold ($800), but the $500 path is the better deal."
   },
   {
     "id": "vantage-cu-250-checking-2026",
