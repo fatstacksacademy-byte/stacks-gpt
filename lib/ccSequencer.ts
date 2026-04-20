@@ -28,7 +28,20 @@ export function sequenceCards(
   // follow-up; the verify:cards admin queue will surface them.
   const available = cards.filter(c => !c.expired && c.offer_link && c.offer_link.length > 0)
 
-  const scored = available.map(card => {
+  // Step 1: filter to feasible cards. A card is infeasible if the user
+  // cannot realistically hit its min_spend within the bank's deadline at
+  // their monthly budget — recommending Amex Business Platinum ($20k in
+  // 3mo) to a $2k/mo spender was the bug here. We allow a small buffer
+  // (1.05x) so a card requiring $5,000 in 3 months at exactly $1,667/mo
+  // doesn't get knocked out by floating-point noise.
+  const FEASIBILITY_BUFFER = 1.05
+  const feasible = available.filter(card => {
+    if (card.min_spend <= 0) return true
+    const monthsNeeded = card.min_spend / monthlyBudget
+    return monthsNeeded <= card.spend_months * FEASIBILITY_BUFFER
+  })
+
+  const scored = feasible.map(card => {
     const bonus_value = card.cpp_value >= 1
       ? card.bonus_amount * 1         // cash cards: bonus_amount IS the dollar value
       : card.bonus_amount * card.cpp_value  // points cards
@@ -36,15 +49,14 @@ export function sequenceCards(
     const net_value = bonus_value + card.statement_credits_year1
       - (card.annual_fee_waived_first_year ? 0 : card.annual_fee)
 
-    // How many months to hit minimum spend at this budget
-    const raw_months = card.min_spend > 0
-      ? card.min_spend / monthlyBudget
-      : 0.5  // instant-qualify cards get half a month
-
-    // Can't exceed the bank's allowed timeframe
-    const months_to_complete = Math.min(
-      Math.max(raw_months, 0.5),
-      card.spend_months,
+    // How many months to hit minimum spend at this budget. Floor at 0.5
+    // so an instant-qualify card doesn't divide-by-zero, but no longer
+    // cap at card.spend_months — the feasibility filter above already
+    // guarantees raw_months <= card.spend_months * 1.05, so capping was
+    // hiding the real "you can't actually do this" cases.
+    const months_to_complete = Math.max(
+      card.min_spend > 0 ? card.min_spend / monthlyBudget : 0.5,
+      0.5,
     )
 
     const return_per_month = months_to_complete > 0
