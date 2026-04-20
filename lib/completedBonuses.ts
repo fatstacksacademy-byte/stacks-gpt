@@ -24,6 +24,46 @@ export async function markBonusStarted(
   return data as CompletedBonus
 }
 
+/**
+ * Record a bonus the user already had at some point — used by the
+ * "Already had" flow on paycheck recommendations. Accepts partial date
+ * info; if both opened_date and closed_date are null, the record is
+ * flagged incomplete_info so cooldown math skips it.
+ *
+ * Postgres requires opened_date to be non-null in the current schema, so
+ * we fall back to today's date when the user skipped — the flag is what
+ * actually gates downstream logic, not the date value.
+ */
+export async function markBonusAlreadyHad(
+  userId: string,
+  bonusId: string,
+  payload: {
+    opened_date: string | null
+    closed_date: string | null
+    bonus_received: boolean
+    actual_amount: number | null
+    incomplete_info: boolean
+  },
+): Promise<CompletedBonus | null> {
+  const supabase = createClient()
+  const today = new Date().toISOString().split("T")[0]
+  const { data, error } = await supabase
+    .from("completed_bonuses")
+    .insert({
+      user_id: userId,
+      bonus_id: bonusId,
+      opened_date: payload.opened_date ?? today,
+      closed_date: payload.closed_date,
+      bonus_received: payload.bonus_received,
+      actual_amount: payload.actual_amount,
+      current_step: payload.closed_date ? "close" : (payload.bonus_received ? "bonus_posted" : null),
+      incomplete_info: payload.incomplete_info,
+    })
+    .select().single()
+  if (error) { console.error("[completedBonuses] markBonusAlreadyHad insert failed:", error.message); return null }
+  return data as CompletedBonus
+}
+
 export async function markBonusClosed(
   recordId: string, closedDate: string, bonusReceived: boolean, actualAmount?: number
 ): Promise<void> {

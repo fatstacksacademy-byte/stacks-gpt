@@ -21,8 +21,9 @@ import CheckpointNav from "../components/CheckpointNav"
 import BonusCommitCard from "../components/BonusCommitCard"
 import { getLinkedBonuses, getComboFor } from "../../lib/linkedBonuses"
 import { matchCustomBonusCandidates } from "../../lib/catalogMatching"
-import { migrateCustomToCompleted } from "../../lib/completedBonuses"
+import { migrateCustomToCompleted, markBonusAlreadyHad } from "../../lib/completedBonuses"
 import CatalogMatchPicker from "../components/CatalogMatchPicker"
+import AlreadyHaveForm from "../components/AlreadyHaveForm"
 import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
 
 type Bonus = (typeof allBonuses)[number]
@@ -253,6 +254,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [bonusSearch, setBonusSearch] = useState("")
   const [matchingCustomId, setMatchingCustomId] = useState<string | null>(null)
+  const [alreadyHadBonusId, setAlreadyHadBonusId] = useState<string | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -1315,11 +1317,28 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                             style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
                             I already opened it
                           </button>
+                          <button onClick={() => setAlreadyHadBonusId(alreadyHadBonusId === hb.bonus.id ? null : hb.bonus.id)}
+                            title="Record as already completed so we stop recommending it"
+                            style={{ padding: "16px 20px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                            {alreadyHadBonusId === hb.bonus.id ? "Cancel" : "Already had"}
+                          </button>
                           <button onClick={() => handleSkip(hb.bonus.id)}
                             style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
                             Not now
                           </button>
                         </div>
+                        {alreadyHadBonusId === hb.bonus.id && (
+                          <AlreadyHaveForm
+                            itemLabel={hb.bonus.bank_name}
+                            onSave={async (payload) => {
+                              await markBonusAlreadyHad(userId, hb.bonus.id, payload)
+                              setAlreadyHadBonusId(null)
+                              const fresh = await getCompletedBonuses(userId)
+                              setCompletedRecords(fresh)
+                            }}
+                            onCancel={() => setAlreadyHadBonusId(null)}
+                          />
+                        )}
                       </>
                     )
                   })()}
