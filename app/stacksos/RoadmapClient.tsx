@@ -207,6 +207,12 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showBusinessBonuses, setShowBusinessBonuses] = useState(false)
+  // "Sensitive ChexSystems" toggle: when on, limit the sequencer view to bonuses
+  // where screening.chex_sensitive === "low". Useful for users with Chex flags.
+  const [onlyLowChex, setOnlyLowChex] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("stacks_only_low_chex") === "1"
+  })
   const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null)
   const [showDisclaimer, setShowDisclaimer] = useState(false)
@@ -591,6 +597,11 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       const allowed = b.bonus.eligibility.states_allowed ?? []
       return allowed.length === 0 || allowed.includes(profile.state)
     })
+    .filter(b => {
+      // "Sensitive ChexSystems" toggle — when on, only show chex-friendly bonuses.
+      if (!onlyLowChex) return true
+      return (b.bonus as any).screening?.chex_sensitive === "low"
+    })
     .sort((a, b) => {
       if (a.feasible && !b.feasible) return -1
       if (!a.feasible && b.feasible) return 1
@@ -617,7 +628,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, showBusinessBonuses, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, showBusinessBonuses, onlyLowChex, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
@@ -911,6 +922,25 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   )}
                 </div>
               )}
+            </div>
+            {/* Filters — match the brokerage/business toggle style from Savings */}
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0", display: "flex", gap: 20, flexWrap: "wrap" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={onlyLowChex}
+                  onChange={e => {
+                    setOnlyLowChex(e.target.checked)
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem("stacks_only_low_chex", e.target.checked ? "1" : "0")
+                    }
+                  }}
+                  style={{ accentColor: "#d97706" }}
+                />
+                <span style={{ fontSize: 13, color: "#555" }}>
+                  Sensitive ChexSystems <span style={{ color: "#bbb" }}>— only show chex-friendly bonuses</span>
+                </span>
+              </label>
             </div>
           </div>
         )}
