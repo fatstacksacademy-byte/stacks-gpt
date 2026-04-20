@@ -367,27 +367,28 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-venture-75k": {
-    summary: "The Capital One Venture is currently offering 75,000 Capital One miles after $4,000 in purchases within 3 months. It carries a $95 annual fee, offset by roughly $250 in year-one statement credits. Estimated net year-one value: $905 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Venture until you've earned the 75,000 Capital One miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Use the year-one credits early — they often expire on a calendar cycle, not 12 months from account opening.",
-    bestFor: "Cardholders who can fully use the 75,000 Capital One miles bonus, the $250 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    summary: "The Capital One Venture is currently offering 75,000 Capital One miles after $4,000 in purchases within 3 months. It carries a $95 annual fee with no year-one statement credits to soften it. Estimated net year-one value: $655 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Venture until you've earned the 75,000 Capital One miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who'd use Capital One miles for travel transfers (Wyndham, Turkish Airlines, Air France/KLM) and don't mind the $95 annual fee in exchange for the 75k SUB plus 2x earn on everything.",
     pros: [
       "75,000 Capital One miles sign-up bonus",
-      "$250 in year-one statement credits",
-      "$250 Capital One Travel credit (year 1)",
       "2x miles on every purchase",
+      "Transfer to 15+ airline and hotel partners",
+      "No foreign transaction fees",
     ],
     cons: [
       "$95 annual fee",
       "High $4,000 minimum spend can be hard to hit organically",
+      "No year-one travel credit (Capital One dropped this from the offer)",
     ],
     comparison: "Among Capital-one personal cards in our catalog, the Capital One Venture is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
       { q: "What's the current Capital One Venture sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
-      { q: "What's the Capital One Venture annual fee?", a: "The annual fee is $95. It is partially offset by approximately $250 in year-one statement credits." },
+      { q: "What's the Capital One Venture annual fee?", a: "The annual fee is $95. The current offer no longer includes the year-one travel credit that earlier promotions bundled in." },
       { q: "How long does the Capital One Venture sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
     relatedSlugs: ["capital-one-spark-cash-select-750-cash","capital-one-spark-cash-1000-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
-    verifiedAt: "2026-04-19T22:02:48.873Z",
+    verifiedAt: "2026-04-22T00:00:00.000Z",
     verifiedUrl: "https://www.capitalone.com/credit-cards/venture/",
   },
 
