@@ -7,6 +7,7 @@ import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPE
 import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
+import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
 import { sequenceCards, formatCurrency } from "../../../lib/ccSequencer"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
@@ -137,13 +138,14 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
   const plannedValue = plannedCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
 
-  // Sequencer: filter out cards user is already tracking + airline/hotel toggle
-  const AIRLINE_CURRENCIES = new Set(["AAdvantage miles", "Alaska miles", "JetBlue TrueBlue", "United MileagePlus"])
-  const isAirlineOrHotel = (c: (typeof creditCardBonuses)[0]) => c.is_hotel_card || AIRLINE_CURRENCIES.has(c.bonus_currency)
+  // Sequencer: filter out cards user is already tracking + airline/hotel toggle.
+  // Default hides airline/hotel-loyalty cards because their points are not
+  // straightforwardly redeemable for cash. Detection lives in lib/cardCategorization
+  // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
-    .filter(sc => includeHotelAirline || !isAirlineOrHotel(sc.card))
+    .filter(sc => includeHotelAirline || !isAirlineOrHotelCard(sc.card))
 
   function addFromRecommendation(sc: (typeof ccSequence)[0]) {
     const c = sc.card
