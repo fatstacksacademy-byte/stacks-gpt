@@ -9,6 +9,8 @@ import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savings
 import { savingsBonuses as savingsBonusesCatalog } from "../../../lib/data/savingsBonuses"
 import { getComboFor } from "../../../lib/linkedBonuses"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
+import VerifiedBadge from "../../components/VerifiedBadge"
+import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -48,6 +50,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const [alreadyHaveRecId, setAlreadyHaveRecId] = useState<string | null>(null)
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
+  const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
   // Manual milestone state for savings entries, persisted to localStorage so
   // users can click checkboxes to advance their own progress. Previously
   // "Account opened" and "$X deposited" were auto-checked on Start — but
@@ -99,14 +102,16 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
   const loadData = useCallback(async () => {
     setLoading(true)
     const supabaseClient = createClient()
-    const [e, p, { data: userProfile }] = await Promise.all([
+    const [e, p, { data: userProfile }, vStates] = await Promise.all([
       getSavingsEntries(userId),
       getSavingsProfile(userId),
       supabaseClient.from("user_profiles").select("state").eq("user_id", userId).single(),
+      getVerificationStateMap(),
     ])
     setEntries(e)
     setProfile(p)
     if (userProfile?.state) setUserState(userProfile.state)
+    setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
 
@@ -764,8 +769,9 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                       return (
                         <>
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                               <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{rec.bank_name}</div>
+                              <VerifiedBadge state={verificationStates.get(rec.bonus.id)} />
                               {offerUrl && (
                                 <a href={offerUrl} target="_blank" rel="noreferrer"
                                   style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>

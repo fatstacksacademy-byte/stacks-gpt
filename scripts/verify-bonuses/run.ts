@@ -227,6 +227,21 @@ const BONUS_KIND = new Map<string, "checking" | "savings">()
 for (const b of bonuses as BonusRecord[]) BONUS_KIND.set(b.id, "checking")
 for (const b of savingsBonuses as unknown as BonusRecord[]) BONUS_KIND.set(b.id, "savings")
 
+/**
+ * Map a VerificationResult to a confidence tier for the freshness badge UI.
+ *   high   = page loaded + 0 mismatches
+ *   medium = 1-2 mismatches OR ambiguous signals (likely regex false positives)
+ *   low    = offer dead, fetch error, no fields extracted, or 3+ mismatches
+ */
+function confidenceFor(r: VerificationResult): "high" | "medium" | "low" {
+  if (r.pageSignal !== "ok") return "low"
+  const mismatches = r.fields.filter((f) => f.status === "mismatch").length
+  const ambiguous = r.fields.filter((f) => f.status === "ambiguous").length
+  if (mismatches === 0 && ambiguous === 0) return "high"
+  if (mismatches + ambiguous <= 2) return "medium"
+  return "low"
+}
+
 async function persistResults(
   results: VerificationResult[],
   edits: ProposedEdit[],
@@ -250,7 +265,7 @@ async function persistResults(
     editsByBonus.set(e.id, arr)
   }
 
-  // Only persist bonuses with issues. OK rows aren't worth storing.
+  // bonus_verifications: only problem rows (admin queue).
   const problemRows = results
     .filter((r) =>
       r.pageSignal !== "ok" ||
@@ -271,17 +286,71 @@ async function persistResults(
       error_message: r.fetch.error ?? null,
     }))
 
-  if (problemRows.length === 0) {
-    console.log(`[persist] All bonuses OK — nothing to write.`)
-    return
+  if (problemRows.length > 0) {
+    const { error } = await supabase.from("bonus_verifications").insert(problemRows)
+    if (error) {
+      console.error(`[persist] bonus_verifications insert failed:`, error.message)
+      process.exit(1)
+    }
+    console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+  } else {
+    console.log(`[persist] All bonuses OK — nothing to write to bonus_verifications.`)
   }
 
-  const { error } = await supabase.from("bonus_verifications").insert(problemRows)
-  if (error) {
-    console.error(`[persist] insert failed:`, error.message)
+  // catalog_verification_state: one row per verified bonus, refreshed every run.
+  // Drives the "Verified 4h ago ✓" freshness badge in the UI.
+  const stateRows = results.map((r) => ({
+    catalog_id: r.id,
+    catalog_kind: BONUS_KIND.get(r.id) ?? "checking",
+    verified_at: r.verifiedAt,
+    verification_source: "bank_page",
+    confidence: confidenceFor(r),
+    mismatch_count: r.fields.filter((f) => f.status === "mismatch" || f.status === "ambiguous").length,
+    page_signal: r.pageSignal,
+    updated_at: runAt,
+  }))
+  const { error: stateErr } = await supabase
+    .from("catalog_verification_state")
+    .upsert(stateRows, { onConflict: "catalog_id" })
+  if (stateErr) {
+    console.error(`[persist] catalog_verification_state upsert failed:`, stateErr.message)
     process.exit(1)
   }
-  console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+  console.log(`[persist] Refreshed freshness state for ${stateRows.length} bonuses`)
+
+  // bonus_page_observations: append one row per OK fetch (skip fetch_errors).
+  // Captures what the extractor actually saw so we can diff across runs and
+  // surface "just bumped" UX signals. See migrations/013.
+  const observationRows = results
+    .filter((r) => r.pageSignal !== "fetch_error")
+    .map((r) => {
+      const extracted: Record<string, unknown> = {}
+      const stored: Record<string, unknown> = {}
+      for (const f of r.fields) {
+        if (f.status === "match" || f.status === "mismatch" || f.status === "ambiguous") {
+          extracted[f.field] = f.extracted
+          stored[f.field] = f.stored
+        }
+      }
+      return {
+        catalog_id: r.id,
+        catalog_kind: BONUS_KIND.get(r.id) ?? "checking",
+        observed_at: r.verifiedAt,
+        run_id: runId,
+        source_url: r.url,
+        extracted,
+        stored_snapshot: stored,
+      }
+    })
+  if (observationRows.length > 0) {
+    const { error: obsErr } = await supabase.from("bonus_page_observations").insert(observationRows)
+    if (obsErr) {
+      console.error(`[persist] bonus_page_observations insert failed:`, obsErr.message)
+      // Non-fatal: observations are a Phase 5 nice-to-have, don't block the run
+    } else {
+      console.log(`[persist] Logged ${observationRows.length} page observations`)
+    }
+  }
 }
 
 async function main() {

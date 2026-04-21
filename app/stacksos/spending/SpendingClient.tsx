@@ -12,6 +12,8 @@ import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
+import VerifiedBadge from "../../components/VerifiedBadge"
+import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import CreditCardProgress from "../../components/CreditCardProgress"
@@ -58,6 +60,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const [recSearch, setRecSearch] = useState("")
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
+  const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -79,14 +82,16 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const loadData = useCallback(async () => {
     setLoading(true)
     const sb = createClient()
-    const [c, p, userProfile] = await Promise.all([
+    const [c, p, userProfile, vStates] = await Promise.all([
       getOwnedCards(userId),
       getSpendingProfile(userId),
       sb.from("user_profiles").select("state").eq("user_id", userId).maybeSingle(),
+      getVerificationStateMap(),
     ])
     setCards(c)
     setProfile(p)
     setUserState((userProfile.data as { state?: string | null } | null)?.state ?? null)
+    setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
 
@@ -622,6 +627,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                             {sc.card.card_type === "business" && (
                               <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
                             )}
+                            <VerifiedBadge state={verificationStates.get(sc.card.id)} compact />
                             {(() => {
                               const post = getPostByBonusId(sc.card.id)
                               if (!post) return null

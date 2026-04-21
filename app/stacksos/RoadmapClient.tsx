@@ -24,6 +24,8 @@ import { matchCustomBonusCandidates } from "../../lib/catalogMatching"
 import { migrateCustomToCompleted, markBonusAlreadyHad } from "../../lib/completedBonuses"
 import CatalogMatchPicker from "../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../components/AlreadyHaveForm"
+import VerifiedBadge from "../components/VerifiedBadge"
+import { getVerificationStateMap, type VerificationState } from "../../lib/verificationState"
 import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
 import lastDiscoverRun from "../../lib/data/lastDiscoverRun.json"
 
@@ -221,6 +223,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [addingDeposit, setAddingDeposit] = useState<string | null>(null)
   const [newDepositAmt, setNewDepositAmt] = useState("")
   const [newDepositDate, setNewDepositDate] = useState(todayStr())
+  const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
   const [bonusNotes, setBonusNotes] = useState<Record<string, string>>({})
   const [editingNote, setEditingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
@@ -310,14 +313,16 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
   const loadRecords = useCallback(async () => {
     setLoadingRecords(true)
-    const [records, custom, deps, notes, skips, openAccts] = await Promise.all([
+    const [records, custom, deps, notes, skips, openAccts, vStates] = await Promise.all([
       getCompletedBonuses(userId),
       getCustomBonuses(userId),
       getDeposits(userId),
       getNotes(userId),
       getSkippedBonuses(userId),
       getOpenAccounts(userId),
+      getVerificationStateMap(),
     ])
+    setVerificationStates(vStates)
     setCompletedRecords(records)
     // Backfill: any kept-open or bonus_posted custom bonus should have bonus_received = true
     const keptOpenMissing = custom.filter(c => (c.current_step === "kept_open" || c.current_step === "bonus_posted") && !c.bonus_received)
@@ -1162,8 +1167,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
                     {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
                   </div>
-                  <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
+                  <div style={{ marginTop: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
                     <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
+                    <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
                     <div style={{ fontSize: 14, color: "#666" }}>
                       Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
                     </div>

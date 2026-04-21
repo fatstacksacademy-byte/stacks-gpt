@@ -334,6 +334,20 @@ function buildReport(results: CardResult[], edits: ReturnType<typeof buildPropos
   return out.join("\n")
 }
 
+/**
+ * Map a CardResult to a confidence tier for the freshness badge UI.
+ *   high   = page loaded + card name matched + 0 mismatches
+ *   medium = 1-2 field mismatches (likely regex false positives)
+ *   low    = offer dead, redirected, fetch error, no fields, card name mismatch, 3+ mismatches
+ */
+function confidenceForCard(r: CardResult): "high" | "medium" | "low" {
+  if (r.pageSignal !== "ok") return "low"
+  const mismatches = r.fields.filter((f) => f.status === "mismatch").length
+  if (mismatches === 0) return "high"
+  if (mismatches <= 2) return "medium"
+  return "low"
+}
+
 async function persistResults(
   results: CardResult[],
   edits: ReturnType<typeof buildProposedEdits>,
@@ -358,7 +372,7 @@ async function persistResults(
     editsByCard.set(e.id, arr)
   }
 
-  // Only persist cards with issues. OK cards aren't worth the row.
+  // card_verifications: only problem rows (admin queue).
   const problemRows = results
     .filter((r) => r.pageSignal !== "ok" || r.fields.some((f) => f.status === "mismatch"))
     .map((r) => ({
@@ -376,17 +390,67 @@ async function persistResults(
       error_message: r.error ?? null,
     }))
 
-  if (problemRows.length === 0) {
-    console.log(`[persist] All cards OK — nothing to write.`)
-    return
+  if (problemRows.length > 0) {
+    const { error } = await supabase.from("card_verifications").insert(problemRows)
+    if (error) {
+      console.error(`[persist] card_verifications insert failed:`, error.message)
+      process.exit(1)
+    }
+    console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+  } else {
+    console.log(`[persist] All cards OK — nothing to write to card_verifications.`)
   }
 
-  const { error } = await supabase.from("card_verifications").insert(problemRows)
-  if (error) {
-    console.error(`[persist] insert failed:`, error.message)
+  // catalog_verification_state: one row per verified card, refreshed every run.
+  // Drives the "Verified 4h ago ✓" freshness badge in the spending UI.
+  const stateRows = results.map((r) => ({
+    catalog_id: r.id,
+    catalog_kind: "card",
+    verified_at: r.verifiedAt,
+    verification_source: "bank_page",
+    confidence: confidenceForCard(r),
+    mismatch_count: r.fields.filter((f) => f.status === "mismatch").length,
+    page_signal: r.pageSignal,
+    updated_at: runAt,
+  }))
+  const { error: stateErr } = await supabase
+    .from("catalog_verification_state")
+    .upsert(stateRows, { onConflict: "catalog_id" })
+  if (stateErr) {
+    console.error(`[persist] catalog_verification_state upsert failed:`, stateErr.message)
     process.exit(1)
   }
-  console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+  console.log(`[persist] Refreshed freshness state for ${stateRows.length} cards`)
+
+  // bonus_page_observations: one row per OK fetch, captures what was extracted.
+  // Enables "just bumped 60k → 125k, 3 days ago" UX signals via diff across runs.
+  const observationRows = results
+    .filter((r) => r.pageSignal !== "fetch_error")
+    .map((r) => {
+      const extracted: Record<string, unknown> = {}
+      const stored: Record<string, unknown> = {}
+      for (const f of r.fields) {
+        extracted[f.field] = f.extracted
+        stored[f.field] = f.stored
+      }
+      return {
+        catalog_id: r.id,
+        catalog_kind: "card",
+        observed_at: r.verifiedAt,
+        run_id: runId,
+        source_url: r.url,
+        extracted,
+        stored_snapshot: stored,
+      }
+    })
+  if (observationRows.length > 0) {
+    const { error: obsErr } = await supabase.from("bonus_page_observations").insert(observationRows)
+    if (obsErr) {
+      console.error(`[persist] bonus_page_observations insert failed:`, obsErr.message)
+    } else {
+      console.log(`[persist] Logged ${observationRows.length} page observations`)
+    }
+  }
 }
 
 async function main() {
