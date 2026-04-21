@@ -1,5 +1,6 @@
 import { createClient } from "./supabase/server"
 import { createClient as createBrowserClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -53,6 +54,6 @@ export async function upsertProfileClient(
     )
 
   if (error) {
-    console.error("[profile] upsert failed:", error.message)
+    reportError("Could not save profile", error)
   }
 }

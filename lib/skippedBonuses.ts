@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export async function getSkippedBonuses(userId: string): Promise<string[]> {
   const supabase = createClient()
@@ -18,7 +19,7 @@ export async function skipBonus(userId: string, bonusId: string): Promise<void> 
   const { error } = await supabase
     .from("skipped_bonuses")
     .upsert({ user_id: userId, bonus_id: bonusId }, { onConflict: "user_id,bonus_id" })
-  if (error) console.error("[skips] insert failed:", error.message)
+  if (error) reportError("Could not skip bonus", error)
 }
 
 export async function unskipBonus(userId: string, bonusId: string): Promise<void> {
@@ -28,5 +29,5 @@ export async function unskipBonus(userId: string, bonusId: string): Promise<void
     .delete()
     .eq("user_id", userId)
     .eq("bonus_id", bonusId)
-  if (error) console.error("[skips] delete failed:", error.message)
+  if (error) reportError("Could not unskip bonus", error)
 }

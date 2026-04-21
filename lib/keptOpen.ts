@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export async function markKeptOpen(recordId: string, keptOpen: boolean): Promise<void> {
   const supabase = createClient()
@@ -6,5 +7,5 @@ export async function markKeptOpen(recordId: string, keptOpen: boolean): Promise
     .from("completed_bonuses")
     .update({ kept_open: keptOpen })
     .eq("id", recordId)
-  if (error) console.error("[keptOpen] update failed:", error.message)
+  if (error) reportError("Could not update kept-open flag", error)
 }

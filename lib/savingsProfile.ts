@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type SavingsProfile = {
   user_id: string
@@ -41,5 +42,5 @@ export async function upsertSavingsProfile(
       { ...profile, updated_at: new Date().toISOString() },
       { onConflict: "user_id" }
     )
-  if (error) console.error("[savings_profile] upsert failed:", error.message)
+  if (error) reportError("Could not save savings profile", error)
 }

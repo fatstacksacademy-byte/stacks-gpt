@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export const OWNED_ACCOUNT_TYPES = ["checking", "savings", "brokerage"] as const
 export type OwnedAccountType = (typeof OWNED_ACCOUNT_TYPES)[number]
@@ -56,7 +57,7 @@ export async function addOwnedAccount(
     })
     .select()
     .single()
-  if (error) { console.error("addOwnedAccount error:", error); return null }
+  if (error) { reportError("Could not save account", error); return null }
   return data
 }
 
@@ -69,7 +70,7 @@ export async function updateOwnedAccount(
     .from("owned_accounts")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)
-  if (error) { console.error("updateOwnedAccount error:", error); return false }
+  if (error) { reportError("Could not update account", error); return false }
   return true
 }
 
@@ -79,6 +80,6 @@ export async function deleteOwnedAccount(id: string): Promise<boolean> {
     .from("owned_accounts")
     .delete()
     .eq("id", id)
-  if (error) { console.error("deleteOwnedAccount error:", error); return false }
+  if (error) { reportError("Could not delete account", error); return false }
   return true
 }

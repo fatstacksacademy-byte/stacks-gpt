@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 import type { UserProfile } from "./profileTypes"
 
 export async function upsertProfileClient(
@@ -11,5 +12,5 @@ export async function upsertProfileClient(
       { ...profile, updated_at: new Date().toISOString() },
       { onConflict: "user_id" }
     )
-  if (error) console.error("[profile] upsert failed:", error.message)
+  if (error) reportError("Could not save profile", error)
 }

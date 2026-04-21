@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type BonusNote = {
   id: string
@@ -29,5 +30,5 @@ export async function upsertNote(userId: string, bonusId: string, note: string):
       { user_id: userId, bonus_id: bonusId, note, updated_at: new Date().toISOString() },
       { onConflict: "user_id,bonus_id" }
     )
-  if (error) console.error("[notes] upsert failed:", error.message)
+  if (error) reportError("Could not save note", error)
 }

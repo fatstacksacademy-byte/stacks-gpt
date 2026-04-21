@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export const OWNED_CARD_ROLES = [
   "sub-in-progress",
@@ -130,7 +131,7 @@ export async function addOwnedCard(
     })
     .select()
     .single()
-  if (error) { console.error("addOwnedCard error:", error); return null }
+  if (error) { reportError("Could not save card", error); return null }
   return data
 }
 
@@ -143,7 +144,7 @@ export async function updateOwnedCard(
     .from("owned_cards")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)
-  if (error) { console.error("updateOwnedCard error:", error); return false }
+  if (error) { reportError("Could not update card", error); return false }
   return true
 }
 
@@ -153,6 +154,6 @@ export async function deleteOwnedCard(id: string): Promise<boolean> {
     .from("owned_cards")
     .delete()
     .eq("id", id)
-  if (error) { console.error("deleteOwnedCard error:", error); return false }
+  if (error) { reportError("Could not delete card", error); return false }
   return true
 }

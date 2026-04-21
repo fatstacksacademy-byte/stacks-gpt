@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type CustomBonus = {
   id: string
@@ -70,7 +71,7 @@ export async function addCustomBonus(
     })
     .select()
     .single()
-  if (error) { console.error("addCustomBonus error:", error); return null }
+  if (error) { reportError("Could not save custom bonus", error); return null }
   return data
 }
 
@@ -88,7 +89,7 @@ export async function updateCustomBonus(
     .from("custom_bonuses")
     .update(updates)
     .eq("id", id)
-  if (error) { console.error("updateCustomBonus error:", error); return false }
+  if (error) { reportError("Could not update custom bonus", error); return false }
   return true
 }
 
@@ -111,6 +112,6 @@ export async function deleteCustomBonus(id: string): Promise<boolean> {
     .from("custom_bonuses")
     .delete()
     .eq("id", id)
-  if (error) { console.error("deleteCustomBonus error:", error); return false }
+  if (error) { reportError("Could not delete custom bonus", error); return false }
   return true
 }

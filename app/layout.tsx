@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { ProfileProvider } from "./components/ProfileProvider"
+import ToastHost from "./components/ToastHost"
 import { createClient } from "../lib/supabase/server"
 import { getProfileServer, DEFAULT_PROFILE } from "../lib/profileServer"
 
@@ -96,6 +97,7 @@ export default async function RootLayout({
         <ProfileProvider serverProfile={serverProfile}>
           {children}
         </ProfileProvider>
+        <ToastHost />
       </body>
     </html>
   )

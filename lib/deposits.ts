@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type BonusDeposit = {
   id: string
@@ -36,7 +37,7 @@ export async function addDeposit(
     .select()
     .single()
   if (error) {
-    console.error("[deposits] insert failed:", error.message)
+    reportError("Could not add deposit", error)
     return null
   }
   return data as BonusDeposit
@@ -48,5 +49,5 @@ export async function deleteDeposit(depositId: string): Promise<void> {
     .from("bonus_deposits")
     .delete()
     .eq("id", depositId)
-  if (error) console.error("[deposits] delete failed:", error.message)
+  if (error) reportError("Could not delete deposit", error)
 }

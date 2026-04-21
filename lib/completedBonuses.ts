@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 import type { CompletedBonus } from "./churn"
 
 export async function getCompletedBonuses(userId: string): Promise<CompletedBonus[]> {
@@ -20,7 +21,7 @@ export async function markBonusStarted(
     .from("completed_bonuses")
     .insert({ user_id: userId, bonus_id: bonusId, opened_date: openedDate, bonus_received: false })
     .select().single()
-  if (error) { console.error("[completedBonuses] insert failed:", error.message); return null }
+  if (error) { reportError("Could not start bonus", error); return null }
   return data as CompletedBonus
 }
 
@@ -60,7 +61,7 @@ export async function markBonusAlreadyHad(
       incomplete_info: payload.incomplete_info,
     })
     .select().single()
-  if (error) { console.error("[completedBonuses] markBonusAlreadyHad insert failed:", error.message); return null }
+  if (error) { reportError("Could not record bonus as already had", error); return null }
   return data as CompletedBonus
 }
 
@@ -78,7 +79,7 @@ export async function markBonusClosed(
       updated_at: new Date().toISOString(),
     })
     .eq("id", recordId)
-  if (error) console.error("[completedBonuses] update failed:", error.message)
+  if (error) reportError("Could not mark bonus closed", error)
 }
 
 export async function updateBonusStep(
@@ -89,13 +90,13 @@ export async function updateBonusStep(
     .from("completed_bonuses")
     .update({ current_step: step, updated_at: new Date().toISOString() })
     .eq("id", recordId)
-  if (error) console.error("[completedBonuses] step update failed:", error.message)
+  if (error) reportError("Could not update bonus step", error)
 }
 
 export async function deleteCompletedBonus(recordId: string): Promise<void> {
   const supabase = createClient()
   const { error } = await supabase.from("completed_bonuses").delete().eq("id", recordId)
-  if (error) console.error("[completedBonuses] delete failed:", error.message)
+  if (error) reportError("Could not delete bonus record", error)
 }
 
 /**

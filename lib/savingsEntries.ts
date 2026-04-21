@@ -1,4 +1,5 @@
 import { createClient } from "./supabase/client"
+import { reportError } from "./toast"
 
 export type SavingsEntry = {
   id: string
@@ -65,7 +66,7 @@ export async function addSavingsEntry(
     })
     .select()
     .single()
-  if (error) { console.error("addSavingsEntry error:", error); return null }
+  if (error) { reportError("Could not save savings entry", error); return null }
   return data
 }
 
@@ -78,7 +79,7 @@ export async function updateSavingsEntry(
     .from("savings_entries")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)
-  if (error) { console.error("updateSavingsEntry error:", error); return false }
+  if (error) { reportError("Could not update savings entry", error); return false }
   return true
 }
 
@@ -88,6 +89,6 @@ export async function deleteSavingsEntry(id: string): Promise<boolean> {
     .from("savings_entries")
     .delete()
     .eq("id", id)
-  if (error) { console.error("deleteSavingsEntry error:", error); return false }
+  if (error) { reportError("Could not delete savings entry", error); return false }
   return true
 }
