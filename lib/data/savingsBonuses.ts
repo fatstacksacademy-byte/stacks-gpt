@@ -89,7 +89,7 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: true,
-      eligibility_notes: "New 360 Performance Savings customers only. External funds required. Ineligible if you held eligible Capital One savings accounts on or after Jan 1, 2022. Use promo code BONUS1500."
+      eligibility_notes: "New 360 Performance Savings customers only. External funds required. Ineligible if you held eligible Capital One savings accounts on or after Jan 1, 2024. Use promo code BONUS1500."
     },
     source_links: [
       "https://www.capitalone.com/bank/bonus1500/"

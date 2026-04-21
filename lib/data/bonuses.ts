@@ -5376,16 +5376,57 @@ export const bonuses: any[] = [
     "raw_excerpt": "Central Bank of the Midwest $500 business checking bonus. $3,000 balance at day 90. Promo 500BB18. State restricted."
   },
   {
+    "id": "grasshopper-business-checking-750-2026",
+    "bank_name": "Grasshopper Bank",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 750,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 10000 },
+      { "bonus": 500, "min_dd_total": 25000 },
+      { "bonus": 750, "min_dd_total": 50000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 60,
+      "min_opening_deposit": null,
+      "min_balance": 10000,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open Innovator Business Checking by May 15, 2026. Maintain $10K / $25K / $50K+ average balance May 16–July 15, 2026. Bonus posts by August 14, 2026. Existing non-bonused customers eligible; ineligible if account under 30 days or received a prior promotional bonus."
+    },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Online-only digital bank. Standard business verification." },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Innovator Business Checking. Open by May 15, 2026. One bonus per business owner/authorized signer. Bonus reversed if account closes within 150 days. Existing customers eligible if no prior promotional bonus."
+    },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 150 },
+    "source_links": [
+      "https://www.grasshopper.bank/april-checking-bonus/",
+      "https://www.doctorofcredit.com/existing-users-grasshopper-bank-up-to-750-business-checking-bonus/"
+    ],
+    "raw_excerpt": "Grasshopper Bank up to $750 Innovator Business Checking bonus. Tiered: $300 ($10K) / $500 ($25K) / $750 ($50K) average balance May 16–July 15, 2026. Open by May 15, 2026. Existing non-bonused customers eligible. No monthly fee."
+  },
+  {
     "id": "hsbc-premier-checking-2026",
     "bank_name": "HSBC",
     "product_type": "checking",
-    "bonus_amount": 7000,
+    "bonus_amount": 5000,
     "cooldown_months": null,
     "tiers": [
       { "bonus": 1500, "min_dd_total": 150000 },
       { "bonus": 2500, "min_dd_total": 250000 },
       { "bonus": 3500, "min_dd_total": 500000 },
-      { "bonus": 7000, "min_dd_total": 1000000 }
+      { "bonus": 5000, "min_dd_total": 1000000 }
     ],
     "requirements": {
       "direct_deposit_required": false,
@@ -5398,7 +5439,7 @@ export const bonuses: any[] = [
       "min_balance": 150000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "HSBC Premier Relationship offer — four tiers: $1,500 bonus for $150K-$249K new money deposited/invested, $2,500 for $250K-$499K, $3,500 for $500K-$999K, and $7,000 for $1M+. No direct deposit requirement; balance-based. Funds must be net-new to HSBC. Deposit by June 30, 2026 and hold through that date. Expires March 31, 2026."
+      "other_requirements_text": "HSBC Premier Relationship offer — four tiers: $1,500 bonus for $150K-$249K new money deposited/invested, $2,500 for $250K-$499K, $3,500 for $500K-$999K, and $5,000 for $1M+. No direct deposit requirement; balance-based. Funds must be net-new to HSBC. Fund by June 30, 2026 and hold through that date. Offer enrollment closes March 31, 2026."
     },
     "fees": { "monthly_fee": 50, "monthly_fee_waiver_text": "Waived with $75,000+ in combined U.S. Dollar personal deposit + investment balances OR $5,000/mo in third-party recurring direct deposits.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Verified 2026-04 from DoC + us.hsbc.com Premier Relationship offer page. Previous entry was stale: had a non-existent $600 tier at $75K and incorrectly marked DD as required. HSBC Premier is balance-qualified, not DD-qualified." },
@@ -5414,7 +5455,7 @@ export const bonuses: any[] = [
       "https://www.us.hsbc.com/checking-accounts/campaigns/premier-relationship/offer/",
       "https://www.doctorofcredit.com/hsbc-1500-7000-checking-bonus/"
     ],
-    "raw_excerpt": "HSBC Premier Relationship checking bonus up to $7,000. Four tiers by new-money deposited: $1,500 ($150K-$249K), $2,500 ($250K-$499K), $3,500 ($500K-$999K), $7,000 ($1M+). Fund by June 30, 2026; hold through that date. Expires March 31, 2026."
+    "raw_excerpt": "HSBC Premier Relationship checking bonus up to $5,000. Four tiers by new-money deposited: $1,500 ($150K-$249K), $2,500 ($250K-$499K), $3,500 ($500K-$999K), $5,000 ($1M+). Fund by June 30, 2026; hold through that date. Enrollment closes March 31, 2026."
   },
   {
     "id": "usaa-300-checking-2026",
