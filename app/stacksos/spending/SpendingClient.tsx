@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
-import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard, SPENDING_CATEGORIES, CATEGORY_LABELS } from "../../../lib/ownedCards"
+import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard, SPENDING_CATEGORIES, SPENDING_CATEGORIES_PRIMARY, SPENDING_CATEGORIES_EXTRA, CATEGORY_LABELS } from "../../../lib/ownedCards"
+import { computeCategoryGaps, GAP_MIN_MONTHLY_SPEND } from "../../../lib/categoryGaps"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { createClient } from "../../../lib/supabase/client"
-import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
+import { creditCardBonuses, type CreditCardBonus } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
@@ -315,35 +316,45 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
 
-            {/* Advanced: category breakdown */}
+            {/* Advanced: category breakdown.
+                Two-tier layout: the legacy 7 (dining, groceries, etc.) are always
+                visible; an inner "+ More categories" toggle reveals 11 additional
+                tokens that map directly to creditCardBonuses.ts rewards keys
+                (streaming, transit, EV charging, etc.) so the gap analyzer
+                downstream can match user spend to bonus categories precisely. */}
             <details style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
               <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Advanced rewards setup</summary>
               <div style={{ marginTop: 12 }}>
-                <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Break down your monthly spend by category for more accurate tracking.</div>
+                <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Break down your monthly spend by category. Categories with $50+/month feed the Portfolio Gaps analysis above the recommendations.</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
-                  {SPENDING_CATEGORIES.map(cat => (
-                    <div key={cat} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      <div style={{ fontSize: 11, color: "#999" }}>{CATEGORY_LABELS[cat]}</div>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <div style={{ position: "relative", flex: 1 }}>
-                          <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12 }}>$</span>
-                          <input type="number" value={profile.category_spend?.[cat] ?? ""}
-                            onChange={e => updateProfile({ category_spend: { ...profile.category_spend, [cat]: Number(e.target.value) || 0 } })}
-                            style={{ ...inputStyle, paddingLeft: 22, fontSize: 12 }} placeholder="0" />
-                        </div>
-                        <input type="text" value={profile.current_cards?.[cat] ?? ""}
-                          onChange={e => updateProfile({ current_cards: { ...profile.current_cards, [cat]: e.target.value } })}
-                          style={{ ...inputStyle, fontSize: 12, flex: 1 }} placeholder="Current card" />
-                        <div style={{ position: "relative", width: 60 }}>
-                          <input type="number" step="0.1" value={profile.current_multipliers?.[cat] ?? ""}
-                            onChange={e => updateProfile({ current_multipliers: { ...profile.current_multipliers, [cat]: parseFloat(e.target.value) || 0 } })}
-                            style={{ ...inputStyle, fontSize: 12, width: 60 }} placeholder="1x" />
-                          <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 11 }}>x</span>
-                        </div>
-                      </div>
-                    </div>
+                  {SPENDING_CATEGORIES_PRIMARY.map(cat => (
+                    <CategorySpendRow
+                      key={cat}
+                      cat={cat}
+                      label={CATEGORY_LABELS[cat]}
+                      profile={profile}
+                      updateProfile={updateProfile}
+                      inputStyle={inputStyle}
+                    />
                   ))}
                 </div>
+                <details style={{ marginTop: 12 }}>
+                  <summary style={{ fontSize: 11, fontWeight: 600, color: "#7c3aed", cursor: "pointer", padding: "4px 0" }}>
+                    + More categories ({SPENDING_CATEGORIES_EXTRA.length})
+                  </summary>
+                  <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+                    {SPENDING_CATEGORIES_EXTRA.map(cat => (
+                      <CategorySpendRow
+                        key={cat}
+                        cat={cat}
+                        label={CATEGORY_LABELS[cat]}
+                        profile={profile}
+                        updateProfile={updateProfile}
+                        inputStyle={inputStyle}
+                      />
+                    ))}
+                  </div>
+                </details>
               </div>
             </details>
           </div>
@@ -367,6 +378,18 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{completedCards.length} completed</div>
           </div>
         </div>
+
+        {/* ── Portfolio Gaps (additive, doesn't affect recommendations sort) ──
+            Compares the best multiplier across the user's owned cards to the
+            best multiplier in the catalog for each category they spend $50+/mo
+            on. Surfaces only when there's a 2x+ gap AND ≥$25/yr uplift, so
+            tiny edge cases don't clutter the page. */}
+        <PortfolioGaps
+          ownedCards={cards}
+          categorySpend={profile.category_spend ?? {}}
+          userId={userId}
+          onAdded={loadData}
+        />
 
         {/* ── Recommended Cards (sequencer) ── */}
         <div style={{ marginBottom: 28 }}>
@@ -1028,6 +1051,262 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
           actionLabel="Match card"
         />
       )}
+    </div>
+  )
+}
+
+// ── Per-category spending row (used by both the legacy 7 and the
+//    extra 11). Three inputs in a flex row: $/mo, current card name,
+//    multiplier. Hoisted into a reusable component so the form-body
+//    doesn't have to duplicate the JSX for the more-categories panel. ──
+function CategorySpendRow({
+  cat,
+  label,
+  profile,
+  updateProfile,
+  inputStyle,
+}: {
+  cat: string
+  label: string
+  profile: SpendingProfile
+  updateProfile: (updates: Partial<SpendingProfile>) => void
+  inputStyle: React.CSSProperties
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <div style={{ fontSize: 11, color: "#999" }}>{label}</div>
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ position: "relative", flex: 1 }}>
+          <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12 }}>$</span>
+          <input type="number" value={profile.category_spend?.[cat] ?? ""}
+            onChange={e => updateProfile({ category_spend: { ...profile.category_spend, [cat]: Number(e.target.value) || 0 } })}
+            style={{ ...inputStyle, paddingLeft: 22, fontSize: 12 }} placeholder="0" />
+        </div>
+        <input type="text" value={profile.current_cards?.[cat] ?? ""}
+          onChange={e => updateProfile({ current_cards: { ...profile.current_cards, [cat]: e.target.value } })}
+          style={{ ...inputStyle, fontSize: 12, flex: 1 }} placeholder="Current card" />
+        <div style={{ position: "relative", width: 60 }}>
+          <input type="number" step="0.1" value={profile.current_multipliers?.[cat] ?? ""}
+            onChange={e => updateProfile({ current_multipliers: { ...profile.current_multipliers, [cat]: parseFloat(e.target.value) || 0 } })}
+            style={{ ...inputStyle, fontSize: 12, width: 60 }} placeholder="1x" />
+          <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 11 }}>x</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Portfolio Gaps section.
+//    Sits above the Recommended Next Cards list. For each spending category
+//    where the user reports $50+/mo, compares their best owned-card multiplier
+//    to the best multiplier in the catalog they don't already own. Renders one
+//    row per category, sorted by annual $ uplift descending. Also embeds a
+//    "My current cards" pill list + a quick "+ Add card" search that writes
+//    directly to owned_cards (status='completed') so the gap math gets honest
+//    inputs without making users round-trip through the Base tab. ──
+function PortfolioGaps({
+  ownedCards,
+  categorySpend,
+  userId,
+  onAdded,
+}: {
+  ownedCards: OwnedCard[]
+  categorySpend: Record<string, number>
+  userId: string
+  onAdded: () => void | Promise<void>
+}) {
+  const [showAddCard, setShowAddCard] = React.useState(false)
+  const [search, setSearch] = React.useState("")
+  const [adding, setAdding] = React.useState<string | null>(null)
+
+  const gaps = React.useMemo(
+    () => computeCategoryGaps(creditCardBonuses, ownedCards, categorySpend),
+    [ownedCards, categorySpend],
+  )
+  const flagged = gaps.filter(g => g.flagged)
+  const ownedActive = ownedCards.filter(c => c.status === "active" || c.status === "completed")
+
+  const ownedNameSet = React.useMemo(
+    () => new Set(ownedCards.map(c => c.card_name.toLowerCase())),
+    [ownedCards],
+  )
+  const searchResults = React.useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q || q.length < 2) return []
+    return creditCardBonuses
+      .filter(cc => !cc.expired && !ownedNameSet.has(cc.card_name.toLowerCase()))
+      .filter(cc =>
+        cc.card_name.toLowerCase().includes(q) ||
+        cc.issuer.toLowerCase().includes(q),
+      )
+      .slice(0, 8)
+  }, [search, ownedNameSet])
+
+  async function quickAddOwned(card: CreditCardBonus) {
+    setAdding(card.id)
+    await addOwnedCard(userId, {
+      card_name: card.card_name,
+      issuer: card.issuer,
+      annual_fee: card.annual_fee,
+      status: "completed",
+      incomplete_info: true,
+      notes: "Added via Portfolio Gaps quick-add — dates not entered",
+    })
+    setSearch("")
+    setShowAddCard(false)
+    setAdding(null)
+    await onAdded()
+  }
+
+  // No owned cards AND no spend entered yet — render a gentle prompt instead
+  // of a blank section. Pre-empts user confusion ("nothing here?").
+  const hasAnySpend = Object.values(categorySpend).some(v => (v ?? 0) >= GAP_MIN_MONTHLY_SPEND)
+  if (ownedActive.length === 0 && !hasAnySpend) {
+    return (
+      <div style={{ marginBottom: 28, background: "#fafafa", border: "1px dashed #e0e0e0", borderRadius: 12, padding: "16px 20px" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#111", marginBottom: 4 }}>Portfolio Gaps</div>
+        <div style={{ fontSize: 12, color: "#999" }}>
+          Open <strong>Spending Profile</strong> at the top right and enter monthly spend by category, then add the cards you currently use to see where your portfolio has gaps worth filling.
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Portfolio Gaps</div>
+        <div style={{ fontSize: 11, color: "#999" }}>
+          {flagged.length > 0
+            ? <><strong style={{ color: "#d97706" }}>{flagged.length}</strong> categor{flagged.length === 1 ? "y" : "ies"} earning below catalog best</>
+            : "No major gaps in categories you spend $50+/mo on"}
+        </div>
+      </div>
+
+      {/* My current cards pill list — single source of truth is the
+          owned_cards table. Adding here writes status='completed' so the
+          card appears in the Completed strip below as well. */}
+      <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", marginBottom: 10 }}>
+        <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+          My current cards ({ownedActive.length})
+        </div>
+        {ownedActive.length === 0 ? (
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 8 }}>
+            None added. Add the cards you currently use so we can compute where your portfolio has gaps.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+            {ownedActive.map(c => (
+              <span key={c.id} style={{
+                fontSize: 11, padding: "3px 9px", borderRadius: 99, fontWeight: 600,
+                color: "#1d4ed8", background: "#dbeafe", border: "1px solid #bfdbfe",
+              }}>
+                {c.card_name}
+              </span>
+            ))}
+          </div>
+        )}
+        {!showAddCard ? (
+          <button onClick={() => setShowAddCard(true)}
+            style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", padding: 0, cursor: "pointer", fontWeight: 700 }}>
+            + Add card
+          </button>
+        ) : (
+          <div>
+            <input
+              type="search"
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by card name or issuer…"
+              style={{
+                width: "100%", padding: "7px 10px", fontSize: 12, color: "#111",
+                border: "1px solid #e0e0e0", borderRadius: 6, background: "#fff",
+                boxSizing: "border-box",
+              }}
+            />
+            {search.trim().length >= 2 && (
+              <div style={{ marginTop: 6, maxHeight: 240, overflowY: "auto", border: "1px solid #f0f0f0", borderRadius: 6 }}>
+                {searchResults.length === 0 ? (
+                  <div style={{ fontSize: 11, color: "#999", padding: "8px 10px" }}>No matches.</div>
+                ) : searchResults.map(card => (
+                  <button key={card.id} onClick={() => quickAddOwned(card)}
+                    disabled={adding !== null}
+                    style={{
+                      display: "block", width: "100%", textAlign: "left", padding: "7px 10px",
+                      background: "#fff", border: "none", borderBottom: "1px solid #f5f5f5",
+                      cursor: adding ? "not-allowed" : "pointer",
+                      fontSize: 12, color: "#111",
+                    }}>
+                    <span style={{ fontWeight: 600 }}>{card.card_name}</span>
+                    <span style={{ color: "#999", marginLeft: 6 }}>{card.issuer}</span>
+                    {adding === card.id && <span style={{ color: "#0d7c5f", marginLeft: 6 }}>adding…</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button onClick={() => { setShowAddCard(false); setSearch("") }}
+              style={{ marginTop: 6, fontSize: 11, color: "#999", background: "none", border: "none", padding: 0, cursor: "pointer" }}>
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Gap rows — only flagged ones surface; unflagged categories are silent. */}
+      {gaps.length === 0 ? (
+        <div style={{ fontSize: 12, color: "#999", padding: "8px 0" }}>
+          Add monthly spend amounts in your Spending Profile (top right) for the categories you actually use.
+        </div>
+      ) : flagged.length === 0 ? (
+        <div style={{ fontSize: 12, color: "#0d7c5f", background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 8, padding: "10px 14px" }}>
+          Your portfolio covers every $50+/mo category at or above catalog best. Nothing to fill.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {flagged.map(g => (
+            <GapRow key={g.spendingCategory} gap={g} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function GapRow({ gap }: { gap: ReturnType<typeof computeCategoryGaps>[number] }) {
+  const label = CATEGORY_LABELS[gap.spendingCategory as keyof typeof CATEGORY_LABELS] ?? gap.spendingCategory
+  const ownedName = gap.ownedBest.card?.card_name ?? null
+  const ownedMult = gap.ownedBest.multiplier
+  const bestName = gap.bestAvailable.card?.card_name ?? "—"
+  const bestMult = gap.bestAvailable.multiplier
+  const unitLabel = (tierUnit: string | undefined) =>
+    tierUnit === "%" || tierUnit === "cashback" ? "%" : "x"
+  return (
+    <div style={{
+      background: "#fff", border: "1px solid #fed7aa", borderLeft: "3px solid #d97706", borderRadius: 10,
+      padding: "12px 16px",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{label}</div>
+          <div style={{ fontSize: 12, color: "#555", marginTop: 3 }}>
+            {ownedName
+              ? <>Your best: <strong>{ownedName}</strong> earns {ownedMult}{unitLabel(gap.ownedBest.tier?.unit)}.</>
+              : <>You don&rsquo;t have a card earning above base on this category.</>}
+            {" "}
+            <strong>{bestName}</strong> earns {bestMult}{unitLabel(gap.bestAvailable.tier?.unit)}.
+          </div>
+          <div style={{ fontSize: 11, color: "#999", marginTop: 3 }}>
+            ${gap.monthlySpend.toLocaleString()}/mo on {label.toLowerCase()}
+          </div>
+        </div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <div style={{ fontSize: 11, color: "#999" }}>est. uplift</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#d97706" }}>
+            +${gap.annualGap.toLocaleString()}/yr
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

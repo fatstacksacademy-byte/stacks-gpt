@@ -35,7 +35,8 @@ export type OwnedCard = {
   updated_at: string
 }
 
-export const SPENDING_CATEGORIES = [
+// Top-of-form, always-visible categories (legacy 7).
+export const SPENDING_CATEGORIES_PRIMARY = [
   "dining",
   "groceries",
   "gas",
@@ -43,6 +44,30 @@ export const SPENDING_CATEGORIES = [
   "utilities",
   "online_shopping",
   "other",
+] as const
+
+// Behind a "More categories" expander. Tokens match creditCardBonuses.ts
+// rewards tier vocabulary directly (cell_phone_internet maps to two tokens —
+// see lib/categoryGaps.ts SPENDING_TO_CATALOG_TOKENS).
+export const SPENDING_CATEGORIES_EXTRA = [
+  "streaming_services",
+  "ridesharing",
+  "transit",
+  "drug_stores",
+  "ev_charging",
+  "cell_phone_internet",
+  "home_improvement",
+  "wholesale_clubs",
+  "amazon",
+  "hotels_direct",
+  "flights_direct",
+] as const
+
+// Combined list — kept exported as SPENDING_CATEGORIES for back-compat with
+// existing call sites (the per-card-multipliers form, etc.).
+export const SPENDING_CATEGORIES = [
+  ...SPENDING_CATEGORIES_PRIMARY,
+  ...SPENDING_CATEGORIES_EXTRA,
 ] as const
 
 export type SpendingCategory = (typeof SPENDING_CATEGORIES)[number]
@@ -55,6 +80,17 @@ export const CATEGORY_LABELS: Record<SpendingCategory, string> = {
   utilities: "Utilities",
   online_shopping: "Online Shopping",
   other: "Other",
+  streaming_services: "Streaming Services",
+  ridesharing: "Ridesharing",
+  transit: "Transit",
+  drug_stores: "Drug Stores",
+  ev_charging: "EV Charging",
+  cell_phone_internet: "Cell / Internet",
+  home_improvement: "Home Improvement",
+  wholesale_clubs: "Wholesale Clubs",
+  amazon: "Amazon",
+  hotels_direct: "Hotels (direct)",
+  flights_direct: "Flights (direct)",
 }
 
 export async function getOwnedCards(userId: string): Promise<OwnedCard[]> {
