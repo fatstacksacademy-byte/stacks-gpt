@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
+import { randomUUID } from "node:crypto"
 import pLimit from "p-limit"
+import { createClient } from "@supabase/supabase-js"
 import { bonuses } from "../../lib/data/bonuses"
 import { savingsBonuses } from "../../lib/data/savingsBonuses"
 import { fetchPage, closeBrowser } from "../_shared/playwright"
@@ -15,7 +17,7 @@ import type {
   FieldResult,
 } from "./types"
 
-// CLI flags: --only=<id>, --limit=<n>, --no-cache, --no-escalate, --include-expired
+// CLI flags: --only=<id>, --limit=<n>, --no-cache, --no-escalate, --include-expired, --persist
 const args = process.argv.slice(2)
 function flag(name: string): string | undefined {
   const found = args.find((a) => a.startsWith(`--${name}=`))
@@ -26,6 +28,7 @@ const LIMIT = Number(flag("limit") ?? 0) || 0
 const USE_CACHE = !args.includes("--no-cache")
 const ESCALATE = !args.includes("--no-escalate")
 const INCLUDE_EXPIRED = args.includes("--include-expired")
+const PERSIST = args.includes("--persist")
 
 const CONCURRENCY = 3
 const MAX_ESCALATIONS_PER_RUN = 20
@@ -218,6 +221,69 @@ function fieldPath(field: string): string | null {
   }
 }
 
+// Maps each bonus id back to its catalog ("checking" or "savings") so the
+// persist step can populate bonus_kind. Built once at startup.
+const BONUS_KIND = new Map<string, "checking" | "savings">()
+for (const b of bonuses as BonusRecord[]) BONUS_KIND.set(b.id, "checking")
+for (const b of savingsBonuses as unknown as BonusRecord[]) BONUS_KIND.set(b.id, "savings")
+
+async function persistResults(
+  results: VerificationResult[],
+  edits: ProposedEdit[],
+): Promise<void> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    console.error("[persist] NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required for --persist")
+    process.exit(1)
+  }
+  const supabase = createClient(url, key, { auth: { persistSession: false } })
+
+  const runId = randomUUID()
+  const runAt = new Date().toISOString()
+
+  // Group edits by bonus id so each row carries its own proposals.
+  const editsByBonus = new Map<string, ProposedEdit[]>()
+  for (const e of edits) {
+    const arr = editsByBonus.get(e.id) ?? []
+    arr.push(e)
+    editsByBonus.set(e.id, arr)
+  }
+
+  // Only persist bonuses with issues. OK rows aren't worth storing.
+  const problemRows = results
+    .filter((r) =>
+      r.pageSignal !== "ok" ||
+      r.fields.some((f) => f.status === "mismatch" || f.status === "ambiguous"),
+    )
+    .map((r) => ({
+      run_id: runId,
+      run_at: runAt,
+      bonus_id: r.id,
+      bank_name: r.bank_name,
+      bonus_kind: BONUS_KIND.get(r.id) ?? "checking",
+      url: r.url,
+      final_url: r.fetch.finalUrl ?? null,
+      status: r.fetch.status ?? null,
+      page_signal: r.pageSignal,
+      field_mismatches: r.fields.filter((f) => f.status === "mismatch" || f.status === "ambiguous"),
+      proposed_edits: editsByBonus.get(r.id) ?? [],
+      error_message: r.fetch.error ?? null,
+    }))
+
+  if (problemRows.length === 0) {
+    console.log(`[persist] All bonuses OK — nothing to write.`)
+    return
+  }
+
+  const { error } = await supabase.from("bonus_verifications").insert(problemRows)
+  if (error) {
+    console.error(`[persist] insert failed:`, error.message)
+    process.exit(1)
+  }
+  console.log(`[persist] Wrote ${problemRows.length} problem rows for run ${runId}`)
+}
+
 async function main() {
   const all: BonusRecord[] = [
     ...(bonuses as BonusRecord[]),
@@ -264,6 +330,10 @@ async function main() {
   console.log(`Done. Output: ${rpt.outDir}`)
   console.log(`Summary:`, rpt.totals, `| proposed edits: ${rpt.proposedEdits}`)
   console.log(`Claude escalations used: ${MAX_ESCALATIONS_PER_RUN - escalationBudget}/${MAX_ESCALATIONS_PER_RUN}`)
+
+  if (PERSIST) {
+    await persistResults(results, edits)
+  }
 }
 
 main().catch((err) => {

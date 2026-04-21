@@ -49,6 +49,22 @@ type CardVerification = {
   error_message: string | null
 }
 
+type BonusVerification = {
+  id: string
+  run_id: string
+  run_at: string
+  bonus_id: string
+  bank_name: string
+  bonus_kind: "checking" | "savings"
+  url: string | null
+  final_url: string | null
+  status: number | null
+  page_signal: string
+  field_mismatches: { field: string; stored: unknown; extracted: unknown; status: string }[]
+  proposed_edits: { id: string; path: string; from: unknown; to: unknown; reason: string }[]
+  error_message: string | null
+}
+
 export default function AdminPage() {
   const supabase = createClient()
   const [authed, setAuthed] = useState<boolean | null>(null)
@@ -57,6 +73,8 @@ export default function AdminPage() {
   const [insights, setInsights] = useState<CustomInsight | null>(null)
   const [verifications, setVerifications] = useState<CardVerification[]>([])
   const [verificationsLastRun, setVerificationsLastRun] = useState<string | null>(null)
+  const [bonusVerifications, setBonusVerifications] = useState<BonusVerification[]>([])
+  const [bonusVerificationsLastRun, setBonusVerificationsLastRun] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null)
   const [loading, setLoading] = useState(false)
@@ -93,13 +111,30 @@ export default function AdminPage() {
 
   async function loadVerifications() {
     setLoading(true)
-    const res = await fetch("/api/admin?action=card-verifications")
-    if (res.ok) {
-      const data = await res.json()
+    const [cardRes, bonusRes] = await Promise.all([
+      fetch("/api/admin?action=card-verifications"),
+      fetch("/api/admin?action=bonus-verifications"),
+    ])
+    if (cardRes.ok) {
+      const data = await cardRes.json()
       setVerifications(data.verifications ?? [])
       setVerificationsLastRun(data.last_run_at ?? null)
     }
+    if (bonusRes.ok) {
+      const data = await bonusRes.json()
+      setBonusVerifications(data.verifications ?? [])
+      setBonusVerificationsLastRun(data.last_run_at ?? null)
+    }
     setLoading(false)
+  }
+
+  async function reviewBonusVerification(id: string, notes?: string) {
+    const res = await fetch("/api/admin?action=review-bonus-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, notes }),
+    })
+    if (res.ok) await loadVerifications()
   }
 
   async function reviewVerification(id: string, notes?: string) {
@@ -133,7 +168,7 @@ export default function AdminPage() {
           {(["users", "insights", "verifications"] as const).map(t => (
             <button key={t} onClick={() => { setTab(t); setSelectedUser(null); setUserDetail(null) }}
               style={{ padding: "6px 16px", fontSize: 13, fontWeight: tab === t ? 700 : 400, color: tab === t ? "#111" : "#999", background: tab === t ? "#f0f0f0" : "transparent", border: "none", borderRadius: 6, cursor: "pointer" }}>
-              {t === "users" ? "Users" : t === "insights" ? "Custom Bonus Insights" : "Card Verifications"}
+              {t === "users" ? "Users" : t === "insights" ? "Custom Bonus Insights" : "Verifications"}
             </button>
           ))}
         </div>
@@ -338,16 +373,18 @@ export default function AdminPage() {
           </>
         )}
 
-        {/* ── Card Verifications Tab ── */}
+        {/* ── Verifications Tab — cards + bonuses, two stacked sections ── */}
         {tab === "verifications" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Open Card Issues ({verifications.length})</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>
+                  Verification queue ({verifications.length + bonusVerifications.length})
+                </div>
                 <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>
-                  {verificationsLastRun
-                    ? `Last verified ${new Date(verificationsLastRun).toLocaleString()}`
-                    : "No verification runs yet."}
+                  Cards last verified {verificationsLastRun ? new Date(verificationsLastRun).toLocaleString() : "never"}.
+                  {" · "}
+                  Bonuses last verified {bonusVerificationsLastRun ? new Date(bonusVerificationsLastRun).toLocaleString() : "never"}.
                   {" · "}Cron: Sundays 14:00 UTC.
                 </div>
               </div>
@@ -361,70 +398,171 @@ export default function AdminPage() {
 
             {loading ? (
               <div style={{ color: "#999" }}>Loading verifications...</div>
-            ) : verifications.length === 0 ? (
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "32px 24px", textAlign: "center", fontSize: 13, color: "#666" }}>
-                No open card issues. All offers verified clean as of last run.
-              </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {verifications.map(v => {
-                  const signalColor: Record<string, string> = {
-                    offer_dead: "#dc2626",
-                    redirected_to_generic: "#d97706",
-                    card_name_mismatch: "#dc2626",
-                    fetch_error: "#6b7280",
-                    ok: "#0d7c5f",
-                  }
-                  const tone = signalColor[v.page_signal] ?? "#6b7280"
-                  return (
-                    <div key={v.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 18px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-                        <div style={{ flex: 1, minWidth: 240 }}>
-                          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{v.card_name}</span>
-                            {v.issuer && <span style={{ fontSize: 11, color: "#999" }}>{v.issuer}</span>}
-                            <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, background: tone + "1a", color: tone, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                              {v.page_signal.replace(/_/g, " ")}
-                            </span>
-                            {v.status != null && v.status !== 200 && (
-                              <span style={{ fontSize: 11, color: "#999" }}>HTTP {v.status}</span>
-                            )}
-                          </div>
-                          {v.url && (
-                            <a href={v.url} target="_blank" rel="noopener" style={{ fontSize: 11, color: "#2563eb", marginTop: 4, display: "inline-block", wordBreak: "break-all" }}>
-                              {v.url}
-                            </a>
-                          )}
-                          {v.field_mismatches.length > 0 && (
-                            <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
-                              {v.field_mismatches.map((m, i) => (
-                                <div key={i} style={{ fontSize: 12, color: "#444" }}>
-                                  <strong>{m.field}</strong>: stored <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3 }}>{JSON.stringify(m.stored)}</code> vs extracted <code style={{ background: "#fef3c7", padding: "1px 4px", borderRadius: 3 }}>{JSON.stringify(m.extracted)}</code>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          {v.error_message && (
-                            <div style={{ marginTop: 6, fontSize: 11, color: "#dc2626" }}>{v.error_message}</div>
-                          )}
-                          <div style={{ marginTop: 6, fontSize: 10, color: "#bbb" }}>
-                            <code>{v.card_id}</code> · run {new Date(v.run_at).toLocaleString()}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => reviewVerification(v.id)}
-                          style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#0d7c5f", background: "#e6f5f0", border: "none", borderRadius: 6, cursor: "pointer", flexShrink: 0 }}
-                        >
-                          Mark reviewed
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+              <>
+                {/* Cards section */}
+                <SectionHeading label="Credit cards" count={verifications.length} />
+                {verifications.length === 0 ? (
+                  <EmptyState text="No open card issues. All offers verified clean as of last run." />
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                    {verifications.map(v => (
+                      <IssueRow
+                        key={v.id}
+                        title={v.card_name}
+                        subtitle={v.issuer}
+                        signal={v.page_signal}
+                        status={v.status}
+                        url={v.url}
+                        fieldMismatches={v.field_mismatches}
+                        errorMessage={v.error_message}
+                        ref_id={v.card_id}
+                        runAt={v.run_at}
+                        kind="card"
+                        onReview={() => reviewVerification(v.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Bonuses section */}
+                <SectionHeading label="Bank + savings bonuses" count={bonusVerifications.length} />
+                {bonusVerifications.length === 0 ? (
+                  <EmptyState text="No open bonus issues. Run npm run verify:bonuses -- --persist to populate (or wait for the cron)." />
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {bonusVerifications.map(v => (
+                      <IssueRow
+                        key={v.id}
+                        title={v.bank_name}
+                        subtitle={v.bonus_kind}
+                        signal={v.page_signal}
+                        status={v.status}
+                        url={v.url}
+                        fieldMismatches={v.field_mismatches}
+                        errorMessage={v.error_message}
+                        ref_id={v.bonus_id}
+                        runAt={v.run_at}
+                        kind={v.bonus_kind}
+                        onReview={() => reviewBonusVerification(v.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+function SectionHeading({ label, count }: { label: string; count: number }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 8, marginBottom: 10 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: 0.4 }}>{label}</div>
+      <div style={{ fontSize: 12, color: count > 0 ? "#b91c1c" : "#999", fontWeight: 600 }}>
+        {count} open
+      </div>
+    </div>
+  )
+}
+
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 10, padding: "14px 16px", fontSize: 13, color: "#0d7c5f", marginBottom: 24 }}>
+      {text}
+    </div>
+  )
+}
+
+function signalColor(signal: string): { bg: string; fg: string } {
+  if (signal === "offer_dead" || signal === "fetch_error") return { bg: "#fee2e2", fg: "#b91c1c" }
+  if (signal === "promo_removed" || signal === "expired_text_on_page") return { bg: "#fef3c7", fg: "#92400e" }
+  if (signal === "no_fields_extracted") return { bg: "#fef3c7", fg: "#92400e" }
+  if (signal === "ok") return { bg: "#e6f5f0", fg: "#0d7c5f" }
+  return { bg: "#f5f5f5", fg: "#555" }
+}
+
+function kindBadge(kind: string): { bg: string; fg: string; label: string } {
+  if (kind === "card") return { bg: "#dbeafe", fg: "#1d4ed8", label: "card" }
+  if (kind === "checking") return { bg: "#ede9fe", fg: "#6d28d9", label: "checking" }
+  if (kind === "savings") return { bg: "#dcfce7", fg: "#15803d", label: "savings" }
+  return { bg: "#f5f5f5", fg: "#555", label: kind }
+}
+
+function IssueRow({
+  title,
+  subtitle,
+  signal,
+  status,
+  url,
+  fieldMismatches,
+  errorMessage,
+  ref_id,
+  runAt,
+  kind,
+  onReview,
+}: {
+  title: string
+  subtitle: string | null
+  signal: string
+  status: number | null
+  url: string | null
+  fieldMismatches: { field: string; stored: unknown; extracted: unknown; status: string }[]
+  errorMessage: string | null
+  ref_id: string
+  runAt: string
+  kind: string
+  onReview: () => void
+}) {
+  const sig = signalColor(signal)
+  const kb = kindBadge(kind)
+  return (
+    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 16px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: kb.fg, background: kb.bg, padding: "1px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: 0.3 }}>{kb.label}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{title}</span>
+            {subtitle && <span style={{ fontSize: 12, color: "#999" }}>{subtitle}</span>}
+            <span style={{ fontSize: 11, fontWeight: 600, color: sig.fg, background: sig.bg, padding: "1px 6px", borderRadius: 4 }}>
+              {signal}{status ? ` · ${status}` : ""}
+            </span>
+          </div>
+          <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>
+            id: {ref_id} · run {new Date(runAt).toLocaleString()}
+          </div>
+          {url && (
+            <div style={{ marginTop: 6 }}>
+              <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "#2563eb", wordBreak: "break-all" }}>{url}</a>
+            </div>
+          )}
+          {errorMessage && (
+            <div style={{ marginTop: 6, fontSize: 12, color: "#b91c1c", fontFamily: "monospace" }}>{errorMessage}</div>
+          )}
+          {fieldMismatches.length > 0 && (
+            <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 3 }}>
+              {fieldMismatches.map((f, i) => (
+                <div key={i} style={{ fontSize: 12, color: "#555" }}>
+                  <span style={{ fontWeight: 600, color: "#111" }}>{f.field}</span>
+                  <span style={{ color: "#999" }}> · stored </span>
+                  <span style={{ color: "#b91c1c" }}>{JSON.stringify(f.stored)}</span>
+                  <span style={{ color: "#999" }}> → page </span>
+                  <span style={{ color: "#0d7c5f" }}>{JSON.stringify(f.extracted)}</span>
+                  <span style={{ color: "#999" }}> ({f.status})</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <button
+          onClick={onReview}
+          style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#555", background: "#f5f5f5", border: "1px solid #e8e8e8", borderRadius: 6, cursor: "pointer", flexShrink: 0 }}
+        >
+          Mark reviewed
+        </button>
       </div>
     </div>
   )

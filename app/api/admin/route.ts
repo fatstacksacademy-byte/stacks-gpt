@@ -178,6 +178,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ verifications: latest, last_run_at: lastRunAt })
   }
 
+  if (action === "bonus-verifications") {
+    // Sister to card-verifications — same shape, different table.
+    const { data, error } = await supabase
+      .from("bonus_verifications")
+      .select("*")
+      .eq("reviewed", false)
+      .order("run_at", { ascending: false })
+    if (error) {
+      console.error("[admin] bonus_verifications query failed:", error.message)
+      return NextResponse.json({ error: error.message, verifications: [] })
+    }
+    const seen = new Set<string>()
+    const latest = (data ?? []).filter((r) => {
+      if (seen.has(r.bonus_id)) return false
+      seen.add(r.bonus_id)
+      return true
+    })
+    const lastRunAt = data?.[0]?.run_at ?? null
+    return NextResponse.json({ verifications: latest, last_run_at: lastRunAt })
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 })
 }
 
@@ -199,6 +220,22 @@ export async function POST(req: NextRequest) {
       .eq("id", id)
     if (error) {
       console.error("[admin] review-card-verification failed:", error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true })
+  }
+
+  if (action === "review-bonus-verification") {
+    const body = await req.json().catch(() => ({}))
+    const { id, notes } = body as { id?: string; notes?: string }
+    if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
+
+    const { error } = await supabase
+      .from("bonus_verifications")
+      .update({ reviewed: true, reviewed_at: new Date().toISOString(), reviewer_notes: notes ?? null })
+      .eq("id", id)
+    if (error) {
+      console.error("[admin] review-bonus-verification failed:", error.message)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
     return NextResponse.json({ ok: true })
