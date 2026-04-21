@@ -4829,8 +4829,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www-darkpod.bankofamerica.com/credit-cards/products/royal-caribbean-credit-card/",
-    expired: false,
+    offer_link: "https://www.bankofamerica.com/credit-cards/",
+    expired: true,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
       { categories: ["cruises_(portal)"], multiplier: 2, unit: "points" },

@@ -1302,6 +1302,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "regions-400-checking-2026",
+    "expired": true,
     "bank_name": "Regions Bank",
     "product_type": "checking",
     "bonus_amount": 400,
