@@ -1,0 +1,68 @@
+name: Discover new bonuses
+
+# Daily pull from RSS + Reddit, follow each lead to the bank's own page,
+# dedupe + classify, and add to the local review queue. Output is the
+# bumped lib/data/lastDiscoverRun.json (committed back to main) so the
+# Stacks OS hub strip can show "Last updated <date>".
+#
+# review-queue/ and logs/ are gitignored — nothing about the queue itself
+# leaves the runner. The cron is just a freshness signal + a way to
+# guarantee discovery runs even if I forget to do it locally.
+#
+# Required GitHub repo secrets:
+#   - ANTHROPIC_API_KEY (optional — without it, the script falls back to
+#     pure-heuristic classification, no API calls)
+
+on:
+  schedule:
+    # 12:00 UTC daily = 8am ET / 5am PT.
+    - cron: "0 12 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run discover:bonuses
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run discover:bonuses
+
+      - name: Bump lastDiscoverRun.json
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          cat > lib/data/lastDiscoverRun.json <<EOF
+          {
+            "lastRunAt": "$today",
+            "note": "Auto-updated by .github/workflows/discover-bonuses.yml on every successful daily run."
+          }
+          EOF
+
+      - name: Commit + push if date changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet lib/data/lastDiscoverRun.json; then
+            echo "lastDiscoverRun.json unchanged — skipping commit."
+            exit 0
+          fi
+          git add lib/data/lastDiscoverRun.json
+          git commit -m "chore(discover): daily run completed $(date -u +%Y-%m-%d)"
+          git push

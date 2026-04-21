@@ -25,6 +25,7 @@ import { migrateCustomToCompleted, markBonusAlreadyHad } from "../../lib/complet
 import CatalogMatchPicker from "../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../components/AlreadyHaveForm"
 import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
+import lastDiscoverRun from "../../lib/data/lastDiscoverRun.json"
 
 type Bonus = (typeof allBonuses)[number]
 
@@ -778,7 +779,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
           <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-          <span style={{ fontSize: 12, color: "#aaa" }}>Last updated April 17, 2026</span>
+          <span style={{ fontSize: 12, color: "#aaa" }}>
+            Last updated {new Date(lastDiscoverRun.lastRunAt + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </span>
         </div>
       </div>
 
