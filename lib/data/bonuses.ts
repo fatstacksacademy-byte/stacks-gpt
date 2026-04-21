@@ -1374,17 +1374,17 @@ export const bonuses: any[] = [
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": {
       "state_restricted": true,
-      "states_allowed": ["IL", "IN", "MO", "FL"],
+      "states_allowed": ["AZ","CO","FL","IL","IN","KS","MO","NM","OK","TX"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New checking customers only."
+      "eligibility_notes": "New checking customers only. Use promo code LEVELUP1 (Foundation) or LEVELUP2 (Pillar)."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://www.busey.com/personal/bank/checking/my-way-checking",
-      "https://www.doctorofcredit.com/busey-bank-500-checking-bonus-il-in-mo-fl/"
+      "https://www.busey.com/personal/products-and-services/banking/checking-account-offer",
+      "https://www.doctorofcredit.com/fl-il-in-mo-busey-bank-300-checking-bonus/"
     ],
-    "raw_excerpt": "Open checking with $2k-$5k DD + 3 debit purchases in 90 days for up to $500."
+    "raw_excerpt": "Open Foundation Checking (LEVELUP1) or Pillar Banking (LEVELUP2) with $2k/$3k/$5k DD + 3 debit purchases in 90 days for $200/$300/$500. Available in 10 states."
   },
   {
     "id": "first-bank-500-checking-2026",
@@ -1726,7 +1726,7 @@ export const bonuses: any[] = [
     "eligibility": { "state_restricted": true, "states_allowed": ["AL","FL","LA","MO","TX"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Must keep open 6 months." },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": 180 },
     "source_links": [
-      "https://www.hancockwhitney.com/personal/bank/checking",
+      "https://www.hancockwhitney.com/26-acq-1513100-600",
       "https://www.doctorofcredit.com/la-ms-fl-al-tx-hancock-whitney-bank-600-checking-savings-bonus/"
     ],
     "raw_excerpt": "$600 Freestyle Checking with $3k DD in 90 days. Keep open 6 months. 5 Southern states."
@@ -1777,8 +1777,8 @@ export const bonuses: any[] = [
     "eligibility": { "state_restricted": true, "states_allowed": ["DE","DC","MD","NJ","PA","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only." },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://offer.fultonbank.com/CheckingPromo",
-      "https://www.doctorofcredit.com/fulton-bank-300-checking-bonus/"
+      "https://www.doctorofcredit.com/de-dc-md-nj-pa-va-only-fulton-bank-200-checking-bonus-direct-deposit-not-required/",
+      "https://offer.fultonbank.com/CheckingPromo"
     ],
     "raw_excerpt": "$300 for $500 DD in 60 days. No fees. 6 Mid-Atlantic states."
   },
@@ -1808,7 +1808,7 @@ export const bonuses: any[] = [
     "id": "southstate-300-checking-2026",
     "bank_name": "SouthState Bank",
     "product_type": "checking",
-    "bonus_amount": 200,
+    "bonus_amount": 300,
     "cooldown_months": null,
     "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 250, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": 15, "billpay_required": null, "other_requirements_text": "$250 DD or 1 auto draft of $25+ within 60 days. 15 debit purchases in 60 days. Promo code 300BONUS. Expires June 30, 2026." },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
@@ -1816,8 +1816,8 @@ export const bonuses: any[] = [
     "eligibility": { "state_restricted": true, "states_allowed": ["AL","CO","FL","GA","NC","SC","TX","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only." },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://www.southstatebank.com/personal/checking",
-      "https://www.doctorofcredit.com/southstate-bank-200-checking-bonus/"
+      "https://www.doctorofcredit.com/ga-nc-sc-south-state-bank-100-checking-bonus-direct-deposit-not-required/",
+      "https://www.southstatebank.com/personal/checking"
     ],
     "raw_excerpt": "$300 for $250 DD + 15 debit purchases in 60 days. 8 Southern states."
   },
@@ -2335,8 +2335,8 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
     "source_links": [
-      "https://www.boh.com/personal/bank/checking",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/hi-bank-of-hawaii-100-400-checking-bonus/",
+      "https://www.boh.com/personal/bank/checking"
     ],
     "raw_excerpt": "Tiered $100-$400 checking bonus with DD in 60 days. $500 opening deposit. Hawaii only."
   },
@@ -2370,10 +2370,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
     "source_links": [
-      "https://www.seacoastbank.com/personal/bank/checking",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/fl-in-branch-only-seacoast-bank-350-checking-150-savings-bonus/",
+      "https://www.seacoastbank.com/personal/bank/checking"
     ],
-    "raw_excerpt": "$400 checking bonus with $1000 DD in 90 days. Promo code CON600. Premium Checking. Florida only."
+    "raw_excerpt": "$400 checking bonus with $1000 DD in 90 days. Promo code CON600. Premium Checking. Florida only. In-branch only."
   },
   {
     "id": "midflorida-400-checking-2026",
@@ -2582,10 +2582,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
     "source_links": [
-      "https://www.broadviewfcu.com/promo/checking-bonus",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ny-broadview-federal-credit-union-750-checking-bonus/",
+      "https://www.broadviewfcu.com/promo/checking-bonus"
     ],
-    "raw_excerpt": "$350 checking bonus with $1000 DD in 60 days. Free Checking. Expires May 26, 2026. NY only."
+    "raw_excerpt": "$350 checking bonus with $1000 DD in 45 days. Free Checking. Expires May 14, 2026. NY only."
   },
   {
     "id": "municipal-cu-350-checking-2026",
@@ -4496,7 +4496,7 @@ export const bonuses: any[] = [
     "id": "delta-community-200-checking-2026",
     "bank_name": "Delta Community Credit Union",
     "product_type": "checking",
-    "bonus_amount": 200,
+    "bonus_amount": 250,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -4522,10 +4522,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
     "source_links": [
-      "https://www.deltacommunitycu.com/bank/checking-accounts",
-      "https://www.doctorofcredit.com/delta-community-credit-union-250-checking-bonus-ga/"
+      "https://www.doctorofcredit.com/ga-only-delta-community-credit-union-200-checking-bonus-direct-deposit-not-required/",
+      "https://www.deltacommunitycu.com/bank/checking-accounts"
     ],
-    "raw_excerpt": "$200 checking bonus. $1000 DD + 10 debit in 90 days. Expires June 2026. Georgia only."
+    "raw_excerpt": "$250 checking bonus (increased from $200). $500 deposit + $500 avg balance + 5 debit purchases of $5+ in 60 days. DD not required. Expires June 30, 2026. Georgia residents, first-time members only."
   },
   {
     "id": "horizon-credit-union-200-checking-2026",
@@ -4860,10 +4860,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
     "source_links": [
-      "https://www.pnfp.com/personal/bank/checking/",
-      "https://www.doctorofcredit.com/pinnacle-financial-partners-200-mastercard-tn/"
+      "https://www.doctorofcredit.com/tn-only-pinnacle-financial-partners-200-mastercard-checking-bonus/",
+      "https://www.pnfp.com/personal/bank/checking/"
     ],
-    "raw_excerpt": "$200 checking bonus. Grizzlies Checking. $100 opening + eStatements. Expires May 2026. Tennessee only."
+    "raw_excerpt": "$200 Mastercard gift-card checking bonus. $100 opening deposit + DD (full paycheck or government benefits) required. Card mailed via USPS 2-4 weeks after qualifying. Expires May 30, 2026. Tennessee only."
   },
   {
     "id": "public-employees-cu-200-checking-2026",
@@ -5016,10 +5016,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
-      "https://www.usbank.com/affiliate/business-checking/online-banking-bonus-a.html",
-      "https://www.doctorofcredit.com/u-s-bank-1500-business-checking-bonus/"
+      "https://www.usbank.com/splash/business-checking/business-checking-promo.html",
+      "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
     ],
-    "raw_excerpt": "U.S. Bank $1,200 Platinum business checking bonus. $25k deposit in 30 days, maintain 60 days, 6 transactions. Promo Q2AFL26. Tiered: $400/$1,200. Expires June 30, 2026."
+    "raw_excerpt": "U.S. Bank $1,200 Platinum business checking bonus. $25k deposit in 30 days, maintain 60 days, 6 transactions. Promo Q2PRO26 or Q2AFL26. Tiered: $400/$1,200. Expires June 30, 2026."
   },
   {
     "id": "wells-fargo-business-checking-825-2026",
@@ -5141,10 +5141,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
-      "https://www.citi.com/business/checking",
-      "https://www.doctorofcredit.com/citi-2000-business-checking-bonus/"
+      "https://www.doctorofcredit.com/ymmv-in-branch-citibank-business-up-to-2000-checking-bonus/",
+      "https://www.citi.com/business/checking"
     ],
-    "raw_excerpt": "Citi $2,000 business checking bonus. In-branch only. Tiered: $300/$500/$1,000/$1,500/$2,000. Deposit in 45 days, maintain 45 days. State restricted. Expires July 7, 2026."
+    "raw_excerpt": "Citi $2,000 business checking bonus. In-branch only (mention offer to Business Specialist). Tiered: $300/$500/$1,000/$1,500/$2,000. Deposit in 45 days, maintain 45 days. State restricted. Expires July 7, 2026."
   },
   {
     "id": "huntington-business-checking-1000-2026",

@@ -584,8 +584,8 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "Brokerage only. 12-month hold. Must be net new funds."
     },
-    source_links: ["https://tastytrade.com/promotions"],
-    raw_excerpt: "Tastytrade up to $5,000 brokerage bonus. 12-month hold. Starts at $5k deposit.",
+    source_links: ["https://www.doctorofcredit.com/tastyworks-brokerage-bonus-fund-with-2000-earn-200-bonus/"],
+    raw_excerpt: "Tastytrade 4% deposit bonus (up to $10,000 on $250k deposit). 12-month hold. Promo code MYNEWBONUS, or BIGDEAL if signing up via referral link.",
     notes: "Brokerage account. No cash APY — funds must be invested or held as cash in brokerage."
   },
   {
@@ -642,8 +642,8 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 12,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Advantage Banking. Deposit in 30 days, maintain 60 days." },
-    source_links: ["https://promotions.bankofamerica.com/en/offers/business"],
-    raw_excerpt: "BofA Business $400/$750 checking bonus. Deposit in 30 days, maintain 60 days.",
+    source_links: ["https://www.doctorofcredit.com/bank-of-america-400-750-business-checking-bonus/"],
+    raw_excerpt: "BofA Business Advantage $400/$750 checking bonus. $5k for $400 or $15k for $750. Deposit in 30 days, maintain 60 days. Expires Dec 31, 2026.",
   },
   {
     id: "usbank-biz-savings-1200",
@@ -723,8 +723,8 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 24,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: true, states_allowed: ["OH","MI","IN","PA","KY","WV","IL","CO","MN","SC","WI","NC","TX"], lifetime_language: false, eligibility_notes: "Unlimited Plus Business Checking. $20k deposit in 60 days." },
-    source_links: ["https://www.huntington.com/business/checking"],
-    raw_excerpt: "Huntington Business $400/$1,000. $20k for top tier. 13 states.",
+    source_links: ["https://www.huntington.com/business-banking-promotions-offers"],
+    raw_excerpt: "Huntington Business $400 ($5k deposit, Unlimited Business Checking) or $1,000 ($20k deposit, Unlimited Plus Business Checking). Apply by June 16, 2026. 13 states.",
   },
   {
     id: "mt-bank-biz-savings-1500",
