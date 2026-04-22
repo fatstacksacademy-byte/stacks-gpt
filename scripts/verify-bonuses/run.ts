@@ -10,6 +10,7 @@ import { compareRecord } from "./compare"
 import { escalate, needsEscalation } from "./escalate"
 import { loadCache, saveCache, isFresh } from "./cache"
 import { writeReport } from "./report"
+import { runConsensus, classifySource, type SourceReading } from "./consensus"
 import type {
   BonusRecord,
   VerificationResult,
@@ -151,6 +152,36 @@ async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
     }
   }
 
+  // Phase 3: cross-source consensus. If the bonus has a secondary source
+  // (usually a DoC article) re-fetch it, run the same extractors, and compare
+  // bonus_amount. Only fires when the primary actually parsed — a broken
+  // primary tells us nothing useful about consensus.
+  let consensus: VerificationResult["consensus"]
+  if (pageSignal === "ok" && extracted) {
+    const primaryReading: SourceReading = {
+      kind: classifySource(url),
+      url,
+      ok: true,
+      extracted,
+      fetch,
+    }
+    try {
+      const c = await runConsensus(record, primaryReading, { useCache: USE_CACHE })
+      if (c.secondary) {
+        consensus = {
+          sourcesAgree: c.sourcesAgree,
+          disagreements: c.disagreements,
+          secondary: { kind: c.secondary.kind, url: c.secondary.url, ok: c.secondary.ok },
+        }
+      }
+    } catch (err) {
+      console.warn(
+        `[consensus] ${record.id} failed:`,
+        err instanceof Error ? err.message : err,
+      )
+    }
+  }
+
   return {
     id: record.id,
     bank_name: record.bank_name,
@@ -159,6 +190,7 @@ async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
     fields,
     pageSignal,
     escalations,
+    consensus,
     verifiedAt,
   }
 }
@@ -232,14 +264,26 @@ for (const b of savingsBonuses as unknown as BonusRecord[]) BONUS_KIND.set(b.id,
  *   high   = page loaded + 0 mismatches
  *   medium = 1-2 mismatches OR ambiguous signals (likely regex false positives)
  *   low    = offer dead, fetch error, no fields extracted, or 3+ mismatches
+ *
+ * Cross-source consensus (Phase 3) then adjusts one step:
+ *   - sources agree on bonus_amount      → bump up   (medium → high)
+ *   - sources disagree on bonus_amount   → knock down (high → medium)
+ * No consensus data (only one source) leaves the base tier untouched.
  */
 function confidenceFor(r: VerificationResult): "high" | "medium" | "low" {
   if (r.pageSignal !== "ok") return "low"
   const mismatches = r.fields.filter((f) => f.status === "mismatch").length
   const ambiguous = r.fields.filter((f) => f.status === "ambiguous").length
-  if (mismatches === 0 && ambiguous === 0) return "high"
-  if (mismatches + ambiguous <= 2) return "medium"
-  return "low"
+  let base: "high" | "medium" | "low"
+  if (mismatches === 0 && ambiguous === 0) base = "high"
+  else if (mismatches + ambiguous <= 2) base = "medium"
+  else base = "low"
+
+  if (r.consensus?.secondary) {
+    if (r.consensus.sourcesAgree && base === "medium") return "high"
+    if (!r.consensus.sourcesAgree && base === "high") return "medium"
+  }
+  return base
 }
 
 async function persistResults(
@@ -307,6 +351,10 @@ async function persistResults(
     confidence: confidenceFor(r),
     mismatch_count: r.fields.filter((f) => f.status === "mismatch" || f.status === "ambiguous").length,
     page_signal: r.pageSignal,
+    sources_agree: r.consensus?.secondary ? r.consensus.sourcesAgree : null,
+    consensus_disagreements: r.consensus?.disagreements?.length ? r.consensus.disagreements : null,
+    secondary_source_url: r.consensus?.secondary?.url ?? null,
+    secondary_source_kind: r.consensus?.secondary?.kind ?? null,
     updated_at: runAt,
   }))
   const { error: stateErr } = await supabase

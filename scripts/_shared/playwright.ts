@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import type { Browser, BrowserContext } from "playwright"
+import type { BrowserContext } from "playwright"
 import { createHash } from "node:crypto"
 import { existsSync, mkdirSync } from "node:fs"
 import { join } from "node:path"
@@ -12,7 +12,10 @@ import { join } from "node:path"
 const { chromium } = require("playwright-extra") as {
   chromium: {
     use: (plugin: unknown) => void
-    launch: (opts?: Record<string, unknown>) => Promise<Browser>
+    launchPersistentContext: (
+      userDataDir: string,
+      opts?: Record<string, unknown>,
+    ) => Promise<BrowserContext>
   }
 }
 const stealth = require("puppeteer-extra-plugin-stealth")()
@@ -47,26 +50,32 @@ const REAL_CHROME_HEADERS: Record<string, string> = {
   "Upgrade-Insecure-Requests": "1",
 }
 
-let _browser: Browser | null = null
 let _context: BrowserContext | null = null
 let _contextUA: string | null = null
 
-async function launchBrowser(): Promise<Browser> {
-  // Persistent profile dir so cookies/consent banners persist across runs —
-  // boosts stealth (sites trust returning-visitor cookies) and avoids
-  // re-showing EU consent overlays that obscure the offer content.
+// Persistent profile dir so cookies/consent banners persist across runs —
+// boosts stealth (sites trust returning-visitor cookies) and avoids
+// re-showing EU consent overlays that obscure the offer content.
+// Must use launchPersistentContext (not launch + --user-data-dir) — recent
+// Playwright refuses the flag-based form and directs callers to this API.
+async function launchContext(userAgent: string): Promise<BrowserContext> {
   const profileDir = join(process.cwd(), ".cache", "playwright-profile")
   if (!existsSync(profileDir)) mkdirSync(profileDir, { recursive: true })
 
-  return chromium.launch({
+  return chromium.launchPersistentContext(profileDir, {
     headless: true,
     args: [
       "--no-sandbox",
       "--disable-blink-features=AutomationControlled",
       "--disable-dev-shm-usage",
       "--disable-features=IsolateOrigins,site-per-process",
-      `--user-data-dir=${profileDir}`,
     ],
+    userAgent,
+    viewport: { width: 1280, height: 800 },
+    ignoreHTTPSErrors: true,
+    locale: "en-US",
+    timezoneId: "America/New_York",
+    extraHTTPHeaders: REAL_CHROME_HEADERS,
   })
 }
 
@@ -76,24 +85,14 @@ export async function getContext(userAgent: string = DEFAULT_UA): Promise<Browse
     await _context.close()
     _context = null
   }
-  if (!_browser) _browser = await launchBrowser()
-  _context = await _browser.newContext({
-    userAgent,
-    viewport: { width: 1280, height: 800 },
-    ignoreHTTPSErrors: true,
-    locale: "en-US",
-    timezoneId: "America/New_York",
-    extraHTTPHeaders: REAL_CHROME_HEADERS,
-  })
+  _context = await launchContext(userAgent)
   _contextUA = userAgent
   return _context
 }
 
 export async function closeBrowser() {
   if (_context) await _context.close()
-  if (_browser) await _browser.close()
   _context = null
-  _browser = null
   _contextUA = null
 }
 

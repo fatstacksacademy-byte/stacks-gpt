@@ -70,6 +70,11 @@ export type VerificationResult = {
     verdict: "same_meaning" | "different" | "unclear"
     rationale: string
   }[]
+  consensus?: {
+    sourcesAgree: boolean
+    disagreements: string[]
+    secondary: { kind: "bank_page" | "doc" | "other"; url: string; ok: boolean } | null
+  }
   verifiedAt: string
 }
 

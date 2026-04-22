@@ -47,6 +47,9 @@ function summarize(results: VerificationResult[]) {
   let ambiguous = 0
   let dead = 0
   let fetchError = 0
+  let consensusAgree = 0
+  let consensusDisagree = 0
+  let consensusNone = 0
   for (const r of results) {
     if (r.pageSignal === "offer_dead" || r.pageSignal === "promo_removed")
       dead++
@@ -54,8 +57,22 @@ function summarize(results: VerificationResult[]) {
     else if (r.fields.some((f) => f.status === "mismatch")) mismatch++
     else if (r.fields.some((f) => f.status === "ambiguous")) ambiguous++
     else ok++
+
+    if (!r.consensus?.secondary) consensusNone++
+    else if (r.consensus.sourcesAgree) consensusAgree++
+    else consensusDisagree++
   }
-  return { total: results.length, ok, mismatch, ambiguous, dead, fetchError }
+  return {
+    total: results.length,
+    ok,
+    mismatch,
+    ambiguous,
+    dead,
+    fetchError,
+    consensusAgree,
+    consensusDisagree,
+    consensusNone,
+  }
 }
 
 function buildMarkdown(
@@ -77,6 +94,12 @@ function buildMarkdown(
   lines.push(`- 🪦 Offer dead/removed: ${t.dead}`)
   lines.push(`- 🚨 Fetch error: ${t.fetchError}`)
   lines.push(`- 📝 Proposed edits: **${edits.length}**`)
+  lines.push(``)
+  lines.push(`### Cross-source consensus`)
+  lines.push(``)
+  lines.push(`- 🤝 Sources agree: ${t.consensusAgree}`)
+  lines.push(`- 🔀 Sources disagree: ${t.consensusDisagree}`)
+  lines.push(`- ➖ Single source (no DoC link): ${t.consensusNone}`)
   lines.push(``)
 
   if (edits.length > 0) {
@@ -101,10 +124,12 @@ function buildMarkdown(
   lines.push(`## Issues by Bonus`)
   lines.push(``)
   for (const r of results) {
+    const consensusDisagrees = r.consensus?.secondary && !r.consensus.sourcesAgree
     const hasIssue =
       r.pageSignal !== "ok" ||
       r.fields.some((f) => f.status !== "match" && f.status !== "missing") ||
-      r.escalations.length > 0
+      r.escalations.length > 0 ||
+      consensusDisagrees
     if (!hasIssue) continue
     lines.push(`### ${r.bank_name} — \`${r.id}\``)
     lines.push(``)
@@ -120,6 +145,13 @@ function buildMarkdown(
     }
     for (const e of r.escalations) {
       lines.push(`  - 🤖 Claude: \`${e.field}\` → **${e.verdict}** — ${e.rationale}`)
+    }
+    if (r.consensus?.secondary) {
+      const tag = r.consensus.sourcesAgree ? "🤝 agree" : "🔀 disagree"
+      lines.push(`- Consensus vs ${r.consensus.secondary.kind} (${r.consensus.secondary.url}): **${tag}**`)
+      for (const d of r.consensus.disagreements) {
+        lines.push(`  - ${d}`)
+      }
     }
     lines.push(``)
   }
