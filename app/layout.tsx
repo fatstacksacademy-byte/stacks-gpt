@@ -1,10 +1,17 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
+import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
 import { ProfileProvider } from "./components/ProfileProvider"
 import ToastHost from "./components/ToastHost"
 import { createClient } from "../lib/supabase/server"
 import { getProfileServer, DEFAULT_PROFILE } from "../lib/profileServer"
+
+// Read the GA4 measurement ID from env so the site stays untracked in dev/CI
+// and lights up automatically once NEXT_PUBLIC_GA_ID is set in production.
+// Format: "G-XXXXXXXXXX". @next/third-parties handles SPA route-change pings
+// for us; no extra wiring needed.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -99,6 +106,7 @@ export default async function RootLayout({
         </ProfileProvider>
         <ToastHost />
       </body>
+      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
   )
 }

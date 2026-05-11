@@ -11,6 +11,13 @@ import { escalate, needsEscalation } from "./escalate"
 import { loadCache, saveCache, isFresh } from "./cache"
 import { writeReport } from "./report"
 import { runConsensus, classifySource, type SourceReading } from "./consensus"
+import {
+  loadFeedbackState,
+  resolveUrl,
+  shouldSuppressEdit,
+  EMPTY_STATE,
+  type FeedbackState,
+} from "./feedback-loop"
 import type {
   BonusRecord,
   VerificationResult,
@@ -18,13 +25,14 @@ import type {
   FieldResult,
 } from "./types"
 
-// CLI flags: --only=<id>, --limit=<n>, --no-cache, --no-escalate, --include-expired, --persist
+// CLI flags: --only=<id>[,<id>...], --limit=<n>, --no-cache, --no-escalate, --include-expired, --persist
 const args = process.argv.slice(2)
 function flag(name: string): string | undefined {
   const found = args.find((a) => a.startsWith(`--${name}=`))
   return found?.split("=")[1]
 }
 const ONLY = flag("only")
+const ONLY_IDS = ONLY ? new Set(ONLY.split(",").map((s) => s.trim()).filter(Boolean)) : null
 const LIMIT = Number(flag("limit") ?? 0) || 0
 const USE_CACHE = !args.includes("--no-cache")
 const ESCALATE = !args.includes("--no-escalate")
@@ -37,8 +45,14 @@ const MAX_ESCALATIONS_PER_RUN = 20
 // Budget tracker for Claude calls
 let escalationBudget = MAX_ESCALATIONS_PER_RUN
 
+// Feedback-loop state is loaded once at startup and threaded into verifyOne so
+// each bonus can pick up an admin URL override without an extra Supabase round
+// trip per fetch. Defaults to an empty state if Supabase isn't reachable.
+let feedbackState: FeedbackState = EMPTY_STATE
+
 async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
-  const url = record.source_links?.[0] ?? ""
+  const defaultUrl = record.source_links?.[0] ?? ""
+  const url = resolveUrl(feedbackState, record.id, defaultUrl)
   const verifiedAt = new Date().toISOString()
 
   if (!url) {
@@ -195,45 +209,66 @@ async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
   }
 }
 
-// Build proposed edits from mismatches + escalations that say "different"
+// Build proposed edits from mismatches + escalations that say "different".
+// Filters edits the admin has already triaged (approved-with-same-target or
+// dismissed-with-unchanged-snippet) using the feedback-loop state.
 function buildEdits(results: VerificationResult[]): ProposedEdit[] {
   const edits: ProposedEdit[] = []
+  let suppressed = 0
+
+  function tryPush(edit: ProposedEdit, snippet: string | null) {
+    const decision = shouldSuppressEdit(
+      feedbackState,
+      edit.id,
+      edit.path,
+      { from: edit.from, to: edit.to },
+      snippet,
+    )
+    if (decision.suppress) {
+      suppressed++
+      return
+    }
+    edits.push(edit)
+  }
+
   for (const r of results) {
     if (r.pageSignal === "offer_dead" || r.pageSignal === "promo_removed" || r.pageSignal === "expired_text_on_page") {
-      edits.push({
-        id: r.id,
-        path: "expired",
-        from: false,
-        to: true,
-        reason: `Page signal: ${r.pageSignal}${r.fetch.error ? ` (${r.fetch.error})` : ""}`,
-      })
+      tryPush(
+        {
+          id: r.id,
+          path: "expired",
+          from: false,
+          to: true,
+          reason: `Page signal: ${r.pageSignal}${r.fetch.error ? ` (${r.fetch.error})` : ""}`,
+        },
+        r.pageSignal,
+      )
       continue
     }
     const escalateMap = new Map(r.escalations.map((e) => [e.field, e]))
     for (const f of r.fields) {
       const path = fieldPath(f.field)
       if (!path) continue
+      const snippet = "snippet" in f ? (f.snippet ?? null) : null
       if (f.status === "mismatch" && "confidence" in f && f.confidence === "high") {
-        edits.push({
-          id: r.id,
-          path,
-          from: f.stored,
-          to: f.extracted,
-          reason: `High-confidence regex mismatch`,
-        })
+        tryPush(
+          { id: r.id, path, from: f.stored, to: f.extracted, reason: `High-confidence regex mismatch` },
+          snippet,
+        )
       } else if (f.status === "ambiguous") {
         const ver = escalateMap.get(f.field)
         if (ver?.verdict === "different") {
-          edits.push({
-            id: r.id,
-            path,
-            from: f.stored,
-            to: f.extracted,
-            reason: `Claude: different — ${ver.rationale}`,
-          })
+          tryPush(
+            { id: r.id, path, from: f.stored, to: f.extracted, reason: `Claude: different — ${ver.rationale}` },
+            snippet,
+          )
         }
       }
     }
+  }
+
+  if (suppressed > 0) {
+    console.log(`[feedback] suppressed ${suppressed} edit(s) based on prior admin decisions`)
   }
   return edits
 }
@@ -402,13 +437,17 @@ async function persistResults(
 }
 
 async function main() {
+  // Pull admin URL overrides + verdicts from Supabase. No-op if env unset —
+  // the run still completes, just without the feedback loop.
+  feedbackState = await loadFeedbackState()
+
   const all: BonusRecord[] = [
     ...(bonuses as BonusRecord[]),
     ...(savingsBonuses as unknown as BonusRecord[]),
   ]
 
   let targets = all
-  if (ONLY) targets = targets.filter((b) => b.id === ONLY)
+  if (ONLY_IDS) targets = targets.filter((b) => ONLY_IDS.has(b.id))
   if (!INCLUDE_EXPIRED) targets = targets.filter((b) => !b.expired)
   if (LIMIT > 0) targets = targets.slice(0, LIMIT)
 
@@ -420,10 +459,44 @@ async function main() {
   const results: VerificationResult[] = []
   let done = 0
 
+  // Hard per-bonus timeout. Playwright's own 30s fetch timeout occasionally
+  // fails to fire when a bank page streams chunks slowly or a DoC article
+  // hangs on a third-party embed — we've seen single bonuses stall the whole
+  // run indefinitely, blocking persist. 120s is generous (primary fetch +
+  // consensus fetch + escalation each have their own sub-timeouts).
+  const BONUS_TIMEOUT_MS = 120_000
+  async function verifyWithTimeout(t: BonusRecord): Promise<VerificationResult> {
+    return Promise.race([
+      verifyOne(t),
+      new Promise<VerificationResult>((resolve) =>
+        setTimeout(
+          () =>
+            resolve({
+              id: t.id,
+              bank_name: t.bank_name,
+              url: t.source_links?.[0] ?? "",
+              fetch: {
+                ok: false,
+                status: 0,
+                finalUrl: "",
+                redirected: false,
+                error: `verify timeout after ${BONUS_TIMEOUT_MS}ms`,
+              },
+              fields: [],
+              pageSignal: "fetch_error",
+              escalations: [],
+              verifiedAt: new Date().toISOString(),
+            }),
+          BONUS_TIMEOUT_MS,
+        ),
+      ),
+    ])
+  }
+
   await Promise.all(
     targets.map((t) =>
       limit(async () => {
-        const r = await verifyOne(t)
+        const r = await verifyWithTimeout(t)
         results.push(r)
         done++
         const tag =

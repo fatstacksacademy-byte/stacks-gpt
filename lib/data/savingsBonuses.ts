@@ -93,6 +93,8 @@ export const savingsBonuses: SavingsBonus[] = [
     },
     source_links: [
       "https://www.capitalone.com/bank/bonus1500/"
+    ,
+      "https://www.doctorofcredit.com/capital-one-300-1500-savings-bonus-requires-20000-100000-deposit/"
     ],
     raw_excerpt: "Open 360 Performance Savings with code BONUS1500, deposit external funds within 15 days, maintain for 90 days. Bonus paid within ~60 days after meeting requirements."
   },
@@ -196,6 +198,8 @@ export const savingsBonuses: SavingsBonus[] = [
     },
     source_links: [
       "https://www.ameriprise.com/products/ameriprise-bank/savings"
+    ,
+      "https://www.doctorofcredit.com/existing-customers-ameriprise-up-to-900-checking-savings-bonus/"
     ],
     raw_excerpt: "Deposit $25,000+ during offer period (Apr 8 - Jun 30, 2026), maintain through September 30, 2026. Bonus credited by March 31, 2027. Fund as late as possible to minimize hold time.",
     notes: "Requires existing Ameriprise client relationship. Calendar-based hold (through Sep 30) rather than days-from-deposit. Fund late in the offer period to minimize lockup."
@@ -221,6 +225,8 @@ export const savingsBonuses: SavingsBonus[] = [
     },
     source_links: [
       "https://www.ally.com/referral?code=6J7N9D8R8T&CP=MobileAppReferFriend"
+    ,
+      "https://www.doctorofcredit.com/ally-launches-pilot-referral-program-100-50/"
     ],
     raw_excerpt: "Open Ally Online Savings via referral link, set up automated recurring transfer ($20/mo minimum), complete 3 consecutive months. Bonus posts after requirements met.",
     notes: "Extremely easy $100. No large deposit required. Set $20/mo recurring and forget it.",
@@ -346,7 +352,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "New TD savings customers only. East Coast states. Expires April 30, 2026."
     },
-    source_links: ["https://www.td.com/us/en/personal-banking/savings-accounts/"],
+    source_links: ["https://www.td.com/us/en/personal-banking/savings-accounts/",
+      "https://www.doctorofcredit.com/targeted-td-bank-300-checking-200-savings-bonus/"
+    ],
     raw_excerpt: "TD Bank $200 savings bonus for $10k deposit. East Coast 16 states. Expires April 30, 2026.",
   },
   {
@@ -368,7 +376,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: true,
       eligibility_notes: "Must open savings during same visit as checking. $15,000 deposit in opening month, maintain 3 months."
     },
-    source_links: ["https://www.wintrust.com/solutions-and-services/community-banking/total-access-checking.html"],
+    source_links: ["https://www.wintrust.com/solutions-and-services/community-banking/total-access-checking.html",
+      "https://www.doctorofcredit.com/il-only-wintrust-bank-300-checking-bonus/"
+    ],
     raw_excerpt: "Wintrust $200 savings bonus for $15k deposit maintained 3 months. Stackable with $500 checking bonus.",
     notes: "Best stacked with the $500 checking bonus. The $200 savings is gravy on top."
   },
@@ -393,7 +403,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "HSBC Premier Savings. May require HSBC Premier relationship ($75k+ in deposits/investments or mortgage)."
     },
-    source_links: ["https://www.us.hsbc.com/savings-accounts/"],
+    source_links: ["https://www.us.hsbc.com/savings-accounts/",
+      "https://www.doctorofcredit.com/hsbc-1500-7000-checking-bonus/"
+    ],
     raw_excerpt: "HSBC up to $7,000 savings bonus. Tiered from $10k-$500k. 4.1% APY. Premier relationship may be required.",
   },
   {
@@ -418,7 +430,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "Cash account (brokerage cash sweep). SIPC protected, not FDIC insured. New customers."
     },
-    source_links: ["https://www.moomoo.com/"],
+    source_links: ["https://www.moomoo.com/",
+      "https://www.doctorofcredit.com/moomoo-8-1-apy-savings-account-rate-for-first-3-months/"
+    ],
     raw_excerpt: "Moomoo $200-$1,000 cash account bonus. 4.1% APY. 60-day hold. SIPC protected.",
     notes: "Bonus paid in NVDA stock (can be sold immediately). SIPC protected, not FDIC insured. Hold: 60d for lower tiers, 120d for k, 180d for k."
   },
@@ -469,7 +483,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "New Raisin customers. Deposit within 30 days, maintain 90 days. Stackable with TopCashback."
     },
-    source_links: ["https://www.raisin.com/"],
+    source_links: ["https://www.raisin.com/",
+      "https://www.doctorofcredit.com/raisin-up-to-200-savings-bonus-referral-savebetter/"
+    ],
     raw_excerpt: "Raisin up to $1,500 savings bonus. 4.3% APY. Tiered: $100/$500/$1,000/$1,500. Stackable with TopCashback.",
     notes: "Stackable with TopCashback for additional cashback on deposit."
   },
@@ -500,7 +516,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "Brokerage or IRA. 12-month hold. Funds must be net new to E*TRADE."
     },
-    source_links: ["https://us.etrade.com/promo/brokerage"],
+    source_links: ["https://us.etrade.com/promo/brokerage",
+      "https://www.doctorofcredit.com/etrade-up-to-3500-brokerage-referral-bonus-25000-1000000-required/"
+    ],
     raw_excerpt: "E*TRADE up to $6,500 brokerage bonus. 12-month hold. Tiered from $1k-$1M deposits.",
     notes: "Brokerage account. 12-month hold is long but tiers start at just $1,000."
   },
@@ -527,7 +545,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: false,
       eligibility_notes: "Brokerage or IRA. 12-month hold. Requires referral from existing Schwab member."
     },
-    source_links: ["https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK"],
+    source_links: ["https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK",
+      "https://www.doctorofcredit.com/schwab-brokerage-bonus-up-to-2500-valid-for-existing-customers-public-offer/"
+    ],
     raw_excerpt: "Schwab up to $1,000 brokerage bonus via referral. 12-month hold.",
     notes: "Brokerage account. Requires referral link from existing Schwab customer."
   },
@@ -608,7 +628,9 @@ export const savingsBonuses: SavingsBonus[] = [
       lifetime_language: true,
       eligibility_notes: "New SoFi Invest customers. $1,000 deposit. Available via Finder portal."
     },
-    source_links: ["https://www.sofi.com/invest/"],
+    source_links: ["https://www.sofi.com/invest/",
+      "https://www.doctorofcredit.com/sofi-invest-150-bonus-via-finder/"
+    ],
     raw_excerpt: "SoFi Invest $150 bonus for $1,000 deposit. 30-day hold. Quick and easy.",
     notes: "Brokerage account. Very low barrier — $1,000 for $150 is 15% return in 30 days."
   },
@@ -626,7 +648,9 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 24,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Complete Checking. Deposit + 5 transactions in 90 days." },
-    source_links: ["https://www.chase.com/business/checking"],
+    source_links: ["https://www.chase.com/business/checking",
+      "https://www.doctorofcredit.com/chase-business-total-checking-750-bonus-no-direct-deposit-required/"
+    ],
     raw_excerpt: "Chase Business $300/$500 checking bonus. Deposit in 30 days, maintain 60 days.",
   },
   {
@@ -655,10 +679,12 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 60,
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 1200 }],
-    cooldown_months: null,
+    cooldown_months: 12,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking. Promo Q2DIG26. Deposit in 30 days, maintain 60 days, 6 transactions." },
-    source_links: ["https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html"],
+    source_links: ["https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html",
+      "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
+    ],
     raw_excerpt: "U.S. Bank Business $400/$1,200. $25k for top tier. Promo Q2AFL26.",
   },
   {
@@ -674,7 +700,9 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 12,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business checking. $2,500 ending balance on days 30 and 60." },
-    source_links: ["https://accountoffers.wellsfargo.com/businesscheckingb"],
+    source_links: ["https://accountoffers.wellsfargo.com/businesscheckingb",
+      "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
+    ],
     raw_excerpt: "Wells Fargo Business $400/$825. $2,500 ending balance days 30 and 60.",
   },
   {
@@ -707,7 +735,9 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: null,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: true, states_allowed: ["CA","FL","IL","MD","NV","NY","DC"], lifetime_language: false, eligibility_notes: "Citi Business Checking. Deposit in 45 days, maintain 45 days. 7 states." },
-    source_links: ["https://banking.citi.com/cbol/small-business/checking-offer/"],
+    source_links: ["https://banking.citi.com/cbol/small-business/checking-offer/",
+      "https://www.doctorofcredit.com/ymmv-in-branch-citibank-business-up-to-2000-checking-bonus/"
+    ],
     raw_excerpt: "Citi Business $300-$2,000. 5 tiers up to $200k. 7 states only.",
   },
   {
@@ -723,7 +753,9 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 24,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: true, states_allowed: ["OH","MI","IN","PA","KY","WV","IL","CO","MN","SC","WI","NC","TX"], lifetime_language: false, eligibility_notes: "Unlimited Plus Business Checking. $20k deposit in 60 days." },
-    source_links: ["https://www.huntington.com/business-banking-promotions-offers"],
+    source_links: ["https://www.huntington.com/business-banking-promotions-offers",
+      "https://www.doctorofcredit.com/oh-mi-pa-ky-wv-il-wi-huntington-bank-500-750-business-checking-bonuses/"
+    ],
     raw_excerpt: "Huntington Business $400 ($5k deposit, Unlimited Business Checking) or $1,000 ($20k deposit, Unlimited Plus Business Checking). Apply by June 16, 2026. 13 states.",
   },
   {
@@ -739,7 +771,9 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: null,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
     eligibility: { state_restricted: true, states_allowed: ["CT","DC","DE","MA","MD","NJ","NY","PA","VA","WV"], lifetime_language: false, eligibility_notes: "Tailored Business Checking. Balance-based tiers in 3rd month." },
-    source_links: ["https://campaigns.mtb.com/bizbonus"],
+    source_links: ["https://campaigns.mtb.com/bizbonus",
+      "https://www.doctorofcredit.com/ct-de-d-c-md-nj-ny-pa-va-wv-in-branch-mt-bank-400-business-checking-bonus/"
+    ],
     raw_excerpt: "M&T Business $300-$1,500. 4 tiers. Balance in 3rd month. 9 states.",
   },
   {

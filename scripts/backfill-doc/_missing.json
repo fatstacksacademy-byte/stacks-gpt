@@ -1,0 +1,361 @@
+[
+  {
+    "id": "chase-total-checking-400-2026",
+    "bank_name": "Chase",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "expired": false,
+    "source_links": [
+      "https://accounts.chase.com/consumer/raf/online/rafoffers?key=2492624790&src=N"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "chime-100-referral-checking",
+    "bank_name": "Chime",
+    "product_type": "checking",
+    "bonus_amount": 100,
+    "expired": false,
+    "source_links": [
+      "https://www.chime.com/r/nathanielbooth10/",
+      "https://www.swagbucks.com/",
+      "https://www.topcashback.com/",
+      "https://www.inboxdollars.com/",
+      "https://www.mypoints.com/",
+      "https://www.rakuten.com/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "citi-regular-checking-325-edd-2026",
+    "bank_name": "Citi",
+    "product_type": "checking",
+    "bonus_amount": 325,
+    "expired": false,
+    "source_links": [
+      "https://banking.citi.com/cbol/OM/checking/choice/featured-offers/default.htm?BT_TX=1&ProspectID=CF66AD0E62054EAA9D2E755859D1CC20"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "us-bank-smartly-checking-450-2026",
+    "bank_name": "U.S. Bank",
+    "product_type": "checking",
+    "bonus_amount": 450,
+    "expired": false,
+    "source_links": [
+      "https://www.usbank.com/splash/checking/2026-all-market-checking-offer.html"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "schwab-referral-500-checking-2026",
+    "bank_name": "Charles Schwab",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "expired": false,
+    "source_links": [
+      "https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK",
+      "https://www.schwab.com/public/schwab/nn/refer-prospect.html"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "bluevine-business-500-2026",
+    "bank_name": "BlueVine",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "expired": false,
+    "source_links": [
+      "https://www.bluevine.com/partner/nw300-checking",
+      "https://www.bluevine.com/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "stanford-fcu-620-checking-2026",
+    "bank_name": "Stanford Federal Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 620,
+    "expired": false,
+    "source_links": [
+      "https://www.sfcu.org/bonus/",
+      "https://www.sfcu.org/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "fidelity-bank-pa-500-checking-2026",
+    "bank_name": "Fidelity Bank (PA)",
+    "product_type": "checking",
+    "bonus_amount": 500,
+    "expired": false,
+    "source_links": [
+      "https://www.bankatfidelity.com/summer-checking-bonus/",
+      "https://www.fidelitydeposit.com/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "4front-cu-400-checking-2026",
+    "bank_name": "4Front Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 400,
+    "expired": false,
+    "source_links": [
+      "https://www.4frontcu.com/4front-400",
+      "https://www.4frontcu.com/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "alltru-cu-300-checking-2026",
+    "bank_name": "AllTru Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "expired": false,
+    "source_links": [
+      "https://alltrucu.org/checking/personal-checking/",
+      "https://www.alltrucu.com/"
+    ],
+    "hasDoc": false,
+    "file": "bonuses"
+  },
+  {
+    "id": "capital-one-360-savings-2026",
+    "bank_name": "Capital One",
+    "product_type": "savings",
+    "bonus_amount": 1500,
+    "expired": false,
+    "source_links": [
+      "https://www.capitalone.com/bank/bonus1500/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "chase-savings-combo-2026",
+    "bank_name": "Chase",
+    "product_type": "savings",
+    "bonus_amount": 600,
+    "expired": false,
+    "source_links": [
+      "https://account.chase.com/consumer/banking/checkingandsavingsoffer"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "ameriprise-savings-2026",
+    "bank_name": "Ameriprise",
+    "product_type": "savings",
+    "bonus_amount": 300,
+    "expired": false,
+    "source_links": [
+      "https://www.ameriprise.com/products/ameriprise-bank/savings"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "ally-savings-referral-2026",
+    "bank_name": "Ally",
+    "product_type": "savings",
+    "bonus_amount": 100,
+    "expired": false,
+    "source_links": [
+      "https://www.ally.com/referral?code=6J7N9D8R8T&CP=MobileAppReferFriend"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "td-bank-savings-2026",
+    "bank_name": "TD Bank",
+    "product_type": "savings",
+    "bonus_amount": 200,
+    "expired": false,
+    "source_links": [
+      "https://www.td.com/us/en/personal-banking/savings-accounts/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "wintrust-savings-2026",
+    "bank_name": "Wintrust Bank",
+    "product_type": "savings",
+    "bonus_amount": 200,
+    "expired": false,
+    "source_links": [
+      "https://www.wintrust.com/solutions-and-services/community-banking/total-access-checking.html"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "hsbc-premier-savings-2026",
+    "bank_name": "HSBC",
+    "product_type": "savings",
+    "bonus_amount": 5000,
+    "expired": false,
+    "source_links": [
+      "https://www.us.hsbc.com/savings-accounts/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "moomoo-cash-sweep-2026",
+    "bank_name": "Moomoo",
+    "product_type": "savings",
+    "bonus_amount": 1000,
+    "expired": false,
+    "source_links": [
+      "https://www.moomoo.com/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "raisin-savings-1500-2026",
+    "bank_name": "Raisin",
+    "product_type": "savings",
+    "bonus_amount": 1500,
+    "expired": false,
+    "source_links": [
+      "https://www.raisin.com/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "etrade-brokerage-2026",
+    "bank_name": "E*TRADE (Brokerage)",
+    "product_type": "savings",
+    "bonus_amount": 6500,
+    "expired": false,
+    "source_links": [
+      "https://us.etrade.com/promo/brokerage"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "schwab-brokerage-2026",
+    "bank_name": "Charles Schwab (Brokerage)",
+    "product_type": "savings",
+    "bonus_amount": 1000,
+    "expired": false,
+    "source_links": [
+      "https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "merrill-edge-brokerage-2026",
+    "bank_name": "Merrill Edge (Brokerage)",
+    "product_type": "savings",
+    "bonus_amount": 1500,
+    "expired": false,
+    "source_links": [
+      "https://www.merrilledge.com/offers"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "sofi-invest-150-2026",
+    "bank_name": "SoFi Invest (Brokerage)",
+    "product_type": "savings",
+    "bonus_amount": 150,
+    "expired": false,
+    "source_links": [
+      "https://www.sofi.com/invest/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "chase-biz-savings-500",
+    "bank_name": "Chase Business Checking",
+    "product_type": "savings",
+    "bonus_amount": 750,
+    "expired": false,
+    "source_links": [
+      "https://www.chase.com/business/checking"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "usbank-biz-savings-1200",
+    "bank_name": "U.S. Bank Business Platinum",
+    "product_type": "savings",
+    "bonus_amount": 1200,
+    "expired": false,
+    "source_links": [
+      "https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "wells-fargo-biz-savings-825",
+    "bank_name": "Wells Fargo Business",
+    "product_type": "savings",
+    "bonus_amount": 825,
+    "expired": false,
+    "source_links": [
+      "https://accountoffers.wellsfargo.com/businesscheckingb"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "citi-biz-savings-2000",
+    "bank_name": "Citi Business",
+    "product_type": "savings",
+    "bonus_amount": 2000,
+    "expired": false,
+    "source_links": [
+      "https://banking.citi.com/cbol/small-business/checking-offer/"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "huntington-biz-savings-1000",
+    "bank_name": "Huntington Business",
+    "product_type": "savings",
+    "bonus_amount": 1000,
+    "expired": false,
+    "source_links": [
+      "https://www.huntington.com/business-banking-promotions-offers"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  },
+  {
+    "id": "mt-bank-biz-savings-1500",
+    "bank_name": "M&T Bank Business",
+    "product_type": "savings",
+    "bonus_amount": 1500,
+    "expired": false,
+    "source_links": [
+      "https://campaigns.mtb.com/bizbonus"
+    ],
+    "hasDoc": false,
+    "file": "savings"
+  }
+]

@@ -17,6 +17,46 @@ function cleanDollars(v: string | null): number | null {
   return Number.isFinite(n) ? n : null
 }
 
+// Phrases that commonly precede dollar amounts on bank pages but are NOT
+// bonus amounts — FDIC insurance limits, loan caps, interest accrual caps,
+// debit/ATM reward caps, total-deposit thresholds. If the match snippet is
+// near any of these, reject the candidate.
+const NON_BONUS_PHRASES = [
+  /home\s+equity/i,
+  /loans?\s+up\s+to/i,
+  /mortgage/i,
+  /FDIC[-\s]*insured/i,
+  /NCUA[-\s]*insured/i,
+  /per\s+(?:monthly\s+)?statement/i,
+  /per\s+month(?!ly\s+fee)/i,
+  /ATM\s+(?:fee|rebate|reimbursement)/i,
+  /surcharge[-\s]*free/i,
+  /deposit\s+up\s+to/i,
+  /balance(?:s)?\s+up\s+to/i,
+  /APY\s+(?:on\s+balances?\s+)?up\s+to/i, // "Earn 2.00% APY up to $25,000"
+  /dividend(?:s)?\s+up\s+to/i,
+  /rewards?\s+up\s+to/i,
+  /protection\s+up\s+to/i,
+  /credit\s+limit/i,
+  /in\s+interest(?:\s+during)?/i,
+  /overdraft/i,
+]
+
+// A plausible bonus amount: ≥ $25 (smallest common promo), ≤ $25,000 (cap
+// above HSBC Premier's ~$7k top tier), divisible by 25 (real promos are
+// always round: $100/$250/$325/$500/$750/$1000/$1500/$2000). Footnote-bleed
+// values like $5001, $7451, $2001 reliably fail the divisibility check.
+function isPlausibleBonusAmount(amount: number): boolean {
+  if (!Number.isFinite(amount)) return false
+  if (amount < 25 || amount > 25000) return false
+  return amount % 25 === 0
+}
+
+function isInNonBonusContext(snippet: string | null): boolean {
+  if (!snippet) return false
+  return NON_BONUS_PHRASES.some((re) => re.test(snippet))
+}
+
 // Bonus amount — prefer largest dollar amount in proximity to "bonus" keyword
 export function extractBonusAmount(text: string): R<number> {
   // Look for phrases like "earn $300", "$500 bonus", "up to $750"
@@ -25,9 +65,25 @@ export function extractBonusAmount(text: string): R<number> {
     /\$(\d{2,4}(?:,\d{3})?)\s+(?:checking\s+)?(?:cash\s+)?bonus/i,
     /\$(\d{2,4}(?:,\d{3})?)\s+welcome/i,
   ]
+  // Walk all matches across every pattern; return the first candidate that
+  // passes plausibility + context filters. The old single-match approach
+  // stopped at the first regex hit even when it was garbage.
+  const candidates: Array<{ value: number; snippet: string }> = []
   for (const re of patterns) {
-    const r = firstMatch(text, re)
-    if (r.value) return { value: cleanDollars(r.value), snippet: r.snippet }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const idx = m.index
+      const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
+      const value = cleanDollars(m[1] ?? null)
+      if (value === null) continue
+      candidates.push({ value, snippet })
+    }
+  }
+  for (const c of candidates) {
+    if (!isPlausibleBonusAmount(c.value)) continue
+    if (isInNonBonusContext(c.snippet)) continue
+    return { value: c.value, snippet: c.snippet }
   }
   return { value: null, snippet: null }
 }

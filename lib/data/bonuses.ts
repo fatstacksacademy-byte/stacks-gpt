@@ -394,6 +394,8 @@ export const bonuses: any[] = [
     },
     "source_links": [
       "https://accounts.chase.com/consumer/raf/online/rafoffers?key=2492624790&src=N"
+    ,
+      "https://www.doctorofcredit.com/chase-400-checking-bonus/"
     ],
     "raw_excerpt": "Open Chase Total Checking, make $1,000+ direct deposits within 90 days, bonus posts within 15 days. Offer expires 04/15/2026.",
     "missing_fields": []
@@ -848,6 +850,8 @@ export const bonuses: any[] = [
       "https://www.inboxdollars.com/",
       "https://www.mypoints.com/",
       "https://www.rakuten.com/"
+    ,
+      "https://www.doctorofcredit.com/chime-referral-bonus-members-earn-25/"
     ],
     "raw_excerpt": "Referral bonus posts instantly after qualifying DD and card activation; portal payouts are separate and variable.",
     "missing_fields": [
@@ -971,6 +975,8 @@ export const bonuses: any[] = [
     },
     "source_links": [
       "https://banking.citi.com/cbol/OM/checking/choice/featured-offers/default.htm?BT_TX=1&ProspectID=CF66AD0E62054EAA9D2E755859D1CC20"
+    ,
+      "https://www.doctorofcredit.com/citi-300-checking-bonus/"
     ],
     "raw_excerpt": "Complete 2 Enhanced Direct Deposits totaling $3,000-$5,999 within 90 days. Bonus posts between day 90 and 120 after account opening.",
     "missing_fields": [
@@ -1030,6 +1036,8 @@ export const bonuses: any[] = [
     },
    "source_links": [
   "https://www.usbank.com/splash/checking/2026-all-market-checking-offer.html"
+,
+  "https://www.doctorofcredit.com/u-s-bank-450-100-checking-bonus/"
 ],
     "raw_excerpt": "Open by 04/06/2026, fund with $25 within 30 days, complete 2+ direct deposits totaling $8,000+ within 90 days for $450 bonus. Posts within 30 days of completing requirements.",
     "missing_fields": [
@@ -4988,7 +4996,7 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "business": true,
     "bonus_amount": 1200,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "tiers": [
       { "bonus": 400, "min_dd_total": 5000 },
       { "bonus": 1200, "min_dd_total": 25000 }
@@ -5601,6 +5609,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.schwab.com/client-referral?refrid=REFERE7P2ZQBK",
       "https://www.schwab.com/public/schwab/nn/refer-prospect.html"
+    ,
+      "https://www.doctorofcredit.com/charles-schwab-referral-bonus-up-to-500/"
     ],
     "raw_excerpt": "Charles Schwab $500 checking bonus via referral. Tiered: $100 at $25k, $300 at $50k, $500 at $100k. 12-month hold."
   },
@@ -5673,6 +5683,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.bluevine.com/partner/nw300-checking",
       "https://www.bluevine.com/"
+    ,
+      "https://www.doctorofcredit.com/bluevine-business-checking-300-bonus/"
     ],
     "raw_excerpt": "BlueVine $500 business checking bonus. $5,000 deposit required."
   },
@@ -5708,6 +5720,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.sfcu.org/bonus/",
       "https://www.sfcu.org/"
+    ,
+      "https://www.doctorofcredit.com/ca-only-stanford-federal-credit-union-100-checking-bonus/"
     ],
     "raw_excerpt": "Stanford Federal Credit Union $620 checking bonus. CA only. Direct deposit required. Also $250/$500 tiers."
   },
@@ -5883,6 +5897,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.bankatfidelity.com/summer-checking-bonus/",
       "https://www.fidelitydeposit.com/"
+    ,
+      "https://www.doctorofcredit.com/northeastern-pa-only-fidelity-bank-400-checking/"
     ],
     "raw_excerpt": "Fidelity Bank (PA) $500 checking bonus. Northeastern PA only."
   },
@@ -5953,6 +5969,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.4frontcu.com/4front-400",
       "https://www.4frontcu.com/"
+    ,
+      "https://www.doctorofcredit.com/mi-4font-credit-union-400-checking-bonus-direct-deposit-not-required/"
     ],
     "raw_excerpt": "4Front Credit Union $400 checking bonus. MI only. No DD required. 15 debit uses for 3 months."
   },
@@ -6443,6 +6461,8 @@ export const bonuses: any[] = [
     "source_links": [
       "https://alltrucu.org/checking/personal-checking/",
       "https://www.alltrucu.com/"
+    ,
+      "https://www.doctorofcredit.com/mo-alltru-credit-union-400-checking-bonus/"
     ],
     "raw_excerpt": "AllTru Credit Union $300 checking bonus. MO only. Direct deposit required."
   }

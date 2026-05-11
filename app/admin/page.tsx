@@ -388,12 +388,20 @@ export default function AdminPage() {
                   {" · "}Cron: Sundays 14:00 UTC.
                 </div>
               </div>
-              <button
-                onClick={loadVerifications}
-                style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#0d7c5f", background: "#e6f5f0", border: "none", borderRadius: 6, cursor: "pointer" }}
-              >
-                Refresh
-              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <a
+                  href="/admin/triage"
+                  style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#fff", background: "#0d7c5f", border: "none", borderRadius: 6, cursor: "pointer", textDecoration: "none" }}
+                >
+                  Open Triage Mode →
+                </a>
+                <button
+                  onClick={loadVerifications}
+                  style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#0d7c5f", background: "#e6f5f0", border: "none", borderRadius: 6, cursor: "pointer" }}
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
 
             {loading ? (
