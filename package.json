@@ -17,6 +17,7 @@
     "search:offer-links": "tsx scripts/search-offer-links/run.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "@next/third-parties": "^16.2.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
@@ -28,7 +29,6 @@
     "stripe": "^20.4.0"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.90.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

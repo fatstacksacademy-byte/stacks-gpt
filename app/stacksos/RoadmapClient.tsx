@@ -246,6 +246,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customDdCount, setCustomDdCount] = useState("")
   const [customDepositWindow, setCustomDepositWindow] = useState("")
   const [customHoldingPeriod, setCustomHoldingPeriod] = useState("")
+  const [smartImportUrl, setSmartImportUrl] = useState("")
+  const [smartImporting, setSmartImporting] = useState(false)
+  const [smartImportError, setSmartImportError] = useState<string | null>(null)
+  const [smartImportApplied, setSmartImportApplied] = useState(false)
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "start" | "close" } | null>(null)
   const [editingCustom, setEditingCustom] = useState<CustomBonus | null>(null)
 
@@ -453,6 +457,62 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setEditingNote(null)
   }
 
+  async function handleSmartImport() {
+    const url = smartImportUrl.trim()
+    if (!url || smartImporting) return
+    setSmartImporting(true)
+    setSmartImportError(null)
+    setSmartImportApplied(false)
+    try {
+      const resp = await fetch("/api/smart-import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      })
+      const data = await resp.json().catch(() => ({}))
+      if (!resp.ok) {
+        setSmartImportError(data?.error || "Smart Import failed.")
+        return
+      }
+      const e = data.extracted as {
+        bank_name: string | null
+        bonus_amount: number | null
+        dd_required: boolean | null
+        min_dd_total: number | null
+        min_dd_per_deposit: number | null
+        dd_count_required: number | null
+        deposit_window_days: number | null
+        holding_period_days: number | null
+        churnable: boolean | null
+        cooldown_months: number | null
+        notes: string | null
+      }
+      if (e.bank_name) setCustomBank(e.bank_name)
+      if (e.bonus_amount != null) setCustomAmount(String(e.bonus_amount))
+      if (e.dd_required != null) setCustomDdRequired(e.dd_required)
+      if (e.min_dd_total != null) setCustomMinDdTotal(String(e.min_dd_total))
+      if (e.min_dd_per_deposit != null) setCustomMinDdPerDeposit(String(e.min_dd_per_deposit))
+      if (e.dd_count_required != null) setCustomDdCount(String(e.dd_count_required))
+      if (e.deposit_window_days != null) setCustomDepositWindow(String(e.deposit_window_days))
+      if (e.holding_period_days != null) setCustomHoldingPeriod(String(e.holding_period_days))
+      if (e.churnable != null) setCustomChurnable(e.churnable)
+      if (e.cooldown_months != null) setCustomCooldown(String(e.cooldown_months))
+      if (e.notes) setCustomNotes(e.notes)
+      setSmartImportApplied(true)
+    } catch {
+      setSmartImportError("Network error — try again.")
+    } finally {
+      setSmartImporting(false)
+    }
+  }
+
+  function resetSmartImport() {
+    setSmartImportUrl("")
+    setSmartImporting(false)
+    setSmartImportError(null)
+    setSmartImportApplied(false)
+  }
+
   async function handleAddCustom() {
     if (!customBank || !customAmount) return
     setAddCustomError(null)
@@ -473,6 +533,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomChurnable(false); setCustomCooldown("12")
     setCustomDdRequired(false); setCustomMinDdTotal(""); setCustomMinDdPerDeposit("")
     setCustomDdCount(""); setCustomDepositWindow(""); setCustomHoldingPeriod("")
+    resetSmartImport()
   }
 
   async function handleCloseCustom() {
@@ -2698,6 +2759,40 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Custom Bonus</div>
             <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bonus that isn't in our database yet.</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {/* Smart Import — paste a URL and let Claude pre-fill the form */}
+              <div style={{ background: "#f6faf8", border: "1px solid #d8ece4", borderRadius: 10, padding: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", letterSpacing: "0.02em" }}>SMART IMPORT</span>
+                  <span style={{ fontSize: 11, color: "#7a9c8e" }}>· paste a bonus offer link</span>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    type="url"
+                    value={smartImportUrl}
+                    onChange={e => { setSmartImportUrl(e.target.value); setSmartImportError(null); setSmartImportApplied(false) }}
+                    placeholder="https://www.doctorofcredit.com/..."
+                    style={{ ...modalInput, padding: "8px 10px", fontSize: 13, flex: 1 }}
+                    onKeyDown={e => { if (e.key === "Enter" && smartImportUrl.trim() && !smartImporting) { e.preventDefault(); handleSmartImport() } }}
+                  />
+                  <button
+                    onClick={handleSmartImport}
+                    disabled={!smartImportUrl.trim() || smartImporting}
+                    style={{
+                      background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8,
+                      padding: "8px 14px", fontSize: 13, fontWeight: 600, cursor: smartImporting ? "default" : "pointer",
+                      opacity: (!smartImportUrl.trim() || smartImporting) ? 0.5 : 1, whiteSpace: "nowrap" as const,
+                    }}
+                  >
+                    {smartImporting ? "Reading…" : "Import"}
+                  </button>
+                </div>
+                {smartImportError && (
+                  <div style={{ fontSize: 11, color: "#dc2626", marginTop: 6 }}>{smartImportError}</div>
+                )}
+                {smartImportApplied && !smartImportError && (
+                  <div style={{ fontSize: 11, color: "#0d7c5f", marginTop: 6 }}>Pre-filled below. Review and adjust before saving.</div>
+                )}
+              </div>
               <div>
                 <label style={modalLabel}>Bank name</label>
                 <input type="text" value={customBank} onChange={e => setCustomBank(e.target.value)} placeholder="e.g. Discover" style={modalInput} />
@@ -2773,7 +2868,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
             )}
             <div style={modalActions}>
-              <button onClick={() => { setShowAddCustom(false); setCustomChurnable(false); setCustomCooldown("12"); setAddCustomError(null) }} style={cancelBtnLight}>Cancel</button>
+              <button onClick={() => { setShowAddCustom(false); setCustomChurnable(false); setCustomCooldown("12"); setAddCustomError(null); resetSmartImport() }} style={cancelBtnLight}>Cancel</button>
               <button onClick={handleAddCustom} disabled={!customBank || !customAmount} style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Add Bonus</button>
             </div>
           </div>
