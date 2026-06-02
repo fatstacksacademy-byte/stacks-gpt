@@ -49,11 +49,26 @@ export default function HubClient({
   userEmail,
   userId,
   initialProfile,
+  subscriptionStatus,
 }: {
   userEmail: string
   userId: string
   initialProfile: UserProfile
+  subscriptionStatus: string | null
 }) {
+  const [billingLoading, setBillingLoading] = useState(false)
+  async function handleManageBilling() {
+    setBillingLoading(true)
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else { setBillingLoading(false); alert(data.error ?? "Could not open billing portal. Email fatstacksacademy@gmail.com for help.") }
+    } catch {
+      setBillingLoading(false)
+      alert("Network error opening billing portal. Email fatstacksacademy@gmail.com for help.")
+    }
+  }
   const [profile] = useState<UserProfile>(initialProfile)
   const [savingsProfile, setSavingsProfile] = useState<SavingsProfile | null>(null)
   const [spendingProfile, setSpendingProfile] = useState<SpendingProfile | null>(null)
@@ -267,6 +282,19 @@ export default function HubClient({
         />
       )}
       <CheckpointNav />
+      {subscriptionStatus === "past_due" && (
+        <div style={{ background: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "12px 20px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#854d0e", textAlign: "center" }}>
+            <span>
+              Your last payment didn't go through — please update your card to keep your subscription active.
+            </span>
+            <button onClick={handleManageBilling} disabled={billingLoading}
+              style={{ fontSize: 13, fontWeight: 700, color: "#fff", background: "#854d0e", border: "none", borderRadius: 6, padding: "6px 12px", cursor: billingLoading ? "wait" : "pointer" }}>
+              {billingLoading ? "Opening…" : "Update payment →"}
+            </button>
+          </div>
+        </div>
+      )}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }} className="hub-inner">
         <div
           style={{

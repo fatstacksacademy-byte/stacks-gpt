@@ -14,6 +14,20 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [billingLoading, setBillingLoading] = useState(false)
+
+  async function handleManageBilling() {
+    setBillingLoading(true)
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else { setBillingLoading(false); alert(data.error ?? "Could not open billing portal. Email fatstacksacademy@gmail.com for help.") }
+    } catch {
+      setBillingLoading(false)
+      alert("Network error opening billing portal. Email fatstacksacademy@gmail.com for help.")
+    }
+  }
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -86,12 +100,35 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         {loggedInEmail ? (
           <div className="lp-nav-user">
             <span className="lp-nav-email">{loggedInEmail}</span>
+            <button onClick={handleManageBilling} disabled={billingLoading}
+              style={{ fontSize: 14, fontWeight: 500, color: "#666", background: "none", border: "none", cursor: billingLoading ? "wait" : "pointer", padding: 0, textDecoration: "underline" }}>
+              {billingLoading ? "Opening…" : "Manage billing"}
+            </button>
             <Link href="/stacksos" style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textDecoration: "none" }}>Go to app →</Link>
           </div>
         ) : (
           <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
         )}
       </nav>
+
+      {/* ── LOGGED-IN, NO ACTIVE SUBSCRIPTION BANNER ── */}
+      {loggedInEmail && (
+        <div style={{ background: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "12px 20px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#854d0e", textAlign: "center" }}>
+            <span>
+              You're signed in as <strong>{loggedInEmail}</strong>, but we don't see an active subscription on this account.
+            </span>
+            <button onClick={handleManageBilling} disabled={billingLoading}
+              style={{ fontSize: 13, fontWeight: 700, color: "#fff", background: "#854d0e", border: "none", borderRadius: 6, padding: "6px 12px", cursor: billingLoading ? "wait" : "pointer" }}>
+              {billingLoading ? "Opening…" : "Check billing →"}
+            </button>
+            <a href="mailto:fatstacksacademy@gmail.com?subject=Stacks%20OS%20subscription%20help"
+              style={{ fontSize: 13, color: "#854d0e", textDecoration: "underline" }}>
+              Email support
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* ── HERO ── */}
       <section className="lp-hero" style={{ maxWidth: 1100, margin: "0 auto" }}>

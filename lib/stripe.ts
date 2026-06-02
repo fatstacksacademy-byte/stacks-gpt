@@ -66,7 +66,20 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
     .eq("user_id", userId)
     .single()
 
-  return data?.status === "active" || data?.status === "trialing"
+  // past_due users keep access during Stripe's retry window so they're not
+  // locked out while we attempt to recover the payment.
+  return data?.status === "active" || data?.status === "trialing" || data?.status === "past_due"
+}
+
+export async function getSubscriptionStatus(userId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("user_id", userId)
+    .single()
+
+  return data?.status ?? null
 }
 
 export async function updateSubscriptionStatus(

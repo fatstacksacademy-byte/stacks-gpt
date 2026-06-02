@@ -1,5 +1,5 @@
 import { createClient } from "../../lib/supabase/server"
-import { hasActiveSubscription } from "../../lib/stripe"
+import { hasActiveSubscription, getSubscriptionStatus } from "../../lib/stripe"
 import { getProfileServer } from "../../lib/profileServer"
 import HubClient from "./HubClient"
 import StacksOSLanding from "./StacksOSLanding"
@@ -24,13 +24,16 @@ export default async function StacksOSPage({
       const profile = await getProfileServer(user.id)
       return (
         <SubscriptionGate isSubscribed={false}>
-          <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} />
+          <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} subscriptionStatus={null} />
         </SubscriptionGate>
       )
     }
     return <StacksOSLanding loggedInEmail={user.email ?? null} />
   }
 
-  const profile = await getProfileServer(user.id)
-  return <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} />
+  const [profile, subscriptionStatus] = await Promise.all([
+    getProfileServer(user.id),
+    getSubscriptionStatus(user.id),
+  ])
+  return <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} subscriptionStatus={subscriptionStatus} />
 }
