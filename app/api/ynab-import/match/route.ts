@@ -13,8 +13,10 @@ import {
 export const runtime = "nodejs"
 
 const MODEL = "claude-sonnet-4-6"
-const MAX_ACCOUNTS = 80
-const MAX_CANDIDATES_PER_ACCOUNT = 30
+const MAX_ACCOUNTS = 100
+const MAX_CANDIDATES_PER_ACCOUNT = 20
+const BATCH_SIZE = 15
+const MAX_TOKENS_PER_BATCH = 4000
 
 const ALLOWED_EMAILS = new Set([
   "booth.nathaniel@gmail.com",
@@ -65,39 +67,59 @@ export async function POST(req: NextRequest) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-  const userMsg = buildUserPrompt(perAccountCandidates)
-
-  let response
-  try {
-    response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4000,
-      system: [
-        { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
-      ],
-      messages: [{ role: "user", content: userMsg }],
-    })
-  } catch (e) {
-    console.error("[ynab-import/match] anthropic error:", e)
-    return NextResponse.json({ error: "Matcher unreachable, try again" }, { status: 502 })
+  const batches: typeof perAccountCandidates[] = []
+  for (let i = 0; i < perAccountCandidates.length; i += BATCH_SIZE) {
+    batches.push(perAccountCandidates.slice(i, i + BATCH_SIZE))
   }
 
-  const text = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map(b => b.text)
-    .join("")
-    .trim()
+  const parsed: ModelResult[] = []
+  const batchErrors: { batch: number; reason: string; sample?: string }[] = []
 
-  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim()
+  for (let b = 0; b < batches.length; b++) {
+    const batch = batches[b]
+    const userMsg = buildUserPrompt(batch)
+    let response
+    try {
+      response = await client.messages.create({
+        model: MODEL,
+        max_tokens: MAX_TOKENS_PER_BATCH,
+        system: [
+          { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+        ],
+        messages: [{ role: "user", content: userMsg }],
+      })
+    } catch (e) {
+      console.error(`[ynab-import/match] batch ${b + 1} anthropic error:`, e)
+      batchErrors.push({ batch: b + 1, reason: e instanceof Error ? e.message : "unknown" })
+      continue
+    }
 
-  let parsed: ModelResult[] = []
-  try {
-    const raw = JSON.parse(cleaned)
-    if (Array.isArray(raw)) parsed = raw
-    else if (raw && Array.isArray(raw.matches)) parsed = raw.matches
-  } catch {
-    console.warn("[ynab-import/match] could not parse JSON:", text.slice(0, 400))
-    return NextResponse.json({ error: "Match result was not valid JSON" }, { status: 502 })
+    const stopReason = response.stop_reason
+    const text = response.content
+      .filter((c): c is Anthropic.TextBlock => c.type === "text")
+      .map(c => c.text)
+      .join("")
+      .trim()
+    const cleaned = extractJson(text)
+
+    let batchParsed: ModelResult[] = []
+    try {
+      const raw = JSON.parse(cleaned)
+      if (Array.isArray(raw)) batchParsed = raw
+      else if (raw && Array.isArray(raw.matches)) batchParsed = raw.matches
+    } catch {
+      console.warn(`[ynab-import/match] batch ${b + 1} JSON parse failed (stop=${stopReason}):`, text.slice(0, 400))
+      batchErrors.push({ batch: b + 1, reason: `Invalid JSON (stop_reason=${stopReason})`, sample: text.slice(0, 200) })
+      continue
+    }
+    parsed.push(...batchParsed)
+  }
+
+  if (parsed.length === 0 && batchErrors.length > 0) {
+    return NextResponse.json(
+      { error: `All ${batches.length} batches failed`, details: batchErrors },
+      { status: 502 },
+    )
   }
 
   const matches: MatchedAccount[] = accounts.map(acc => {
@@ -125,6 +147,21 @@ export async function POST(req: NextRequest) {
   })
 
   return NextResponse.json({ matches })
+}
+
+function extractJson(text: string): string {
+  const stripped = text.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim()
+  if (stripped.startsWith("[") || stripped.startsWith("{")) return stripped
+  const firstBracket = stripped.indexOf("[")
+  const firstBrace = stripped.indexOf("{")
+  const starts = [firstBracket, firstBrace].filter(i => i >= 0)
+  if (starts.length === 0) return stripped
+  const start = Math.min(...starts)
+  const open = stripped[start]
+  const close = open === "[" ? "]" : "}"
+  const end = stripped.lastIndexOf(close)
+  if (end <= start) return stripped
+  return stripped.slice(start, end + 1)
 }
 
 function clamp01(n: unknown): number {
