@@ -2504,6 +2504,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add custom bonus
               </button>
+              {(userEmail === "booth.nathaniel@gmail.com" || userEmail === "fatstacksacademy@gmail.com") && (
+                <>
+                  <span style={{ color: "#e0e0e0" }}>|</span>
+                  <a href="/stacksos/import-ynab"
+                    style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                    ↑ Import from YNAB
+                  </a>
+                </>
+              )}
               <span style={{ color: "#e0e0e0" }}>|</span>
               <button onClick={() => setShowAddOpenAccount(true)}
                 style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
