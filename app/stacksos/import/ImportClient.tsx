@@ -178,7 +178,7 @@ export default function ImportClient({ userId }: { userId: string }) {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Account Import</h1>
         <p style={{ color: "#666", marginBottom: 24, lineHeight: 1.5 }}>
-          Upload a CSV (or paste delimited text) of your accounts. Claude detects which columns mean what,
+          Upload a CSV (or paste delimited text) of your accounts. Stacks detects which columns mean what,
           matches each account to a catalog entry, then you confirm dates and commit to your profile.
         </p>
 
