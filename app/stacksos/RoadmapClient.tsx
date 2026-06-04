@@ -2507,9 +2507,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               {(userEmail === "booth.nathaniel@gmail.com" || userEmail === "fatstacksacademy@gmail.com") && (
                 <>
                   <span style={{ color: "#e0e0e0" }}>|</span>
-                  <a href="/stacksos/import-ynab"
+                  <a href="/stacksos/import"
                     style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
-                    ↑ Import from YNAB
+                    ↑ Import spreadsheet
                   </a>
                 </>
               )}

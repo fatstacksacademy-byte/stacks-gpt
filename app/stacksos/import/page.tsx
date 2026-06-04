@@ -8,7 +8,7 @@ const ALLOWED_EMAILS = new Set([
   "fatstacksacademy@gmail.com",
 ])
 
-export default async function ImportYnabPage() {
+export default async function ImportPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")
