@@ -23,6 +23,15 @@ import { createClient } from "@supabase/supabase-js"
 import { fetchPage, closeBrowser } from "../_shared/playwright"
 import { creditCardBonuses, type CreditCardBonus } from "../../lib/data/creditCardBonuses"
 import { extractAll, type CardExtracted } from "./extract"
+import {
+  loadFeedbackState,
+  resolveUrl,
+  shouldSuppressEdit,
+  getHint,
+  EMPTY_STATE,
+  type FeedbackState,
+} from "./feedback-loop"
+import { escalateCard, type Escalation } from "./escalate"
 
 const args = process.argv.slice(2)
 function flag(name: string): string | undefined {
@@ -31,6 +40,7 @@ function flag(name: string): string | undefined {
 const ONLY = flag("only")
 const LIMIT = Number(flag("limit") ?? 0) || 0
 const USE_CACHE = !args.includes("--no-cache")
+const ESCALATE = !args.includes("--no-escalate")
 const INCLUDE_EXPIRED = args.includes("--include-expired")
 const PERSIST = args.includes("--persist")
 
@@ -38,6 +48,10 @@ const OUT_DIR = join(process.cwd(), "verification-output")
 const CACHE_DIR = join(process.cwd(), ".cache", "verify-cards")
 const CONCURRENCY = 3
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const MAX_ESCALATIONS_PER_RUN = 20
+
+let escalationBudget = MAX_ESCALATIONS_PER_RUN
+let feedbackState: FeedbackState = EMPTY_STATE
 
 type CardPageSignal =
   | "ok"
@@ -65,6 +79,7 @@ type CardResult = {
   error?: string
   fields: FieldResult[]
   extracted: CardExtracted | null
+  escalations: Escalation[]
   cacheHit: boolean
   verifiedAt: string
 }
@@ -156,13 +171,14 @@ function compareCard(card: CreditCardBonus, extracted: CardExtracted): FieldResu
 
 async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
   const verifiedAt = new Date().toISOString()
-  const url = card.offer_link ?? ""
+  const defaultUrl = card.offer_link ?? ""
+  const url = resolveUrl(feedbackState, card.id, defaultUrl)
   if (!url) {
     return {
       id: card.id, card_name: card.card_name, issuer: card.issuer,
       url: "", finalUrl: "", status: 0, pageSignal: "fetch_error",
       error: "no offer_link", fields: [], extracted: null,
-      cacheHit: false, verifiedAt,
+      escalations: [], cacheHit: false, verifiedAt,
     }
   }
 
@@ -250,15 +266,87 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
   }
 
   const fields = extracted ? compareCard(card, extracted) : []
+
+  // Escalate field-level mismatches (budget-limited). Cards extract.ts only
+  // ever returns match/mismatch/missing — so we escalate mismatches when the
+  // admin has *not* already triaged this (card_id, field) pair, OR has but
+  // the prior triage included a hint we can pass along to Claude.
+  const escalations: Escalation[] = []
+  if (ESCALATE && extracted) {
+    for (const f of fields) {
+      if (f.status !== "mismatch") continue
+      if (escalationBudget <= 0) break
+      const snippet = pickSnippet(f.field, extracted)
+      if (!snippet) continue
+      try {
+        const adminHint = getHint(feedbackState, card.id, f.field)
+        const v = await escalateCard(
+          card.card_name,
+          f.field,
+          f.stored,
+          f.extracted,
+          snippet,
+          adminHint
+            ? {
+                issue_category: adminHint.issue_category,
+                issue_description: adminHint.issue_description,
+                suggested_fix: adminHint.suggested_fix,
+                corrected_value: adminHint.corrected_value,
+              }
+            : null,
+        )
+        escalations.push(v)
+        escalationBudget--
+      } catch (err) {
+        console.warn(
+          `[escalate] ${card.id}/${f.field} failed:`,
+          err instanceof Error ? err.message : err,
+        )
+      }
+    }
+  }
+
   return {
     id: card.id, card_name: card.card_name, issuer: card.issuer,
     url, finalUrl, status, pageSignal, error: errorMsg,
-    fields, extracted, cacheHit, verifiedAt,
+    fields, extracted, escalations, cacheHit, verifiedAt,
+  }
+}
+
+function pickSnippet(field: FieldResult["field"], extracted: CardExtracted): string | null {
+  switch (field) {
+    case "bonus_amount":
+      return extracted.snippets.bonusAmount
+    case "min_spend":
+    case "spend_months":
+      return extracted.snippets.minSpend
+    case "annual_fee":
+      return extracted.snippets.annualFee
   }
 }
 
 function buildProposedEdits(results: CardResult[]): { id: string; path: string; from: unknown; to: unknown; reason: string }[] {
   const edits: { id: string; path: string; from: unknown; to: unknown; reason: string }[] = []
+  let suppressed = 0
+
+  function tryPush(
+    edit: { id: string; path: string; from: unknown; to: unknown; reason: string },
+    snippet: string | null,
+  ) {
+    const decision = shouldSuppressEdit(
+      feedbackState,
+      edit.id,
+      edit.path,
+      { from: edit.from, to: edit.to },
+      snippet,
+    )
+    if (decision.suppress) {
+      suppressed++
+      return
+    }
+    edits.push(edit)
+  }
+
   for (const r of results) {
     if (
       r.pageSignal === "offer_dead" ||
@@ -266,21 +354,35 @@ function buildProposedEdits(results: CardResult[]): { id: string; path: string; 
       r.pageSignal === "card_name_mismatch" ||
       r.pageSignal === "no_fields_extracted"
     ) {
-      edits.push({
-        id: r.id, path: "expired or offer_link",
-        from: false, to: true,
-        reason: `Page signal: ${r.pageSignal}${r.error ? ` (${r.error})` : ""}. Verify + update offer_link or mark expired.`,
-      })
+      tryPush(
+        {
+          id: r.id, path: "expired or offer_link",
+          from: false, to: true,
+          reason: `Page signal: ${r.pageSignal}${r.error ? ` (${r.error})` : ""}. Verify + update offer_link or mark expired.`,
+        },
+        r.pageSignal,
+      )
     }
+    const escalateMap = new Map(r.escalations.map((e) => [e.field, e]))
     for (const f of r.fields) {
-      if (f.status === "mismatch") {
-        edits.push({
-          id: r.id, path: f.field,
-          from: f.stored, to: f.extracted,
-          reason: "regex mismatch — human review",
-        })
+      if (f.status !== "mismatch") continue
+      const snippet = r.extracted ? pickSnippet(f.field, r.extracted) : null
+      const ver = escalateMap.get(f.field)
+      // Claude says SAME_MEANING → drop the edit (wording drift, not a real change).
+      if (ver?.verdict === "same_meaning") {
+        suppressed++
+        continue
       }
+      const reason =
+        ver?.verdict === "different"
+          ? `Claude: different — ${ver.rationale}`
+          : "regex mismatch — human review"
+      tryPush({ id: r.id, path: f.field, from: f.stored, to: f.extracted, reason }, snippet)
     }
+  }
+
+  if (suppressed > 0) {
+    console.log(`[feedback] suppressed ${suppressed} edit(s) based on prior admin decisions / Claude verdicts`)
   }
   return edits
 }
@@ -454,12 +556,16 @@ async function persistResults(
 }
 
 async function main() {
+  feedbackState = await loadFeedbackState()
+
   let targets: CreditCardBonus[] = creditCardBonuses as CreditCardBonus[]
   if (!INCLUDE_EXPIRED) targets = targets.filter((c) => !c.expired)
   if (ONLY) targets = targets.filter((c) => c.id === ONLY)
   if (LIMIT > 0) targets = targets.slice(0, LIMIT)
 
-  console.log(`Verifying ${targets.length} credit card bonuses (cache=${USE_CACHE ? "on" : "off"})`)
+  console.log(
+    `Verifying ${targets.length} credit card bonuses (cache=${USE_CACHE ? "on" : "off"}, escalate=${ESCALATE ? "on" : "off"})`,
+  )
 
   const limit = pLimit(CONCURRENCY)
   const results: CardResult[] = []

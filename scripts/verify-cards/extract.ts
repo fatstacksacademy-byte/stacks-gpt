@@ -42,6 +42,16 @@ function cleanAmount(raw: string): number | null {
 
 // ────────── Bonus amount (points / miles / dollars) ──────────
 
+// Card welcome bonuses are heavily tiered ("60K after $3K in 3mo OR 80K after
+// $4K in 6mo"). Catalogs store the HEADLINE tier; first-match systematically
+// pulled the worst. We walk every candidate and return the LARGEST plausible.
+function isPlausiblePointsBonus(amount: number): boolean {
+  return Number.isFinite(amount) && amount >= 1000 && amount <= 500_000
+}
+function isPlausibleCashBonus(amount: number): boolean {
+  return Number.isFinite(amount) && amount >= 50 && amount <= 5000
+}
+
 export function extractBonusAmount(text: string): {
   amount: number | null
   unit: string | null
@@ -60,16 +70,25 @@ export function extractBonusAmount(text: string): {
       unitIdx: 2,
     },
   ]
+  const pointsCandidates: Array<{ amount: number; unit: string; snippet: string }> = []
   for (const p of pointsPatterns) {
-    const m = text.match(p.re)
-    if (m) {
-      const idx = m.index ?? 0
-      return {
-        amount: cleanAmount(m[p.amountIdx]),
+    const globalRe = new RegExp(p.re.source, p.re.flags.includes("g") ? p.re.flags : p.re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const amount = cleanAmount(m[p.amountIdx])
+      if (amount === null) continue
+      if (!isPlausiblePointsBonus(amount)) continue
+      pointsCandidates.push({
+        amount,
         unit: m[p.unitIdx].toLowerCase().replace(/\s+/g, " "),
-        snippet: snippet(text, idx),
-      }
+        snippet: snippet(text, m.index),
+      })
     }
+  }
+  if (pointsCandidates.length > 0) {
+    pointsCandidates.sort((a, b) => b.amount - a.amount)
+    const top = pointsCandidates[0]
+    return { amount: top.amount, unit: top.unit, snippet: top.snippet }
   }
 
   // Cash bonus — "$300 cash back bonus", "earn $200", "$1,000 welcome bonus"
@@ -80,73 +99,123 @@ export function extractBonusAmount(text: string): {
     /\$(\d+(?:,\d{3})*)\s+(?:cash\s+)?(?:back\s+)?(?:welcome\s+)?bonus/i,
     /\bearn\s+\$(\d+(?:,\d{3})*)\s+when\s+you\s+spend/i,
   ]
+  const dollarCandidates: Array<{ amount: number; snippet: string }> = []
   for (const re of dollarPatterns) {
-    const m = text.match(re)
-    if (m) {
-      const idx = m.index ?? 0
-      return { amount: cleanAmount(m[1]), unit: "$", snippet: snippet(text, idx) }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const amount = cleanAmount(m[1])
+      if (amount === null) continue
+      if (!isPlausibleCashBonus(amount)) continue
+      dollarCandidates.push({ amount, snippet: snippet(text, m.index) })
     }
+  }
+  if (dollarCandidates.length > 0) {
+    dollarCandidates.sort((a, b) => b.amount - a.amount)
+    const top = dollarCandidates[0]
+    return { amount: top.amount, unit: "$", snippet: top.snippet }
   }
   return { amount: null, unit: null, snippet: null }
 }
 
 // ────────── Minimum spend + window ──────────
 
+// Cards with tiered welcome bonuses pair each tier with its own spend
+// requirement: "$3,000 in 3 months" → 60K, "$4,000 in 6 months" → 80K.
+// Catalog stores the spend tied to the HEADLINE bonus, which is usually
+// the LARGEST spend requirement on the page. Walk all candidates, keep
+// the largest spend (and its paired month window).
 export function extractMinSpend(text: string): {
   minSpend: number | null
   spendMonths: number | null
   snippet: string | null
 } {
   const patterns: RegExp[] = [
-    // "$4,000 in the first 3 months" / "$4,000 on purchases in the first 3 months"
     /\$(\d[\d,]{2,6})\s+(?:on\s+purchases?\s+)?(?:in|within)\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
-    // "spend $4,000 in 3 months"
     /spend\s+\$(\d[\d,]{2,6})\s+in\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
-    // "after spending $X within Y months"
     /after\s+spending\s+\$(\d[\d,]{2,6})\s+(?:in|within)\s+(\d{1,2})\s+months/i,
   ]
+  const candidates: Array<{ spend: number; months: number; snippet: string }> = []
   for (const re of patterns) {
-    const m = text.match(re)
-    if (m) {
-      const idx = m.index ?? 0
-      return {
-        minSpend: cleanAmount(m[1]),
-        spendMonths: Number(m[2]),
-        snippet: snippet(text, idx),
-      }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const spend = cleanAmount(m[1])
+      const months = Number(m[2])
+      if (spend === null || !Number.isFinite(months)) continue
+      if (spend < 500 || spend > 50_000) continue
+      if (months < 1 || months > 18) continue
+      candidates.push({ spend, months, snippet: snippet(text, m.index) })
     }
   }
-  return { minSpend: null, spendMonths: null, snippet: null }
+  if (candidates.length === 0) return { minSpend: null, spendMonths: null, snippet: null }
+  candidates.sort((a, b) => b.spend - a.spend)
+  const top = candidates[0]
+  return { minSpend: top.spend, spendMonths: top.months, snippet: top.snippet }
 }
 
 // ────────── Annual fee ──────────
+
+// "No annual fee" is sometimes conditional ("no annual fee the first year",
+// "no annual fee with a Chase deposit account"). When followed by a temporal
+// or conditional clause within ~80 chars, the actual fee is whatever the page
+// lists structurally — we shouldn't return $0.
+const CONDITIONAL_NO_FEE_FOLLOWERS = [
+  /\s+(?:the\s+)?first\s+year/i,
+  /\s+(?:the\s+)?intro(?:ductory)?\s+(?:period|year)/i,
+  /\s+with\s+/i,
+  /\s+when\s+/i,
+  /\s+if\s+/i,
+  /\s+for\s+(?:the\s+first|qualifying|eligible)/i,
+  /\s+as\s+long\s+as/i,
+]
+
+function isConditionalNoAnnualFee(text: string, idx: number, len: number): boolean {
+  const tail = text.slice(idx + len, idx + len + 80)
+  return CONDITIONAL_NO_FEE_FOLLOWERS.some((re) => re.test(tail))
+}
 
 export function extractAnnualFee(text: string): {
   annualFee: number | null
   snippet: string | null
 } {
-  // No annual fee
-  const noFeeRe = /no\s+annual\s+fee|\$0\s+annual\s+fee|annual\s+fee:\s*\$0/i
-  const noFeeMatch = text.match(noFeeRe)
-  if (noFeeMatch) {
-    const idx = noFeeMatch.index ?? 0
-    return { annualFee: 0, snippet: snippet(text, idx) }
-  }
-
-  // $N annual fee / annual fee of $N / annual fee: $N — same digit-cap fix.
+  // Collect every dollar-fee candidate first.
   const feePatterns: RegExp[] = [
     /\$(\d+(?:,\d{3})*)\s+annual\s+fee/i,
     /annual\s+fee\s*(?:of|:)\s*\$(\d+(?:,\d{3})*)/i,
     /annual\s+fee\s+is\s+\$(\d+(?:,\d{3})*)/i,
   ]
+  const candidates: Array<{ amount: number; snippet: string }> = []
   for (const re of feePatterns) {
-    const m = text.match(re)
-    if (m) {
-      const idx = m.index ?? 0
-      return { annualFee: cleanAmount(m[1]), snippet: snippet(text, idx) }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const amount = cleanAmount(m[1])
+      if (amount === null) continue
+      if (amount > 1000) continue // implausible — likely a balance / cap
+      candidates.push({ amount, snippet: snippet(text, m.index) })
     }
   }
-  return { annualFee: null, snippet: null }
+
+  // "$0 annual fee" / "annual fee: $0" are explicit unconditional zeros.
+  const explicitZero = text.match(/\$0\s+annual\s+fee|annual\s+fee:\s*\$0/i)
+  if (explicitZero && candidates.length === 0) {
+    return { annualFee: 0, snippet: snippet(text, explicitZero.index ?? 0) }
+  }
+
+  // "No annual fee" — only treat as $0 if not immediately conditional.
+  const noFeeRe = /no\s+annual\s+fee/gi
+  let nm: RegExpExecArray | null
+  while ((nm = noFeeRe.exec(text)) !== null) {
+    if (isConditionalNoAnnualFee(text, nm.index, nm[0].length)) continue
+    if (candidates.length === 0) return { annualFee: 0, snippet: snippet(text, nm.index) }
+    candidates.push({ amount: 0, snippet: snippet(text, nm.index) })
+  }
+
+  if (candidates.length === 0) return { annualFee: null, snippet: null }
+  // Prefer largest non-zero fee — captures the structural rate over a waiver branch.
+  candidates.sort((a, b) => b.amount - a.amount)
+  return { annualFee: candidates[0].amount, snippet: candidates[0].snippet }
 }
 
 // ────────── Card name sanity check ──────────
