@@ -20,6 +20,17 @@ type QueueEntry = {
 
 type Verdict = "approved" | "dismissed" | "snoozed"
 
+// Field paths that hold numeric values. Drives the Modify form's input type.
+const NUMERIC_FIELDS = new Set<string>([
+  "bonus_amount",
+  "requirements.min_direct_deposit_total",
+  "requirements.deposit_window_days",
+  "fees.monthly_fee",
+])
+
+// Field paths that hold booleans (e.g. expired). Drives the Modify form's input type.
+const BOOLEAN_FIELDS = new Set<string>(["expired"])
+
 type OverrideRow = {
   id: string
   bonus_id: string
@@ -121,9 +132,13 @@ export default function TriagePage() {
   const [overrides, setOverrides] = useState<OverrideRow[]>([])
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
-  // Report-flag-issue workflow.
+  // Report-flag-issue workflow (Reject path — captures lesson, dismisses flag).
   const [reportFormOpen, setReportFormOpen] = useState(false)
   const [reportFormFocusKey, setReportFormFocusKey] = useState(0)
+
+  // Modify workflow — admin supplies the correct value + lesson; approves with that value.
+  const [modifyFormOpen, setModifyFormOpen] = useState(false)
+  const [modifyFormFocusKey, setModifyFormFocusKey] = useState(0)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -195,6 +210,7 @@ export default function TriagePage() {
   useEffect(() => {
     setUrlFormOpen(false)
     setReportFormOpen(false)
+    setModifyFormOpen(false)
   }, [cursor])
 
   const current = filteredQueue[cursor]
@@ -308,6 +324,59 @@ export default function TriagePage() {
     [current, busy, advance],
   )
 
+  // Submit a Modify decision: admin supplies the correct value + lesson.
+  // Server writes the flag_issue_reports row (with corrected_value) and a
+  // parallel verification_decisions row with verdict='approved' and
+  // to_value=corrected_value — so the existing bulk-apply pipeline patches
+  // the catalog to the admin's value, not the verifier's extract.
+  const submitModify = useCallback(
+    async (input: {
+      corrected_value: unknown
+      issue_category: string
+      issue_description: string
+      suggested_fix: string
+    }) => {
+      if (!current || busy) return { ok: false, error: "no current card" as string }
+      setBusy(true)
+      setError(null)
+      const res = await fetch("/api/admin?action=triage-modify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bonus_id: current.bonus_id,
+          field_path: current.field_path,
+          from_value: current.from_value,
+          to_value: current.to_value,
+          corrected_value: input.corrected_value,
+          url: current.url,
+          page_signal: current.page_signal,
+          snippet: current.snippet,
+          snippet_fingerprint: fingerprint(current.snippet),
+          issue_category: input.issue_category,
+          issue_description: input.issue_description,
+          suggested_fix: input.suggested_fix,
+        }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        const err = body.error ?? "Failed to save modification."
+        setError(err)
+        setBusy(false)
+        return { ok: false, error: err }
+      }
+      const key = `${current.bonus_id}::${current.field_path}`
+      setDecidedKeys((prev) => new Set(prev).add(key))
+      setStats((s) => ({ ...s, approved: s.approved + 1 }))
+      setModifyFormOpen(false)
+      setSuccessMsg("Modification saved. Catalog will be patched to your value on next apply run.")
+      setTimeout(() => setSuccessMsg(null), 2200)
+      setTimeout(() => advance(), 0)
+      setBusy(false)
+      return { ok: true, error: null }
+    },
+    [current, busy, advance],
+  )
+
   // Submit a found-URL override for the current card. Records the override,
   // also writes a parallel "snoozed" decision so the same edit doesn't
   // immediately reappear before the verify pipeline re-runs.
@@ -367,7 +436,8 @@ export default function TriagePage() {
     [current, busy, advance, loadOverrides],
   )
 
-  // Keyboard shortcuts: A/D/S for verdicts, U for URL override, arrows for navigation.
+  // Keyboard shortcuts: A approve, D reject (opens form), M modify (opens form),
+  // S skip, U URL override, arrows for navigation.
   useEffect(() => {
     if (!authed) return
     function onKey(e: KeyboardEvent) {
@@ -375,18 +445,22 @@ export default function TriagePage() {
       const target = e.target as HTMLElement
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) return
       if (e.key === "a" || e.key === "A") { e.preventDefault(); decide("approved") }
-      else if (e.key === "d" || e.key === "D") { e.preventDefault(); decide("dismissed") }
+      else if (e.key === "d" || e.key === "D") {
+        e.preventDefault()
+        setReportFormOpen(true)
+        setReportFormFocusKey((k) => k + 1)
+      }
+      else if (e.key === "m" || e.key === "M") {
+        e.preventDefault()
+        setModifyFormOpen(true)
+        setModifyFormFocusKey((k) => k + 1)
+      }
       else if (e.key === "s" || e.key === "S") { e.preventDefault(); decide("snoozed") }
       else if (e.key === "u" || e.key === "U") {
         e.preventDefault()
         setUrlFormOpen(true)
         // Bump focus key so the form re-focuses its URL input.
         setUrlFormFocusKey((k) => k + 1)
-      }
-      else if (e.key === "r" || e.key === "R") {
-        e.preventDefault()
-        setReportFormOpen(true)
-        setReportFormFocusKey((k) => k + 1)
       }
       else if (e.key === "ArrowLeft") { e.preventDefault(); goPrev() }
       else if (e.key === "ArrowRight") { e.preventDefault(); goNext() }
@@ -507,7 +581,6 @@ export default function TriagePage() {
             decided={currentDecided}
             busy={busy}
             onApprove={() => decide("approved")}
-            onDismiss={() => decide("dismissed")}
             onSkip={() => decide("snoozed")}
             onPrev={goPrev}
             onNext={goNext}
@@ -521,6 +594,11 @@ export default function TriagePage() {
             onOpenReportForm={() => { setReportFormOpen(true); setReportFormFocusKey((k) => k + 1) }}
             onCancelReportForm={() => setReportFormOpen(false)}
             onSubmitFlagReport={submitFlagReport}
+            modifyFormOpen={modifyFormOpen}
+            modifyFormFocusKey={modifyFormFocusKey}
+            onOpenModifyForm={() => { setModifyFormOpen(true); setModifyFormFocusKey((k) => k + 1) }}
+            onCancelModifyForm={() => setModifyFormOpen(false)}
+            onSubmitModify={submitModify}
           />
         )}
 
@@ -627,9 +705,10 @@ function ConsensusBadge({ consensus }: { consensus: QueueEntry["consensus"] }) {
 }
 
 function TriageCard({
-  entry, cursor, total, decided, busy, onApprove, onDismiss, onSkip, onPrev, onNext,
+  entry, cursor, total, decided, busy, onApprove, onSkip, onPrev, onNext,
   urlFormOpen, urlFormFocusKey, onOpenUrlForm, onCancelUrlForm, onSubmitUrlOverride,
   reportFormOpen, reportFormFocusKey, onOpenReportForm, onCancelReportForm, onSubmitFlagReport,
+  modifyFormOpen, modifyFormFocusKey, onOpenModifyForm, onCancelModifyForm, onSubmitModify,
 }: {
   entry: QueueEntry
   cursor: number
@@ -637,7 +716,6 @@ function TriageCard({
   decided: boolean
   busy: boolean
   onApprove: () => void
-  onDismiss: () => void
   onSkip: () => void
   onPrev: () => void
   onNext: () => void
@@ -651,6 +729,11 @@ function TriageCard({
   onOpenReportForm: () => void
   onCancelReportForm: () => void
   onSubmitFlagReport: (input: { issue_category: string; issue_description: string; suggested_fix: string }) => Promise<{ ok: boolean; error: string | null }>
+  modifyFormOpen: boolean
+  modifyFormFocusKey: number
+  onOpenModifyForm: () => void
+  onCancelModifyForm: () => void
+  onSubmitModify: (input: { corrected_value: unknown; issue_category: string; issue_description: string; suggested_fix: string }) => Promise<{ ok: boolean; error: string | null }>
 }) {
   const buttonBase: React.CSSProperties = {
     flex: 1,
@@ -787,39 +870,64 @@ function TriageCard({
         </div>
       )}
 
-      {/* Action buttons */}
+      {/* Primary action buttons: Approve / Reject / Modify.
+          Approve = stored is wrong, accept extracted as the catalog value.
+          Reject  = extracted is wrong, stored stays, admin writes a lesson.
+          Modify  = both are wrong, admin enters the correct value + lesson. */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <button
           onClick={onApprove}
           disabled={busy}
-          aria-label="Approve (A)"
+          aria-label="Approve — accept extracted (A)"
           style={{ ...buttonBase, background: "#0d7c5f", color: "#fff" }}
         >
           ✅ Approve
-          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>A</span>
+          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>A · accept extracted</span>
         </button>
         <button
-          onClick={onDismiss}
-          disabled={busy}
-          aria-label="Dismiss (D)"
-          style={{ ...buttonBase, background: "#fee2e2", color: "#991b1b" }}
+          onClick={onOpenReportForm}
+          disabled={busy || reportFormOpen}
+          aria-label="Reject — extracted is wrong (D)"
+          style={{ ...buttonBase, background: "#fee2e2", color: "#991b1b", opacity: busy || reportFormOpen ? 0.6 : 1 }}
         >
-          🗑 Dismiss
-          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>D</span>
+          ❌ Reject
+          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>D · keep stored + teach</span>
         </button>
         <button
-          onClick={onSkip}
-          disabled={busy}
-          aria-label="Skip (S)"
-          style={{ ...buttonBase, background: "#f5f5f5", color: "#555" }}
+          onClick={onOpenModifyForm}
+          disabled={busy || modifyFormOpen}
+          aria-label="Modify — supply correct value (M)"
+          style={{ ...buttonBase, background: "#ede9fe", color: "#5b21b6", opacity: busy || modifyFormOpen ? 0.6 : 1 }}
         >
-          ⏭ Skip
-          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>S</span>
+          ✏️ Modify
+          <span style={{ display: "block", fontSize: 10, fontWeight: 500, opacity: 0.85 }}>M · correct value + teach</span>
         </button>
       </div>
 
-      {/* Outline triggers — found URL + report flag issue. */}
+      {/* Secondary actions: Skip + Found URL. */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button
+          onClick={onSkip}
+          disabled={busy}
+          aria-label="Skip — decide later (S)"
+          style={{
+            flex: 1,
+            minWidth: 160,
+            minHeight: 44,
+            fontSize: 13,
+            fontWeight: 700,
+            color: "#555",
+            background: "#fff",
+            border: "1px solid #d4d4d4",
+            borderRadius: 8,
+            padding: "8px 12px",
+            cursor: busy ? "wait" : "pointer",
+            opacity: busy ? 0.5 : 1,
+          }}
+        >
+          ⏭ Skip
+          <span style={{ display: "inline-block", fontSize: 10, fontWeight: 500, opacity: 0.85, marginLeft: 6 }}>S</span>
+        </button>
         <button
           onClick={onOpenUrlForm}
           disabled={busy || urlFormOpen}
@@ -842,28 +950,6 @@ function TriageCard({
           🔗 Found URL
           <span style={{ display: "inline-block", fontSize: 10, fontWeight: 500, opacity: 0.85, marginLeft: 6 }}>U</span>
         </button>
-        <button
-          onClick={onOpenReportForm}
-          disabled={busy || reportFormOpen}
-          aria-label="Report flag issue (R)"
-          style={{
-            flex: 1,
-            minWidth: 160,
-            minHeight: 44,
-            fontSize: 13,
-            fontWeight: 700,
-            color: "#b45309",
-            background: "#fff",
-            border: "1px solid #f59e0b",
-            borderRadius: 8,
-            padding: "8px 12px",
-            cursor: busy || reportFormOpen ? "not-allowed" : "pointer",
-            opacity: busy || reportFormOpen ? 0.5 : 1,
-          }}
-        >
-          🐞 Report flag issue
-          <span style={{ display: "inline-block", fontSize: 10, fontWeight: 500, opacity: 0.85, marginLeft: 6 }}>R</span>
-        </button>
       </div>
 
       {/* Inline URL override form. */}
@@ -877,13 +963,26 @@ function TriageCard({
         />
       )}
 
-      {/* Inline flag-issue report form. */}
+      {/* Inline flag-issue report form (Reject path). */}
       {reportFormOpen && (
         <FlagIssueReportForm
           key={reportFormFocusKey}
           busy={busy}
           onCancel={onCancelReportForm}
           onSubmit={onSubmitFlagReport}
+        />
+      )}
+
+      {/* Inline modify form — correct value + lesson. */}
+      {modifyFormOpen && (
+        <ModifyForm
+          key={modifyFormFocusKey}
+          fieldPath={entry.field_path}
+          storedValue={entry.from_value}
+          extractedValue={entry.to_value}
+          busy={busy}
+          onCancel={onCancelModifyForm}
+          onSubmit={onSubmitModify}
         />
       )}
 
@@ -906,7 +1005,7 @@ function TriageCard({
       </div>
 
       <div style={{ fontSize: 10, color: "#bbb", textAlign: "center" }}>
-        Keyboard: A approve · D dismiss · S skip · U found URL · R report issue · ← → navigate
+        Keyboard: A approve · D reject (+teach) · M modify (+correct value +teach) · S skip · U found URL · ← → navigate
       </div>
     </div>
   )
@@ -992,7 +1091,7 @@ function FlagIssueReportForm({
       }}
     >
       <div style={{ fontSize: 13, fontWeight: 700, color: "#92400e" }}>
-        Report a flag issue (trains the heuristic classifier)
+        Reject this flag — keep stored value, teach the verifier
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -1060,7 +1159,7 @@ function FlagIssueReportForm({
       )}
 
       <div style={{ fontSize: 11, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px" }}>
-        Submitting also dismisses this flag so it leaves the queue.
+        Stored value stays. Lesson is saved and shown to the verifier on the next run.
       </div>
 
       <div style={{ display: "flex", gap: 8 }}>
@@ -1080,7 +1179,262 @@ function FlagIssueReportForm({
             opacity: submitting || busy ? 0.7 : 1,
           }}
         >
-          {submitting ? "Saving…" : "Submit report + dismiss"}
+          {submitting ? "Saving…" : "Reject + save lesson"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={submitting}
+          style={{
+            flex: 1,
+            minHeight: 44,
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#555",
+            background: "#fff",
+            border: "1px solid #e8e8e8",
+            borderRadius: 8,
+            cursor: submitting ? "not-allowed" : "pointer",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  )
+}
+
+// Parse the typed value into the JSON shape the API expects, based on field path.
+function parseCorrectedValue(
+  fieldPath: string,
+  raw: string,
+): { value: unknown; error: string | null } {
+  const trimmed = raw.trim()
+  if (trimmed.length === 0) return { value: undefined, error: "Enter the correct value." }
+
+  if (BOOLEAN_FIELDS.has(fieldPath)) {
+    if (/^(true|yes|1)$/i.test(trimmed)) return { value: true, error: null }
+    if (/^(false|no|0)$/i.test(trimmed)) return { value: false, error: null }
+    return { value: undefined, error: "Enter true or false." }
+  }
+
+  if (NUMERIC_FIELDS.has(fieldPath)) {
+    const cleaned = trimmed.replace(/[$,\s]/g, "")
+    const n = Number(cleaned)
+    if (!Number.isFinite(n)) return { value: undefined, error: "Enter a valid number." }
+    if (n < 0) return { value: undefined, error: "Value must be ≥ 0." }
+    return { value: n, error: null }
+  }
+
+  return { value: trimmed, error: null }
+}
+
+function ModifyForm({
+  fieldPath,
+  storedValue,
+  extractedValue,
+  busy,
+  onCancel,
+  onSubmit,
+}: {
+  fieldPath: string
+  storedValue: unknown
+  extractedValue: unknown
+  busy: boolean
+  onCancel: () => void
+  onSubmit: (input: {
+    corrected_value: unknown
+    issue_category: string
+    issue_description: string
+    suggested_fix: string
+  }) => Promise<{ ok: boolean; error: string | null }>
+}) {
+  const [valueText, setValueText] = useState("")
+  const [category, setCategory] = useState<string>("tier_mismatch")
+  const [issue, setIssue] = useState("")
+  const [fix, setFix] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
+  const valueRef = React.useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    valueRef.current?.focus()
+  }, [])
+
+  const selectedHint = ISSUE_CATEGORIES.find((c) => c.value === category)?.hint ?? ""
+  const isNumeric = NUMERIC_FIELDS.has(fieldPath)
+  const isBoolean = BOOLEAN_FIELDS.has(fieldPath)
+  const valueLabel = isBoolean
+    ? "Correct value (true / false)"
+    : isNumeric
+      ? "Correct value (number)"
+      : "Correct value"
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLocalError(null)
+    const parsed = parseCorrectedValue(fieldPath, valueText)
+    if (parsed.error || parsed.value === undefined) {
+      setLocalError(parsed.error ?? "Invalid value.")
+      return
+    }
+    if (issue.trim().length < 20) {
+      setLocalError("Describe what the verifier got wrong (at least 20 characters).")
+      return
+    }
+    if (fix.trim().length < 20) {
+      setLocalError("Describe how the verifier should find it next time (at least 20 characters).")
+      return
+    }
+    setSubmitting(true)
+    const res = await onSubmit({
+      corrected_value: parsed.value,
+      issue_category: category,
+      issue_description: issue.trim(),
+      suggested_fix: fix.trim(),
+    })
+    setSubmitting(false)
+    if (!res.ok) setLocalError(res.error ?? "Failed to save.")
+  }
+
+  const inputBase: React.CSSProperties = {
+    width: "100%",
+    padding: "10px 12px",
+    fontSize: 14,
+    border: "1px solid #e8e8e8",
+    borderRadius: 6,
+    background: "#fafafa",
+    color: "#111",
+    boxSizing: "border-box",
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        background: "#f5f3ff",
+        border: "1px solid #c4b5fd",
+        borderRadius: 8,
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        maxWidth: 520,
+        width: "100%",
+      }}
+    >
+      <div style={{ fontSize: 13, fontWeight: 700, color: "#5b21b6" }}>
+        Modify — supply the correct value + teach the verifier
+      </div>
+
+      <div style={{ fontSize: 11, color: "#6b21a8" }}>
+        Stored: <code>{JSON.stringify(storedValue)}</code> · Verifier extracted:{" "}
+        <code>{JSON.stringify(extractedValue)}</code>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <label htmlFor="modify-value" style={{ fontSize: 11, color: "#666", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>
+          {valueLabel}
+        </label>
+        <input
+          id="modify-value"
+          ref={valueRef}
+          type="text"
+          inputMode={isNumeric ? "decimal" : undefined}
+          required
+          value={valueText}
+          onChange={(e) => setValueText(e.target.value)}
+          placeholder={isBoolean ? "true" : isNumeric ? "e.g. 500" : "e.g. correct text"}
+          disabled={submitting || busy}
+          style={inputBase}
+        />
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <label htmlFor="modify-category" style={{ fontSize: 11, color: "#666", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>
+          Issue category
+        </label>
+        <select
+          id="modify-category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          disabled={submitting || busy}
+          style={inputBase}
+        >
+          {ISSUE_CATEGORIES.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
+        </select>
+        {selectedHint && (
+          <div style={{ fontSize: 11, color: "#6b21a8", fontStyle: "italic" }}>{selectedHint}</div>
+        )}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <label htmlFor="modify-issue" style={{ fontSize: 11, color: "#666", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>
+          What did the verifier do wrong?
+        </label>
+        <textarea
+          id="modify-issue"
+          required
+          minLength={20}
+          rows={3}
+          value={issue}
+          onChange={(e) => setIssue(e.target.value)}
+          placeholder="e.g. Picked up the $400 first tier instead of the $1,200 top tier. Page lists tiers in ascending order."
+          disabled={submitting || busy}
+          style={{ ...inputBase, fontFamily: "inherit", lineHeight: 1.4, resize: "vertical" }}
+        />
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <label htmlFor="modify-fix" style={{ fontSize: 11, color: "#666", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>
+          How should the verifier find the right value next time?
+        </label>
+        <textarea
+          id="modify-fix"
+          required
+          minLength={20}
+          rows={3}
+          value={fix}
+          onChange={(e) => setFix(e.target.value)}
+          placeholder="e.g. On tier pages, return the LARGEST plausible bonus amount, not the first match. Anchor to 'top tier' / 'maximum bonus' wording."
+          disabled={submitting || busy}
+          style={{ ...inputBase, fontFamily: "inherit", lineHeight: 1.4, resize: "vertical" }}
+        />
+        <div style={{ fontSize: 11, color: "#999" }}>
+          Min 20 chars each. The next verify run shows the lesson to Claude when re-checking this field.
+        </div>
+      </div>
+
+      {localError && (
+        <div style={{ fontSize: 12, color: "#b91c1c", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 6, padding: "6px 10px" }}>
+          {localError}
+        </div>
+      )}
+
+      <div style={{ fontSize: 11, color: "#5b21b6", background: "#ede9fe", border: "1px solid #c4b5fd", borderRadius: 6, padding: "6px 10px" }}>
+        Catalog will be patched to your value on the next bulk-apply run.
+      </div>
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          type="submit"
+          disabled={submitting || busy}
+          style={{
+            flex: 1,
+            minHeight: 44,
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#fff",
+            background: "#5b21b6",
+            border: "none",
+            borderRadius: 8,
+            cursor: submitting || busy ? "wait" : "pointer",
+            opacity: submitting || busy ? 0.7 : 1,
+          }}
+        >
+          {submitting ? "Saving…" : "Modify + save lesson"}
         </button>
         <button
           type="button"

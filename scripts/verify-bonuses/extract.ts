@@ -57,17 +57,18 @@ function isInNonBonusContext(snippet: string | null): boolean {
   return NON_BONUS_PHRASES.some((re) => re.test(snippet))
 }
 
-// Bonus amount — prefer largest dollar amount in proximity to "bonus" keyword
+// Bonus amount — walk every match across every pattern, drop non-plausible /
+// non-bonus-context hits, then return the LARGEST remaining candidate. On
+// multi-tier pages the small tier almost always appears first (and previously
+// won by walk-order), but the catalog stores the top tier — so first-match
+// systematically extracted the wrong number. Largest-match aligns with the
+// stored "top tier" convention.
 export function extractBonusAmount(text: string): R<number> {
-  // Look for phrases like "earn $300", "$500 bonus", "up to $750"
   const patterns = [
     /(?:earn|get|receive|up\s+to|bonus(?:\s+of)?)\s+\$(\d{2,4}(?:,\d{3})?)/i,
     /\$(\d{2,4}(?:,\d{3})?)\s+(?:checking\s+)?(?:cash\s+)?bonus/i,
     /\$(\d{2,4}(?:,\d{3})?)\s+welcome/i,
   ]
-  // Walk all matches across every pattern; return the first candidate that
-  // passes plausibility + context filters. The old single-match approach
-  // stopped at the first regex hit even when it was garbage.
   const candidates: Array<{ value: number; snippet: string }> = []
   for (const re of patterns) {
     const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
@@ -77,17 +78,22 @@ export function extractBonusAmount(text: string): R<number> {
       const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
       const value = cleanDollars(m[1] ?? null)
       if (value === null) continue
+      if (!isPlausibleBonusAmount(value)) continue
+      if (isInNonBonusContext(snippet)) continue
       candidates.push({ value, snippet })
     }
   }
-  for (const c of candidates) {
-    if (!isPlausibleBonusAmount(c.value)) continue
-    if (isInNonBonusContext(c.snippet)) continue
-    return { value: c.value, snippet: c.snippet }
-  }
-  return { value: null, snippet: null }
+  if (candidates.length === 0) return { value: null, snippet: null }
+  // Largest plausible match — tier pages list ascending or non-monotonic,
+  // and the stored value is the headline tier.
+  candidates.sort((a, b) => b.value - a.value)
+  return { value: candidates[0].value, snippet: candidates[0].snippet }
 }
 
+// Direct deposit threshold — tiered offer pages list multiple DD requirements
+// (e.g. $3k DD → $200 bonus, $8k DD → $450 bonus). The catalog stores the
+// headline tier's threshold, so return the LARGEST plausible value, not the
+// first. Cap at $100k to reject footnote-bleed numbers.
 export function extractMinDirectDeposit(text: string): R<number> {
   const patterns = [
     /\$(\d[\d,]{2,6})\s+(?:or\s+more\s+)?in\s+(?:qualifying\s+)?direct\s+deposits?/i,
@@ -95,47 +101,137 @@ export function extractMinDirectDeposit(text: string): R<number> {
     /(?:receive|with)\s+(?:a\s+)?direct\s+deposit(?:s)?\s+of\s+\$(\d[\d,]{2,6})/i,
     /minimum\s+(?:cumulative\s+)?direct\s+deposit\s+of\s+\$(\d[\d,]{2,6})/i,
   ]
+  const candidates: Array<{ value: number; snippet: string }> = []
   for (const re of patterns) {
-    const r = firstMatch(text, re)
-    if (r.value) return { value: cleanDollars(r.value), snippet: r.snippet }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const idx = m.index
+      const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
+      const value = cleanDollars(m[1] ?? null)
+      if (value === null) continue
+      if (value < 100 || value > 100_000) continue
+      candidates.push({ value, snippet })
+    }
   }
-  return { value: null, snippet: null }
+  if (candidates.length === 0) return { value: null, snippet: null }
+  candidates.sort((a, b) => b.value - a.value)
+  return { value: candidates[0].value, snippet: candidates[0].snippet }
 }
 
+// Deposit window — pages sometimes list multiple ("fund within 10 days" AND
+// "direct deposits within 90 days of opening"). The catalog stores the actual
+// qualification deadline (the larger window), so return the LARGEST plausible.
+// Cap at 365 days to reject footnote noise.
 export function extractDepositWindowDays(text: string): R<number> {
-  const patterns: Array<[RegExp, (m: RegExpMatchArray) => number]> = [
+  const patterns: Array<[RegExp, (m: RegExpExecArray) => number]> = [
     [/within\s+(\d{1,3})\s+days/i, (m) => Number(m[1])],
     [/within\s+(\d{1,2})\s+months/i, (m) => Number(m[1]) * 30],
     [/in\s+the\s+first\s+(\d{1,3})\s+days/i, (m) => Number(m[1])],
     [/(\d{1,3})-day\s+(?:qualification|funding)/i, (m) => Number(m[1])],
   ]
+  const candidates: Array<{ value: number; snippet: string }> = []
   for (const [re, fn] of patterns) {
-    const m = text.match(re)
-    if (m) {
-      const idx = m.index ?? 0
-      const snippet = text.slice(Math.max(0, idx - 80), idx + 160)
-      return { value: fn(m), snippet }
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const idx = m.index
+      const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
+      const value = fn(m)
+      if (!Number.isFinite(value) || value <= 0 || value > 365) continue
+      candidates.push({ value, snippet })
     }
   }
-  return { value: null, snippet: null }
+  if (candidates.length === 0) return { value: null, snippet: null }
+  candidates.sort((a, b) => b.value - a.value)
+  return { value: candidates[0].value, snippet: candidates[0].snippet }
+}
+
+// Phrases that, when they appear within ~80 chars AFTER "no monthly fee",
+// indicate the $0 fee is conditional. Bank pages overwhelmingly write
+// "no monthly fee with one of the following", "no fee when you...", etc.
+// The unconditional fee is whatever the page lists as the structural charge.
+const CONDITIONAL_FEE_FOLLOWERS = [
+  /\s+with\s+/i,
+  /\s+when\s+/i,
+  /\s+if\s+/i,
+  /\s+provided\s+/i,
+  /\s+as\s+long\s+as/i,
+  /\s+(?:waiv(?:ed|able))/i,
+  /\s+by\s+(?:maintaining|having|enrolling)/i,
+  /\s+(?:upon|after)\s+(?:opening|enrollment)/i,
+]
+
+function isConditionalNoFee(text: string, matchIdx: number, matchLen: number): boolean {
+  const tail = text.slice(matchIdx + matchLen, matchIdx + matchLen + 80)
+  return CONDITIONAL_FEE_FOLLOWERS.some((re) => re.test(tail))
+}
+
+// Phrases that, when they appear within ~30 chars BEFORE a "$X monthly fee"
+// match, mean the $X is a balance threshold for waiving the fee, not the fee
+// itself. (BMO bug: "Average Collected Balance needed to waive monthly
+// maintenance fee $100 $1,500 …" — the $100 is a waiver threshold.)
+function isFeeMatchActuallyAWaiver(text: string, matchIdx: number): boolean {
+  const lead = text.slice(Math.max(0, matchIdx - 60), matchIdx).toLowerCase()
+  if (/\bwaive[d]?\b/.test(lead)) return true
+  if (/\bbalance\s+needed\b/.test(lead)) return true
+  if (/\bminimum\s+(?:balance|deposit)\b/.test(lead)) return true
+  return false
 }
 
 export function extractMonthlyFee(text: string): R<number> {
-  // Check "no monthly fee" first
-  if (/no\s+monthly\s+(service\s+|maintenance\s+)?fee/i.test(text)) {
-    const m = text.match(/no\s+monthly\s+(service\s+|maintenance\s+)?fee/i)
-    const idx = m?.index ?? 0
-    return { value: 0, snippet: text.slice(Math.max(0, idx - 60), idx + 120) }
-  }
-  const patterns = [
-    /\$(\d{1,3})(?:\.\d{2})?\s+monthly\s+(?:service\s+|maintenance\s+)?fee/i,
-    /monthly\s+(?:service\s+|maintenance\s+)?fee(?:\s+of)?\s+\$(\d{1,3})/i,
+  // Two pattern classes. Only the "fee-then-$" class is vulnerable to the
+  // waiver-threshold ambiguity ("waive monthly fee $100 $1,500..." where $100
+  // is the threshold, not the fee). "$X monthly fee" patterns are always the
+  // fee itself even when nearby text mentions "waive".
+  const dollarBeforePatterns = [
+    /\$(\d{1,3}(?:\.\d{2})?)\s+monthly\s+(?:service\s+|maintenance\s+)?fee/i,
   ]
-  for (const re of patterns) {
-    const r = firstMatch(text, re)
-    if (r.value) return { value: cleanDollars(r.value), snippet: r.snippet }
+  const dollarAfterPatterns = [
+    /monthly\s+(?:service\s+|maintenance\s+)?fee(?:\s+of)?\s+\$(\d{1,3}(?:\.\d{2})?)/i,
+    // "Monthly Service Fee1 $15" — Chase-style header with footnote between fee word and price.
+    /monthly\s+(?:service\s+|maintenance\s+)?fee[^\n$]{0,6}\$(\d{1,3}(?:\.\d{2})?)/i,
+  ]
+  const candidates: Array<{ value: number; snippet: string }> = []
+  function pushMatches(re: RegExp, applyWaiverFilter: boolean) {
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const idx = m.index
+      const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
+      const value = cleanDollars(m[1] ?? null)
+      if (value === null) continue
+      if (applyWaiverFilter && isFeeMatchActuallyAWaiver(text, idx)) continue
+      candidates.push({ value, snippet })
+    }
   }
-  return { value: null, snippet: null }
+  for (const re of dollarBeforePatterns) pushMatches(re, false)
+  for (const re of dollarAfterPatterns) pushMatches(re, true)
+
+  // Then check "no monthly fee" — but only treat it as authoritative $0 if it
+  // ISN'T immediately followed by a conditional clause. If conditional + we
+  // have a dollar candidate, prefer the dollar value (it's the unconditional fee).
+  const noFeeRe = /no\s+monthly\s+(service\s+|maintenance\s+)?fee/gi
+  let noFeeMatch: RegExpExecArray | null
+  while ((noFeeMatch = noFeeRe.exec(text)) !== null) {
+    const idx = noFeeMatch.index
+    const snippet = text.slice(Math.max(0, idx - 60), idx + 120)
+    if (!isConditionalNoFee(text, idx, noFeeMatch[0].length)) {
+      // Unconditional — $0 wins unless we already have a non-zero candidate
+      // that the regex above caught on the same page (sometimes "no monthly fee
+      // for the first year, then $12/mo" — keep the structural fee).
+      if (candidates.length === 0) return { value: 0, snippet }
+      // Mixed signal: log $0 as a candidate, then fall through to selection.
+      candidates.push({ value: 0, snippet })
+    }
+    // If conditional, skip — we want the structural fee, not the waiver.
+  }
+
+  if (candidates.length === 0) return { value: null, snippet: null }
+  // Prefer the largest fee if there are multiple — captures the unwaived rate
+  // and avoids picking the $0 waiver branch.
+  candidates.sort((a, b) => b.value - a.value)
+  return { value: candidates[0].value, snippet: candidates[0].snippet }
 }
 
 export function extractExpirationDate(text: string): R<string> {

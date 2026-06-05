@@ -21,13 +21,35 @@ export type Escalation = {
   rationale: string
 }
 
+export type AdminHint = {
+  issue_category: string
+  issue_description: string
+  suggested_fix: string
+  corrected_value: unknown | null
+}
+
 export async function escalate(
   bank: string,
   field: string,
   stored: unknown,
   extracted: unknown,
   snippet: string,
+  adminHint?: AdminHint | null,
 ): Promise<Escalation> {
+  const hintLines = adminHint
+    ? [
+        ``,
+        `ADMIN LESSON (from a prior triage decision on this same bonus + field):`,
+        `  Category: ${adminHint.issue_category}`,
+        `  What the verifier did wrong: ${adminHint.issue_description}`,
+        `  How to find the right value: ${adminHint.suggested_fix}`,
+        adminHint.corrected_value !== null && adminHint.corrected_value !== undefined
+          ? `  Admin-supplied correct value: ${JSON.stringify(adminHint.corrected_value)}`
+          : `  (Admin did not supply a correct value — the stored value is correct.)`,
+        `Use this lesson to judge whether the freshly-extracted value is right.`,
+      ]
+    : []
+
   const userMsg = [
     `Bank: ${bank}`,
     `Field: ${field}`,
@@ -35,6 +57,7 @@ export async function escalate(
     `Extracted from bank page: ${JSON.stringify(extracted)}`,
     `Page context (~240 chars around the extracted value):`,
     `"${snippet}"`,
+    ...hintLines,
     ``,
     `Are these two values equivalent in meaning for a reader shopping for this bonus?`,
     `Respond with ONE of these exact tokens on the first line:`,

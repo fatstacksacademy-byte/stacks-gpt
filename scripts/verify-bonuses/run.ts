@@ -15,6 +15,7 @@ import {
   loadFeedbackState,
   resolveUrl,
   shouldSuppressEdit,
+  getHint,
   EMPTY_STATE,
   type FeedbackState,
 } from "./feedback-loop"
@@ -148,12 +149,21 @@ async function verifyOne(record: BonusRecord): Promise<VerificationResult> {
       const snippet = "snippet" in f ? f.snippet ?? "" : ""
       if (!snippet) continue
       try {
+        const adminHint = getHint(feedbackState, record.id, fieldPath(f.field) ?? f.field)
         const v = await escalate(
           record.bank_name,
           f.field,
           f.stored,
           f.extracted,
           snippet,
+          adminHint
+            ? {
+                issue_category: adminHint.issue_category,
+                issue_description: adminHint.issue_description,
+                suggested_fix: adminHint.suggested_fix,
+                corrected_value: adminHint.corrected_value,
+              }
+            : null,
         )
         escalations.push(v)
         escalationBudget--

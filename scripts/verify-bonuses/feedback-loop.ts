@@ -32,15 +32,31 @@ export type UrlOverride = {
   previous_url: string | null
 }
 
+// An admin "lesson" from the triage page (Reject or Modify). The verifier
+// passes hints into Claude's escalation prompt as ground-truth context so
+// the next run doesn't repeat the same mistake.
+export type Hint = {
+  bonus_id: string
+  field_path: string
+  issue_category: string
+  issue_description: string
+  suggested_fix: string
+  corrected_value: unknown | null // non-null for Modify; null for Reject
+  reported_at: string
+}
+
 export type FeedbackState = {
   overrides: Map<string, UrlOverride>
   // Map<"bonus_id|field_path", Decision[]> — multiple verdicts possible per pair
   decisions: Map<string, Decision[]>
+  // Map<"bonus_id|field_path", Hint[]> — admin lessons, newest first
+  hints: Map<string, Hint[]>
 }
 
 export const EMPTY_STATE: FeedbackState = {
   overrides: new Map(),
   decisions: new Map(),
+  hints: new Map(),
 }
 
 export async function loadFeedbackState(): Promise<FeedbackState> {
@@ -52,12 +68,22 @@ export async function loadFeedbackState(): Promise<FeedbackState> {
   }
   const supabase = createClient(url, key, { auth: { persistSession: false } })
 
-  const [{ data: overrideRows, error: oErr }, { data: decisionRows, error: dErr }] = await Promise.all([
+  const [
+    { data: overrideRows, error: oErr },
+    { data: decisionRows, error: dErr },
+    { data: hintRows, error: hErr },
+  ] = await Promise.all([
     supabase.from("bonus_url_overrides").select("bonus_id, override_url, previous_url").eq("is_active", true),
     supabase.from("verification_decisions").select("bonus_id, field_path, verdict, from_value, to_value, snippet_fingerprint"),
+    supabase
+      .from("flag_issue_reports")
+      .select("bonus_id, field_path, issue_category, issue_description, suggested_fix, corrected_value, reported_at")
+      .eq("resolved", false)
+      .order("reported_at", { ascending: false }),
   ])
   if (oErr) console.warn("[feedback] overrides query failed:", oErr.message)
   if (dErr) console.warn("[feedback] decisions query failed:", dErr.message)
+  if (hErr) console.warn("[feedback] hints query failed:", hErr.message)
 
   const overrides = new Map<string, UrlOverride>()
   for (const r of overrideRows ?? []) overrides.set(r.bonus_id, r as UrlOverride)
@@ -70,8 +96,25 @@ export async function loadFeedbackState(): Promise<FeedbackState> {
     decisions.set(k, arr)
   }
 
-  console.log(`[feedback] loaded ${overrides.size} URL override(s), ${decisionRows?.length ?? 0} decision(s)`)
-  return { overrides, decisions }
+  const hints = new Map<string, Hint[]>()
+  for (const h of hintRows ?? []) {
+    const k = `${h.bonus_id}|${h.field_path}`
+    const arr = hints.get(k) ?? []
+    arr.push(h as Hint)
+    hints.set(k, arr)
+  }
+
+  console.log(
+    `[feedback] loaded ${overrides.size} URL override(s), ${decisionRows?.length ?? 0} decision(s), ${hintRows?.length ?? 0} admin hint(s)`,
+  )
+  return { overrides, decisions, hints }
+}
+
+/** Returns the most recent admin lesson for this (bonus, field), or null. */
+export function getHint(state: FeedbackState, bonusId: string, fieldPath: string): Hint | null {
+  const arr = state.hints.get(`${bonusId}|${fieldPath}`)
+  if (!arr || arr.length === 0) return null
+  return arr[0]
 }
 
 /** Returns the URL the verify pipeline should fetch for this bonus. */

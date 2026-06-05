@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
+import { readFile, writeFile, rename } from "node:fs/promises"
+import { join } from "node:path"
 import { createClient } from "@/lib/supabase/server"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
 const ADMIN_EMAIL = "booth.nathaniel@gmail.com"
+const LEADS_PATH = join(process.cwd(), "review-queue", "leads.json")
 
 function createServiceClient() {
   return createSupabaseClient(
@@ -382,6 +385,128 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ reports: data ?? [] })
   }
 
+  if (action === "card-triage-queue") {
+    // Card mirror of "triage-queue". Reads from card_verifications + the card
+    // feedback-loop tables (card_verification_decisions, card_url_overrides).
+    const { data: latestRow } = await supabase
+      .from("card_verifications")
+      .select("run_at")
+      .order("run_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const lastRunAt = latestRow?.run_at ?? null
+    if (!lastRunAt) return NextResponse.json({ last_run_at: null, queue: [] })
+
+    const { data: rows, error: rowsErr } = await supabase
+      .from("card_verifications")
+      .select("card_id, card_name, issuer, url, page_signal, proposed_edits, field_mismatches")
+      .eq("run_at", lastRunAt)
+    if (rowsErr) {
+      console.error("[admin] card-triage-queue rows query failed:", rowsErr.message)
+      return NextResponse.json({ error: rowsErr.message, queue: [] })
+    }
+
+    const cardIds = Array.from(new Set((rows ?? []).map((r) => r.card_id)))
+    const decisionsByKey = new Map<string, { verdict: string; decided_at: string }>()
+    if (cardIds.length > 0) {
+      const { data: decisions } = await supabase
+        .from("card_verification_decisions")
+        .select("card_id, field_path, verdict, decided_at")
+        .in("card_id", cardIds)
+        .order("decided_at", { ascending: false })
+      for (const d of decisions ?? []) {
+        const key = `${d.card_id}::${d.field_path}`
+        if (!decisionsByKey.has(key)) {
+          decisionsByKey.set(key, { verdict: d.verdict, decided_at: d.decided_at })
+        }
+      }
+    }
+
+    const overrideByCard = new Map<string, string>()
+    if (cardIds.length > 0) {
+      const { data: overrides } = await supabase
+        .from("card_url_overrides")
+        .select("card_id, override_url")
+        .in("card_id", cardIds)
+        .eq("is_active", true)
+      for (const o of overrides ?? []) overrideByCard.set(o.card_id, o.override_url)
+    }
+
+    type ProposedEdit = { id: string; path: string; from: unknown; to: unknown; reason: string }
+    type FieldMismatch = { field: string; stored: unknown; extracted: unknown; status: string }
+
+    const queue: Array<{
+      card_id: string
+      card_name: string
+      issuer: string | null
+      url: string | null
+      page_signal: string
+      field_path: string
+      from_value: unknown
+      to_value: unknown
+      reason: string
+      snippet: string | null
+      current_override_url: string | null
+    }> = []
+
+    for (const row of rows ?? []) {
+      const edits = (row.proposed_edits as ProposedEdit[]) ?? []
+      // Card mismatches don't carry a per-field snippet today (only page-level),
+      // so we leave snippet null. The triage UI still has the card_name + url
+      // for context.
+      void (row.field_mismatches as FieldMismatch[]) // reserved for future enrichment
+      for (const edit of edits) {
+        const key = `${row.card_id}::${edit.path}`
+        const prior = decisionsByKey.get(key)
+        if (prior && (prior.verdict === "approved" || prior.verdict === "dismissed")) continue
+        queue.push({
+          card_id: row.card_id,
+          card_name: row.card_name,
+          issuer: row.issuer ?? null,
+          url: row.url ?? null,
+          page_signal: row.page_signal,
+          field_path: edit.path,
+          from_value: edit.from,
+          to_value: edit.to,
+          reason: edit.reason,
+          snippet: null,
+          current_override_url: overrideByCard.get(row.card_id) ?? null,
+        })
+      }
+    }
+    return NextResponse.json({ last_run_at: lastRunAt, queue })
+  }
+
+  if (action === "discover-queue") {
+    // Lead-review queue lives in review-queue/leads.json (file-based; the
+    // discover-bonuses pipeline writes it, this admin UI reads + writes
+    // status). Local-dev only — review-queue/ is gitignored.
+    try {
+      const raw = await readFile(LEADS_PATH, "utf8")
+      const leads = JSON.parse(raw)
+      return NextResponse.json({ leads, count: Array.isArray(leads) ? leads.length : 0 })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      // Missing file is normal — discover hasn't run yet.
+      if (msg.includes("ENOENT")) return NextResponse.json({ leads: [], count: 0 })
+      console.error("[admin] discover-queue read failed:", msg)
+      return NextResponse.json({ error: msg, leads: [] }, { status: 500 })
+    }
+  }
+
+  if (action === "card-url-overrides") {
+    const { data, error } = await supabase
+      .from("card_url_overrides")
+      .select("id, card_id, override_url, previous_url, discovery_method, created_at")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+    if (error) {
+      console.error("[admin] card-url-overrides query failed:", error.message)
+      return NextResponse.json({ error: error.message, overrides: [] })
+    }
+    return NextResponse.json({ overrides: data ?? [] })
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 })
 }
 
@@ -644,6 +769,390 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ id: data.id, dismissed: true })
+  }
+
+  if (action === "triage-modify") {
+    // The admin says: neither the stored value nor the extracted value is
+    // correct — here is the actual value plus a teaching note. We persist
+    // both signals:
+    //   1. flag_issue_reports row with corrected_value set (captures lesson)
+    //   2. verification_decisions row with verdict='approved' and
+    //      to_value = corrected_value (so the existing bulk-apply pipeline
+    //      patches the catalog without any extra wiring).
+    const body = await req.json().catch(() => ({}))
+    const {
+      bonus_id,
+      field_path,
+      from_value,
+      to_value,
+      corrected_value,
+      url,
+      page_signal,
+      snippet,
+      snippet_fingerprint,
+      issue_category,
+      issue_description,
+      suggested_fix,
+    } = body as {
+      bonus_id?: string
+      field_path?: string
+      from_value?: unknown
+      to_value?: unknown
+      corrected_value?: unknown
+      url?: string | null
+      page_signal?: string | null
+      snippet?: string | null
+      snippet_fingerprint?: string
+      issue_category?: string
+      issue_description?: string
+      suggested_fix?: string
+    }
+    if (!bonus_id || !field_path || !issue_category || !issue_description || !suggested_fix) {
+      return NextResponse.json(
+        { error: "bonus_id, field_path, issue_category, issue_description, suggested_fix required" },
+        { status: 400 },
+      )
+    }
+    if (corrected_value === undefined) {
+      return NextResponse.json({ error: "corrected_value required (use Reject if there is no correct value)" }, { status: 400 })
+    }
+    const allowedCategories = [
+      "regex_false_positive",
+      "wrong_page",
+      "tier_mismatch",
+      "conditional_value",
+      "snippet_too_narrow",
+      "expired_misread",
+      "other",
+    ]
+    if (!allowedCategories.includes(issue_category)) {
+      return NextResponse.json({ error: "invalid issue_category" }, { status: 400 })
+    }
+    if (issue_description.trim().length < 20) {
+      return NextResponse.json({ error: "issue_description must be at least 20 characters" }, { status: 400 })
+    }
+    if (suggested_fix.trim().length < 20) {
+      return NextResponse.json({ error: "suggested_fix must be at least 20 characters" }, { status: 400 })
+    }
+
+    const { data: reportRow, error: reportErr } = await supabase
+      .from("flag_issue_reports")
+      .insert({
+        bonus_id,
+        field_path,
+        from_value: from_value ?? null,
+        to_value: to_value ?? null,
+        corrected_value,
+        url: url ?? null,
+        page_signal: page_signal ?? null,
+        snippet: snippet ?? null,
+        issue_category,
+        issue_description: issue_description.trim(),
+        suggested_fix: suggested_fix.trim(),
+        reported_by: admin.email ?? null,
+      })
+      .select("id")
+      .single()
+    if (reportErr) {
+      console.error("[admin] triage-modify report insert failed:", reportErr.message)
+      return NextResponse.json({ error: reportErr.message }, { status: 500 })
+    }
+
+    // Parallel "approved" decision targets corrected_value, so bulk-apply
+    // patches the catalog to the admin's value (not the verifier's extract).
+    const { error: decErr } = await supabase
+      .from("verification_decisions")
+      .insert({
+        bonus_id,
+        field_path,
+        verdict: "approved",
+        from_value: from_value ?? null,
+        to_value: corrected_value,
+        snippet_fingerprint: snippet_fingerprint ?? null,
+        notes: `Admin modify (${issue_category}) — see flag_issue_reports.${reportRow.id}`,
+        decided_by: admin.email ?? null,
+      })
+    if (decErr) {
+      console.error("[admin] triage-modify parallel approve failed:", decErr.message)
+      return NextResponse.json({ id: reportRow.id, applied: false, apply_error: decErr.message })
+    }
+    return NextResponse.json({ id: reportRow.id, applied: true })
+  }
+
+  // ─── Card triage POST actions ─────────────────────────────────────────
+  // Mirror of the bonus actions above, but writing to card_* tables and
+  // keyed on card_id (not bonus_id).
+
+  if (action === "discover-decide") {
+    // Update a lead's status in review-queue/leads.json. Status values match
+    // what the discover apply pipeline already understands:
+    //   approved  — drafted on next `npm run discover:bonuses -- --apply-approved`
+    //   dismissed — hidden from queue; kept for dedup so we don't re-surface
+    //   snoozed   — hidden from queue but re-surfaces if the lead changes
+    // Atomic write: temp file + rename so a crash mid-write can't corrupt
+    // the queue. Optimistic concurrency via discovered_at check — if the file
+    // was rewritten by discover under us, the lead might be gone or different.
+    const body = await req.json().catch(() => ({}))
+    const { id, status, notes } = body as {
+      id?: string
+      status?: "approved" | "dismissed" | "snoozed" | "new"
+      notes?: string
+    }
+    if (!id || !status) {
+      return NextResponse.json({ error: "id and status required" }, { status: 400 })
+    }
+    if (!["approved", "dismissed", "snoozed", "new"].includes(status)) {
+      return NextResponse.json({ error: "invalid status" }, { status: 400 })
+    }
+
+    let raw: string
+    try {
+      raw = await readFile(LEADS_PATH, "utf8")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ error: `leads.json read failed: ${msg}` }, { status: 500 })
+    }
+    let leads: Array<Record<string, unknown>>
+    try {
+      leads = JSON.parse(raw)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ error: `leads.json parse failed: ${msg}` }, { status: 500 })
+    }
+    const idx = leads.findIndex((l) => l.id === id)
+    if (idx < 0) {
+      return NextResponse.json({ error: "lead id not found in queue" }, { status: 404 })
+    }
+    leads[idx] = {
+      ...leads[idx],
+      status,
+      decided_at: new Date().toISOString(),
+      decided_by: admin.email ?? null,
+      decision_notes: notes ?? null,
+    }
+    const tmpPath = `${LEADS_PATH}.tmp.${process.pid}.${Date.now()}`
+    try {
+      await writeFile(tmpPath, JSON.stringify(leads, null, 2))
+      await rename(tmpPath, LEADS_PATH)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error("[admin] discover-decide write failed:", msg)
+      return NextResponse.json({ error: `write failed: ${msg}` }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true, id, status })
+  }
+
+  if (action === "card-triage-decide") {
+    const body = await req.json().catch(() => ({}))
+    const {
+      card_id,
+      field_path,
+      verdict,
+      from_value,
+      to_value,
+      snippet_fingerprint,
+      notes,
+    } = body as {
+      card_id?: string
+      field_path?: string
+      verdict?: "approved" | "dismissed" | "snoozed"
+      from_value?: unknown
+      to_value?: unknown
+      snippet_fingerprint?: string
+      notes?: string
+    }
+    if (!card_id || !field_path || !verdict) {
+      return NextResponse.json({ error: "card_id, field_path, verdict required" }, { status: 400 })
+    }
+    if (!["approved", "dismissed", "snoozed"].includes(verdict)) {
+      return NextResponse.json({ error: "invalid verdict" }, { status: 400 })
+    }
+    const { data, error } = await supabase
+      .from("card_verification_decisions")
+      .insert({
+        card_id,
+        field_path,
+        verdict,
+        from_value: from_value ?? null,
+        to_value: to_value ?? null,
+        snippet_fingerprint: snippet_fingerprint ?? null,
+        notes: notes ?? null,
+        decided_by: admin.email ?? null,
+      })
+      .select("id")
+      .single()
+    if (error) {
+      console.error("[admin] card-triage-decide failed:", error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true, id: data.id })
+  }
+
+  if (action === "card-url-override") {
+    const body = await req.json().catch(() => ({}))
+    const {
+      card_id,
+      override_url,
+      previous_url,
+      discovery_method,
+    } = body as {
+      card_id?: string
+      override_url?: string
+      previous_url?: string
+      discovery_method?: string
+    }
+    if (!card_id || !override_url || !discovery_method) {
+      return NextResponse.json(
+        { error: "card_id, override_url, discovery_method required" },
+        { status: 400 },
+      )
+    }
+    try {
+      const parsed = new URL(override_url)
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return NextResponse.json({ error: "override_url must be http(s)" }, { status: 400 })
+      }
+    } catch {
+      return NextResponse.json({ error: "override_url is not a valid URL" }, { status: 400 })
+    }
+    if (discovery_method.trim().length < 10) {
+      return NextResponse.json({ error: "discovery_method must be at least 10 characters" }, { status: 400 })
+    }
+    const { error: deactErr } = await supabase
+      .from("card_url_overrides")
+      .update({ is_active: false })
+      .eq("card_id", card_id)
+      .eq("is_active", true)
+    if (deactErr) {
+      console.error("[admin] card-url-override deactivate failed:", deactErr.message)
+      return NextResponse.json({ error: deactErr.message }, { status: 500 })
+    }
+    const { data, error } = await supabase
+      .from("card_url_overrides")
+      .insert({
+        card_id,
+        override_url,
+        previous_url: previous_url ?? null,
+        discovery_method: discovery_method.trim(),
+        is_active: true,
+        created_by: admin.email ?? null,
+      })
+      .select("id, card_id, override_url")
+      .single()
+    if (error) {
+      console.error("[admin] card-url-override insert failed:", error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ id: data.id, card_id: data.card_id, override_url: data.override_url })
+  }
+
+  if (action === "card-report-flag-issue" || action === "card-triage-modify") {
+    // Both actions share the same payload shape; modify additionally requires
+    // corrected_value and writes a parallel verification_decisions row with
+    // verdict='approved' so the catalog gets patched.
+    const isModify = action === "card-triage-modify"
+    const body = await req.json().catch(() => ({}))
+    const {
+      card_id,
+      field_path,
+      from_value,
+      to_value,
+      corrected_value,
+      url,
+      page_signal,
+      snippet,
+      snippet_fingerprint,
+      issue_category,
+      issue_description,
+      suggested_fix,
+    } = body as {
+      card_id?: string
+      field_path?: string
+      from_value?: unknown
+      to_value?: unknown
+      corrected_value?: unknown
+      url?: string | null
+      page_signal?: string | null
+      snippet?: string | null
+      snippet_fingerprint?: string
+      issue_category?: string
+      issue_description?: string
+      suggested_fix?: string
+    }
+    if (!card_id || !field_path || !issue_category || !issue_description || !suggested_fix) {
+      return NextResponse.json(
+        { error: "card_id, field_path, issue_category, issue_description, suggested_fix required" },
+        { status: 400 },
+      )
+    }
+    if (isModify && corrected_value === undefined) {
+      return NextResponse.json({ error: "corrected_value required (use card-report-flag-issue for Reject)" }, { status: 400 })
+    }
+    const allowedCategories = [
+      "regex_false_positive",
+      "wrong_page",
+      "tier_mismatch",
+      "conditional_value",
+      "snippet_too_narrow",
+      "expired_misread",
+      "other",
+    ]
+    if (!allowedCategories.includes(issue_category)) {
+      return NextResponse.json({ error: "invalid issue_category" }, { status: 400 })
+    }
+    if (issue_description.trim().length < 20) {
+      return NextResponse.json({ error: "issue_description must be at least 20 characters" }, { status: 400 })
+    }
+    if (suggested_fix.trim().length < 20) {
+      return NextResponse.json({ error: "suggested_fix must be at least 20 characters" }, { status: 400 })
+    }
+
+    const { data: reportRow, error: reportErr } = await supabase
+      .from("card_flag_issue_reports")
+      .insert({
+        card_id,
+        field_path,
+        from_value: from_value ?? null,
+        to_value: to_value ?? null,
+        corrected_value: isModify ? corrected_value : null,
+        url: url ?? null,
+        page_signal: page_signal ?? null,
+        snippet: snippet ?? null,
+        issue_category,
+        issue_description: issue_description.trim(),
+        suggested_fix: suggested_fix.trim(),
+        reported_by: admin.email ?? null,
+      })
+      .select("id")
+      .single()
+    if (reportErr) {
+      console.error(`[admin] ${action} report insert failed:`, reportErr.message)
+      return NextResponse.json({ error: reportErr.message }, { status: 500 })
+    }
+
+    // Parallel decision: Reject → dismissed, Modify → approved (to corrected_value)
+    const decisionVerdict = isModify ? "approved" : "dismissed"
+    const decisionToValue = isModify ? corrected_value : (to_value ?? null)
+    const decisionNotes = isModify
+      ? `Admin modify (${issue_category}) — see card_flag_issue_reports.${reportRow.id}`
+      : `Flag issue reported (${issue_category}) — see card_flag_issue_reports.${reportRow.id}`
+    const { error: decErr } = await supabase
+      .from("card_verification_decisions")
+      .insert({
+        card_id,
+        field_path,
+        verdict: decisionVerdict,
+        from_value: from_value ?? null,
+        to_value: decisionToValue,
+        snippet_fingerprint: snippet_fingerprint ?? null,
+        notes: decisionNotes,
+        decided_by: admin.email ?? null,
+      })
+    if (decErr) {
+      console.error(`[admin] ${action} parallel decision failed:`, decErr.message)
+      return NextResponse.json({ id: reportRow.id, applied: false, apply_error: decErr.message })
+    }
+    return NextResponse.json({ id: reportRow.id, applied: true, verdict: decisionVerdict })
   }
 
   return NextResponse.json({ error: "Unknown action" }, { status: 400 })
