@@ -23,6 +23,7 @@ export type CustomBonus = {
   monthly_fee: number | null
   monthly_fee_waiver_text: string | null
   early_closure_fee: number | null
+  lifetime_restricted: boolean | null
 }
 
 export async function getCustomBonuses(userId: string): Promise<CustomBonus[]> {
@@ -46,6 +47,7 @@ export type CustomBonusRequirements = {
   monthlyFee?: number | null
   monthlyFeeWaiverText?: string | null
   earlyClosureFee?: number | null
+  lifetimeRestricted?: boolean | null
 }
 
 export async function addCustomBonus(
@@ -77,6 +79,7 @@ export async function addCustomBonus(
       monthly_fee: reqs?.monthlyFee ?? null,
       monthly_fee_waiver_text: reqs?.monthlyFeeWaiverText ?? null,
       early_closure_fee: reqs?.earlyClosureFee ?? null,
+      lifetime_restricted: reqs?.lifetimeRestricted ?? null,
     })
     .select()
     .single()
@@ -92,6 +95,7 @@ export async function updateCustomBonus(
     | "dd_required" | "min_dd_total" | "min_dd_per_deposit" | "dd_count_required"
     | "deposit_window_days" | "holding_period_days"
     | "monthly_fee" | "monthly_fee_waiver_text" | "early_closure_fee"
+    | "lifetime_restricted"
   >>
 ): Promise<boolean> {
   const supabase = createClient()

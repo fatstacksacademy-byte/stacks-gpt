@@ -38,14 +38,15 @@ Extract these fields:
 - dd_count_required: number of qualifying direct deposits required (integer, null if unspecified).
 - deposit_window_days: days from account opening to complete DDs (integer, null if unspecified).
 - holding_period_days: days the account must remain open after the bonus posts (integer, null if unspecified).
-- churnable: true ONLY if the source explicitly says you can earn the bonus again after a cooldown, otherwise false.
-- cooldown_months: months you must wait to be eligible again (integer, null if unspecified).
+- churnable: true if the page implies the bonus can be earned more than once. Look for phrases like "one bonus per customer per N months", "limit one per N-month period", "previous recipients eligible after N months", or any frequency-bounded restriction. false if the page says "one per lifetime" or "previous recipients ineligible" with no time bound. null only if the page is genuinely silent on repeat eligibility.
+- cooldown_months: months you must wait to be eligible again. Pull from the same eligibility language ("one per 24 months" → 24). Integer, null if unspecified or lifetime-restricted.
+- lifetime_restricted: true if the page uses lifetime language ("one bonus per lifetime", "limit one ever", "prior recipients permanently ineligible", "available only to new customers who have never had this bonus"). false if there is a finite cooldown. null if silent.
 - monthly_fee: monthly maintenance / service fee in USD as integer (null if unspecified or free).
 - monthly_fee_waiver_text: one-line description of how to waive the monthly fee (e.g. "Waived with $1,500 daily balance" or "Waived with one direct deposit per month"). Max 120 chars. null if no waiver or no fee.
 - early_closure_fee: fee charged if the account is closed before a minimum period (integer USD, null if unspecified or none). Often called "early account closure fee" or "early termination fee".
 - notes: one-line summary of any OTHER relevant requirements not covered by the fields above. Max 160 chars. null if nothing useful.
 
-Return strict JSON with exactly these 14 keys.`
+Return strict JSON with exactly these 15 keys.`
 }
 
 async function fetchViaPlaywright(url: string): Promise<{ text: string } | null> {
@@ -87,6 +88,7 @@ type Extracted = {
   holding_period_days: number | null
   churnable: boolean | null
   cooldown_months: number | null
+  lifetime_restricted: boolean | null
   monthly_fee: number | null
   monthly_fee_waiver_text: string | null
   early_closure_fee: number | null
@@ -125,6 +127,7 @@ function coerceExtracted(raw: unknown): Extracted | null {
     holding_period_days: num(r.holding_period_days),
     churnable: bool(r.churnable),
     cooldown_months: num(r.cooldown_months),
+    lifetime_restricted: bool(r.lifetime_restricted),
     monthly_fee: num(r.monthly_fee),
     monthly_fee_waiver_text: str(r.monthly_fee_waiver_text, 120),
     early_closure_fee: num(r.early_closure_fee),

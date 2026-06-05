@@ -250,6 +250,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customMonthlyFee, setCustomMonthlyFee] = useState("")
   const [customMonthlyFeeWaiver, setCustomMonthlyFeeWaiver] = useState("")
   const [customEarlyClosureFee, setCustomEarlyClosureFee] = useState("")
+  const [customLifetimeRestricted, setCustomLifetimeRestricted] = useState(false)
   const [smartImportUrl, setSmartImportUrl] = useState("")
   const [smartImporting, setSmartImporting] = useState(false)
   const [smartImportError, setSmartImportError] = useState<string | null>(null)
@@ -492,6 +493,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         holding_period_days: number | null
         churnable: boolean | null
         cooldown_months: number | null
+        lifetime_restricted: boolean | null
         monthly_fee: number | null
         monthly_fee_waiver_text: string | null
         early_closure_fee: number | null
@@ -507,6 +509,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       if (e.holding_period_days != null) setCustomHoldingPeriod(String(e.holding_period_days))
       if (e.churnable != null) setCustomChurnable(e.churnable)
       if (e.cooldown_months != null) setCustomCooldown(String(e.cooldown_months))
+      if (e.lifetime_restricted != null) setCustomLifetimeRestricted(e.lifetime_restricted)
       if (e.monthly_fee != null) setCustomMonthlyFee(String(e.monthly_fee))
       if (e.monthly_fee_waiver_text) setCustomMonthlyFeeWaiver(e.monthly_fee_waiver_text)
       if (e.early_closure_fee != null) setCustomEarlyClosureFee(String(e.early_closure_fee))
@@ -545,6 +548,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       monthlyFee: customMonthlyFee ? parseFloat(customMonthlyFee) : null,
       monthlyFeeWaiverText: customMonthlyFeeWaiver || null,
       earlyClosureFee: customEarlyClosureFee ? parseFloat(customEarlyClosureFee) : null,
+      lifetimeRestricted: customLifetimeRestricted,
     })
     if (!result) { setAddCustomError("Failed to save — please check your connection and try again."); return }
     track("custom_bonus_added", { amount: parseInt(customAmount), has_dd: customDdRequired, churnable: customChurnable })
@@ -557,6 +561,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomDdRequired(false); setCustomMinDdTotal(""); setCustomMinDdPerDeposit("")
     setCustomDdCount(""); setCustomDepositWindow(""); setCustomHoldingPeriod("")
     setCustomMonthlyFee(""); setCustomMonthlyFeeWaiver(""); setCustomEarlyClosureFee("")
+    setCustomLifetimeRestricted(false)
     resetSmartImport()
   }
 
@@ -589,6 +594,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : "")
     setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? "")
     setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : "")
+    setCustomLifetimeRestricted(c.lifetime_restricted ?? false)
     setEditingCustom(c)
   }
 
@@ -609,6 +615,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       monthly_fee: customMonthlyFee ? parseFloat(customMonthlyFee) : null,
       monthly_fee_waiver_text: customMonthlyFeeWaiver || null,
       early_closure_fee: customEarlyClosureFee ? parseFloat(customEarlyClosureFee) : null,
+      lifetime_restricted: customLifetimeRestricted,
     })
     await loadRecords()
     setEditingCustom(null)
@@ -2497,7 +2504,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #a7f3d0", color: "#0d7c5f", background: "#f0faf5", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
                               {isMatching ? "Cancel match" : "Match to catalog"}
                             </button>
-                            <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : ""); setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : ""); setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? ""); setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : "") }}
+                            <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : ""); setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : ""); setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? ""); setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : ""); setCustomLifetimeRestricted(c.lifetime_restricted ?? false) }}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
                             <button onClick={() => handleDeleteCustom(c.id)}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
@@ -2930,7 +2937,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
 
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => setCustomChurnable(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
                   <label htmlFor="customChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
                 </div>
                 {customChurnable && (
@@ -2941,6 +2948,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     <span style={{ fontSize: 13, color: "#666" }}>months</span>
                   </div>
                 )}
+                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" id="customLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: "#dc2626" }} />
+                  <label htmlFor="customLifetime" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
+                </div>
               </div>
             </div>
             {addCustomError && (
@@ -3076,7 +3087,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               </div>
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="checkbox" id="editCustomChurnable" checked={customChurnable} onChange={e => setCustomChurnable(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                  <input type="checkbox" id="editCustomChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
                   <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
                 </div>
                 {customChurnable && (
@@ -3087,6 +3098,10 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     <span style={{ fontSize: 13, color: "#666" }}>months</span>
                   </div>
                 )}
+                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" id="editCustomLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: "#dc2626" }} />
+                  <label htmlFor="editCustomLifetime" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
+                </div>
               </div>
             </div>
             <div style={modalActions}>
