@@ -883,6 +883,48 @@ export async function POST(req: NextRequest) {
   // Mirror of the bonus actions above, but writing to card_* tables and
   // keyed on card_id (not bonus_id).
 
+  if (action === "run-apply-approved") {
+    // Spawns `npm run discover:bonuses -- --apply-approved` server-side so the
+    // admin doesn't need to drop into a terminal after a triage pass. Reads
+    // review-queue/leads.json, writes draft files to lib/data/*.draft.ts, and
+    // exits. Local-dev only — Vercel functions can't spawn npm.
+    //
+    // Hardcoded args (no user-controlled values passed to the shell), gated
+    // by verifyAdmin → no command injection vector.
+    const { spawn } = await import("node:child_process")
+    return await new Promise<Response>((resolve) => {
+      const child = spawn("npm", ["run", "discover:bonuses", "--", "--apply-approved"], {
+        cwd: process.cwd(),
+        stdio: ["ignore", "pipe", "pipe"],
+      })
+      let stdout = ""
+      let stderr = ""
+      child.stdout?.on("data", (d) => { stdout += d.toString() })
+      child.stderr?.on("data", (d) => { stderr += d.toString() })
+      child.on("error", (err) => {
+        resolve(NextResponse.json({ ok: false, error: err.message, stdout, stderr }, { status: 500 }))
+      })
+      child.on("close", (code) => {
+        // Parse the "applied N approved lead(s) to:\n  path1\n  path2" line
+        // emitted by scripts/discover-bonuses/run.ts so the UI can show a
+        // structured summary instead of dumping raw stdout.
+        const appliedMatch = stdout.match(/applied\s+(\d+)\s+approved\s+lead\(s\)\s+to:\s*\n((?:\s+\S.*\n?)*)/)
+        const count = appliedMatch ? Number(appliedMatch[1]) : 0
+        const files = appliedMatch
+          ? appliedMatch[2].split("\n").map((s) => s.trim()).filter((s) => s.length > 0 && s !== "(no files written)")
+          : []
+        resolve(NextResponse.json({
+          ok: code === 0,
+          exitCode: code,
+          appliedCount: count,
+          draftFiles: files,
+          stdout,
+          stderr,
+        }))
+      })
+    })
+  }
+
   if (action === "discover-decide") {
     // Update a lead's status in review-queue/leads.json. Status values match
     // what the discover apply pipeline already understands:

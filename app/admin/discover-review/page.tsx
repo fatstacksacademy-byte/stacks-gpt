@@ -74,6 +74,8 @@ export default function DiscoverReviewPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("open")
   const [classFilter, setClassFilter] = useState<ClassificationFilter>("all")
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const [drafterRunning, setDrafterRunning] = useState(false)
+  const [drafterResult, setDrafterResult] = useState<{ count: number; files: string[] } | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -98,6 +100,22 @@ export default function DiscoverReviewPage() {
     if (!authed) return
     load()
   }, [authed, load])
+
+  const runDrafter = useCallback(async () => {
+    setDrafterRunning(true)
+    setError(null)
+    setDrafterResult(null)
+    const res = await fetch("/api/admin?action=run-apply-approved", { method: "POST" })
+    const body = await res.json().catch(() => ({}))
+    setDrafterRunning(false)
+    if (!res.ok || !body.ok) {
+      setError(body.error ?? `Drafter exited ${body.exitCode}. ${body.stderr ?? ""}`.slice(0, 240))
+      return
+    }
+    setDrafterResult({ count: body.appliedCount ?? 0, files: body.draftFiles ?? [] })
+    setSuccessMsg(`Drafted ${body.appliedCount ?? 0} approved lead(s).`)
+    setTimeout(() => setSuccessMsg(null), 2400)
+  }, [])
 
   const decide = useCallback(
     async (lead: Lead, status: "approved" | "dismissed" | "snoozed" | "new") => {
@@ -128,7 +146,7 @@ export default function DiscoverReviewPage() {
     const c = { all: leads.length, new: 0, approved: 0, dismissed: 0, snoozed: 0, open: 0 }
     for (const l of leads) {
       c[l.status] = (c[l.status] ?? 0) + 1
-      if (l.status === "new" || l.status === "approved") c.open++
+      if (l.status === "new") c.open++
     }
     return c
   }, [leads])
@@ -137,9 +155,11 @@ export default function DiscoverReviewPage() {
   const visible = useMemo(() => {
     const lower = search.toLowerCase().trim()
     const filtered = leads.filter((l) => {
-      // Status filter. "open" means new + approved (work-in-progress lanes).
+      // Status filter. "open" = new only — approved leads are done from the
+      // admin's perspective (waiting on the drafter, not on you). Switch to
+      // the "Approved" pill to see what's queued for --apply-approved.
       if (statusFilter === "open") {
-        if (l.status !== "new" && l.status !== "approved") return false
+        if (l.status !== "new") return false
       } else if (statusFilter !== "all" && l.status !== statusFilter) return false
       // Classification filter.
       if (classFilter !== "all" && l.classification !== classFilter) return false
@@ -185,11 +205,51 @@ export default function DiscoverReviewPage() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "20px 16px" }}>
         {/* Stat tiles */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 16 }}>
-          <StatTile label="Open (new + approved)" value={statusCounts.open} color="#1e40af" />
+          <StatTile label="To triage (new)" value={statusCounts.open} color="#1e40af" />
           <StatTile label="Approved (drafts pending)" value={statusCounts.approved} color="#065f46" />
           <StatTile label="Dismissed" value={statusCounts.dismissed} color="#991b1b" />
           <StatTile label="Snoozed" value={statusCounts.snoozed} color="#5b21b6" />
         </div>
+
+        {/* Draft generator */}
+        <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 13, color: "#333" }}>
+            <span style={{ fontWeight: 700 }}>{statusCounts.approved}</span> approved lead{statusCounts.approved === 1 ? "" : "s"} ready to draft into <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3, fontSize: 11 }}>lib/data/*.draft.ts</code>.
+          </div>
+          <button
+            onClick={runDrafter}
+            disabled={drafterRunning || statusCounts.approved === 0}
+            style={{
+              padding: "8px 14px",
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#fff",
+              background: statusCounts.approved === 0 ? "#bbb" : "#0d7c5f",
+              border: "none",
+              borderRadius: 6,
+              cursor: drafterRunning || statusCounts.approved === 0 ? "not-allowed" : "pointer",
+              opacity: drafterRunning ? 0.7 : 1,
+            }}
+          >
+            {drafterRunning ? "Drafting…" : `⚙ Run drafter`}
+          </button>
+        </div>
+        {drafterResult && (
+          <div style={{ background: "#e6f5f0", border: "1px solid #a7f3d0", color: "#065f46", borderRadius: 8, padding: "10px 12px", marginBottom: 14, fontSize: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>
+              Drafted {drafterResult.count} lead{drafterResult.count === 1 ? "" : "s"}. Review + hand-copy into the live data file.
+            </div>
+            {drafterResult.files.length > 0 ? (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {drafterResult.files.map((f) => (
+                  <li key={f} style={{ fontFamily: "monospace", fontSize: 11 }}>{f}</li>
+                ))}
+              </ul>
+            ) : (
+              <div style={{ fontStyle: "italic", color: "#065f46" }}>(no draft files were written)</div>
+            )}
+          </div>
+        )}
 
         {/* Filter bar */}
         <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -201,7 +261,7 @@ export default function DiscoverReviewPage() {
             style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #e8e8e8", borderRadius: 6, background: "#fafafa" }}
           />
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            <FilterPill label={`Open (${statusCounts.open})`} active={statusFilter === "open"} onClick={() => setStatusFilter("open")} />
+            <FilterPill label={`To triage (${statusCounts.open})`} active={statusFilter === "open"} onClick={() => setStatusFilter("open")} />
             <FilterPill label={`New (${statusCounts.new})`} active={statusFilter === "new"} onClick={() => setStatusFilter("new")} />
             <FilterPill label={`Approved (${statusCounts.approved})`} active={statusFilter === "approved"} onClick={() => setStatusFilter("approved")} />
             <FilterPill label={`Dismissed (${statusCounts.dismissed})`} active={statusFilter === "dismissed"} onClick={() => setStatusFilter("dismissed")} />
@@ -327,8 +387,11 @@ function LeadCard({ lead, busy, onDecide }: { lead: Lead; busy: boolean; onDecid
         <span style={{ fontSize: 11, color: "#666" }}>conf {formatConfidence(lead.confidence)}</span>
         <span style={{ fontSize: 11, color: "#999" }}>· {shortDate(lead.discovered_at)}</span>
         {lead.flags?.length > 0 && (
-          <span style={{ fontSize: 11, color: "#92400e", background: "#fef3c7", padding: "2px 6px", borderRadius: 99 }}>
-            ⚠ {lead.flags.join(", ")}
+          <span
+            title="Discover-pipeline metadata — not a result of any click"
+            style={{ fontSize: 10, color: "#666", background: "#f5f5f5", padding: "2px 6px", borderRadius: 99, border: "1px solid #e8e8e8" }}
+          >
+            {lead.flags.map((f) => f.replace(/_/g, " ")).join(" · ")}
           </span>
         )}
       </div>
