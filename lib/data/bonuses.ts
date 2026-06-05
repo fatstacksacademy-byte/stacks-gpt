@@ -376,10 +376,10 @@ export const bonuses: any[] = [
       "early_closure_fee": 0
     },
     "screening": {
-      "chex_sensitive": "medium",
+      "chex_sensitive": "low",
       "hard_pull": false,
       "soft_pull": true,
-      "screening_notes": "Soft pull/EWS reported. Not available to existing Chase checking customers, those closed within 90 days, or closed with negative balance within 3 years. One bonus per account every two years from last coupon enrollment."
+      "screening_notes": "Soft pull/EWS reported. Chase does not pull ChexSystems. Not available to existing Chase checking customers, those closed within 90 days, or closed with negative balance within 3 years. One bonus per account every two years from last coupon enrollment."
     },
     "eligibility": {
       "state_restricted": false,
@@ -6466,5 +6466,197 @@ export const bonuses: any[] = [
       "https://www.doctorofcredit.com/mo-alltru-credit-union-400-checking-bonus/"
     ],
     "raw_excerpt": "AllTru Credit Union $300 checking bonus. MO only. Direct deposit required."
+  },
+  {
+    "id": "four-leaf-fcu-550-checking-2026",
+    "bank_name": "Four Leaf Federal Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 550,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": 500,
+      "dd_count_required": 1,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open a new Free Checking by 12/31/2026. Receive $350 after first qualifying recurring direct deposit of $500+ within 90 days. Earn an additional $100 after 12 consecutive months of qualifying DDs, and a third $100 after 24 consecutive months. Qualifying DDs must be recurring electronic deposits of paycheck, pension, or government benefits."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "Free Checking has no monthly fee.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "high",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems sensitive — approval reportedly depends on how many accounts you've opened in the last 1-2 months (zero or one is ideal). Credit card funding not allowed."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (via membership)"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Four Leaf FCU (formerly Bethpage Federal Credit Union, rebranded 2026). Membership eligibility paths not detailed in the offer terms — verify on the bank page before applying. Account must be opened between 02/02/2026 and 12/31/2026."
+    },
+    "timeline": {
+      "bonus_posting_days_est": null,
+      "must_remain_open_days": 730
+    },
+    "source_links": [
+      "https://www.fourleaffcu.com/queens-open-an-account/",
+      "https://www.doctorofcredit.com/four-leaf-federal-credit-union-550-checking-bonus-fka-as-bethpage-federalcredit-union/"
+    ],
+    "raw_excerpt": "Four Leaf FCU (formerly Bethpage FCU) $550 tiered checking bonus: $350 initial after first $500+ qualifying DD within 90 days, then $100 at 12 months and $100 at 24 months of consecutive DDs. ChexSystems sensitive. Open by 12/31/2026.",
+    "missing_fields": ["membership eligibility path"]
+  },
+  {
+    "id": "adelfi-cu-100-checking-2026",
+    "bank_name": "AdelFi Credit Union",
+    "product_type": "checking",
+    "bonus_amount": 100,
+    "cooldown_months": 24,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open Harvest Checking, register for digital banking, enroll in eStatements, and complete a qualifying direct deposit. Bonus posts ~60 days after eligibility confirmed. Pair with the Harvest Savings $100 bonus for a combined $200. Expires 07/31/2026."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "Harvest Checking has no monthly fee.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems inquiry reported. New members only — cannot have been an AdelFi member within the last 24 months."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (via Christian membership)"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "AdelFi is a faith-based credit union — membership is restricted to Christians of various denominations. Path to membership not explicitly state-restricted. New members only (no AdelFi history in last 24 months)."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 60,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.adelfibanking.com/",
+      "https://www.hustlermoneyblog.com/adelfi-credit-union-promotions/"
+    ],
+    "raw_excerpt": "AdelFi Credit Union (faith-based) $100 Harvest Checking bonus — new members complete a qualifying DD, with bonus posting in ~60 days. Pair with the $100 Harvest Savings bonus for $200 combined. Expires 07/31/2026.",
+    "missing_fields": ["min direct deposit total"]
+  },
+  {
+    "id": "percapita-300-checking-2026",
+    "bank_name": "Percapita",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 30,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": 0,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open the Percapita checking account, then open a Goals account within 30 days for an extra $10. Earn $25 per month for 12 consecutive months by spending $300+ on the debit card each month (12 × $25 = $300 over the year). Account balance must stay > $0 throughout. Valid through 12/31/2026 or first 7,000 customers."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "Both checking and Goals accounts are fee-free with no closure penalties.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "No ChexSystems sensitivity reported."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "New Percapita customers only. Percapita is a fintech checking platform — funds held at a partner bank. First 7,000 customers cap; check capacity before applying late in the promotion."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 30,
+      "must_remain_open_days": 365
+    },
+    "source_links": [
+      "https://www.percapita.com/en/earn300",
+      "https://www.profitablecontent.com/percapita-300-checking-bonus/"
+    ],
+    "raw_excerpt": "Percapita $300 — earned as $25/month for 12 months of $300+ debit spend, plus $10 for opening the Goals account within 30 days. Mechanic is debit-spend, not DD. First 7,000 customers; expires 12/31/2026.",
+    "missing_fields": []
+  },
+  {
+    "id": "horizon-bank-250-checking-2026",
+    "bank_name": "Horizon Bank",
+    "product_type": "checking",
+    "bonus_amount": 250,
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 500,
+      "min_direct_deposit_per_deposit": 500,
+      "dd_count_required": 1,
+      "deposit_window_days": 90,
+      "holding_period_days": 90,
+      "min_opening_deposit": 25,
+      "min_balance": null,
+      "debit_transactions_required": 10,
+      "billpay_required": null,
+      "other_requirements_text": "Open Everyday Checking with promo code 'America250' and $25 minimum opening deposit. Set up one recurring qualifying direct deposit of $500+ within 90 days, AND complete 10 debit card transactions within 90 days. Account must remain open for 90 days. Bonus posts 30 days after all requirements met. Expires 07/31/2026."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": "Everyday Checking is fee-free.",
+      "early_closure_fee": 0
+    },
+    "screening": {
+      "chex_sensitive": "medium",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "ChexSystems inquiry reported."
+    },
+    "eligibility": {
+      "state_restricted": true,
+      "states_allowed": ["IN", "MI"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "Horizon Bank serves Indiana and Michigan only — must be a resident of one of these states to open."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 30,
+      "must_remain_open_days": 90
+    },
+    "source_links": [
+      "https://www.horizonbank.com/america250",
+      "https://www.profitablecontent.com/horizon-bank-250-checking-bonus/"
+    ],
+    "raw_excerpt": "Horizon Bank Everyday Checking $250. IN/MI only. Promo code America250. $500+ DD + 10 debit transactions within 90 days. Bonus posts 30 days after. Expires 07/31/2026.",
+    "missing_fields": []
   }
 ]
