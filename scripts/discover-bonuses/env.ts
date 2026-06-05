@@ -19,3 +19,21 @@ export const REDDIT_THROTTLE_SECONDS = Number(
 export const MAX_CLAUDE_CALLS = Number(
   process.env.BONUS_BOT_MAX_CLAUDE_CALLS ?? 20,
 )
+
+/**
+ * Reddit OAuth (client-credentials / app-only auth).
+ *
+ * Reddit started 403'ing unauthenticated /.json requests in mid-2025. To pull
+ * subreddit feeds again, create a "script" app at https://www.reddit.com/prefs/apps,
+ * then set both env vars:
+ *
+ *   REDDIT_CLIENT_ID      — the alphanumeric string right under your app name
+ *   REDDIT_CLIENT_SECRET  — the "secret" field
+ *
+ * No Reddit user account required (we use client_credentials grant, which is
+ * app-only). Rate limit: ~600 requests per 10 minutes, ample for discover runs.
+ * If either env var is missing, the reddit puller falls back to the old
+ * unauthenticated fetch (which will likely 403).
+ */
+export const REDDIT_CLIENT_ID = process.env.REDDIT_CLIENT_ID
+export const REDDIT_CLIENT_SECRET = process.env.REDDIT_CLIENT_SECRET

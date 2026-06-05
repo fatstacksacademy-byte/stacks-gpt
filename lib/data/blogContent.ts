@@ -30,6 +30,10 @@ export type BlogContent = {
   relatedSlugs: string[]
   /** What works / doesn't work as direct deposit (checking only) */
   ddMethods?: DDMethod[]
+  /** Provenance: when scripts/generate-bonus-blog last verified the offer page (auto-generated entries only) */
+  verifiedAt?: string
+  /** The exact offer page URL the generator verified (may differ from current source_links[0]) */
+  verifiedUrl?: string
 }
 
 export const blogContent: Record<string, BlogContent> = {

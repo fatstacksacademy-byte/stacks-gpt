@@ -1,10 +1,54 @@
-import { REDDIT_THROTTLE_SECONDS, UA } from "../env"
+import { REDDIT_THROTTLE_SECONDS, UA, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from "../env"
 import { throttleHost } from "../ratelimit"
 import { log } from "../logger"
 import type { RawItem, SourceConfig } from "../types"
 
-// Reddit's public JSON endpoints. No auth required, but a non-default UA is mandatory.
-// We treat URLs like https://www.reddit.com/r/churning/new.json?limit=50 as the entry point.
+// Reddit endpoints. As of mid-2025 the public /.json paths return 403 for
+// unauthenticated callers, so when REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET are
+// set we acquire a client-credentials OAuth token and hit the authenticated
+// oauth.reddit.com mirror instead. Without credentials we fall through to the
+// unauthenticated request (which usually 403s now — kept for parity).
+//
+// We treat URLs like https://www.reddit.com/r/churning/new.json?limit=50 as
+// the entry point. When using OAuth we rewrite the host to oauth.reddit.com,
+// which is required because www.reddit.com rejects Bearer tokens.
+
+// In-memory token cache. Tokens last 1 hour; discover runs finish in minutes.
+let tokenCache: { token: string; expiresAt: number } | null = null
+
+async function getOAuthToken(): Promise<string | null> {
+  if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET) return null
+  if (tokenCache && Date.now() < tokenCache.expiresAt - 30_000) return tokenCache.token
+
+  const basic = Buffer.from(`${REDDIT_CLIENT_ID}:${REDDIT_CLIENT_SECRET}`).toString("base64")
+  try {
+    const r = await fetch("https://www.reddit.com/api/v1/access_token", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basic}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": UA,
+      },
+      body: "grant_type=client_credentials",
+      signal: AbortSignal.timeout(15000),
+    })
+    if (!r.ok) {
+      log("error", "reddit.oauth_failed", { status: r.status, statusText: r.statusText })
+      return null
+    }
+    const j = (await r.json()) as { access_token?: string; expires_in?: number; error?: string }
+    if (!j.access_token) {
+      log("error", "reddit.oauth_no_token", { body: JSON.stringify(j).slice(0, 200) })
+      return null
+    }
+    const ttlMs = (j.expires_in ?? 3600) * 1000
+    tokenCache = { token: j.access_token, expiresAt: Date.now() + ttlMs }
+    return j.access_token
+  } catch (err) {
+    log("error", "reddit.oauth_error", { error: err instanceof Error ? err.message : String(err) })
+    return null
+  }
+}
 
 type RedditListing = {
   data: {
@@ -27,14 +71,30 @@ type RedditPost = {
 }
 
 export async function pullReddit(src: SourceConfig): Promise<RawItem[]> {
-  // robots.txt on reddit.com allows /.json endpoints for named bots — still check
   const throttle = src.throttle_seconds ?? REDDIT_THROTTLE_SECONDS
   await throttleHost(src.url, throttle)
 
+  // When OAuth credentials are set, rewrite the host to oauth.reddit.com and
+  // attach Bearer auth. The path + query are preserved, so existing source
+  // entries pointing at www.reddit.com keep working transparently.
+  const token = await getOAuthToken()
+  let fetchUrl = src.url
+  const headers: Record<string, string> = { "User-Agent": UA, Accept: "application/json" }
+  if (token) {
+    try {
+      const u = new URL(src.url)
+      u.host = "oauth.reddit.com"
+      fetchUrl = u.toString()
+      headers.Authorization = `Bearer ${token}`
+    } catch {
+      // Bad URL — fall through with the original.
+    }
+  }
+
   let json: RedditListing
   try {
-    const r = await fetch(src.url, {
-      headers: { "User-Agent": UA, Accept: "application/json" },
+    const r = await fetch(fetchUrl, {
+      headers,
       signal: AbortSignal.timeout(15000),
     })
     if (!r.ok) {
@@ -42,6 +102,8 @@ export async function pullReddit(src: SourceConfig): Promise<RawItem[]> {
         source: src.name,
         status: r.status,
         statusText: r.statusText,
+        authed: Boolean(token),
+        hint: token ? undefined : "Set REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET — Reddit blocks unauthenticated JSON now",
       })
       return []
     }

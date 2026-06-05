@@ -79,8 +79,16 @@ async function main() {
         (await import("./classify")).heuristicClassify(item)
       : await classify(item)
     const lead = rawToLead(item, c.classification, c.confidence)
-    // Discard "other" with very low confidence — noise filter
-    if (c.classification === "other" && c.confidence < 0.3) continue
+    // News / review / non-bonus filter: only keep leads that look like a
+    // sign-up bonus. A real SUB nearly always has a dollar amount or a
+    // points/miles total in the headline.  hintFromTitle catches both
+    // forms; if it returns null, the post is almost certainly a review,
+    // news item, weekly data points roundup, etc.
+    if (c.classification === "other") continue
+    if (lead.bonus_amount === null) {
+      log("info", "run.skip_no_sub", { title: item.title.slice(0, 100), classification: c.classification })
+      continue
+    }
     leads.push(lead)
   }
 

@@ -7,11 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "verify:bonuses": "tsx scripts/verify-bonuses/run.ts",
     "verify:cards": "tsx scripts/verify-cards/run.ts",
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts",
+    "test:reddit-oauth": "tsx scripts/discover-bonuses/test-reddit-oauth.ts",
     "discover:cards": "tsx scripts/discover-cards/run.ts",
     "generate:card-blog": "tsx scripts/generate-card-blog/run.ts",
+    "generate:bonus-blog": "tsx scripts/generate-bonus-blog/run.ts",
     "ingest:rwp-cards": "tsx scripts/ingest-rwp-cards/run.ts",
     "find:offer-links": "tsx scripts/find-offer-links/run.ts",
     "search:offer-links": "tsx scripts/search-offer-links/run.ts"
@@ -23,9 +27,12 @@
     "@supabase/supabase-js": "^2.97.0",
     "next": "16.1.6",
     "playwright-extra": "^4.3.6",
+    "posthog-js": "^1.380.0",
+    "posthog-node": "^5.36.1",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.12.4",
     "stripe": "^20.4.0"
   },
   "devDependencies": {
@@ -33,6 +40,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "fast-xml-parser": "^5.7.0",
@@ -40,6 +48,7 @@
     "playwright": "^1.59.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }
