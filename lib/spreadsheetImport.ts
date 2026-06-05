@@ -189,9 +189,50 @@ export function normalizeAccountName(raw: string): string {
 
 const STOPWORDS = new Set(["the", "of", "and", "or", "a", "an"])
 
+const ABBREV_EXPANSIONS: Record<string, string[]> = {
+  fu: ["freedom unlimited"],
+  csp: ["sapphire preferred"],
+  csr: ["sapphire reserve"],
+  bbc: ["blue business cash"],
+  bbp: ["blue business plus"],
+  bce: ["blue cash everyday"],
+  bcp: ["blue cash preferred"],
+  ihg: ["ihg"],
+  usb: ["us bank"],
+  wf: ["wells fargo"],
+  boa: ["bank of america"],
+  cfu: ["chase freedom unlimited"],
+  cff: ["chase freedom flex"],
+  ink: ["ink business"],
+}
+
+function tokenize(s: string): string[] {
+  const norm = normalizeAccountName(s)
+  const raw = norm.split(/\s+/).filter(t => t.length >= 2 && !STOPWORDS.has(t))
+  const out: string[] = []
+  for (const t of raw) {
+    out.push(t)
+    if (ABBREV_EXPANSIONS[t]) out.push(...ABBREV_EXPANSIONS[t].flatMap(x => x.split(" ")))
+  }
+  return out
+}
+
+function bigramSet(s: string): Set<string> {
+  const clean = s.toLowerCase().replace(/[^a-z0-9]+/g, "")
+  const out = new Set<string>()
+  for (let i = 0; i < clean.length - 1; i++) out.add(clean.slice(i, i + 2))
+  return out
+}
+
+function dice(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0
+  let intersect = 0
+  for (const g of a) if (b.has(g)) intersect++
+  return (2 * intersect) / (a.size + b.size)
+}
+
 export function cheapPrefilter(rawName: string, accountType: string | null | undefined, catalog: CatalogEntryFlat[]): CatalogEntryFlat[] {
-  const norm = normalizeAccountName(rawName)
-  const tokens = norm.split(/\s+/).filter(t => t.length >= 3 && !STOPWORDS.has(t))
+  const tokens = tokenize(rawName)
   const typeHint = (accountType ?? "").toLowerCase()
   const isCC = /credit|card|cc/.test(typeHint)
   const isSavings = /saving/.test(typeHint)
@@ -211,4 +252,124 @@ export function cheapPrefilter(rawName: string, accountType: string | null | und
   const withHits = scored.filter(s => s.score > 0)
   const top = withHits.length >= 5 ? withHits : scored
   return top.slice(0, 25).map(s => s.c)
+}
+
+export type HeuristicMatchResult = {
+  top: MatchCandidate
+  candidates: MatchCandidate[]
+  confidence: number
+  margin: number
+}
+
+export function heuristicMatch(
+  rawName: string,
+  accountType: string | null | undefined,
+  catalog: CatalogEntryFlat[],
+): HeuristicMatchResult | null {
+  const pool = cheapPrefilter(rawName, accountType, catalog)
+  if (pool.length === 0) return null
+  const queryGrams = bigramSet(normalizeAccountName(rawName) + " " + (accountType ?? ""))
+  const queryTokens = new Set(tokenize(rawName))
+  const typeHint = (accountType ?? "").toLowerCase()
+  const isCC = /credit|card|cc/.test(typeHint)
+  const isSavings = /saving/.test(typeHint)
+  const isChecking = /check/.test(typeHint)
+
+  const scored = pool.map(c => {
+    const labelGrams = bigramSet(c.label + " " + c.issuer_or_bank)
+    const diceScore = dice(queryGrams, labelGrams)
+    let tokenScore = 0
+    for (const t of queryTokens) {
+      const hay = (c.label + " " + c.issuer_or_bank).toLowerCase()
+      if (hay.includes(t)) tokenScore += 1
+    }
+    tokenScore = queryTokens.size > 0 ? tokenScore / queryTokens.size : 0
+    let typeBoost = 0
+    if (isCC && c.type === "credit_card") typeBoost = 0.15
+    else if (isSavings && c.type === "savings") typeBoost = 0.15
+    else if (isChecking && c.type === "checking") typeBoost = 0.15
+    else if (typeHint && c.type === "credit_card" && !isCC) typeBoost = -0.1
+    const confidence = Math.min(1, 0.55 * diceScore + 0.35 * tokenScore + typeBoost)
+    return { entry: c, confidence }
+  })
+  scored.sort((a, b) => b.confidence - a.confidence)
+  const top = scored[0]
+  const second = scored[1]
+  if (!top) return null
+  const margin = top.confidence - (second?.confidence ?? 0)
+  const candidates: MatchCandidate[] = scored.slice(0, 3).map(s => ({
+    catalog_id: s.entry.id,
+    label: s.entry.label,
+    type: s.entry.type,
+    confidence: Math.round(s.confidence * 100) / 100,
+  }))
+  return {
+    top: candidates[0],
+    candidates,
+    confidence: top.confidence,
+    margin,
+  }
+}
+
+export const HEURISTIC_ACCEPT_THRESHOLD = 0.78
+export const HEURISTIC_MARGIN_THRESHOLD = 0.08
+
+export type SchemaDetectionResult = {
+  schema: DetectedSchema
+  matched_headers: string[]
+}
+
+type SchemaStringField = Exclude<keyof DetectedSchema, "confidence">
+
+const HEADER_PATTERNS: { field: SchemaStringField; patterns: RegExp[] }[] = [
+  { field: "account_name_col", patterns: [/^account$/i, /^account[\s_]*name$/i, /^bank[\s_]*name$/i, /^bank$/i, /^card[\s_]*name$/i, /^card$/i, /^institution/i, /^name$/i, /^account[\s_]*nickname$/i, /^description$/i] },
+  { field: "account_type_col", patterns: [/^type$/i, /^account[\s_]*type$/i, /^product[\s_]*type$/i, /^product$/i, /^category$/i, /^kind$/i] },
+  { field: "opened_date_col", patterns: [/^opened$/i, /^date[\s_]*opened$/i, /^opened[\s_]*on$/i, /^opened[\s_]*date$/i, /^open[\s_]*date$/i, /^start[\s_]*date$/i, /^origination[\s_]*date$/i, /^created$/i] },
+  { field: "closed_date_col", patterns: [/^closed$/i, /^date[\s_]*closed$/i, /^closed[\s_]*on$/i, /^closed[\s_]*date$/i, /^close[\s_]*date$/i, /^end[\s_]*date$/i, /^terminated[\s_]*on$/i] },
+  { field: "balance_col", patterns: [/^balance$/i, /^current[\s_]*balance$/i, /^amount$/i, /^current[\s_]*amount$/i, /^value$/i] },
+  { field: "status_col", patterns: [/^status$/i, /^state$/i, /^condition$/i] },
+  { field: "notes_col", patterns: [/^notes?$/i, /^comments?$/i, /^memo$/i, /^description$/i, /^remarks?$/i] },
+]
+
+export function detectSchemaHeuristic(sheet: ParsedSheet): SchemaDetectionResult {
+  const schema: DetectedSchema = {
+    account_name_col: null,
+    account_type_col: null,
+    opened_date_col: null,
+    closed_date_col: null,
+    balance_col: null,
+    status_col: null,
+    notes_col: null,
+    confidence: 0,
+  }
+  const matched: string[] = []
+  for (const { field, patterns } of HEADER_PATTERNS) {
+    for (const h of sheet.headers) {
+      if (patterns.some(rx => rx.test(h.trim()))) {
+        if (!schema[field]) {
+          schema[field] = h
+          matched.push(h)
+          break
+        }
+      }
+    }
+  }
+  if (!schema.account_name_col) {
+    const cand = sheet.headers.find(h => /name|account|bank|card|institution/i.test(h))
+    if (cand) { schema.account_name_col = cand; matched.push(cand) }
+  }
+  if (!schema.opened_date_col && sheet.rows.length > 0) {
+    for (const h of sheet.headers) {
+      const looksLikeDate = sheet.rows.slice(0, 3).some(r => /\d{1,4}[-/]\d{1,2}[-/]\d{1,4}/.test(r[h] ?? ""))
+      if (looksLikeDate && /open|start|date/i.test(h) && !schema.closed_date_col) {
+        schema.opened_date_col = h
+        matched.push(h)
+        break
+      }
+    }
+  }
+  const requiredCount = schema.account_name_col ? 1 : 0
+  const optionalCount = ["account_type_col", "opened_date_col", "closed_date_col", "balance_col", "status_col"].filter(k => schema[k as keyof DetectedSchema] !== null).length
+  schema.confidence = schema.account_name_col ? Math.min(1, 0.5 + 0.1 * optionalCount + 0.3 * requiredCount) : 0.2
+  return { schema, matched_headers: matched }
 }

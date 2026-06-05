@@ -4,6 +4,9 @@ import Anthropic from "@anthropic-ai/sdk"
 import {
   buildCatalogFlat,
   cheapPrefilter,
+  heuristicMatch,
+  HEURISTIC_ACCEPT_THRESHOLD,
+  HEURISTIC_MARGIN_THRESHOLD,
   type ImportRow,
   type MatchCandidate,
   type MatchedRow,
@@ -60,60 +63,91 @@ export async function POST(req: NextRequest) {
   const catalog = buildCatalogFlat()
   const catalogIndex = new Map(catalog.map(c => [c.id, c]))
 
-  const perRow: { row: ImportRow; pool: CatalogEntryFlat[] }[] =
-    rows.map(r => ({ row: r, pool: cheapPrefilter(r.raw_name, r.account_type, catalog).slice(0, MAX_CANDIDATES_PER_ROW) }))
+  type RowState = {
+    row: ImportRow
+    pool: CatalogEntryFlat[]
+    heuristic: ReturnType<typeof heuristicMatch>
+    needsLlm: boolean
+  }
+  const states: RowState[] = rows.map(r => {
+    const h = heuristicMatch(r.raw_name, r.account_type, catalog)
+    const accepted = !!h && h.confidence >= HEURISTIC_ACCEPT_THRESHOLD && h.margin >= HEURISTIC_MARGIN_THRESHOLD
+    return {
+      row: r,
+      pool: cheapPrefilter(r.raw_name, r.account_type, catalog).slice(0, MAX_CANDIDATES_PER_ROW),
+      heuristic: h,
+      needsLlm: !accepted,
+    }
+  })
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
-  const batches: typeof perRow[] = []
-  for (let i = 0; i < perRow.length; i += BATCH_SIZE) batches.push(perRow.slice(i, i + BATCH_SIZE))
+  const llmRows = states.filter(s => s.needsLlm)
+  const heuristicAccepted = states.length - llmRows.length
 
   const parsed: ModelResult[] = []
   const batchErrors: { batch: number; reason: string; sample?: string }[] = []
 
-  for (let b = 0; b < batches.length; b++) {
-    const batch = batches[b]
-    const userMsg = buildPrompt(batch)
-    let response
-    try {
-      response = await client.messages.create({
-        model: MODEL,
-        max_tokens: MAX_TOKENS_PER_BATCH,
-        system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-        messages: [{ role: "user", content: userMsg }],
-      })
-    } catch (e) {
-      console.error(`[import/match] batch ${b + 1} anthropic error:`, e)
-      batchErrors.push({ batch: b + 1, reason: e instanceof Error ? e.message : "unknown" })
-      continue
-    }
+  if (llmRows.length > 0) {
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const batches: RowState[][] = []
+    for (let i = 0; i < llmRows.length; i += BATCH_SIZE) batches.push(llmRows.slice(i, i + BATCH_SIZE))
 
-    const stop = response.stop_reason
-    const text = response.content
-      .filter((c): c is Anthropic.TextBlock => c.type === "text")
-      .map(c => c.text).join("").trim()
-    const cleaned = extractJson(text)
+    for (let b = 0; b < batches.length; b++) {
+      const batch = batches[b].map(s => ({ row: s.row, pool: s.pool }))
+      const userMsg = buildPrompt(batch)
+      let response
+      try {
+        response = await client.messages.create({
+          model: MODEL,
+          max_tokens: MAX_TOKENS_PER_BATCH,
+          system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+          messages: [{ role: "user", content: userMsg }],
+        })
+      } catch (e) {
+        console.error(`[import/match] batch ${b + 1} anthropic error:`, e)
+        batchErrors.push({ batch: b + 1, reason: e instanceof Error ? e.message : "unknown" })
+        continue
+      }
 
-    let batchParsed: ModelResult[] = []
-    try {
-      const raw = JSON.parse(cleaned)
-      if (Array.isArray(raw)) batchParsed = raw
-      else if (raw && Array.isArray(raw.matches)) batchParsed = raw.matches
-    } catch {
-      console.warn(`[import/match] batch ${b + 1} JSON parse failed (stop=${stop}):`, text.slice(0, 400))
-      batchErrors.push({ batch: b + 1, reason: `Invalid JSON (stop_reason=${stop})`, sample: text.slice(0, 200) })
-      continue
+      const stop = response.stop_reason
+      const text = response.content
+        .filter((c): c is Anthropic.TextBlock => c.type === "text")
+        .map(c => c.text).join("").trim()
+      const cleaned = extractJson(text)
+
+      let batchParsed: ModelResult[] = []
+      try {
+        const raw = JSON.parse(cleaned)
+        if (Array.isArray(raw)) batchParsed = raw
+        else if (raw && Array.isArray(raw.matches)) batchParsed = raw.matches
+      } catch {
+        console.warn(`[import/match] batch ${b + 1} JSON parse failed (stop=${stop}):`, text.slice(0, 400))
+        batchErrors.push({ batch: b + 1, reason: `Invalid JSON (stop_reason=${stop})`, sample: text.slice(0, 200) })
+        continue
+      }
+      parsed.push(...batchParsed)
     }
-    parsed.push(...batchParsed)
   }
 
-  if (parsed.length === 0 && batchErrors.length > 0) {
-    return NextResponse.json({ error: `All ${batches.length} batches failed`, details: batchErrors }, { status: 502 })
-  }
-
-  const matches: MatchedRow[] = rows.map(row => {
-    const m = parsed.find(p => p.raw_name === row.raw_name)
-    if (!m) return { ...row, top: null, candidates: [], unmatched_reason: "No model result" }
+  const matches: MatchedRow[] = states.map(s => {
+    if (!s.needsLlm && s.heuristic) {
+      return {
+        ...s.row,
+        top: s.heuristic.top,
+        candidates: s.heuristic.candidates,
+      }
+    }
+    const m = parsed.find(p => p.raw_name === s.row.raw_name)
+    if (!m) {
+      if (s.heuristic) {
+        return {
+          ...s.row,
+          top: s.heuristic.top,
+          candidates: s.heuristic.candidates,
+          unmatched_reason: "Below heuristic threshold; AI fallback failed",
+        }
+      }
+      return { ...s.row, top: null, candidates: [], unmatched_reason: "No match" }
+    }
     const candidates: MatchCandidate[] = (m.candidates ?? [])
       .map(c => {
         const entry = catalogIndex.get(c.id)
@@ -123,10 +157,14 @@ export async function POST(req: NextRequest) {
       .filter((x): x is MatchCandidate => x !== null)
       .sort((a, b) => b.confidence - a.confidence)
     const top = m.top_id ? candidates.find(c => c.catalog_id === m.top_id) ?? candidates[0] ?? null : null
-    return { ...row, top, candidates, unmatched_reason: m.unmatched_reason ?? undefined }
+    return { ...s.row, top, candidates, unmatched_reason: m.unmatched_reason ?? undefined }
   })
 
-  return NextResponse.json({ matches, batch_errors: batchErrors })
+  return NextResponse.json({
+    matches,
+    batch_errors: batchErrors,
+    stats: { total: rows.length, heuristic_accepted: heuristicAccepted, llm_resolved: llmRows.length },
+  })
 }
 
 function clamp01(n: unknown): number {

@@ -5,6 +5,7 @@ import CheckpointNav from "../../components/CheckpointNav"
 import {
   parseDelimited,
   applySchema,
+  detectSchemaHeuristic,
   type ParsedSheet,
   type DetectedSchema,
   type ImportRow,
@@ -33,7 +34,7 @@ const input: React.CSSProperties = {
   padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, width: "100%",
 }
 
-type Phase = "upload" | "detecting" | "schema_review" | "matching" | "review" | "committing" | "done"
+type Phase = "upload" | "schema_review" | "matching" | "review" | "committing" | "done"
 
 type Row = {
   data: ImportRow
@@ -52,6 +53,7 @@ export default function ImportClient({ userId }: { userId: string }) {
   const [pastedText, setPastedText] = useState("")
   const [schema, setSchema] = useState<DetectedSchema | null>(null)
   const [phase, setPhase] = useState<Phase>("upload")
+  const [matchStats, setMatchStats] = useState<{ total: number; heuristic_accepted: number; llm_resolved: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [rows, setRows] = useState<Row[]>([])
 
@@ -80,30 +82,12 @@ export default function ImportClient({ userId }: { userId: string }) {
     setError(null)
   }
 
-  async function runDetect() {
+  function runDetect() {
     if (!sheet) { setError("Upload or paste a sheet first."); return }
-    setPhase("detecting")
     setError(null)
-    try {
-      const resp = await fetch("/api/import/detect-schema", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ headers: sheet.headers, sample_rows: sheet.rows.slice(0, 5) }),
-      })
-      if (!resp.ok) {
-        const j = await resp.json().catch(() => ({}))
-        setError(j.error ?? `Schema detect failed (${resp.status})`)
-        setPhase("upload")
-        return
-      }
-      const { schema: s } = (await resp.json()) as { schema: DetectedSchema }
-      setSchema(s)
-      setPhase("schema_review")
-    } catch (e) {
-      console.error(e)
-      setError("Network error contacting schema detector.")
-      setPhase("upload")
-    }
+    const { schema: s } = detectSchemaHeuristic(sheet)
+    setSchema(s)
+    setPhase("schema_review")
   }
 
   async function runMatch() {
@@ -131,7 +115,8 @@ export default function ImportClient({ userId }: { userId: string }) {
         setPhase("schema_review")
         return
       }
-      const { matches } = (await resp.json()) as { matches: MatchedRow[] }
+      const { matches, stats } = (await resp.json()) as { matches: MatchedRow[]; stats?: { total: number; heuristic_accepted: number; llm_resolved: number } }
+      if (stats) setMatchStats(stats)
       const initial: Row[] = matches.map(m => ({
         data: { raw_name: m.raw_name, account_type: m.account_type, opened_date: m.opened_date, closed_date: m.closed_date, balance: m.balance, status: m.status, notes: m.notes },
         match: m,
@@ -211,12 +196,6 @@ export default function ImportClient({ userId }: { userId: string }) {
           </div>
         )}
 
-        {phase === "detecting" && (
-          <div style={card}>
-            <div style={{ fontSize: 14 }}>Detecting columns…</div>
-          </div>
-        )}
-
         {phase === "schema_review" && schema && sheet && (
           <SchemaReview
             sheet={sheet}
@@ -238,10 +217,17 @@ export default function ImportClient({ userId }: { userId: string }) {
           <div style={card}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Review {rows.length} match{rows.length === 1 ? "" : "es"}</h3>
-              <div style={{ fontSize: 12, color: "#666" }}>
-                Matched: {rows.filter(r => r.match.top).length} ·
-                Low confidence: {rows.filter(r => r.match.top && r.match.top.confidence < 0.7).length} ·
-                Unmatched: {rows.filter(r => !r.match.top).length}
+              <div style={{ fontSize: 12, color: "#666", textAlign: "right" }}>
+                <div>
+                  Matched: {rows.filter(r => r.match.top).length} ·
+                  Low confidence: {rows.filter(r => r.match.top && r.match.top.confidence < 0.7).length} ·
+                  Unmatched: {rows.filter(r => !r.match.top).length}
+                </div>
+                {matchStats && (
+                  <div style={{ fontSize: 11, color: "#0d7c5f", marginTop: 4 }}>
+                    {matchStats.heuristic_accepted}/{matchStats.total} matched locally (no AI call) · {matchStats.llm_resolved} sent to AI
+                  </div>
+                )}
               </div>
             </div>
 
