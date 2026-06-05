@@ -3,10 +3,12 @@ import { createClient } from "@/lib/supabase/server"
 import Anthropic from "@anthropic-ai/sdk"
 
 export const runtime = "nodejs"
+export const maxDuration = 60
 
 const MODEL = "claude-sonnet-4-6"
 const MAX_TEXT_CHARS = 30000
 const FETCH_TIMEOUT_MS = 12000
+const PLAYWRIGHT_TIMEOUT_MS = 30000
 
 // Cached so warm Lambdas reuse the prompt cache hit. Anthropic ephemeral
 // cache lives ~5 minutes; the static system prompt benefits whenever the
@@ -43,10 +45,17 @@ Extract these fields:
 Return strict JSON with exactly these 11 keys.`
 }
 
-// Minimal HTML→text: drop scripts/styles, replace tags with spaces,
-// decode the common entities, collapse whitespace. Good enough for
-// passing static content into the LLM; JS-rendered pages will fail
-// gracefully (the user can edit fields manually).
+async function fetchViaPlaywright(url: string): Promise<{ text: string } | null> {
+  const mod = await import("../../../scripts/_shared/playwright").catch(err => {
+    console.warn("[smart-import] playwright import failed:", err instanceof Error ? err.message : err)
+    return null
+  })
+  if (!mod) return null
+  const result = await mod.fetchPage(url, { timeoutMs: PLAYWRIGHT_TIMEOUT_MS })
+  if (!result.ok || !result.textContent) return null
+  return { text: result.textContent }
+}
+
 function htmlToText(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -139,37 +148,51 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "URL must start with http:// or https://" }, { status: 400 })
   }
 
-  let html: string
+  let text = ""
+  let fetchPath: "playwright" | "plain" = "plain"
   try {
-    const ctrl = new AbortController()
-    const tmo = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS)
-    const resp = await fetch(parsed.toString(), {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; StacksOS-SmartImport/1.0; +https://fatstacksacademy.com)",
-        Accept: "text/html,application/xhtml+xml,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-      },
-      signal: ctrl.signal,
-      redirect: "follow",
-    }).finally(() => clearTimeout(tmo))
-    if (!resp.ok) {
-      return NextResponse.json({ error: `That page returned ${resp.status}.` }, { status: 400 })
+    const pw = await fetchViaPlaywright(parsed.toString())
+    if (pw && pw.text.length >= 200) {
+      text = pw.text.slice(0, MAX_TEXT_CHARS)
+      fetchPath = "playwright"
     }
-    html = await resp.text()
-  } catch {
-    return NextResponse.json(
-      { error: "Couldn't fetch that page — the site may block bots or be slow." },
-      { status: 400 },
-    )
+  } catch (e) {
+    console.warn("[smart-import] playwright path failed, falling back:", e instanceof Error ? e.message : e)
   }
 
-  const text = htmlToText(html).slice(0, MAX_TEXT_CHARS)
+  if (text.length < 200) {
+    try {
+      const ctrl = new AbortController()
+      const tmo = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS)
+      const resp = await fetch(parsed.toString(), {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; StacksOS-SmartImport/1.0; +https://fatstacksacademy.com)",
+          Accept: "text/html,application/xhtml+xml,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+        },
+        signal: ctrl.signal,
+        redirect: "follow",
+      }).finally(() => clearTimeout(tmo))
+      if (!resp.ok) {
+        return NextResponse.json({ error: `That page returned ${resp.status}.` }, { status: 400 })
+      }
+      const html = await resp.text()
+      text = htmlToText(html).slice(0, MAX_TEXT_CHARS)
+    } catch {
+      return NextResponse.json(
+        { error: "Couldn't fetch that page. The site may block bots or be slow." },
+        { status: 400 },
+      )
+    }
+  }
+
   if (text.length < 80) {
     return NextResponse.json(
-      { error: "That page didn't have enough readable text — try the bank's plain offer page or a DoC article." },
+      { error: "That page didn't have enough readable text. Try the bank's plain offer page or a DoC article." },
       { status: 400 },
     )
   }
+  console.log(`[smart-import] fetched via ${fetchPath} (${text.length} chars) for ${parsed.hostname}`)
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   let result
