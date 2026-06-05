@@ -14,6 +14,7 @@
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts",
     "test:reddit-oauth": "tsx scripts/discover-bonuses/test-reddit-oauth.ts",
     "discover:cards": "tsx scripts/discover-cards/run.ts",
+    "catalog:apply-decisions": "tsx scripts/apply-decisions-to-catalog.ts",
     "generate:card-blog": "tsx scripts/generate-card-blog/run.ts",
     "generate:bonus-blog": "tsx scripts/generate-bonus-blog/run.ts",
     "ingest:rwp-cards": "tsx scripts/ingest-rwp-cards/run.ts",
