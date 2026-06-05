@@ -25,6 +25,7 @@ import { migrateCustomToCompleted, markBonusAlreadyHad } from "../../lib/complet
 import CatalogMatchPicker from "../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../components/AlreadyHaveForm"
 import VerifiedBadge from "../components/VerifiedBadge"
+import { track } from "../../lib/analytics"
 import { getVerificationStateMap, type VerificationState } from "../../lib/verificationState"
 import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
 import lastDiscoverRun from "../../lib/data/lastDiscoverRun.json"
@@ -246,6 +247,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   const [customDdCount, setCustomDdCount] = useState("")
   const [customDepositWindow, setCustomDepositWindow] = useState("")
   const [customHoldingPeriod, setCustomHoldingPeriod] = useState("")
+  const [customMonthlyFee, setCustomMonthlyFee] = useState("")
+  const [customMonthlyFeeWaiver, setCustomMonthlyFeeWaiver] = useState("")
+  const [customEarlyClosureFee, setCustomEarlyClosureFee] = useState("")
   const [smartImportUrl, setSmartImportUrl] = useState("")
   const [smartImporting, setSmartImporting] = useState(false)
   const [smartImportError, setSmartImportError] = useState<string | null>(null)
@@ -378,6 +382,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   async function handleStart() {
     if (!actionBonus) return
     await markBonusStarted(userId, actionBonus.bonus.id, actionDate)
+    track("bonus_started", { module: "paycheck", source: "catalog", bonus_id: actionBonus.bonus.id, amount: actionBonus.bonus.bonus_amount })
     await loadRecords()
     setActionBonus(null)
   }
@@ -388,6 +393,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     if (!record) return
     const parsed = actualAmount ? parseInt(actualAmount.replace(/\D/g, "")) : undefined
     await markBonusClosed(record.id, actionDate, true, parsed)
+    track("bonus_completed", { module: "paycheck", bonus_id: actionBonus.bonus.id, amount: parsed ?? actionBonus.bonus.bonus_amount })
     await loadRecords()
     setActionBonus(null)
   }
@@ -460,6 +466,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
   async function handleSmartImport() {
     const url = smartImportUrl.trim()
     if (!url || smartImporting) return
+    track("smart_import_opened", { url })
     setSmartImporting(true)
     setSmartImportError(null)
     setSmartImportApplied(false)
@@ -485,6 +492,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
         holding_period_days: number | null
         churnable: boolean | null
         cooldown_months: number | null
+        monthly_fee: number | null
+        monthly_fee_waiver_text: string | null
+        early_closure_fee: number | null
         notes: string | null
       }
       if (e.bank_name) setCustomBank(e.bank_name)
@@ -497,7 +507,15 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       if (e.holding_period_days != null) setCustomHoldingPeriod(String(e.holding_period_days))
       if (e.churnable != null) setCustomChurnable(e.churnable)
       if (e.cooldown_months != null) setCustomCooldown(String(e.cooldown_months))
+      if (e.monthly_fee != null) setCustomMonthlyFee(String(e.monthly_fee))
+      if (e.monthly_fee_waiver_text) setCustomMonthlyFeeWaiver(e.monthly_fee_waiver_text)
+      if (e.early_closure_fee != null) setCustomEarlyClosureFee(String(e.early_closure_fee))
       if (e.notes) setCustomNotes(e.notes)
+      track("smart_import_extracted", {
+        bank: e.bank_name ?? null,
+        amount: e.bonus_amount ?? null,
+        had_dd: e.dd_required ?? false,
+      })
       setSmartImportApplied(true)
     } catch {
       setSmartImportError("Network error — try again.")
@@ -524,8 +542,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       ddCountRequired: customDdRequired && customDdCount ? parseInt(customDdCount) : null,
       depositWindowDays: customDdRequired && customDepositWindow ? parseInt(customDepositWindow) : null,
       holdingPeriodDays: customHoldingPeriod ? parseInt(customHoldingPeriod) : null,
+      monthlyFee: customMonthlyFee ? parseFloat(customMonthlyFee) : null,
+      monthlyFeeWaiverText: customMonthlyFeeWaiver || null,
+      earlyClosureFee: customEarlyClosureFee ? parseFloat(customEarlyClosureFee) : null,
     })
     if (!result) { setAddCustomError("Failed to save — please check your connection and try again."); return }
+    track("custom_bonus_added", { amount: parseInt(customAmount), has_dd: customDdRequired, churnable: customChurnable })
+    track("bonus_started", { module: "paycheck", source: "custom", bonus_id: result.id, amount: parseInt(customAmount) })
     await loadRecords()
     setShowAddCustom(false)
     setAddCustomError(null)
@@ -533,6 +556,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomChurnable(false); setCustomCooldown("12")
     setCustomDdRequired(false); setCustomMinDdTotal(""); setCustomMinDdPerDeposit("")
     setCustomDdCount(""); setCustomDepositWindow(""); setCustomHoldingPeriod("")
+    setCustomMonthlyFee(""); setCustomMonthlyFeeWaiver(""); setCustomEarlyClosureFee("")
     resetSmartImport()
   }
 
@@ -562,6 +586,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
     setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : "")
     setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : "")
     setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : "")
+    setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : "")
+    setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? "")
+    setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : "")
     setEditingCustom(c)
   }
 
@@ -579,6 +606,9 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       dd_count_required: customDdRequired && customDdCount ? parseInt(customDdCount) : null,
       deposit_window_days: customDdRequired && customDepositWindow ? parseInt(customDepositWindow) : null,
       holding_period_days: customHoldingPeriod ? parseInt(customHoldingPeriod) : null,
+      monthly_fee: customMonthlyFee ? parseFloat(customMonthlyFee) : null,
+      monthly_fee_waiver_text: customMonthlyFeeWaiver || null,
+      early_closure_fee: customEarlyClosureFee ? parseFloat(customEarlyClosureFee) : null,
     })
     await loadRecords()
     setEditingCustom(null)
@@ -1012,6 +1042,33 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                   Sensitive ChexSystems <span style={{ color: "#bbb" }}>— only show chex-friendly bonuses</span>
                 </span>
               </label>
+            </div>
+          </div>
+        )}
+
+        {/* ── First-run "Start here" banner ── */}
+        {inProgress.length === 0 && activeCustom.length === 0 && allClosed.length === 0 && closedCustom.length === 0 && (
+          <div style={{
+            background: "linear-gradient(135deg, #e6f5f0 0%, #f0faf6 100%)",
+            border: "1px solid #c8e6d8",
+            borderRadius: 12,
+            padding: "16px 20px",
+            marginBottom: 16,
+            display: "flex",
+            gap: 14,
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+          }}>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "#0d7c5f", fontWeight: 700, marginBottom: 4 }}>
+                Start here
+              </div>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0a5c47", margin: "0 0 4px" }}>
+                Pick your first bonus
+              </h2>
+              <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
+                We&apos;ve sequenced the bonuses below by what you can realistically finish given your paycheck. Tap the green &ldquo;Start&rdquo; button on the first one to begin.
+              </p>
             </div>
           </div>
         )}
@@ -2440,7 +2497,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #a7f3d0", color: "#0d7c5f", background: "#f0faf5", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
                               {isMatching ? "Cancel match" : "Match to catalog"}
                             </button>
-                            <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : "") }}
+                            <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : ""); setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : ""); setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? ""); setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : "") }}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
                             <button onClick={() => handleDeleteCustom(c.id)}
                               style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
@@ -2851,6 +2908,21 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
               </div>
 
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee ($)</label>
+                  <input type="number" step="0.01" value={customMonthlyFee} onChange={e => setCustomMonthlyFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
+                <div>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Early closure fee ($)</label>
+                  <input type="number" step="0.01" value={customEarlyClosureFee} onChange={e => setCustomEarlyClosureFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee waiver (how to avoid it)</label>
+                  <input type="text" value={customMonthlyFeeWaiver} onChange={e => setCustomMonthlyFeeWaiver(e.target.value)} placeholder="e.g. $1,500 daily balance" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
+              </div>
+
               <div>
                 <label style={modalLabel}>Notes (optional)</label>
                 <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Any requirements or details" style={modalInput} />
@@ -2983,6 +3055,20 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
               <div>
                 <label style={{ ...modalLabel, fontSize: 11 }}>Holding period after bonus posts (days, optional)</label>
                 <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
+              </div>
+              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee ($)</label>
+                  <input type="number" step="0.01" value={customMonthlyFee} onChange={e => setCustomMonthlyFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
+                <div>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Early closure fee ($)</label>
+                  <input type="number" step="0.01" value={customEarlyClosureFee} onChange={e => setCustomEarlyClosureFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee waiver (how to avoid it)</label>
+                  <input type="text" value={customMonthlyFeeWaiver} onChange={e => setCustomMonthlyFeeWaiver(e.target.value)} placeholder="e.g. $1,500 daily balance" style={{ ...modalInput, padding: "6px 10px" }} />
+                </div>
               </div>
               <div>
                 <label style={modalLabel}>Notes (optional)</label>

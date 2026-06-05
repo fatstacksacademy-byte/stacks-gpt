@@ -20,6 +20,9 @@ export type CustomBonus = {
   dd_count_required: number | null
   deposit_window_days: number | null
   holding_period_days: number | null
+  monthly_fee: number | null
+  monthly_fee_waiver_text: string | null
+  early_closure_fee: number | null
 }
 
 export async function getCustomBonuses(userId: string): Promise<CustomBonus[]> {
@@ -40,6 +43,9 @@ export type CustomBonusRequirements = {
   ddCountRequired?: number | null
   depositWindowDays?: number | null
   holdingPeriodDays?: number | null
+  monthlyFee?: number | null
+  monthlyFeeWaiverText?: string | null
+  earlyClosureFee?: number | null
 }
 
 export async function addCustomBonus(
@@ -68,6 +74,9 @@ export async function addCustomBonus(
       dd_count_required: reqs?.ddCountRequired ?? null,
       deposit_window_days: reqs?.depositWindowDays ?? null,
       holding_period_days: reqs?.holdingPeriodDays ?? null,
+      monthly_fee: reqs?.monthlyFee ?? null,
+      monthly_fee_waiver_text: reqs?.monthlyFeeWaiverText ?? null,
+      early_closure_fee: reqs?.earlyClosureFee ?? null,
     })
     .select()
     .single()
@@ -82,6 +91,7 @@ export async function updateCustomBonus(
     | "bank_name" | "bonus_amount" | "opened_date" | "cooldown_months"
     | "dd_required" | "min_dd_total" | "min_dd_per_deposit" | "dd_count_required"
     | "deposit_window_days" | "holding_period_days"
+    | "monthly_fee" | "monthly_fee_waiver_text" | "early_closure_fee"
   >>
 ): Promise<boolean> {
   const supabase = createClient()
