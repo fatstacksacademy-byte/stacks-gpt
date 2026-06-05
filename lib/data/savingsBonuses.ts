@@ -256,7 +256,8 @@ export const savingsBonuses: SavingsBonus[] = [
       "https://www.doctorofcredit.com/nj-blue-foundry-bank-300-checking-300-savings-bonus/"
     ],
     raw_excerpt: "Deposit $15,000+ in new money, maintain for 6 months (182 days). Bonus credited within 60 days after qualification. Blended APY: 3.73% on first $5k, 1.30% on $5k-$250k.",
-    notes: "Weak standalone — long 182-day lockup with low blended APY. Only worth doing if stacked with the Blue Foundry checking bonus."
+    notes: "Weak standalone — long 182-day lockup with low blended APY. Only worth doing if stacked with the Blue Foundry checking bonus.",
+    expired: true,
   },
   {
     id: "citi-savings-2026",
@@ -680,7 +681,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 1200 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    fees: { monthly_fee: 30, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking. Promo Q2DIG26. Deposit in 30 days, maintain 60 days, 6 transactions." },
     source_links: ["https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html",
       "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
@@ -698,7 +699,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 60,
     tiers: [{ min_deposit: 2500, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 825 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    fees: { monthly_fee: 15, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business checking. $2,500 ending balance on days 30 and 60." },
     source_links: ["https://accountoffers.wellsfargo.com/businesscheckingb",
       "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
@@ -751,7 +752,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 120,
     tiers: [{ min_deposit: 2000, bonus_amount: 200 }, { min_deposit: 10000, bonus_amount: 400 }, { min_deposit: 20000, bonus_amount: 1000 }],
     cooldown_months: 24,
-    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    fees: { monthly_fee: 40, early_closure_fee: 0 },
     eligibility: { state_restricted: true, states_allowed: ["OH","MI","IN","PA","KY","WV","IL","CO","MN","SC","WI","NC","TX"], lifetime_language: false, eligibility_notes: "Unlimited Plus Business Checking. $20k deposit in 60 days." },
     source_links: ["https://www.huntington.com/business-banking-promotions-offers",
       "https://www.doctorofcredit.com/oh-mi-pa-ky-wv-il-wi-huntington-bank-500-750-business-checking-bonuses/"
