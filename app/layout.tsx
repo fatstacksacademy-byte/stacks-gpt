@@ -2,8 +2,10 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
+import { Suspense } from "react"
 import { ProfileProvider } from "./components/ProfileProvider"
 import ToastHost from "./components/ToastHost"
+import PostHogProvider from "./components/PostHogProvider"
 import { createClient } from "../lib/supabase/server"
 import { getProfileServer, DEFAULT_PROFILE } from "../lib/profileServer"
 
@@ -101,6 +103,9 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Suspense fallback={null}>
+          <PostHogProvider userId={user?.id ?? null} />
+        </Suspense>
         <ProfileProvider serverProfile={serverProfile}>
           {children}
         </ProfileProvider>

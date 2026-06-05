@@ -1,0 +1,41 @@
+"use client"
+
+import posthog from "posthog-js"
+
+/**
+ * Typed wrapper around posthog.capture so events are consistent.
+ * Names follow snake_case so PostHog groups them cleanly.
+ *
+ * Add a new event here before calling it anywhere. The compiler
+ * forces every call site to pick a known name; renames flow through
+ * the type system instead of slipping past code review.
+ */
+export type AnalyticsEvent =
+  // Onboarding
+  | "wizard_started"
+  | "wizard_completed"
+  | "wizard_step_completed"
+  // Bonus actions
+  | "bonus_started"          // module: paycheck|spending|savings|debt
+  | "bonus_completed"
+  | "bonus_skipped"
+  | "custom_bonus_added"
+  // Smart Import
+  | "smart_import_opened"
+  | "smart_import_extracted"
+  // Subscription
+  | "checkout_started"
+  | "billing_portal_opened"
+  // Misc
+  | "tax_summary_viewed"
+  | "dashboard_tab_changed"
+
+export function track(event: AnalyticsEvent, props?: Record<string, unknown>) {
+  try {
+    if (typeof window === "undefined") return
+    if (!posthog.__loaded) return
+    posthog.capture(event, props)
+  } catch {
+    // Never let analytics break the app.
+  }
+}
