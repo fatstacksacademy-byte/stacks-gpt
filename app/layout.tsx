@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
@@ -6,6 +6,7 @@ import { Suspense } from "react"
 import { ProfileProvider } from "./components/ProfileProvider"
 import ToastHost from "./components/ToastHost"
 import PostHogProvider from "./components/PostHogProvider"
+import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar"
 import { createClient } from "../lib/supabase/server"
 import { getProfileServer, DEFAULT_PROFILE } from "../lib/profileServer"
 
@@ -29,6 +30,22 @@ export const metadata: Metadata = {
   title: "Fat Stacks Academy — Bank Bonuses, Credit Card Strategy & Stacks OS",
   description: "Earn thousands in bank bonuses and credit card rewards. Free guides, bonus rankings, and Stacks OS — your personal bonus tracking dashboard.",
   metadataBase: new URL("https://fatstacksacademy.com"),
+  // PWA — iOS "Add to Home Screen" affordance + standalone behavior.
+  // The web manifest at app/manifest.ts drives Android.
+  appleWebApp: {
+    capable: true,
+    title: "Stacks OS",
+    statusBarStyle: "default",
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#0d7c5f",
+  width: "device-width",
+  initialScale: 1,
+  // viewportFit: "cover" lets PWA content extend behind the iOS notch +
+  // home indicator when launched from the home screen.
+  viewportFit: "cover",
 }
 
 // Site-wide structured data. Organization enables the knowledge panel +
@@ -110,6 +127,7 @@ export default async function RootLayout({
           {children}
         </ProfileProvider>
         <ToastHost />
+        <ServiceWorkerRegistrar />
       </body>
       {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
