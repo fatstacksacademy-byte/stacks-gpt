@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { upsertProfileClient } from "../../lib/profileClient"
 import { upsertSavingsProfile } from "../../lib/savingsProfile"
 import { upsertSpendingProfile } from "../../lib/spendingProfile"
+import { track } from "../../lib/analytics"
 import type { UserProfile, PayFrequency } from "../../lib/profileTypes"
 
 type Step = "paycheck" | "savings" | "spending" | "done"
@@ -28,6 +29,8 @@ export default function WelcomeWizard({
 }) {
   const [step, setStep] = useState<Step>("paycheck")
 
+  useEffect(() => { track("wizard_started") }, [])
+
   // ── Paycheck state ──
   const [state, setState] = useState(initialProfile.state ?? "")
   const [payFreq, setPayFreq] = useState<PayFrequency>(initialProfile.pay_frequency)
@@ -51,6 +54,7 @@ export default function WelcomeWizard({
       paycheck_amount: paycheck,
       state: state || null,
     })
+    track("wizard_step_completed", { step: "paycheck" })
     setStep("savings")
   }
 
@@ -67,6 +71,7 @@ export default function WelcomeWizard({
       })
       setSavingSaving(false)
     }
+    track("wizard_step_completed", { step: "savings", skipped: skip })
     setStep("spending")
   }
 
@@ -83,6 +88,8 @@ export default function WelcomeWizard({
       })
     }
     localStorage.setItem("stacks:onboarded", "1")
+    track("wizard_step_completed", { step: "spending", skipped: skip })
+    track("wizard_completed")
     setStep("done")
     onComplete()
   }

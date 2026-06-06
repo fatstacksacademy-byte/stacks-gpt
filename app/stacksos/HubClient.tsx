@@ -3,6 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import PortfolioCard from "../components/PortfolioCard"
 import StartedBonusesList, { type StartedBonus } from "../components/StartedBonusesList"
+import HistoricalWinsList, { type HistoricalWin } from "../components/HistoricalWinsList"
+import DashboardGoalBar from "../components/DashboardGoalBar"
+import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
+import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep } from "../../lib/bonusNextStep"
+import { track } from "../../lib/analytics"
 import CheckpointNav from "../components/CheckpointNav"
 import WelcomeWizard from "../components/WelcomeWizard"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
@@ -59,6 +64,7 @@ export default function HubClient({
   const [billingLoading, setBillingLoading] = useState(false)
   async function handleManageBilling() {
     setBillingLoading(true)
+    track("billing_portal_opened", { source: "past_due_banner" })
     try {
       const res = await fetch("/api/stripe/portal", { method: "POST" })
       const data = await res.json()
@@ -77,6 +83,7 @@ export default function HubClient({
   const [ownedCards, setOwnedCards] = useState<OwnedCard[]>([])
   const [savingsEntries, setSavingsEntries] = useState<SavingsEntry[]>([])
   const [showWizard, setShowWizard] = useState(false)
+  const [view, setView] = useState<DashboardView>("active")
 
   const loadData = useCallback(() => {
     getSavingsProfile(userId).then(setSavingsProfile).catch(() => setSavingsProfile(null))
@@ -167,11 +174,15 @@ export default function HubClient({
       if (r.closed_date) continue
       const b = bonuses.find((x) => (x as { id?: string }).id === r.bonus_id)
       if (!b) continue
+      const step = checkingBonusStep(r, b)
       out.push({
         module: "paycheck",
         name: (b as { bank_name?: string }).bank_name ?? r.bonus_id,
         amount: r.actual_amount ?? (b as { bonus_amount?: number }).bonus_amount ?? 0,
         started_date: r.opened_date,
+        nextStep: step.nextStep,
+        deadline: step.deadline,
+        urgency: step.urgency,
         href: "/stacksos/paycheck",
       })
     }
@@ -180,12 +191,15 @@ export default function HubClient({
     for (const c of customBonuses) {
       if (c.closed_date) continue
       if (c.current_step && NON_ACTIVE_CUSTOM_STEPS.has(c.current_step)) continue
+      const step = customBonusStep(c)
       out.push({
         module: "paycheck",
         name: c.bank_name,
         amount: c.actual_amount ?? c.bonus_amount,
         started_date: c.opened_date,
-        nextStep: c.current_step ?? null,
+        nextStep: step.nextStep,
+        deadline: step.deadline,
+        urgency: step.urgency,
         href: "/stacksos/paycheck",
       })
     }
@@ -193,12 +207,15 @@ export default function HubClient({
     // 3) Spending cards: status === "active"
     for (const c of ownedCards) {
       if (c.status !== "active") continue
+      const step = spendingCardStep(c)
       out.push({
         module: "spending",
         name: c.card_name,
         amount: c.expected_value ?? c.signup_bonus_value ?? 0,
         started_date: c.opened_date,
-        nextStep: c.spend_deadline ? `Spend deadline ${c.spend_deadline}` : null,
+        nextStep: step.nextStep,
+        deadline: step.deadline,
+        urgency: step.urgency,
         href: "/stacksos/spending",
       })
     }
@@ -206,18 +223,21 @@ export default function HubClient({
     // 4) Savings entries: status === "active"
     for (const e of savingsEntries) {
       if (e.status !== "active") continue
+      const step = savingsEntryStep(e)
       out.push({
         module: "savings",
         name: e.institution_name,
         amount: e.expected_total_value ?? e.bonus_amount ?? 0,
         started_date: e.opened_date,
-        nextStep: e.deadline ? `Deadline ${e.deadline}` : null,
+        nextStep: step.nextStep,
+        deadline: step.deadline,
+        urgency: step.urgency,
         href: "/stacksos/savings",
       })
     }
 
-    // Sort newest-first by start date.
-    return out.sort((a, b) => (b.started_date || "").localeCompare(a.started_date || ""))
+    // Order is finalized by StartedBonusesList (urgency-first, then deadline).
+    return out
   }, [completedRecords, customBonuses, ownedCards, savingsEntries])
 
   // ─── Lifetime earned (completed across all modules) ───────────────
@@ -269,6 +289,64 @@ export default function HubClient({
     [startedBonuses],
   )
 
+  // ─── Historical wins across all 4 sources ─────────────────────────
+  // Mirrors the lifetimeEarned logic but produces individual rows for
+  // the "History" dashboard tab.
+  const historicalWins = useMemo<HistoricalWin[]>(() => {
+    const out: HistoricalWin[] = []
+
+    for (const r of completedRecords) {
+      if (!r.bonus_received) continue
+      const b = bonuses.find((x) => (x as { id?: string }).id === r.bonus_id)
+      const fallback = b ? ((b as { bonus_amount?: number }).bonus_amount ?? 0) : 0
+      out.push({
+        module: "paycheck",
+        name: (b as { bank_name?: string } | undefined)?.bank_name ?? r.bonus_id,
+        amount: r.actual_amount ?? fallback,
+        date: r.closed_date ?? r.opened_date ?? null,
+        href: "/stacksos/paycheck",
+      })
+    }
+
+    for (const c of customBonuses) {
+      const closedAndReceived = c.closed_date && c.bonus_received
+      const keptOpenPosted = !c.closed_date && (c.current_step === "kept_open" || c.current_step === "bonus_posted")
+      if (!(closedAndReceived || keptOpenPosted)) continue
+      out.push({
+        module: "paycheck",
+        name: c.bank_name,
+        amount: c.actual_amount ?? c.bonus_amount,
+        date: c.closed_date ?? c.opened_date ?? null,
+        href: "/stacksos/paycheck",
+      })
+    }
+
+    for (const c of ownedCards) {
+      if (c.status !== "completed") continue
+      out.push({
+        module: "spending",
+        name: c.card_name,
+        amount: c.actual_value ?? c.expected_value ?? 0,
+        // OwnedCard has no closed_date — updated_at fires when status flips to "completed".
+        date: (c.updated_at ?? c.opened_date)?.slice(0, 10) ?? null,
+        href: "/stacksos/spending",
+      })
+    }
+
+    for (const e of savingsEntries) {
+      if (e.status !== "completed") continue
+      out.push({
+        module: "savings",
+        name: e.institution_name,
+        amount: e.actual_value ?? e.expected_total_value ?? 0,
+        date: (e.updated_at ?? e.opened_date)?.slice(0, 10) ?? null,
+        href: "/stacksos/savings",
+      })
+    }
+
+    return out.sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+  }, [completedRecords, customBonuses, ownedCards, savingsEntries])
+
   return (
     <>
       {showWizard && (
@@ -289,7 +367,7 @@ export default function HubClient({
               Your last payment didn't go through — please update your card to keep your subscription active.
             </span>
             <button onClick={handleManageBilling} disabled={billingLoading}
-              style={{ fontSize: 13, fontWeight: 700, color: "#fff", background: "#854d0e", border: "none", borderRadius: 6, padding: "6px 12px", cursor: billingLoading ? "wait" : "pointer" }}>
+              style={{ fontSize: 14, fontWeight: 700, color: "#fff", background: "#854d0e", border: "none", borderRadius: 8, padding: "10px 16px", minHeight: 40, cursor: billingLoading ? "wait" : "pointer" }}>
               {billingLoading ? "Opening…" : "Update payment →"}
             </button>
           </div>
@@ -320,29 +398,34 @@ export default function HubClient({
           </a>
         </div>
 
-        <PortfolioCard
-          total={portfolio12mo}
-          lifetimeEarned={lifetimeEarned}
+        <DashboardGoalBar
+          projection12mo={portfolio12mo}
           inProgress={inProgressValue}
-          breakdown={[
-            { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
-            { label: "Spending", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
-            { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
-          ]}
+          lifetimeEarned={lifetimeEarned}
         />
 
-        <StartedBonusesList bonuses={startedBonuses} />
+        <DashboardViewTabs
+          view={view}
+          onChange={(v) => { setView(v); track("dashboard_tab_changed", { tab: v }) }}
+          counts={{ active: startedBonuses.length, history: historicalWins.length }}
+        />
+
+        {view === "active" && <StartedBonusesList bonuses={startedBonuses} />}
+
+        {view === "projection" && (
+          <PortfolioCard
+            total={portfolio12mo}
+            breakdown={[
+              { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
+              { label: "Spending", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
+              { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
+            ]}
+          />
+        )}
+
+        {view === "history" && <HistoricalWinsList wins={historicalWins} />}
 
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
-          <a
-            href="/stacksos/history"
-            style={{
-              fontSize: 13, color: "#666", textDecoration: "none",
-              padding: "8px 14px", border: "1px solid #e8e8e8", borderRadius: 8,
-            }}
-          >
-            Completed bonuses →
-          </a>
           <a
             href="/stacksos/taxes"
             style={{

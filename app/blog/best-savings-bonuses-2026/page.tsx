@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { blogPosts, getSavingsBonusById } from "../../../lib/data/blogPosts"
 import { blogContent } from "../../../lib/data/blogContent"
+import AffiliateDisclosure from "../components/AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -192,6 +193,8 @@ export default function BestSavingsBonuses() {
             Subscribe on YouTube &rarr;
           </a>
         </div>
+
+        <AffiliateDisclosure variant="block" />
 
         <div style={{ marginTop: 32, display: "flex", gap: 20 }}>
           <Link href="/blog" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>&larr; All reviews</Link>

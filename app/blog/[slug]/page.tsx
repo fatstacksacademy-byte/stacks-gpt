@@ -3,8 +3,10 @@ import { notFound } from "next/navigation"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById, getCardById } from "../../../lib/data/blogPosts"
 import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
+import { applyUrl } from "../../../lib/affiliateLinks"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
+import AffiliateDisclosure from "../components/AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -393,12 +395,13 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
       {/* Apply */}
       {links.length > 0 && (
         <Section title="Apply">
-          <a href={links[0]} target="_blank" rel="noopener noreferrer" style={{
+          <a href={applyUrl(bonus.id)} target="_blank" rel="noopener noreferrer" style={{
             display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
             Open Account &rarr;
           </a>
+          <AffiliateDisclosure variant="inline" />
           {links.length > 1 && (
             <div style={{ marginTop: 16 }}>
               <div style={{ fontSize: 12, color: "#bbb", marginBottom: 8 }}>Additional sources:</div>
@@ -481,12 +484,13 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
       {/* Apply */}
       {links.length > 0 && (
         <Section title="Apply">
-          <a href={links[0]} target="_blank" rel="noopener noreferrer" style={{
+          <a href={applyUrl(bonus.id)} target="_blank" rel="noopener noreferrer" style={{
             display: "inline-block", padding: "14px 28px", fontSize: 14, fontWeight: 700,
             background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
           }}>
             Open Account &rarr;
           </a>
+          <AffiliateDisclosure variant="inline" />
           {links.length > 1 && (
             <div style={{ marginTop: 16 }}>
               <div style={{ fontSize: 12, color: "#bbb", marginBottom: 8 }}>Additional sources:</div>
@@ -525,7 +529,7 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
             <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>after ${card.min_spend.toLocaleString()} spend in {card.spend_months} months</div>
           </div>
           {card.offer_link && (
-            <a href={card.offer_link} target="_blank" rel="noopener noreferrer"
+            <a href={applyUrl(card.id)} target="_blank" rel="noopener noreferrer"
               style={{ padding: "10px 20px", fontSize: 13, fontWeight: 700, background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none", flexShrink: 0 }}>
               View official offer →
             </a>
@@ -539,6 +543,7 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
         )}
         <InfoRow label="Estimated SUB value" value={`$${subValue.toLocaleString()}`} accent />
         <InfoRow label="Net year-1 value" value={`$${netYear1.toLocaleString()}`} accent />
+        {card.offer_link && <AffiliateDisclosure variant="inline" />}
       </div>
 
       {/* Rewards tiers */}
@@ -769,14 +774,8 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         {/* Comments */}
         <CommentSection slug={post.slug} />
 
-        {/* Disclaimer */}
-        <div style={{ marginTop: 32, padding: "20px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12 }}>
-          <p style={{ fontSize: 12, color: "#999", lineHeight: 1.7, margin: 0 }}>
-            Bonus offers, requirements, and fees are determined by each financial institution and may change at any time.
-            Always verify the current terms directly with the bank before applying. This content is for informational
-            purposes only and does not constitute financial advice.
-          </p>
-        </div>
+        {/* Affiliate disclosure + general disclaimer */}
+        <AffiliateDisclosure variant="block" />
 
         {/* Back */}
         <div style={{ marginTop: 32, display: "flex", gap: 20 }}>

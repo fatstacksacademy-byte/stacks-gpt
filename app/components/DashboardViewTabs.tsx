@@ -1,0 +1,78 @@
+"use client"
+
+export type DashboardView = "active" | "projection" | "history"
+
+/**
+ * Three-way segmented control swapping the dashboard's main panel between
+ * the active to-do, the 12-month projection breakdown, and historical wins.
+ */
+export default function DashboardViewTabs({
+  view,
+  onChange,
+  counts,
+}: {
+  view: DashboardView
+  onChange: (v: DashboardView) => void
+  counts: { active: number; history: number }
+}) {
+  const tabs: { id: DashboardView; label: string; badge?: number }[] = [
+    { id: "active", label: "In progress", badge: counts.active },
+    { id: "projection", label: "Projection" },
+    { id: "history", label: "History", badge: counts.history },
+  ]
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        background: "#f1f1f0",
+        borderRadius: 10,
+        padding: 3,
+        marginBottom: 16,
+        gap: 2,
+      }}
+    >
+      {tabs.map(t => {
+        const active = view === t.id
+        return (
+          <button
+            key={t.id}
+            onClick={() => onChange(t.id)}
+            style={{
+              border: "none",
+              background: active ? "#fff" : "transparent",
+              color: active ? "#111" : "#777",
+              fontSize: 13,
+              fontWeight: active ? 700 : 600,
+              padding: "7px 14px",
+              borderRadius: 8,
+              cursor: "pointer",
+              boxShadow: active ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "background 0.15s",
+            }}
+          >
+            {t.label}
+            {t.badge != null && t.badge > 0 && (
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  background: active ? "#e6f5f0" : "#e4e4e3",
+                  color: active ? "#0d7c5f" : "#666",
+                  borderRadius: 99,
+                  padding: "1px 7px",
+                  minWidth: 14,
+                  textAlign: "center",
+                }}
+              >
+                {t.badge}
+              </span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}

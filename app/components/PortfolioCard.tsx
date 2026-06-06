@@ -13,28 +13,16 @@ type Breakdown = {
 }
 
 /**
- * Dashboard portfolio card — the "big total" hero.
- *
- * Layout:
- *   PROJECTED 12 MONTH STACK
- *   $12,500
- *     Paycheck   $5,165  [Show breakdown →]  → expands to top 5 bonuses
- *     Spending   $11,887 [Show breakdown →]
- *     Savings    $11,150 [Show breakdown →]
- *
- *   LIFETIME EARNED                    IN PROGRESS
- *   $3,200                             $1,450
+ * 12-month projection breakdown — shown when the user toggles the
+ * "Projection" tab on the dashboard. Lifetime/in-progress numbers live
+ * in DashboardGoalBar now, so this card focuses on per-module breakdown.
  */
 export default function PortfolioCard({
   total,
   breakdown,
-  lifetimeEarned,
-  inProgress,
 }: {
   total: number
   breakdown: Breakdown[]
-  lifetimeEarned: number
-  inProgress: number
 }) {
   const [expandedLabel, setExpandedLabel] = useState<string | null>(null)
 
@@ -51,7 +39,7 @@ export default function PortfolioCard({
       className="portfolio-card"
     >
       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.75 }}>
-        Projected 12 Month Stack
+        12-Month Projection
       </div>
       <div
         className="portfolio-total"
@@ -103,7 +91,7 @@ export default function PortfolioCard({
                   )}
                 </div>
                 {isExpanded && hasItems && (
-                  <div style={{ marginTop: 6, marginLeft: 100, display: "flex", flexDirection: "column", gap: 3 }}>
+                  <div className="pc-breakdown" style={{ marginTop: 6, marginLeft: 100, display: "flex", flexDirection: "column", gap: 3 }}>
                     {b.items!.slice(0, 5).map((it, i) => (
                       <div
                         key={i}
@@ -130,38 +118,11 @@ export default function PortfolioCard({
         </div>
       )}
 
-      <div
-        className="portfolio-stats"
-        style={{
-          display: "flex",
-          gap: 12,
-          marginTop: 20,
-          paddingTop: 16,
-          borderTop: "1px solid rgba(255,255,255,0.15)",
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", opacity: 0.7 }}>
-            Lifetime earned
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginTop: 3 }}>
-            ${lifetimeEarned.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </div>
-        </div>
-        <div style={{ flex: 1, textAlign: "right" }}>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", opacity: 0.7 }}>
-            In progress
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginTop: 3 }}>
-            ${inProgress.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </div>
-        </div>
-      </div>
-
       <style>{`
         @media (max-width: 520px) {
           .portfolio-card { padding: 20px 20px !important; border-radius: 12px !important; }
           .portfolio-total { font-size: 32px !important; }
+          .pc-breakdown { margin-left: 0 !important; padding-left: 14px; border-left: 2px solid rgba(255,255,255,0.15); }
         }
       `}</style>
     </div>
