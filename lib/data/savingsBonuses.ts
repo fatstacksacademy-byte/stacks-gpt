@@ -808,7 +808,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 15000, bonus_amount: 900 },
     ],
     cooldown_months: 24,
-    fees: { monthly_fee: 12, early_closure_fee: 0 },
+    fees: { monthly_fee: 15, early_closure_fee: 0 },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
