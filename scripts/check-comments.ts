@@ -50,8 +50,13 @@ async function main() {
     byParent.get(k)!.push(c)
   }
 
-  const isMine = (c: (typeof comments)[number]) =>
-    myId ? c.user_id === myId : false
+  // A reply counts as mine if it's on my account OR posted as a guest under
+  // my display name (I sometimes reply without signing in).
+  const isMine = (c: (typeof comments)[number]) => {
+    if (myId && c.user_id === myId) return true
+    if (!c.user_id && c.display_name.trim().toLowerCase() === "nathaniel") return true
+    return false
+  }
 
   // "Unresponded" = comment NOT by me, AND no descendant reply by me.
   const hasMyDescendant = (id: string): boolean => {
