@@ -57,6 +57,22 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      # Reuse Playwright fetch cache across runs so we don't re-fetch every
+      # bonus + card page from scratch every night. Cold cache = ~25 min;
+      # warm cache = ~5 min. Cache key includes the catalog files so we
+      # invalidate when bonuses change (and pick up new entries).
+      - name: Restore verify cache
+        id: cache-verify
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/verify-bonuses
+            .cache/verify-cards
+          key: verify-cache-${{ hashFiles('lib/data/bonuses.ts', 'lib/data/savingsBonuses.ts', 'lib/data/creditCardBonuses.ts') }}-${{ github.run_id }}
+          restore-keys: |
+            verify-cache-${{ hashFiles('lib/data/bonuses.ts', 'lib/data/savingsBonuses.ts', 'lib/data/creditCardBonuses.ts') }}-
+            verify-cache-
+
       # ─── Step 1: refresh bonus verification queue ─────────────────────
       - name: Verify bonuses + persist to Supabase
         env:
