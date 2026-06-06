@@ -100,7 +100,6 @@ export const bonuses: any[] = [
       "must_remain_open_days": 135
     },
     "source_links": [
-      "https://i.capitalone.com/GRErGO2HT",
       "https://www.capitalone.com/bank/offer300/",
       "https://www.doctorofcredit.com/capital-one-300-checking-bonus/",
       "https://www.profitablecontent.com/capital-one-350-checking-bonus/"
@@ -156,9 +155,8 @@ export const bonuses: any[] = [
       "must_remain_open_days": null
     },
     "source_links": [
-      "https://www.varomoney.com/r1/?r=Nathaniel2908",
-      "https://www.doctorofcredit.com/varo-money-online-bank-account-75-sign-up-bonus-ios-android-sharing-referrals-still-a-nono/",
-      "https://www.varomoney.com/"
+      "https://www.varomoney.com/",
+      "https://www.doctorofcredit.com/varo-money-online-bank-account-75-sign-up-bonus-ios-android-sharing-referrals-still-a-nono/"
     ],
     "raw_excerpt": "Use referral link, open new Varo account, and receive $500+ qualifying direct deposit within 45 days.",
     "missing_fields": [
@@ -844,7 +842,7 @@ export const bonuses: any[] = [
       "must_remain_open_days": null
     },
     "source_links": [
-      "https://www.chime.com/r/nathanielbooth10/",
+      "https://www.chime.com/banking/",
       "https://www.swagbucks.com/",
       "https://www.topcashback.com/",
       "https://www.inboxdollars.com/",
@@ -5493,7 +5491,8 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Military members and families only."
+      "eligibility_notes": "Military members and families only.",
+      "military_only": true
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [

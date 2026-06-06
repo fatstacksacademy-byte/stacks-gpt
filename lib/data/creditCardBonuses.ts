@@ -49,6 +49,8 @@ export type CreditCardBonus = {
   expired: boolean
   key_benefits: string[]
   state_restricted?: string[]
+  /** Restricted to military-affiliated users (USAA, Navy Federal, AAFES). Hidden unless user_profiles.military_affiliated is true. */
+  military_only?: boolean
   /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
   rewards?: RewardsTier[]
 }
@@ -998,6 +1000,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "AAFES Military Star",
     issuer: "exchange-credit-program",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 0,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -4240,6 +4243,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Navy Federal cashRewards",
     issuer: "navy-federal",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 200,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -4261,6 +4265,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Navy Federal cashRewards Plus",
     issuer: "navy-federal",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 200,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -4282,6 +4287,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Navy Federal Flagship Travel Rewards",
     issuer: "navy-federal",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 35000,
     bonus_currency: "Points",
     is_hotel_card: false,
@@ -4304,6 +4310,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Navy Federal GO REWARDS",
     issuer: "navy-federal",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 0,
     bonus_currency: "Points",
     is_hotel_card: false,
@@ -4327,6 +4334,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Navy Federal More Rewards",
     issuer: "navy-federal",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 0,
     bonus_currency: "Points",
     is_hotel_card: false,
@@ -5579,6 +5587,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Bank Cashback Rewards Plus",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 0,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -5647,6 +5656,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Bank Eagle Navigator",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 30000,
     bonus_currency: "Points",
     is_hotel_card: false,
@@ -5669,6 +5679,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Eagle Adapt",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 200,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -5691,6 +5702,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Bank Preferred Cash Rewards",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 200,
     bonus_currency: "cash",
     is_hotel_card: false,
@@ -5712,6 +5724,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Bank Rewards (VISA)",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 2500,
     bonus_currency: "Points",
     is_hotel_card: false,
@@ -5734,6 +5747,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "USAA Bank Rewards (AMEX)",
     issuer: "usaa-bank",
     card_type: "personal",
+    military_only: true,
     bonus_amount: 2500,
     bonus_currency: "Points",
     is_hotel_card: false,

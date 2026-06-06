@@ -13,8 +13,10 @@ import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import VerifiedBadge from "../../components/VerifiedBadge"
+import { applyUrl } from "../../../lib/affiliateLinks"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
+import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
@@ -78,6 +80,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   // User's state (from user_profiles, not spending_profile) — used to filter
   // cards with state_restricted lists. Fetched alongside spending profile.
   const [userState, setUserState] = useState<string | null>(null)
+  const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -85,12 +88,14 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     const [c, p, userProfile, vStates] = await Promise.all([
       getOwnedCards(userId),
       getSpendingProfile(userId),
-      sb.from("user_profiles").select("state").eq("user_id", userId).maybeSingle(),
+      sb.from("user_profiles").select("state, military_affiliated").eq("user_id", userId).maybeSingle(),
       getVerificationStateMap(),
     ])
     setCards(c)
     setProfile(p)
-    setUserState((userProfile.data as { state?: string | null } | null)?.state ?? null)
+    const up = userProfile.data as { state?: string | null; military_affiliated?: boolean | null } | null
+    setUserState(up?.state ?? null)
+    setMilitaryAffiliated(up?.military_affiliated === true)
     setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
@@ -138,7 +143,8 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
     if (editingId) {
       await updateOwnedCard(editingId, payload)
     } else {
-      await addOwnedCard(userId, payload)
+      const card = await addOwnedCard(userId, payload)
+      if (card) track("bonus_started", { module: "spending", source: "manual_add", card_name: payload.card_name, status: fStatus, expected_value: payload.expected_value ?? 0 })
     }
     resetForm()
     setShowAdd(false)
@@ -183,7 +189,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const recSearchQ = recSearch.trim().toLowerCase()
   const isTravel = rewardsMode === "travel"
   const cppOverrides = profile?.cpp_overrides ?? null
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides)
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides, militaryAffiliated)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     // Travel mode is opinionated about hotel/airline cards — that's the
     // whole point — so the includeHotelAirline filter is ignored there.
@@ -659,7 +665,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                         </div>
                       </div>
                       <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                        <a href={sc.card.offer_link} target="_blank" rel="noreferrer"
+                        <a href={applyUrl(sc.card.id)} target="_blank" rel="noreferrer"
                           style={{ padding: "5px 14px", fontSize: 12, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 6, textDecoration: "none", display: "inline-block" }}>
                           Apply
                         </a>
@@ -758,6 +764,27 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
             </>
           )}
         </div>
+
+        {/* Empty state when no cards at all */}
+        {cards.length === 0 && (
+          <div style={{
+            background: "linear-gradient(135deg, #f3f0ff 0%, #faf8ff 100%)",
+            border: "1px solid #ddd6fe",
+            borderRadius: 12,
+            padding: "20px 22px",
+            marginBottom: 24,
+          }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "#7c3aed", fontWeight: 700, marginBottom: 4 }}>
+              Start here
+            </div>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: "#5b21b6", margin: "0 0 6px" }}>
+              Add your first credit card
+            </h2>
+            <p style={{ fontSize: 13, color: "#5b21b6", margin: 0, lineHeight: 1.5 }}>
+              The recommended cards above are sequenced for your spend. Pick one and click &ldquo;Start&rdquo; — or use &ldquo;+ Add a card I already have&rdquo; to log cards already in your wallet.
+            </p>
+          </div>
+        )}
 
         {/* Active Cards */}
         {activeCards.length > 0 && (

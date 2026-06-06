@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { runSequencer, SequencedBonus } from "@/lib/sequencer"
 import { createClient } from "@/lib/supabase/client"
+import { track } from "@/lib/analytics"
 
 type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -42,6 +43,7 @@ export default function OnboardingPage() {
   const [frequency, setFrequency] = useState<PayFrequency>("biweekly")
   const [paycheck, setPaycheck] = useState<string>("1500")
   const [userState, setUserState] = useState<string>("")
+  const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [ddSlots, setDdSlots] = useState<string>("1")
   const [savingsBalance, setSavingsBalance] = useState<string>("")
   const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
@@ -93,6 +95,7 @@ export default function OnboardingPage() {
   async function handleCheckout() {
     setCheckoutLoading(true)
     setCheckoutError(null)
+    track("checkout_started", { plan: selectedPlan, source: "onboarding" })
     try {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -233,6 +236,22 @@ export default function OnboardingPage() {
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
+            </div>
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={militaryAffiliated}
+                  onChange={(e) => setMilitaryAffiliated(e.target.checked)}
+                  style={{ marginTop: 2 }}
+                />
+                <span>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>I'm eligible for military banking</div>
+                  <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                    Active duty, veteran, dependent, or other affiliation. Unlocks USAA, Navy Federal, and AAFES bonuses.
+                  </div>
+                </span>
+              </label>
             </div>
             <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0}
               style={{

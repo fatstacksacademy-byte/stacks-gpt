@@ -28,6 +28,7 @@ import VerifiedBadge from "../components/VerifiedBadge"
 import { track } from "../../lib/analytics"
 import { getVerificationStateMap, type VerificationState } from "../../lib/verificationState"
 import { bonuses as bonusesCatalog } from "../../lib/data/bonuses"
+import { applyUrl } from "../../lib/affiliateLinks"
 import lastDiscoverRun from "../../lib/data/lastDiscoverRun.json"
 
 type Bonus = (typeof allBonuses)[number]
@@ -702,6 +703,13 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
       return allowed.length === 0 || allowed.includes(profile.state)
     })
     .filter(b => {
+      // Military-only offers (USAA, Navy Federal, AAFES Military Star, etc.)
+      // — hide for users who aren't military-affiliated.
+      const isMilitaryOnly = (b.bonus as any).eligibility?.military_only === true
+      if (!isMilitaryOnly) return true
+      return profile.military_affiliated === true
+    })
+    .filter(b => {
       // "Sensitive ChexSystems" toggle — when on, only show chex-friendly bonuses.
       if (!onlyLowChex) return true
       return (b.bonus as any).screening?.chex_sensitive === "low"
@@ -952,6 +960,17 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <div style={settingsLabel}>Military-affiliated</div>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={profile.military_affiliated === true}
+                    onChange={(e) => setProfile({ military_affiliated: e.target.checked })}
+                  />
+                  <span>Show USAA / Navy Federal / AAFES offers</span>
+                </label>
               </div>
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
@@ -1434,7 +1453,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                     const combo = getComboFor(hb.bonus.id)
                     const isCombo = !!combo && !!comboMode[hb.bonus.id]
                     const standaloneLink = bestLink(hb.bonus.source_links)
-                    const ctaLink = isCombo && combo?.combo_url ? combo.combo_url : standaloneLink
+                    const ctaLink = isCombo && combo?.combo_url ? combo.combo_url : (standaloneLink ? applyUrl(hb.bonus.id) : null)
                     const ctaLabel = isCombo ? `Open combo ($${combo!.comboTotal.toLocaleString()} total)` : "Open your account"
                     return (
                       <>
@@ -1797,7 +1816,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                                 <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, padding: "2px 8px" }}>Expired</span>
                               )}
                               {bestLink(b.source_links) && (
-                                <a href={bestLink(b.source_links)!} target="_blank" rel="noreferrer"
+                                <a href={applyUrl(b.id)} target="_blank" rel="noreferrer"
                                   style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
                                   View offer
                                 </a>
@@ -2696,7 +2715,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                               </>
                             ) : (
                               <>
-                                {link && <a href={link} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", textAlign: "center" }}>Open account</a>}
+                                {link && <a href={applyUrl(b.id)} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", textAlign: "center" }}>Open account</a>}
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
                                   style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>Already opened</button>
                               </>

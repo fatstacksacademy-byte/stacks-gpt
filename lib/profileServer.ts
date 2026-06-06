@@ -10,6 +10,8 @@ export type UserProfile = {
   pay_frequency: PayFrequency
   paycheck_amount: number
   state?: string | null
+  /** Active duty, veteran, dependent, etc.  Unlocks USAA / Navy Federal / AAFES / military-only offers. */
+  military_affiliated?: boolean | null
   income_2_frequency?: PayFrequency | null
   income_2_amount?: number | null
   income_3_frequency?: PayFrequency | null
@@ -21,6 +23,7 @@ export const DEFAULT_PROFILE: Omit<UserProfile, "user_id"> = {
   pay_frequency: "biweekly",
   paycheck_amount: 1500,
   state: null,
+  military_affiliated: false,
   income_2_frequency: null,
   income_2_amount: null,
   income_3_frequency: null,

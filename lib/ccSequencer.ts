@@ -36,6 +36,8 @@ export function sequenceCards(
    *  feasibility math unchanged so Cash Mode is bit-for-bit untouched. */
   useTravelCpp: boolean = false,
   cppOverrides?: Record<string, number> | null,
+  /** When false, hide USAA / Navy Federal / AAFES military-only cards. */
+  militaryAffiliated: boolean = false,
 ): SequencedCard[] {
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
@@ -55,6 +57,9 @@ export function sequenceCards(
     if (userState && c.state_restricted && c.state_restricted.length > 0) {
       if (!c.state_restricted.includes(userState)) return false
     }
+    // Military-only cards (USAA / Navy Federal / AAFES) — hide unless
+    // the user is military-affiliated.
+    if ((c as any).military_only === true && !militaryAffiliated) return false
     return true
   })
 
