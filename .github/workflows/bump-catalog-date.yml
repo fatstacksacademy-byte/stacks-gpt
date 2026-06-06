@@ -1,0 +1,57 @@
+name: Bump catalog last-updated date
+
+# Fires on every push to main that touches one of the three catalog .ts
+# files. Updates lib/data/lastDiscoverRun.json with today's date so the
+# "Last updated <date>" header on /stacksos reflects the real catalog
+# state, not just whether the discover cron ran.
+#
+# Loop prevention: this workflow itself pushes a commit with
+# "[skip catalog-date-bump]" in the message. The if-guard at the job
+# level reads that string and skips, so we don't recurse.
+#
+# Covers both paths to a catalog update:
+#   1. The nightly auto-apply PR gets merged → push to main → fires here
+#   2. The user pushes a manual edit to bonuses.ts / savingsBonuses.ts /
+#      creditCardBonuses.ts → fires here
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/data/bonuses.ts"
+      - "lib/data/savingsBonuses.ts"
+      - "lib/data/creditCardBonuses.ts"
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip catalog-date-bump]')"
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write today's date into lastDiscoverRun.json
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          cat > lib/data/lastDiscoverRun.json <<EOF
+          {
+            "lastRunAt": "$today",
+            "note": "Auto-bumped by .github/workflows/bump-catalog-date.yml whenever lib/data/{bonuses,savingsBonuses,creditCardBonuses}.ts changes on main."
+          }
+          EOF
+
+      - name: Commit + push if the date actually moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet lib/data/lastDiscoverRun.json; then
+            echo "Date already current — nothing to commit."
+            exit 0
+          fi
+          today=$(date -u +%Y-%m-%d)
+          git add lib/data/lastDiscoverRun.json
+          git commit -m "chore(catalog): bump last-updated to $today [skip catalog-date-bump]"
+          git push
