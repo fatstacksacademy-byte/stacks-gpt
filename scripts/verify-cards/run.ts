@@ -620,8 +620,10 @@ async function main() {
   console.log(`Summary:`, summary, `| proposed edits: ${edits.length}`)
 }
 
-main().catch(async (err) => {
-  console.error(err)
-  await closeBrowser()
-  process.exit(1)
-})
+main()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error(err)
+    await closeBrowser()
+    process.exit(1)
+  })
