@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
+import { track } from "../../lib/analytics"
 
 type Props = {
   children: React.ReactNode
@@ -75,6 +76,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
   async function handleCheckout(plan: "monthly" | "annual") {
     setLoading(plan)
     setError(null)
+    track("checkout_started", { plan, source: "subscription_gate" })
     try {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",

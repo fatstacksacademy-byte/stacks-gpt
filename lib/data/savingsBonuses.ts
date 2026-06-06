@@ -178,6 +178,32 @@ export const savingsBonuses: SavingsBonus[] = [
     notes: "The $600 bonus assumes you also complete the checking direct deposit. If only doing savings, the bonus is $200. Best used as a combo play with checking."
   },
   {
+    id: "seacoast-200-savings-2026",
+    bank_name: "Seacoast Bank",
+    product_type: "savings",
+    base_apy: 0.0001, // ~0.01% APY on Statement Savings
+    funding_window_days: 90,
+    maintenance_days: 90,
+    total_hold_days: 180,
+    tiers: [
+      { min_deposit: 25000, bonus_amount: 200 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: true,
+      states_allowed: ["FL"],
+      lifetime_language: true,
+      eligibility_notes: "Florida residents only. New savings customers only. In-branch only. Promo code SWITCH600. Pairs with $400 Premium Checking bonus for $600 total."
+    },
+    source_links: [
+      "https://www.seacoastbank.com/switch600",
+      "https://www.doctorofcredit.com/fl-in-branch-only-seacoast-bank-350-checking-150-savings-bonus/"
+    ],
+    raw_excerpt: "$200 savings bonus with $25,000 net-new deposit, maintained 90 days. Florida only. In-branch only. Promo code SWITCH600. Combo with $400 checking = $600 total switch bonus.",
+    notes: "Standalone savings half of the Seacoast Switch & Save offer. The $400 checking half is a separate entry (seacoast-400-checking-2026). Open both in-branch with the same promo for $600 total."
+  },
+  {
     id: "ameriprise-savings-2026",
     bank_name: "Ameriprise",
     product_type: "savings",

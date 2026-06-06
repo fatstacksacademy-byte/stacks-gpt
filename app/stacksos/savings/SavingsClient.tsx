@@ -10,7 +10,9 @@ import { savingsBonuses as savingsBonusesCatalog } from "../../../lib/data/savin
 import { getComboFor } from "../../../lib/linkedBonuses"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import VerifiedBadge from "../../components/VerifiedBadge"
+import { track } from "../../../lib/analytics"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
+import { applyUrl } from "../../../lib/affiliateLinks"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`
@@ -152,7 +154,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     if (editingId) {
       await updateSavingsEntry(editingId, payload)
     } else {
-      await addSavingsEntry(userId, payload)
+      const entry = await addSavingsEntry(userId, payload)
+      if (entry) track("bonus_started", { module: "savings", source: "manual_add", institution: payload.institution_name, status: fStatus, expected_total: payload.expected_total_value ?? 0 })
     }
     resetForm()
     setShowAdd(false)
@@ -255,6 +258,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
         canonical_offer_id: null,
       })
       if (!result) throw new Error("Insert returned null — check RLS/schema. See browser console for detail.")
+      track("bonus_started", { module: "savings", source: "recommended", institution: rec.bank_name, expected_total: rec.total_earnings })
       await loadData()
     } catch (err) {
       // Roll back the optimistic hide so the user can retry
@@ -605,8 +609,8 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                       <div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
                           <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
-                          {offerLink && (
-                            <a href={offerLink} target="_blank" rel="noreferrer"
+                          {offerLink && catalogEntry && (
+                            <a href={applyUrl(catalogEntry.id)} target="_blank" rel="noreferrer"
                               style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
                               View offer ↗
                             </a>
@@ -722,6 +726,27 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
           </div>
         )}
 
+        {/* ── First-run "Start here" banner ── */}
+        {entries.length === 0 && (
+          <div style={{
+            background: "linear-gradient(135deg, #e6f5f0 0%, #f0faf6 100%)",
+            border: "1px solid #c8e6d8",
+            borderRadius: 12,
+            padding: "16px 20px",
+            marginBottom: 16,
+          }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "#0d7c5f", fontWeight: 700, marginBottom: 4 }}>
+              Start here
+            </div>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0a5c47", margin: "0 0 4px" }}>
+              Pick your first savings bonus
+            </h2>
+            <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
+              The recommended offers below are ranked by effective APY for your balance. Tap the green &ldquo;Start&rdquo; button on one to begin — or add a custom one with &ldquo;+ Add savings bonus&rdquo; further down.
+            </p>
+          </div>
+        )}
+
         {/* ── Recommended Savings Bonuses ── */}
         {(sequencerResult.entries.length > 0 || recSearchQ) && (
           <div style={{ marginBottom: 28 }}>
@@ -764,7 +789,7 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
                     {(() => {
                       const combo = getComboFor(rec.bonus.id)
                       const isCombo = !!combo && !!comboMode[rec.id]
-                      const offerUrl = isCombo && combo?.combo_url ? combo.combo_url : rec.bonus.source_links?.[0]
+                      const offerUrl = isCombo && combo?.combo_url ? combo.combo_url : (rec.bonus.source_links?.[0] ? applyUrl(rec.bonus.id) : undefined)
                       const headlineTotal = isCombo ? rec.total_earnings + (combo!.comboTotal - combo!.selfEffectiveAmount) : rec.total_earnings
                       return (
                         <>

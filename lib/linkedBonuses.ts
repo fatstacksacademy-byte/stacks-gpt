@@ -45,6 +45,12 @@ export const LINKED_BONUS_GROUPS: LinkedBonusGroup[] = [
   { ids: ["hsbc-premier-checking-2026", "hsbc-premier-savings-2026"] },
   // Wells Fargo Everyday Checking + Platinum Savings — common branch bundle
   { ids: ["wells-fargo-400-everyday-checking-2026", "wells-fargo-platinum-savings-2026"] },
+  // Seacoast Bank Switch & Save — $400 Premium Checking + $200 Statement
+  // Savings, opened in-branch in FL via the /switch600 landing page.
+  {
+    ids: ["seacoast-400-checking-2026", "seacoast-200-savings-2026"],
+    combo_url: "https://www.seacoastbank.com/switch600",
+  },
 ]
 
 export type LinkedBonus =
