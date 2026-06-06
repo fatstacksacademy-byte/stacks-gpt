@@ -1,5 +1,6 @@
 import { createClient } from "./supabase/client"
 import { reportError } from "./toast"
+import type { UserBenefitProfile } from "./cardBenefits"
 
 export type SpendingProfile = {
   user_id: string
@@ -15,6 +16,9 @@ export type SpendingProfile = {
    *  bonus_currency value (e.g. "Ultimate Rewards", "Hilton Honors").
    *  Decimals: 0.022 = 2.2¢ per point. Empty / null = use TRAVEL_CPP defaults. */
   cpp_overrides: Record<string, number> | null
+  /** Which card benefits the user would actually use. Drives per-card value
+   *  computation in the sequencer. Null = use DEFAULT_BENEFIT_PROFILE. */
+  benefit_usage: UserBenefitProfile | null
   updated_at: string
 }
 
@@ -26,6 +30,7 @@ export const DEFAULT_SPENDING_PROFILE: Omit<SpendingProfile, "user_id" | "update
   rewards_valuation: "cashback",
   cpp_valuation: null,
   cpp_overrides: null,
+  benefit_usage: null,
 }
 
 export async function getSpendingProfile(userId: string): Promise<SpendingProfile> {

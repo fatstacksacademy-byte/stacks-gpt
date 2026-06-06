@@ -18,6 +18,8 @@ import { getVerificationStateMap, type VerificationState } from "../../../lib/ve
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
+import { DEFAULT_BENEFIT_PROFILE, type UserBenefitProfile } from "../../../lib/cardBenefits"
+import { computeWalletSlots } from "../../../lib/walletSlots"
 import CreditCardProgress from "../../components/CreditCardProgress"
 
 const money = (n: number) => `$${n.toLocaleString()}`
@@ -181,20 +183,32 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
   const plannedValue = plannedCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
 
-  // Sequencer: filter out cards user is already tracking + airline/hotel toggle.
-  // Default hides airline/hotel-loyalty cards because their points are not
-  // straightforwardly redeemable for cash. Detection lives in lib/cardCategorization
-  // (name-based keyword match — bonus_currency is too inconsistent post-RWP-import).
+  // Sequencer: filter out cards user is already tracking + cash/travel mode.
+  //
+  // Cash mode shows ONLY cards whose bonus_currency is "cash" — Chase Sapphire
+  // and AmEx Gold are not cash-back cards even though we can compute their
+  // cash-floor value, and showing them under "cash" confuses the user.
+  // Travel mode shows everything but applies an additional hotel/airline
+  // toggle (default off) because those points are loyalty-locked and not
+  // useful for users not building a specific program balance.
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
   const isTravel = rewardsMode === "travel"
   const cppOverrides = profile?.cpp_overrides ?? null
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides, militaryAffiliated)
+  const benefitProfile: UserBenefitProfile = profile?.benefit_usage ?? DEFAULT_BENEFIT_PROFILE
+  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides, militaryAffiliated, benefitProfile)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
-    // Travel mode is opinionated about hotel/airline cards — that's the
-    // whole point — so the includeHotelAirline filter is ignored there.
-    .filter(sc => isTravel || includeHotelAirline || !isAirlineOrHotelCard(sc.card))
+    // Cash mode: only true cash-back cards. Travel mode: everything by default,
+    // with a separate toggle for airline/hotel loyalty cards.
+    .filter(sc => isTravel ? (includeHotelAirline || !isAirlineOrHotelCard(sc.card)) : sc.card.bonus_currency === "cash")
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
+
+  // Wallet-slot view: compute the best card per spending category from the
+  // user's owned cards, and the catalog-best for upgrade opportunities.
+  const ownedCardObjs = cards
+    .map(c => creditCardBonuses.find(cc => cc.card_name.toLowerCase() === c.card_name.toLowerCase()))
+    .filter((c): c is CreditCardBonus => !!c)
+  const walletSlots = computeWalletSlots(ownedCardObjs, creditCardBonuses)
 
   function addFromRecommendation(sc: (typeof ccSequence)[0]) {
     const c = sc.card
@@ -743,12 +757,54 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                         </div>
                       )}
                       {isExpanded && (
-                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f0f0f0", display: "flex", flexDirection: "column", gap: 2 }}>
-                          {sc.card.key_benefits.map((b, i) => (
-                            <div key={i} style={{ fontSize: 11, color: "#666" }}>• {b}</div>
-                          ))}
+                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f0f0f0", display: "flex", flexDirection: "column", gap: 8 }}>
+                          {/* Value breakdown — explains *why* this card's net value is what it is */}
+                          <div style={{ background: "#fafafa", border: "1px solid #f0f0f0", borderRadius: 8, padding: "10px 12px" }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                              Value breakdown
+                            </div>
+                            <BreakdownRow label="Welcome bonus" value={Math.round(sc.value_breakdown.welcome_bonus)} />
+                            {sc.value_breakdown.statement_credits > 0 && (
+                              <BreakdownRow label="Statement credits (catalog)" value={sc.value_breakdown.statement_credits} />
+                            )}
+                            {sc.value_breakdown.benefits_value > 0 && (
+                              <BreakdownRow label={`Benefits you'd use (${sc.value_breakdown.included_benefits.length})`} value={sc.value_breakdown.benefits_value} />
+                            )}
+                            {sc.value_breakdown.annual_fee !== 0 && (
+                              <BreakdownRow label="Annual fee" value={sc.value_breakdown.annual_fee} />
+                            )}
+                            <div style={{ borderTop: "1px solid #e8e8e8", marginTop: 6, paddingTop: 6, display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 700 }}>
+                              <span>Net year 1</span>
+                              <span style={{ color: "#0d7c5f" }}>{formatCurrency(sc.net_value)}</span>
+                            </div>
+                          </div>
+                          {/* Per-benefit list — included + excluded so user can see what they're leaving on table */}
+                          {sc.value_breakdown.included_benefits.length > 0 && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.05em" }}>Counted</div>
+                              {sc.value_breakdown.included_benefits.map((b, i) => (
+                                <div key={i} style={{ fontSize: 11, color: "#666" }}>✓ ${b.annualValue} — {b.label}</div>
+                              ))}
+                            </div>
+                          )}
+                          {sc.value_breakdown.excluded_benefits.length > 0 && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Not counted (you said you wouldn't use)</div>
+                              {sc.value_breakdown.excluded_benefits.map((b, i) => (
+                                <div key={i} style={{ fontSize: 11, color: "#bbb" }}>○ ${b.annualValue} — {b.label}</div>
+                              ))}
+                            </div>
+                          )}
+                          {sc.card.key_benefits.length > 0 && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.05em" }}>Other features</div>
+                              {sc.card.key_benefits.map((b, i) => (
+                                <div key={i} style={{ fontSize: 11, color: "#666" }}>• {b}</div>
+                              ))}
+                            </div>
+                          )}
                           {sc.card.is_hotel_card && (
-                            <div style={{ fontSize: 10, color: "#d97706", marginTop: 4 }}>Hotel points valued at 0.5&cent; per point</div>
+                            <div style={{ fontSize: 10, color: "#d97706" }}>Hotel points valued at 0.5&cent; per point</div>
                           )}
                         </div>
                       )}
@@ -761,6 +817,18 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
                   </div>
                 )}
               </div>
+
+              {/* ─── Benefits I'd use panel ─── */}
+              <BenefitsPanel
+                profile={benefitProfile}
+                onChange={async (next) => {
+                  await upsertSpendingProfile({ user_id: userId, benefit_usage: next })
+                  await loadData()
+                }}
+              />
+
+              {/* ─── Wallet-slot view: best card per category ─── */}
+              <WalletSlotView slots={walletSlots} ownedCount={ownedCardObjs.length} />
             </>
           )}
         </div>
@@ -1339,6 +1407,175 @@ function GapRow({ gap }: { gap: ReturnType<typeof computeCategoryGaps>[number] }
             +${gap.annualGap.toLocaleString()}/yr
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Value-breakdown row (used inside the expanded card section) ──────
+function BreakdownRow({ label, value }: { label: string; value: number }) {
+  const positive = value >= 0
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#444", padding: "2px 0" }}>
+      <span>{label}</span>
+      <span style={{ color: positive ? "#0d7c5f" : "#b91c1c", fontVariantNumeric: "tabular-nums" }}>
+        {positive ? "+" : "-"}${Math.abs(value).toLocaleString()}
+      </span>
+    </div>
+  )
+}
+
+// ── Benefits I'd use panel ───────────────────────────────────────────
+// Lifestyle toggles that personalize each card's benefits value. Changes
+// save immediately. Default profile in lib/cardBenefits.ts pre-fills
+// reasonable defaults so new users aren't staring at all-off checkboxes.
+function BenefitsPanel({
+  profile,
+  onChange,
+}: {
+  profile: UserBenefitProfile
+  onChange: (next: UserBenefitProfile) => void | Promise<void>
+}) {
+  function toggle(key: keyof UserBenefitProfile) {
+    onChange({ ...profile, [key]: !profile[key] })
+  }
+
+  const groups: { title: string; items: { key: keyof UserBenefitProfile; label: string; help: string }[] }[] = [
+    {
+      title: "Travel benefits",
+      items: [
+        { key: "uses_travel_credit", label: "Flexible travel credits", help: "$300 CSR / VX-style credits — you book a flight or hotel each year" },
+        { key: "uses_hotel_credit", label: "Hotel-specific credits", help: "$100 Citi Strata / $200 FHR Amex Plat credits" },
+        { key: "uses_airline_credit", label: "Airline incidental credits", help: "$200 Amex Plat / $100 BofA Premium Rewards" },
+        { key: "uses_lounge_access", label: "Lounge access (Priority Pass, Centurion, etc.)", help: "Only valuable if you fly 4+ times/year" },
+        { key: "needs_global_entry", label: "I still need Global Entry / TSA PreCheck", help: "Most active churners already have this — turn off if covered" },
+        { key: "uses_clear", label: "I'd use CLEAR Plus", help: "Worth ~$189/yr if you fly through CLEAR-equipped airports" },
+        { key: "flies_enough_for_insurance", label: "Trip insurance + primary rental coverage matters", help: "Only meaningful if you fly or rent cars enough to use it" },
+      ],
+    },
+    {
+      title: "Spending credits",
+      items: [
+        { key: "uses_uber_credit", label: "Uber Cash credits", help: "$120-$200 across various cards" },
+        { key: "uses_dining_credit", label: "Dining / Resy credits", help: "Amex Gold $120 dining, Brilliant $300 dining" },
+        { key: "uses_doordash_credit", label: "DoorDash / DashPass", help: "Chase Sapphire DashPass + monthly credit" },
+        { key: "uses_entertainment_credit", label: "Digital entertainment (Disney+, NYT, etc.)", help: "Amex Plat $240 — depends on which streams you pay for" },
+        { key: "uses_saks_credit", label: "Saks Fifth Avenue credit", help: "Amex Plat $100/yr — only valuable if you shop there" },
+        { key: "uses_walmart_plus", label: "Walmart+", help: "Amex Plat covers ~$98 membership" },
+      ],
+    },
+    {
+      title: "Hotel perks",
+      items: [
+        { key: "uses_free_night", label: "Annual free-night certificates", help: "Hyatt $150 / Marriott $200-400 / IHG $250 — most users value these" },
+      ],
+    },
+  ]
+
+  return (
+    <details style={{ marginTop: 20, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 18px" }}>
+      <summary style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>Benefits I&apos;d use</div>
+          <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>
+            Lifestyle inputs that personalize each card&apos;s value. Toggle anything you wouldn&apos;t actually use so the math reflects reality.
+          </div>
+        </div>
+      </summary>
+      <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 18 }}>
+        {groups.map((g, gi) => (
+          <div key={gi}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{g.title}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 6 }}>
+              {g.items.map(item => {
+                const on = profile[item.key]
+                return (
+                  <label key={item.key} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "8px 10px", background: on ? "#f0faf5" : "#fafafa", border: `1px solid ${on ? "#a7f3d0" : "#eee"}`, borderRadius: 8, cursor: "pointer" }}>
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={() => toggle(item.key)}
+                      style={{ marginTop: 2, accentColor: "#0d7c5f" }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#111", lineHeight: 1.3 }}>{item.label}</div>
+                      <div style={{ fontSize: 10, color: "#888", marginTop: 2, lineHeight: 1.4 }}>{item.help}</div>
+                    </div>
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </details>
+  )
+}
+
+// ── Wallet-slot view ─────────────────────────────────────────────────
+// "What card should I swipe for groceries?" per category, with the
+// catalog's best alternative shown for upgrade context.
+function WalletSlotView({
+  slots,
+  ownedCount,
+}: {
+  slots: ReturnType<typeof computeWalletSlots>
+  ownedCount: number
+}) {
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 8 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#111", margin: 0 }}>Wallet slots — best card per category</h3>
+        <span style={{ fontSize: 11, color: "#999" }}>{ownedCount} tracked card{ownedCount === 1 ? "" : "s"} in your wallet</span>
+      </div>
+      <p style={{ fontSize: 12, color: "#666", margin: "0 0 12px", lineHeight: 1.5 }}>
+        What to swipe for each category. &ldquo;Your best&rdquo; comes from cards you already own; &ldquo;Catalog best&rdquo; shows the biggest upgrade if you opened a new card.
+      </p>
+      <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: "#fafafa" }}>
+              {["Category", "Your best", "Catalog best", "Upgrade gain"].map(h => (
+                <th key={h} style={{ textAlign: "left", padding: "10px 14px", fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid #e8e8e8" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {slots.map(slot => {
+              const ownedRate = slot.ownedBest?.rate ?? 0
+              const catRate = slot.catalogBest?.rate ?? 0
+              const isUpgrade = slot.upgradeGain > 0.1
+              return (
+                <tr key={slot.category} style={{ borderBottom: "1px solid #f4f4f4" }}>
+                  <td style={{ padding: "10px 14px", fontWeight: 600, color: "#111" }}>{slot.label}</td>
+                  <td style={{ padding: "10px 14px", color: slot.ownedBest ? "#111" : "#bbb" }}>
+                    {slot.ownedBest ? (
+                      <>
+                        <div style={{ fontSize: 12 }}>{slot.ownedBest.card.card_name}</div>
+                        <div style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 700 }}>{ownedRate.toFixed(1)}¢/$</div>
+                      </>
+                    ) : "—"}
+                  </td>
+                  <td style={{ padding: "10px 14px" }}>
+                    {slot.catalogBest ? (
+                      <>
+                        <div style={{ fontSize: 12, color: "#111" }}>{slot.catalogBest.card.card_name}</div>
+                        <div style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 700 }}>{catRate.toFixed(1)}¢/$</div>
+                      </>
+                    ) : "—"}
+                  </td>
+                  <td style={{ padding: "10px 14px" }}>
+                    {isUpgrade ? (
+                      <span style={{ fontSize: 12, color: "#d97706", fontWeight: 700 }}>+{slot.upgradeGain.toFixed(1)}¢/$</span>
+                    ) : (
+                      <span style={{ fontSize: 11, color: "#0d7c5f" }}>✓ optimal</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   )

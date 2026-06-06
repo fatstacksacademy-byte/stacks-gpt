@@ -2,13 +2,31 @@
  * Credit card bonus sequencer — orders cards by return on spend.
  *
  * Valuation: 1 cpp for general/airline points, 0.5 cpp for hotel points.
- * Net value = (bonus * cpp) + statement_credits_year1 - annual_fee
+ * Net value = (bonus * cpp) + statement_credits_year1 + benefits - annual_fee
  * Return per month = net_value / months_to_complete
  * months_to_complete = min_spend / monthly_budget (capped at spend_months)
+ *
+ * Each card now returns a value_breakdown showing the components so the UI
+ * can explain *why* a card is recommended (welcome bonus vs benefits vs AF).
  */
 
 import { CreditCardBonus } from "./data/creditCardBonuses"
 import { getTravelCpp } from "./travelCpp"
+import {
+  DEFAULT_BENEFIT_PROFILE,
+  valueOfBenefits,
+  type UserBenefitProfile,
+  type CardBenefit,
+} from "./cardBenefits"
+
+export type ValueBreakdown = {
+  welcome_bonus: number       // bonus_amount × cpp
+  statement_credits: number   // statement_credits_year1 (existing flat field)
+  benefits_value: number      // sum of CardBenefit annualValues the user would use
+  annual_fee: number          // negative or 0 if waived year 1
+  included_benefits: CardBenefit[]
+  excluded_benefits: CardBenefit[]
+}
 
 export type SequencedCard = {
   card: CreditCardBonus
@@ -17,6 +35,7 @@ export type SequencedCard = {
   return_per_month: number
   cumulative_value: number
   cumulative_months: number
+  value_breakdown: ValueBreakdown
 }
 
 /** Default cap on credit card applications per year. 4 ≈ one every 90 days,
@@ -38,7 +57,11 @@ export function sequenceCards(
   cppOverrides?: Record<string, number> | null,
   /** When false, hide USAA / Navy Federal / AAFES military-only cards. */
   militaryAffiliated: boolean = false,
+  /** User benefit usage profile. Drives per-card benefits value math.
+   *  Defaults to DEFAULT_BENEFIT_PROFILE if null/undefined. */
+  benefitProfile: UserBenefitProfile | null = null,
 ): SequencedCard[] {
+  const profile = benefitProfile ?? DEFAULT_BENEFIT_PROFILE
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
   // ships with offer_link === "" until issuer URLs are filled in via
@@ -82,12 +105,26 @@ export function sequenceCards(
     // currency keeps its 1:1 short-circuit because TRAVEL_CPP["cash"]
     // is 0.01 anyway and bonus_amount is already in dollars.
     const effective_cpp = useTravelCpp ? getTravelCpp(card, cppOverrides) : card.cpp_value
-    const bonus_value = card.cpp_value >= 1
+    const welcome_bonus = card.cpp_value >= 1
       ? card.bonus_amount * 1                  // cash cards: bonus_amount IS the dollar value
       : card.bonus_amount * effective_cpp      // points cards
 
-    const net_value = bonus_value + card.statement_credits_year1
-      - (card.annual_fee_waived_first_year ? 0 : card.annual_fee)
+    // Per-card benefits value gated by the user's usage profile. Cards
+    // not in the registry return [] and contribute 0 — math unchanged.
+    const { total: benefits_value, included: included_benefits, excluded: excluded_benefits } =
+      valueOfBenefits(card.card_name, profile)
+
+    const annual_fee_charged = card.annual_fee_waived_first_year ? 0 : card.annual_fee
+    const net_value = welcome_bonus + card.statement_credits_year1 + benefits_value - annual_fee_charged
+
+    const value_breakdown: ValueBreakdown = {
+      welcome_bonus,
+      statement_credits: card.statement_credits_year1,
+      benefits_value,
+      annual_fee: -annual_fee_charged,
+      included_benefits,
+      excluded_benefits,
+    }
 
     // How many months to hit minimum spend at this budget. Floor at 0.5
     // so an instant-qualify card doesn't divide-by-zero, but no longer
@@ -103,7 +140,7 @@ export function sequenceCards(
       ? net_value / months_to_complete
       : net_value
 
-    return { card, net_value, months_to_complete, return_per_month, cumulative_value: 0, cumulative_months: 0 }
+    return { card, net_value, months_to_complete, return_per_month, cumulative_value: 0, cumulative_months: 0, value_breakdown }
   })
 
   // Sort by return per month descending — highest value per month of spend first
