@@ -24,7 +24,7 @@
  * which is what releases the update to existing installed users.
  */
 
-const CACHE_VERSION = "stacksos-v1"
+const CACHE_VERSION = "stacksos-v2" // v2: add push + notificationclick handlers
 const APP_SHELL = ["/offline", "/icon", "/apple-icon", "/manifest.webmanifest"]
 
 self.addEventListener("install", (event) => {
@@ -43,6 +43,57 @@ self.addEventListener("activate", (event) => {
         keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)),
       ),
     ).then(() => self.clients.claim()),
+  )
+})
+
+// ─── Push notifications ─────────────────────────────────────────────
+//
+// The server (lib/push/server.ts) sends JSON payloads shaped like
+// { title, body, url?, tag? }.  We render a notification with the title +
+// body and stash the url on the notification's data so notificationclick
+// can open it.
+//
+// Defensive parse: if the payload isn't JSON, fall back to plain-text
+// title + body so the user still sees SOMETHING.
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return
+  let payload = { title: "Stacks OS", body: "" }
+  try {
+    payload = event.data.json()
+  } catch {
+    payload = { title: "Stacks OS", body: event.data.text() }
+  }
+  const options = {
+    body: payload.body,
+    icon: "/icon",
+    badge: "/icon",
+    tag: payload.tag || undefined,
+    // tag + renotify makes a fresh push with the same tag replace the
+    // previous one instead of stacking.
+    renotify: Boolean(payload.tag),
+    data: { url: payload.url || "/stacksos" },
+  }
+  event.waitUntil(self.registration.showNotification(payload.title, options))
+})
+
+// Clicking a notification: focus an already-open tab on the target URL
+// or open a new one.  Most users have at least one tab to a bonus page
+// already; reusing it is less jarring than spawning a new window.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url || "/stacksos"
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if ("focus" in client && new URL(client.url).pathname === url) {
+          return client.focus()
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(url)
+      }
+    }),
   )
 })
 

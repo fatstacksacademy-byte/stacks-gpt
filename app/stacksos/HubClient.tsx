@@ -5,6 +5,7 @@ import PortfolioCard from "../components/PortfolioCard"
 import StartedBonusesList, { type StartedBonus } from "../components/StartedBonusesList"
 import HistoricalWinsList, { type HistoricalWin } from "../components/HistoricalWinsList"
 import DashboardGoalBar from "../components/DashboardGoalBar"
+import PushOptIn from "../components/PushOptIn"
 import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
 import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep } from "../../lib/bonusNextStep"
 import { track } from "../../lib/analytics"
@@ -403,6 +404,8 @@ export default function HubClient({
           inProgress={inProgressValue}
           lifetimeEarned={lifetimeEarned}
         />
+
+        <PushOptIn />
 
         <DashboardViewTabs
           view={view}

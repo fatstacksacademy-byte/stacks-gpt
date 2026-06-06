@@ -3,6 +3,7 @@ import { createAdminClient } from "../../../../lib/stackhouse/supabaseAdmin"
 import { sendEmail } from "../../../../lib/email/client"
 import { deadlineReminderHTML, deadlineReminderText } from "../../../../lib/email/templates"
 import { alreadySent, recordSent } from "../../../../lib/email/preferences"
+import { sendToUser as sendPushToUser } from "../../../../lib/push/server"
 import { bonuses as catalogBonuses } from "../../../../lib/data/bonuses"
 import {
   checkingBonusStep,
@@ -158,6 +159,20 @@ export async function GET(req: Request) {
       }
       await recordSent(user.id, kind, c.bonusKey, result.id)
       sentCount++
+
+      // Best-effort push.  Failure here doesn't undo the email send; we
+      // log + move on so a misconfigured push setup never breaks the
+      // primary reminder channel.
+      try {
+        await sendPushToUser(supabase, user.id, {
+          title: subject,
+          body: `${c.nextStep} — ${fmtDeadlineLabel(c.deadline)}`,
+          url: dashboardUrl,
+          tag: `${kind}:${c.bonusKey}`,
+        })
+      } catch (err) {
+        console.warn(`push failed for ${user.id}:`, err instanceof Error ? err.message : err)
+      }
     }
   }
 
