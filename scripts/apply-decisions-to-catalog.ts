@@ -37,7 +37,7 @@ const args = process.argv.slice(2)
 const WRITE = args.includes("--write")
 const LIMIT = Number(args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? 0) || 0
 
-const ROOT = "/Users/nathaniel/stacks-gpt"
+const ROOT = process.cwd()
 const FILES = {
   bonus: [`${ROOT}/lib/data/bonuses.ts`, `${ROOT}/lib/data/savingsBonuses.ts`],
   card: [`${ROOT}/lib/data/creditCardBonuses.ts`],
@@ -65,25 +65,32 @@ type Outcome = {
 
 function envFile(): Record<string, string> {
   const env: Record<string, string> = {}
-  for (const line of readFileSync(`${ROOT}/.env.local`, "utf8").split("\n")) {
-    const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/)
-    if (!m) continue
-    let v = m[2]
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-      v = v.slice(1, -1)
+  try {
+    const raw = readFileSync(`${ROOT}/.env.local`, "utf8")
+    for (const line of raw.split("\n")) {
+      const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/)
+      if (!m) continue
+      let v = m[2]
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+        v = v.slice(1, -1)
+      }
+      env[m[1]] = v
     }
-    env[m[1]] = v
+  } catch {
+    // No .env.local on CI runners — that's fine, the env vars are set directly.
   }
   return env
 }
 
 async function main() {
   const env = envFile()
-  const supabase = createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false } },
-  )
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required (either in .env.local or process.env).")
+    process.exit(1)
+  }
+  const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } })
 
   console.log(`Mode: ${WRITE ? "WRITE (modifies files + stamps applied_at)" : "DRY RUN (no changes)"}`)
   console.log("")
