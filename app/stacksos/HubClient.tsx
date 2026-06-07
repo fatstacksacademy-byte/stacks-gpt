@@ -185,6 +185,7 @@ export default function HubClient({
         deadline: step.deadline,
         urgency: step.urgency,
         href: "/stacksos/paycheck",
+        bonus_id: r.bonus_id,
       })
     }
 
@@ -234,6 +235,7 @@ export default function HubClient({
         deadline: step.deadline,
         urgency: step.urgency,
         href: "/stacksos/savings",
+        bonus_id: e.canonical_offer_id,
       })
     }
 

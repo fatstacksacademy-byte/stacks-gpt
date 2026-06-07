@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import NewsletterCTA from "../blog/components/NewsletterCTA"
 import TrackBonusButton from "../components/TrackBonusButton"
+import PortalStacksToggle from "../components/PortalStacksToggle"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
@@ -346,6 +347,7 @@ function TopPicksGrid({ items, sourcePage }: { items: TopPick[]; sourcePage: str
                 Read full review →
               </Link>
             )}
+            <PortalStacksToggle bonusId={it.bonusId} />
           </div>
         </div>
       ))}

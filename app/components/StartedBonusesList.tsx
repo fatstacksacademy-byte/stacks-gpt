@@ -1,6 +1,7 @@
 "use client"
 
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
+import PortalStacksBadge from "./PortalStacksBadge"
 
 /**
  * Unified list of every currently-started bonus across paycheck,
@@ -18,6 +19,7 @@ export type StartedBonus = {
   deadline?: string | null      // ISO yyyy-mm-dd for the next required action
   urgency?: BonusUrgency        // overdue | urgent | soon | none
   href: string
+  bonus_id?: string | null      // catalog ID for portal-stack lookup; null when no catalog match
 }
 
 const MODULE_COLORS: Record<StartedBonus["module"], { fg: string; bg: string; label: string }> = {
@@ -176,6 +178,7 @@ export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[
                         {urg.chipLabel}
                       </span>
                     )}
+                    <PortalStacksBadge bonusId={b.bonus_id} />
                   </div>
                 )}
                 <div style={{ fontSize: 11, color: "#999", marginTop: 3 }}>
