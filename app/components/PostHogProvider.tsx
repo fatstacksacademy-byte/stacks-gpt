@@ -3,17 +3,19 @@
 import { useEffect } from "react"
 import posthog from "posthog-js"
 import { usePathname, useSearchParams } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 /**
- * PostHog provider — initializes the client and emits $pageview on
- * route changes. No-ops in dev (or whenever NEXT_PUBLIC_POSTHOG_KEY
- * is unset) so we don't poison the dataset with developer traffic.
+ * PostHog provider — initializes the client, emits $pageview on route
+ * changes, and identifies the user via the Supabase auth listener so
+ * identification works on every route (no need for the root layout to
+ * fetch the user). No-ops whenever NEXT_PUBLIC_POSTHOG_KEY is unset.
  *
  * To enable in production, set:
  *   NEXT_PUBLIC_POSTHOG_KEY   = ph_project_*
  *   NEXT_PUBLIC_POSTHOG_HOST  = https://us.i.posthog.com  (or your region)
  */
-export default function PostHogProvider({ userId }: { userId: string | null }) {
+export default function PostHogProvider() {
   const pathname = usePathname()
   const search = useSearchParams()
 
@@ -30,11 +32,18 @@ export default function PostHogProvider({ userId }: { userId: string | null }) {
     })
   }, [])
 
+  // Identify off the Supabase auth state: fires immediately with the current
+  // session and again on sign-in / sign-out. No server-side handoff needed.
   useEffect(() => {
-    if (!posthog.__loaded) return
-    if (userId) posthog.identify(userId)
-    else posthog.reset()
-  }, [userId])
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return
+    const supabase = createClient()
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!posthog.__loaded) return
+      if (session?.user) posthog.identify(session.user.id)
+      else posthog.reset()
+    })
+    return () => sub.subscription.unsubscribe()
+  }, [])
 
   useEffect(() => {
     if (!posthog.__loaded || !pathname) return
