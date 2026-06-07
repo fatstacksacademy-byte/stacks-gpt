@@ -8,7 +8,7 @@ import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPE
 import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses, type CreditCardBonus } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
-import { isAirlineOrHotelCard } from "../../../lib/cardCategorization"
+import { isAirlineOrHotelCard, cardRedemptionModes } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
@@ -185,12 +185,12 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
 
   // Sequencer: filter out cards user is already tracking + cash/travel mode.
   //
-  // Cash mode shows ONLY cards whose bonus_currency is "cash" — Chase Sapphire
-  // and AmEx Gold are not cash-back cards even though we can compute their
-  // cash-floor value, and showing them under "cash" confuses the user.
-  // Travel mode shows everything but applies an additional hotel/airline
-  // toggle (default off) because those points are loyalty-locked and not
-  // useful for users not building a specific program balance.
+  // Cash mode shows cards that can pay out as cash at >=1¢ — pure cash-back
+  // cards AND flexible-issuer-points cards (UR, MR, Capital One miles, Citi
+  // ThankYou, Wells Fargo Rewards, BofA points). Travel mode adds airline /
+  // hotel loyalty cards behind a toggle (default off). Loyalty-locked
+  // currencies never appear in cash mode. Logic lives in cardRedemptionModes
+  // so the cash/flex/loyalty taxonomy is single-source.
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
   const isTravel = rewardsMode === "travel"
@@ -198,9 +198,13 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
   const benefitProfile: UserBenefitProfile = profile?.benefit_usage ?? DEFAULT_BENEFIT_PROFILE
   const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides, militaryAffiliated, benefitProfile)
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
-    // Cash mode: only true cash-back cards. Travel mode: everything by default,
-    // with a separate toggle for airline/hotel loyalty cards.
-    .filter(sc => isTravel ? (includeHotelAirline || !isAirlineOrHotelCard(sc.card)) : sc.card.bonus_currency === "cash")
+    .filter(sc => {
+      const modes = cardRedemptionModes(sc.card)
+      if (isTravel) {
+        return modes.includes("travel") && (includeHotelAirline || !isAirlineOrHotelCard(sc.card))
+      }
+      return modes.includes("cash")
+    })
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
 
   // Wallet-slot view: compute the best card per spending category from the
