@@ -1,11 +1,27 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 
+// useSearchParams reads from the request, so the page can't be statically
+// prerendered. Marking it dynamic lets Vercel build cleanly. Was implicit
+// when the root layout was async; now that the layout is Supabase-free
+// and Next can try to prerender everything, this opt-out is required.
+export const dynamic = "force-dynamic"
+
 export default function LoginPage() {
+  // useSearchParams forces a CSR bailout — Next requires a Suspense boundary
+  // around any subtree that calls it, even on a fully client page.
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
+  )
+}
+
+function LoginInner() {
   const supabase = createClient()
   const router = useRouter()
   const searchParams = useSearchParams()

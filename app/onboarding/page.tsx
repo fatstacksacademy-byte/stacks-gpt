@@ -1,10 +1,15 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { runSequencer, SequencedBonus } from "@/lib/sequencer"
 import { createClient } from "@/lib/supabase/client"
 import { track } from "@/lib/analytics"
+
+// Opt out of static prerender — useSearchParams reads from the request,
+// and the now-Supabase-free root layout no longer transitively marks
+// every page dynamic.
+export const dynamic = "force-dynamic"
 
 type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -35,6 +40,15 @@ function fmtDate(d: Date) {
 }
 
 export default function OnboardingPage() {
+  // useSearchParams forces a CSR bailout — wrap in Suspense so Next can build.
+  return (
+    <Suspense fallback={null}>
+      <OnboardingInner />
+    </Suspense>
+  )
+}
+
+function OnboardingInner() {
   const searchParams = useSearchParams()
   const initialPlan = (searchParams.get("plan") ?? "annual") as "monthly" | "annual"
   const supabase = createClient()
@@ -412,6 +426,14 @@ export default function OnboardingPage() {
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
                   </div>
+
+                  {isLoggedIn && (
+                    <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 18, paddingTop: 14, textAlign: "center" as const }}>
+                      <a href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
+                        Or, start tracking bonuses for free →
+                      </a>
+                    </div>
+                  )}
 
                   {/* Feature checklist */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
