@@ -3,12 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
 import { Suspense } from "react"
-import { ProfileProvider } from "./components/ProfileProvider"
 import ToastHost from "./components/ToastHost"
 import PostHogProvider from "./components/PostHogProvider"
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar"
-import { createClient } from "../lib/supabase/server"
-import { getProfileServer, DEFAULT_PROFILE } from "../lib/profileServer"
+import FloatingPushButton from "./components/FloatingPushButton"
 
 // Read the GA4 measurement ID from env so the site stays untracked in dev/CI
 // and lights up automatically once NEXT_PUBLIC_GA_ID is set in production.
@@ -94,22 +92,14 @@ const ORGANIZATION_LD = {
   ],
 }
 
-export default async function RootLayout({
+// Root layout is intentionally Supabase-free so the build can prerender
+// public pages (/offline, /blog, etc.) without env vars. Routes whose pages
+// call useProfile() wrap themselves with <AuthBoundary> in their own layout.
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Fetch profile server-side so ProfileProvider hydrates without flicker.
-  // If user is not logged in, use guest defaults (no DB write until authenticated).
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const serverProfile = user
-    ? await getProfileServer(user.id)
-    : { user_id: "", ...DEFAULT_PROFILE }
-
   return (
     <html lang="en">
       <head>
@@ -121,13 +111,12 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Suspense fallback={null}>
-          <PostHogProvider userId={user?.id ?? null} />
+          <PostHogProvider />
         </Suspense>
-        <ProfileProvider serverProfile={serverProfile}>
-          {children}
-        </ProfileProvider>
+        {children}
         <ToastHost />
         <ServiceWorkerRegistrar />
+        <FloatingPushButton />
       </body>
       {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
