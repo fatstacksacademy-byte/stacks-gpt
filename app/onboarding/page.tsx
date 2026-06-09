@@ -100,8 +100,14 @@ function OnboardingInner() {
       (e): e is SequencedBonus => e.type === "bonus" && e.start_week <= 52
     )
 
-    const total = allBonusEntries.reduce((s, b) => s + b.bonus_amount, 0)
-    setBonuses(allBonusEntries)
+    // First-year projection: use NET bonuses (post-fee) and cap at the first 12
+    // placements ranked by start week. The unclamped sum of every slot×bonus
+    // over 52 weeks reads as implausibly high — 12 bonuses is what the
+    // landing copy promises and lines up with a realistic first-year cadence.
+    const sortedByStart = [...allBonusEntries].sort((a, b) => a.start_week - b.start_week)
+    const firstYearBonuses = sortedByStart.slice(0, 12)
+    const total = firstYearBonuses.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount), 0)
+    setBonuses(firstYearBonuses)
     setYearTotal(total)
     setStep("projection")
   }
@@ -242,10 +248,10 @@ function OnboardingInner() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(for state-specific bonuses)</span></div>
+              <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(unlocks state-specific bonuses)</span></div>
               <select value={userState} onChange={e => setUserState(e.target.value)}
                 style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
-                <option value="">Show all bonuses (any state)</option>
+                <option value="">Nationwide bonuses only</option>
                 {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
