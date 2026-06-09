@@ -9,6 +9,27 @@ import {
   unsubscribeFromPush,
 } from "../../lib/push/client"
 
+// iOS reports navigator.userAgent containing "iPhone" / "iPad" / "iPod".
+// iPadOS lies as a Mac so we also gate on touch + the standalone API.
+function isIOS(): boolean {
+  if (typeof navigator === "undefined") return false
+  const ua = navigator.userAgent
+  if (/iPhone|iPad|iPod/.test(ua)) return true
+  // iPadOS 13+ pretends to be Mac. Detect via touch support + the
+  // iOS-specific standalone API.
+  if (/Macintosh/.test(ua) && (navigator.maxTouchPoints ?? 0) > 1) return true
+  return false
+}
+
+function isInstalledPWA(): boolean {
+  if (typeof window === "undefined") return false
+  if (window.matchMedia?.("(display-mode: standalone)").matches) return true
+  // Older iOS Safari uses navigator.standalone.
+  const nav = navigator as Navigator & { standalone?: boolean }
+  if (nav.standalone === true) return true
+  return false
+}
+
 /**
  * Fixed-position floating "Enable notifications" button. Mounted once in
  * the root layout so it shows on every page (except the offline shell,
@@ -23,25 +44,49 @@ import {
  * desktop it sits in the bottom-right corner and stays out of the way.
  */
 export default function FloatingPushButton() {
-  const [supported, setSupported] = useState<boolean | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const [supported, setSupported] = useState(false)
   const [subscribed, setSubscribed] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
   const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     setSupported(pushSupported())
     isSubscribed().then(setSubscribed)
   }, [])
 
-  // First paint + unsupported browsers → render nothing.
-  if (supported === null) return null
-  if (!supported) return null
+  // Skip SSR/first paint only — we always render on the client so users
+  // can find the button no matter their platform/install state.
+  if (!mounted) return null
 
   async function handleClick() {
     if (busy) return
     setBusy(true)
     setError(null)
+    setInfo(null)
+
+    // Unsupported path: explain what to do instead of silently failing.
+    if (!supported) {
+      if (isIOS() && !isInstalledPWA()) {
+        setInfo(
+          "On iPhone, push notifications work only after you install Stacks OS to your home screen. Tap the Share button at the bottom of Safari, then 'Add to Home Screen' — once installed, open it and tap this button again.",
+        )
+      } else if (isIOS()) {
+        setInfo(
+          "Your iOS version doesn't support web push yet. Update to iOS 16.4 or newer to enable.",
+        )
+      } else {
+        setInfo(
+          "Your browser doesn't support push notifications. Try Chrome / Edge / Firefox / Safari on a modern device.",
+        )
+      }
+      setBusy(false)
+      return
+    }
+
     try {
       if (subscribed) {
         await unsubscribeFromPush()
@@ -91,7 +136,7 @@ export default function FloatingPushButton() {
             borderRadius: 10,
             padding: "8px 12px",
             fontSize: 12,
-            maxWidth: 260,
+            maxWidth: 280,
             lineHeight: 1.4,
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
@@ -99,7 +144,26 @@ export default function FloatingPushButton() {
           {error}
         </div>
       )}
-      {expanded && !subscribed && !error && (
+      {expanded && info && !error && (
+        <div
+          role="status"
+          style={{
+            pointerEvents: "auto",
+            background: "#fffbeb",
+            border: "1px solid #fde68a",
+            color: "#92400e",
+            borderRadius: 10,
+            padding: "10px 12px",
+            fontSize: 12,
+            maxWidth: 280,
+            lineHeight: 1.45,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+          }}
+        >
+          {info}
+        </div>
+      )}
+      {expanded && !subscribed && !error && !info && (
         <div
           style={{
             pointerEvents: "auto",
@@ -109,7 +173,7 @@ export default function FloatingPushButton() {
             borderRadius: 10,
             padding: "8px 12px",
             fontSize: 12,
-            maxWidth: 260,
+            maxWidth: 280,
             lineHeight: 1.4,
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
