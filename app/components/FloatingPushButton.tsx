@@ -21,6 +21,13 @@ function isIOS(): boolean {
   return false
 }
 
+// On iOS every browser is forced onto WebKit, but only Safari can install
+// PWAs and receive push. CriOS/FxiOS/EdgiOS/OPiOS = non-Safari shells.
+function isNonSafariIOS(): boolean {
+  if (typeof navigator === "undefined") return false
+  return /CriOS|FxiOS|EdgiOS|OPiOS|OPT\//.test(navigator.userAgent)
+}
+
 function isInstalledPWA(): boolean {
   if (typeof window === "undefined") return false
   if (window.matchMedia?.("(display-mode: standalone)").matches) return true
@@ -70,7 +77,11 @@ export default function FloatingPushButton() {
 
     // Unsupported path: explain what to do instead of silently failing.
     if (!supported) {
-      if (isIOS() && !isInstalledPWA()) {
+      if (isIOS() && isNonSafariIOS()) {
+        setInfo(
+          "On iPhone, push notifications only work in Safari (Apple's rule, not ours). Open fatstacksacademy.com in Safari, then tap the Share button → 'Add to Home Screen'.",
+        )
+      } else if (isIOS() && !isInstalledPWA()) {
         setInfo(
           "On iPhone, push notifications work only after you install Stacks OS to your home screen. Tap the Share button at the bottom of Safari, then 'Add to Home Screen' — once installed, open it and tap this button again.",
         )
