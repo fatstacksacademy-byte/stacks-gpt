@@ -1,4 +1,10 @@
 /* eslint-disable no-console */
+import { existsSync } from "node:fs"
+// Auto-load .env.local so ANTHROPIC_API_KEY / Supabase keys are visible
+// without needing `set -a; source .env.local` first. Node ≥21.7 ships
+// process.loadEnvFile natively — no dotenv dep needed.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local")
+
 import { randomUUID } from "node:crypto"
 import pLimit from "p-limit"
 import { createClient } from "@supabase/supabase-js"
