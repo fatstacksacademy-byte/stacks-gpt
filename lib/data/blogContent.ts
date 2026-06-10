@@ -9,6 +9,223 @@ export type DDMethod = {
   method: string
   works: boolean | "mixed"
   notes?: string
+
+  // ─── AUTO-GENERATED — added by scripts/generate-bonus-blog ───
+  // The entries above this banner are hand-edited; do not let the
+  // generator overwrite them. Auto-generator only appends below.
+  // Last generator run: 2026-06-10T01:26:40.560Z
+  "grasshopper-business-checking-750-2026": {
+    summary: "Grasshopper Bank is currently offering $750 on its checking bonus. Qualifying activity must clear within 30 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Open the account and complete the listed qualifying activity as soon as you can — most bonuses penalize late completion. Once you've met requirements, plan on roughly 120 days for the bonus to actually post. Note this account has lifetime-language eligibility — if you've ever held this bonus before, you may be excluded.",
+    bestFor: "Anyone with the flexibility to open a new account and complete the listed qualifying activity within the bonus window.",
+    pros: [
+      "$750 bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+    ],
+    cons: [
+      "Lifetime language — one shot per tax ID",
+      "120-day posting timeline is on the slow side",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the Bank of America $750 offer. Grasshopper Bank's version stands out when you prefer Grasshopper Bank's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Grasshopper Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $750 once qualifying activity clears within 30 days of opening." },
+      { q: "Does Grasshopper Bank run a hard credit pull for this account?", a: "No — Grasshopper Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Grasshopper Bank bonus take to post?", a: "Approximately 120 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+      { q: "Can I get this Grasshopper Bank bonus more than once?", a: "No. The offer terms include lifetime language — one bonus per tax ID. If you've held this account before with a bonus, you're likely excluded." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:38.727Z",
+    verifiedUrl: "https://www.grasshopper.bank/april-checking-bonus/",
+  },
+  "four-leaf-fcu-550-checking-2026": {
+    summary: "Four Leaf Federal Credit Union is currently offering $550 on its checking bonus. The headline requirement is $500 in qualifying direct deposits within 90 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Plan to route $500 in payroll (or a confirmed-working ACH push) into the new Four Leaf Federal Credit Union account within the 90-day window. Bonus posting times vary by bank; budget 30–60 days unless the catalog says otherwise. No lifetime language means this bonus is repeatable on the typical cooldown. Four Leaf Federal Credit Union screens ChexSystems aggressively — unfreeze ChexSystems before applying, and avoid this offer if your ChexSystems file is messy.",
+    bestFor: "Working-income earners with at least $500 of qualifying direct-deposit capacity over a 90-day window who want a $550 cash bonus without committing to a long holding period.",
+    pros: [
+      "$550 bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+      "Generous 90-day window to complete activity",
+    ],
+    cons: [
+      "ChexSystems-sensitive — apply only with a clean Chex file",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the Bank of America $500 offer. Four Leaf Federal Credit Union's version stands out when you value the higher headline bonus.",
+    faqs: [
+      { q: "What's the current Four Leaf Federal Credit Union checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $550 after $500 in qualifying direct deposits within 90 days of opening." },
+      { q: "Does Four Leaf Federal Credit Union run a hard credit pull for this account?", a: "No — Four Leaf Federal Credit Union uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:38.755Z",
+    verifiedUrl: "https://www.fourleaffcu.com/queens-open-an-account/",
+  },
+  "percapita-300-checking-2026": {
+    summary: "Percapita is currently offering $300 on its checking bonus. Qualifying activity must clear within 30 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Open the account and complete the listed qualifying activity as soon as you can — most bonuses penalize late completion. Once you've met requirements, plan on roughly 30 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown.",
+    bestFor: "Anyone with the flexibility to open a new account and complete the listed qualifying activity within the bonus window.",
+    pros: [
+      "$300 bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+    ],
+    cons: [
+      "Standard caveat: issuers can change SUB or requirements without notice — verify before applying",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the PSECU $300 offer. Percapita's version stands out when you prefer Percapita's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Percapita checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $300 once qualifying activity clears within 30 days of opening." },
+      { q: "Does Percapita run a hard credit pull for this account?", a: "No — Percapita uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Percapita bonus take to post?", a: "Approximately 30 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:38.786Z",
+    verifiedUrl: "https://www.percapita.com/en/earn300",
+  },
+  "horizon-bank-250-checking-2026": {
+    summary: "Horizon Bank is currently offering $250 on its checking bonus. The headline requirement is $500 in qualifying direct deposits within 90 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Plan to route $500 in payroll (or a confirmed-working ACH push) into the new Horizon Bank account within the 90-day window. Once you've met requirements, plan on roughly 30 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown. Horizon Bank runs a ChexSystems check; make sure your file is unfrozen before applying.",
+    bestFor: "Working-income earners with at least $500 of qualifying direct-deposit capacity over a 90-day window who want a $250 cash bonus without committing to a long holding period.",
+    pros: [
+      "$250 bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+      "Generous 90-day window to complete activity",
+    ],
+    cons: [
+      "State-restricted offer — confirm eligibility in your state",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the Farmers Insurance Federal Credit Union $250 offer. Horizon Bank's version stands out when you prefer Horizon Bank's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Horizon Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $250 after $500 in qualifying direct deposits within 90 days of opening." },
+      { q: "Does Horizon Bank run a hard credit pull for this account?", a: "No — Horizon Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Horizon Bank bonus take to post?", a: "Approximately 30 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:38.787Z",
+    verifiedUrl: "https://www.horizonbank.com/america250",
+  },
+  "provident-bank-300-checking-2026": {
+    summary: "Provident Bank is currently offering $300 on its checking bonus. The headline requirement is $1,000 in qualifying direct deposits within 60 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Plan to route $1,000 in payroll (or a confirmed-working ACH push) into the new Provident Bank account within the 60-day window. Once you've met requirements, plan on roughly 120 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown.",
+    bestFor: "Working-income earners with at least $1,000 of qualifying direct-deposit capacity over a 60-day window who want a $300 cash bonus without committing to a long holding period.",
+    pros: [
+      "$300 bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+      "Generous 60-day window to complete activity",
+    ],
+    cons: [
+      "State-restricted offer — confirm eligibility in your state",
+      "120-day posting timeline is on the slow side",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the PSECU $300 offer. Provident Bank's version stands out when you prefer Provident Bank's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Provident Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $300 after $1,000 in qualifying direct deposits within 60 days of opening." },
+      { q: "Does Provident Bank run a hard credit pull for this account?", a: "No — Provident Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Provident Bank bonus take to post?", a: "Approximately 120 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:53.537Z",
+    verifiedUrl: "https://www.provident.bank/basic-offer",
+  },
+  "ascend-bank-300-checking-2026": {
+    summary: "Ascend Bank is currently offering $300 on its checking bonus. The headline requirement is $100 in qualifying direct deposits within 30 days of opening. The account carries a $15 monthly fee (waivable — see terms).",
+    strategy: "Plan to route $100 in payroll (or a confirmed-working ACH push) into the new Ascend Bank account within the 30-day window. Once you've met requirements, plan on roughly 60 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown.",
+    bestFor: "Working-income earners with at least $100 of qualifying direct-deposit capacity over a 30-day window who want a $300 cash bonus without committing to a long holding period.",
+    pros: [
+      "$300 bonus",
+      "$15 monthly fee (waivable — see terms)",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+    ],
+    cons: [
+      "State-restricted offer — confirm eligibility in your state",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the PSECU $300 offer. Ascend Bank's version stands out when you prefer Ascend Bank's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Ascend Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $300 after $100 in qualifying direct deposits within 30 days of opening." },
+      { q: "Does Ascend Bank run a hard credit pull for this account?", a: "No — Ascend Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Ascend Bank bonus take to post?", a: "Approximately 60 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+      { q: "What's the Ascend Bank monthly fee on this account?", a: "$15 per month, waivable based on the bank's stated criteria (see the offer terms)." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:25:59.523Z",
+    verifiedUrl: "https://ascend.bank/spring-personal-checking-offer/",
+  },
+  "chase-total-checking-900-tiered-2026": {
+    summary: "Chase is currently offering — on its savings bonus. Read the catalog page for the full set of qualifying activities. The account carries a $15 monthly fee.",
+    strategy: "Open the account and complete the listed qualifying activity as soon as you can — most bonuses penalize late completion. Bonus posting times vary by bank; budget 30–60 days unless the catalog says otherwise. No lifetime language means this bonus is repeatable on the typical cooldown.",
+    bestFor: "Anyone with the flexibility to open a new account and complete the listed qualifying activity within the bonus window.",
+    pros: [
+      "— bonus",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+    ],
+    cons: [
+      "Unwaivable $15 monthly fee eats into the net bonus",
+    ],
+    comparison: "Among savings bonuses in our catalog, the closest peer is the Capital One — offer. Chase's version stands out when you prefer Chase's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Chase savings bonus?", a: "As verified directly from the bank's offer page, the current bonus is —." },
+      { q: "Does Chase run a hard credit pull for this account?", a: "No — Chase uses a soft pull (if any). It won't affect your credit score." },
+      { q: "What's the Chase monthly fee on this account?", a: "$15 per month, with no documented waiver path in our catalog notes." },
+    ],
+    relatedSlugs: ["capital-one-360-savings-2026","chase-savings-combo-2026","psecu-300-checking-2026"],
+    verifiedAt: "2026-06-10T01:26:09.978Z",
+    verifiedUrl: "https://account.chase.com/consumer/banking/EK42726?jp_cmp=rb/xlob/int/dmlp900tiered/na",
+  },
+  "wells-fargo-325-everyday-checking-2026": {
+    summary: "Wells Fargo is currently offering $325 on its checking bonus. The headline requirement is $1,000 in qualifying direct deposits within 90 days of opening. The account carries a $15 monthly fee (waivable — see terms).",
+    strategy: "Plan to route $1,000 in payroll (or a confirmed-working ACH push) into the new Wells Fargo account within the 90-day window. Once you've met requirements, plan on roughly 30 days for the bonus to actually post. Note this account has lifetime-language eligibility — if you've ever held this bonus before, you may be excluded.",
+    bestFor: "Working-income earners with at least $1,000 of qualifying direct-deposit capacity over a 90-day window who want a $325 cash bonus without committing to a long holding period.",
+    pros: [
+      "$325 bonus",
+      "$15 monthly fee (waivable — see terms)",
+      "Soft pull only — won't ding your credit score",
+      "Generous 90-day window to complete activity",
+    ],
+    cons: [
+      "Lifetime language — one shot per tax ID",
+    ],
+    comparison: "Among checking bonuses in our catalog, the closest peer is the Citi $325 offer. Wells Fargo's version stands out when you prefer Wells Fargo's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Wells Fargo checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $325 after $1,000 in qualifying direct deposits within 90 days of opening." },
+      { q: "Does Wells Fargo run a hard credit pull for this account?", a: "No — Wells Fargo uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
+      { q: "How long does the Wells Fargo bonus take to post?", a: "Approximately 30 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
+      { q: "What's the Wells Fargo monthly fee on this account?", a: "$15 per month, waivable based on the bank's stated criteria (see the offer terms)." },
+      { q: "Can I get this Wells Fargo bonus more than once?", a: "No. The offer terms include lifetime language — one bonus per tax ID. If you've held this account before with a bonus, you're likely excluded." },
+    ],
+    relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
+    verifiedAt: "2026-06-10T01:26:14.334Z",
+    verifiedUrl: "https://www.wellsfargo.com/checking/everyday/",
+  },
+  "rho-1000-business-checking-2026": {
+    summary: "Rho is currently offering — on its savings bonus. Read the catalog page for the full set of qualifying activities. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    strategy: "Open the account and complete the listed qualifying activity as soon as you can — most bonuses penalize late completion. Bonus posting times vary by bank; budget 30–60 days unless the catalog says otherwise. No lifetime language means this bonus is repeatable on the typical cooldown.",
+    bestFor: "Anyone with the flexibility to open a new account and complete the listed qualifying activity within the bonus window.",
+    pros: [
+      "— bonus",
+      "No monthly fee",
+      "Soft pull only — won't ding your credit score",
+      "No lifetime language — repeatable on cooldown",
+    ],
+    cons: [
+      "Standard caveat: issuers can change SUB or requirements without notice — verify before applying",
+    ],
+    comparison: "Among savings bonuses in our catalog, the closest peer is the Capital One — offer. Rho's version stands out when you prefer Rho's footprint or screening profile over the higher peer payout.",
+    faqs: [
+      { q: "What's the current Rho savings bonus?", a: "As verified directly from the bank's offer page, the current bonus is —." },
+      { q: "Does Rho run a hard credit pull for this account?", a: "No — Rho uses a soft pull (if any). It won't affect your credit score." },
+    ],
+    relatedSlugs: ["capital-one-360-savings-2026","chase-savings-combo-2026","psecu-300-checking-2026"],
+    verifiedAt: "2026-06-10T01:26:14.335Z",
+    verifiedUrl: "https://www.rho.co/",
+  },
 }
 
 export type BlogContent = {
