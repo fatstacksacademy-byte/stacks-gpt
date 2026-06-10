@@ -303,10 +303,16 @@ function rewriteBlogContent(newEntries: Record<string, BlogContent>): void {
   // new entries just before it. Hand-written entries above are preserved
   // byte-for-byte — we never touch their JSON formatting.
   const src = readFileSync(OUT_PATH, "utf8")
-  const closeMatch = src.match(/^\}\s*$/m)
-  if (!closeMatch) {
+  // The file declares `export type DDMethod = { ... }`, `export type
+  // BlogContent = { ... }`, then `export const blogContent = { ... }`.
+  // Each ends with `^}$`. We want the LAST one — the blogContent map.
+  // Matching only the first match landed our entries inside the
+  // DDMethod type and broke compilation.
+  const allCloses = [...src.matchAll(/^\}\s*$/gm)]
+  if (allCloses.length === 0) {
     throw new Error("Could not find closing brace of blogContent export — refusing to rewrite")
   }
+  const closeMatch = allCloses[allCloses.length - 1]
   const closeIdx = closeMatch.index!
   const head = src.slice(0, closeIdx)
   const tail = src.slice(closeIdx)
