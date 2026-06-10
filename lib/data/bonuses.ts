@@ -4503,7 +4503,7 @@ export const bonuses: any[] = [
     "id": "delta-community-200-checking-2026",
     "bank_name": "Delta Community Credit Union",
     "product_type": "checking",
-    "bonus_amount": 200,
+    "bonus_amount": 250,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
