@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { Lora, IBM_Plex_Mono } from "next/font/google"
 import "./stackhouse.css"
+import AuthBoundary from "../components/AuthBoundary"
 
 // Scoped fonts — attach to the /stackhouse subtree only. The root
 // layout continues to serve Geist; these additional CSS vars are
@@ -20,6 +21,8 @@ const plexMono = IBM_Plex_Mono({
 
 export default function StackhouseLayout({ children }: { children: ReactNode }) {
   return (
-    <div className={`${lora.variable} ${plexMono.variable}`}>{children}</div>
+    <div className={`${lora.variable} ${plexMono.variable}`}>
+      <AuthBoundary>{children}</AuthBoundary>
+    </div>
   )
 }

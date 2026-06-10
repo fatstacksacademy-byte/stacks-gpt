@@ -32,7 +32,7 @@ const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, ba
 
 const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
 
-export default function SpendingClient({ userEmail, userId }: { userEmail: string; userId: string }) {
+export default function SpendingClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
   const [cards, setCards] = useState<OwnedCard[]>([])
   const [profile, setProfile] = useState<SpendingProfile>({ user_id: userId, ...DEFAULT_SPENDING_PROFILE, updated_at: "" })
   const [loading, setLoading] = useState(true)
@@ -420,7 +420,34 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
           onAdded={loadData}
         />
 
+        {!isPaid && (
+          <div style={{
+            background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+            padding: "20px 22px", marginBottom: 24,
+            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
+          }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Pro feature
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                Get the ranked credit card queue
+              </div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                Stacks ranks every signup bonus for your spend — net value, 5/24, cooldowns — and tells you which card to apply for next.
+              </div>
+            </div>
+            <a href="/onboarding" style={{
+              fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
+            }}>
+              Upgrade to Pro →
+            </a>
+          </div>
+        )}
+
         {/* ── Recommended Cards (sequencer) ── */}
+        {isPaid && (
         <div style={{ marginBottom: 28 }}>
           <button onClick={() => setShowRecommendations(!showRecommendations)}
             style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: showRecommendations ? 12 : 0 }}>
@@ -836,6 +863,7 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
             </>
           )}
         </div>
+        )}
 
         {/* Empty state when no cards at all */}
         {cards.length === 0 && (
@@ -853,7 +881,9 @@ export default function SpendingClient({ userEmail, userId }: { userEmail: strin
               Add your first credit card
             </h2>
             <p style={{ fontSize: 13, color: "#5b21b6", margin: 0, lineHeight: 1.5 }}>
-              The recommended cards above are sequenced for your spend. Pick one and click &ldquo;Start&rdquo; — or use &ldquo;+ Add a card I already have&rdquo; to log cards already in your wallet.
+              {isPaid
+                ? "The recommended cards above are sequenced for your spend. Pick one and click “Start” — or use “+ Add a card I already have” to log cards already in your wallet."
+                : "Use “+ Add a card I already have” below to track signup bonuses, spend deadlines, and net value across your wallet."}
             </p>
           </div>
         )}

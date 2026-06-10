@@ -10,7 +10,5 @@ export default async function SavingsPage() {
   if (!user) redirect("/login")
 
   const isSubscribed = await hasActiveSubscription(user.id)
-  if (!isSubscribed) redirect("/onboarding")
-
-  return <SavingsClient userEmail={user.email!} userId={user.id} />
+  return <SavingsClient userEmail={user.email!} userId={user.id} isPaid={isSubscribed} />
 }

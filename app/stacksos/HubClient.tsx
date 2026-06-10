@@ -11,6 +11,7 @@ import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep 
 import { track } from "../../lib/analytics"
 import CheckpointNav from "../components/CheckpointNav"
 import WelcomeWizard from "../components/WelcomeWizard"
+import AddCustomBonusModal from "../components/AddCustomBonusModal"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
 import { runSavingsSequencer } from "../../lib/savingsSequencer"
 import { sequenceCards, DEFAULT_MAX_CARDS_PER_YEAR } from "../../lib/ccSequencer"
@@ -56,11 +57,13 @@ export default function HubClient({
   userId,
   initialProfile,
   subscriptionStatus,
+  isPaid,
 }: {
   userEmail: string
   userId: string
   initialProfile: UserProfile
   subscriptionStatus: string | null
+  isPaid: boolean
 }) {
   const [billingLoading, setBillingLoading] = useState(false)
   async function handleManageBilling() {
@@ -84,6 +87,7 @@ export default function HubClient({
   const [ownedCards, setOwnedCards] = useState<OwnedCard[]>([])
   const [savingsEntries, setSavingsEntries] = useState<SavingsEntry[]>([])
   const [showWizard, setShowWizard] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [view, setView] = useState<DashboardView>("active")
 
   const loadData = useCallback(() => {
@@ -132,6 +136,7 @@ export default function HubClient({
       availableBalance: balance,
       userState: profile.state,
       currentHysaApy: savingsProfile.current_apy ?? 0,
+      includeBrokerage: true,
     })
     const items = [...(result.entries ?? [])]
       .sort((a, b) => (b.total_earnings ?? 0) - (a.total_earnings ?? 0))
@@ -362,6 +367,13 @@ export default function HubClient({
           }}
         />
       )}
+      {showAddModal && (
+        <AddCustomBonusModal
+          userId={userId}
+          onClose={() => setShowAddModal(false)}
+          onAdded={() => loadData()}
+        />
+      )}
       <CheckpointNav />
       {subscriptionStatus === "past_due" && (
         <div style={{ background: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "12px 20px" }}>
@@ -388,17 +400,29 @@ export default function HubClient({
           }}
         >
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "#111" }}>Dashboard</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "#111" }}>Dashboard</h1>
+              {!isPaid && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, color: "#666", background: "#f0f0f0",
+                  padding: "3px 8px", borderRadius: 99, letterSpacing: "0.06em", textTransform: "uppercase",
+                }}>
+                  Free
+                </span>
+              )}
+            </div>
             <div style={{ fontSize: 13, color: "#888", marginTop: 2, overflowWrap: "anywhere" }}>
               {userEmail}
             </div>
           </div>
-          <a
-            href="/stacksos/profile"
-            style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600, flexShrink: 0 }}
-          >
-            Edit profile →
-          </a>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+            <a
+              href="/stacksos/profile"
+              style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}
+            >
+              Edit profile →
+            </a>
+          </div>
         </div>
 
         <DashboardGoalBar
@@ -415,7 +439,42 @@ export default function HubClient({
           counts={{ active: startedBonuses.length, history: historicalWins.length }}
         />
 
-        {view === "active" && <StartedBonusesList bonuses={startedBonuses} />}
+        {view === "active" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "16px 0 10px", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ fontSize: 13, color: "#888" }}>
+                {startedBonuses.length > 0 ? `${startedBonuses.length} bonus${startedBonuses.length === 1 ? "" : "es"} in progress` : ""}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <a
+                  href="/bonuses"
+                  style={{
+                    fontSize: 13, fontWeight: 600, color: "#0d7c5f",
+                    padding: "8px 14px", border: "1px solid #0d7c5f", borderRadius: 8,
+                    textDecoration: "none",
+                  }}
+                >
+                  Browse catalog
+                </a>
+                <button
+                  onClick={() => { track("custom_bonus_modal_opened", { source: "dashboard_active_tab" }); setShowAddModal(true) }}
+                  style={{
+                    fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                    padding: "8px 14px", border: "none", borderRadius: 8, cursor: "pointer",
+                  }}
+                >
+                  + Add bonus
+                </button>
+              </div>
+            </div>
+
+            {startedBonuses.length === 0 ? (
+              <EmptyDashboardCta onAddCustom={() => { track("custom_bonus_modal_opened", { source: "dashboard_empty_state" }); setShowAddModal(true) }} isPaid={isPaid} />
+            ) : (
+              <StartedBonusesList bonuses={startedBonuses} />
+            )}
+          </>
+        )}
 
         {view === "projection" && (
           <PortfolioCard
@@ -452,5 +511,70 @@ export default function HubClient({
         }
       `}</style>
     </>
+  )
+}
+
+function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; isPaid: boolean }) {
+  return (
+    <div style={{
+      background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14,
+      padding: "32px 28px", marginTop: 16,
+    }}>
+      <div style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
+        Start tracking your bonuses
+      </div>
+      <div style={{ fontSize: 14, color: "#666", lineHeight: 1.5, margin: "0 0 22px" }}>
+        Add any bank or credit card bonus you&apos;re working on. Stacks keeps a checklist, tracks your deposits, and remembers your lifetime earnings.
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+        <a
+          href="/bonuses"
+          style={{
+            display: "flex", flexDirection: "column", gap: 6,
+            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            textDecoration: "none",
+          }}
+        >
+          <div style={{ fontSize: 22 }}>📚</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Browse catalog</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+            Pick from every live bank bonus and one-click track.
+          </div>
+        </a>
+
+        <button
+          type="button"
+          onClick={onAddCustom}
+          style={{
+            display: "flex", flexDirection: "column", gap: 6,
+            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+          }}
+        >
+          <div style={{ fontSize: 22 }}>✍️</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Add manually</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+            Type in a bonus from anywhere — bank, card, or savings.
+          </div>
+        </button>
+
+        <a
+          href="/stacksos/import"
+          style={{
+            display: "flex", flexDirection: "column", gap: 6,
+            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            textDecoration: "none",
+          }}
+        >
+          <div style={{ fontSize: 22 }}>📊</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Import a spreadsheet</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+            Paste from YNAB or a tracking sheet — we match the catalog.
+          </div>
+        </a>
+      </div>
+
+    </div>
   )
 }

@@ -10,7 +10,5 @@ export default async function SpendingPage() {
   if (!user) redirect("/login")
 
   const isSubscribed = await hasActiveSubscription(user.id)
-  if (!isSubscribed) redirect("/onboarding")
-
-  return <SpendingClient userEmail={user.email!} userId={user.id} />
+  return <SpendingClient userEmail={user.email!} userId={user.id} isPaid={isSubscribed} />
 }

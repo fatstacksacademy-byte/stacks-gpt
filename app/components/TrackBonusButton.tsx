@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "../../lib/supabase/client"
+import { trackCatalogBonus, type TrackKind } from "../../lib/trackBonus"
 
 type Props = {
   bonusId: string
@@ -14,6 +16,32 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
+  const [userId, setUserId] = useState<string | null>(null)
+  const [doneMessage, setDoneMessage] = useState<string>("")
+
+  // Detect logged-in user so we can write directly to completed_bonuses
+  // instead of taking the email-capture lead-magnet path.
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setUserId(data.user.id)
+    })
+  }, [])
+
+  async function trackAsLoggedInUser() {
+    if (!userId) return
+    setStatus("loading")
+    // Default unknown bonusType to checking — that's where /bonuses
+    // historically routed everything before per-table support landed.
+    const kind: TrackKind = (bonusType as TrackKind) || "personal-checking"
+    const ok = await trackCatalogBonus(userId, bonusId, kind)
+    if (ok) {
+      setDoneMessage(`✓ ${bankName} added to your dashboard`)
+      setStatus("done")
+    } else {
+      setStatus("error")
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -25,7 +53,12 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, bonusId, bonusType, sourcePage }),
       })
-      setStatus(res.ok ? "done" : "error")
+      if (res.ok) {
+        setDoneMessage(`✓ Saved — we'll add ${bankName} to your account when you sign up`)
+        setStatus("done")
+      } else {
+        setStatus("error")
+      }
     } catch {
       setStatus("error")
     }
@@ -39,8 +72,27 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
         background: "#e6f5f0", border: "1px solid #a7f3d0", borderRadius: 8,
         fontSize: compact ? 12 : 13, color: "#0d7c5f", fontWeight: 600,
       }}>
-        ✓ Saved — we&apos;ll add this to your Stacks OS account
+        {doneMessage}
       </div>
+    )
+  }
+
+  // Logged-in user → one-click tracking, no email form
+  if (userId) {
+    return (
+      <button
+        type="button"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackAsLoggedInUser() }}
+        disabled={status === "loading"}
+        style={{
+          padding: compact ? "8px 12px" : "10px 16px",
+          background: status === "loading" ? "#5aaa8a" : "#0d7c5f", color: "#fff",
+          border: "none", borderRadius: 8,
+          fontSize: compact ? 12 : 13, fontWeight: 700,
+          cursor: status === "loading" ? "wait" : "pointer", whiteSpace: "nowrap",
+        }}>
+        {status === "loading" ? "Adding…" : "Track this bonus →"}
+      </button>
     )
   }
 

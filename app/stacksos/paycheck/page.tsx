@@ -1,8 +1,8 @@
 import { createClient } from "../../../lib/supabase/server"
+import { redirect } from "next/navigation"
 import { hasActiveSubscription } from "../../../lib/stripe"
 import RoadmapClient from "../RoadmapClient"
 import SubscriptionGate from "../../components/SubscriptionGate"
-import StacksOSLanding from "../StacksOSLanding"
 
 export default async function PaycheckPage({
   searchParams,
@@ -12,21 +12,19 @@ export default async function PaycheckPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) return <StacksOSLanding loggedInEmail={null} />
+  if (!user) redirect("/login")
 
   const isSubscribed = await hasActiveSubscription(user.id)
+  const params = await searchParams
 
-  if (!isSubscribed) {
-    const params = await searchParams
-    if (params.checkout === "success") {
-      return (
-        <SubscriptionGate isSubscribed={false}>
-          <RoadmapClient userEmail={user.email!} userId={user.id} />
-        </SubscriptionGate>
-      )
-    }
-    return <StacksOSLanding loggedInEmail={user.email ?? null} />
+  // Post-checkout polling window: wait for the webhook to flip the subscription.
+  if (!isSubscribed && params.checkout === "success") {
+    return (
+      <SubscriptionGate isSubscribed={false}>
+        <RoadmapClient userEmail={user.email!} userId={user.id} isPaid={false} />
+      </SubscriptionGate>
+    )
   }
 
-  return <RoadmapClient userEmail={user.email!} userId={user.id} />
+  return <RoadmapClient userEmail={user.email!} userId={user.id} isPaid={isSubscribed} />
 }

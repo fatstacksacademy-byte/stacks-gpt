@@ -16,24 +16,30 @@ export default async function StacksOSPage({
   // Not logged in → marketing landing
   if (!user) return <StacksOSLanding loggedInEmail={null} />
 
-  const isSubscribed = await hasActiveSubscription(user.id)
-
-  if (!isSubscribed) {
-    const params = await searchParams
-    if (params.checkout === "success") {
-      const profile = await getProfileServer(user.id)
-      return (
-        <SubscriptionGate isSubscribed={false}>
-          <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} subscriptionStatus={null} />
-        </SubscriptionGate>
-      )
-    }
-    return <StacksOSLanding loggedInEmail={user.email ?? null} />
-  }
-
-  const [profile, subscriptionStatus] = await Promise.all([
+  const [profile, subscriptionStatus, isSubscribed] = await Promise.all([
     getProfileServer(user.id),
     getSubscriptionStatus(user.id),
+    hasActiveSubscription(user.id),
   ])
-  return <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} subscriptionStatus={subscriptionStatus} />
+
+  // Returning from successful Stripe checkout — show the post-payment polling
+  // gate until the webhook flips the subscription to active.
+  const params = await searchParams
+  if (!isSubscribed && params.checkout === "success") {
+    return (
+      <SubscriptionGate isSubscribed={false}>
+        <HubClient userEmail={user.email!} userId={user.id} initialProfile={profile} subscriptionStatus={null} isPaid={false} />
+      </SubscriptionGate>
+    )
+  }
+
+  return (
+    <HubClient
+      userEmail={user.email!}
+      userId={user.id}
+      initialProfile={profile}
+      subscriptionStatus={subscriptionStatus}
+      isPaid={isSubscribed}
+    />
+  )
 }

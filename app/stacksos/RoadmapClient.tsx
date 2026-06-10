@@ -200,7 +200,7 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
 ]
 
-export default function RoadmapClient({ userEmail, userId }: { userEmail: string; userId: string }) {
+export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
   const { profile, setProfile, loaded } = useProfile()
   const [mounted, setMounted] = useState(false)
   const [completedRecords, setCompletedRecords] = useState<CompletedBonus[]>([])
@@ -1090,12 +1090,41 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 Start here
               </div>
               <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0a5c47", margin: "0 0 4px" }}>
-                Pick your first bonus
+                {isPaid ? "Pick your first bonus" : "Add the bonus you're working on"}
               </h2>
               <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
-                We&apos;ve sequenced the bonuses below by what you can realistically finish given your paycheck. Tap the green &ldquo;Start&rdquo; button on the first one to begin.
+                {isPaid
+                  ? "We've sequenced the bonuses below by what you can realistically finish given your paycheck. Tap the green \"Start\" button on the first one to begin."
+                  : "Browse the public catalog or type one in manually — Stacks tracks deposits, deadlines, and your lifetime earnings."}
               </p>
             </div>
+          </div>
+        )}
+
+        {/* ── Free-tier upgrade nudge — replaces the sequencer hero cards ── */}
+        {!isPaid && (
+          <div style={{
+            background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+            padding: "20px 22px", marginBottom: 20,
+            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
+          }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Pro feature
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                Get the personalized bonus queue
+              </div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                Stacks ranks every live bonus for your paycheck and tells you which one to do next — sequenced by cooldowns and net profitability.
+              </div>
+            </div>
+            <a href="/onboarding" style={{
+              fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
+            }}>
+              Upgrade to Pro →
+            </a>
           </div>
         )}
 
@@ -1110,18 +1139,20 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
                 <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
               </div>
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available bonuses</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length + inProgress.length}</div>
-                <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
-                  {showProjection ? "Hide plan" : "View full bonus plan"}
-                </button>
-                <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Portfolio projection lives on the Dashboard.</div>
-              </div>
+              {isPaid && (
+                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available bonuses</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length + inProgress.length}</div>
+                  <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
+                    {showProjection ? "Hide plan" : "View full bonus plan"}
+                  </button>
+                  <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Portfolio projection lives on the Dashboard.</div>
+                </div>
+              )}
             </div>
 
             {/* Projection breakdown (expandable) */}
-            {showProjection && projectionResult && (() => {
+            {isPaid && showProjection && projectionResult && (() => {
               const projected = getProjectedBonuses(projectionResult)
               const year1End = addDays(todayStr(), 365)
               const year2End = addDays(todayStr(), 730)
@@ -1248,7 +1279,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             })()}
 
             {/* ── HERO: Action Cards (one per open income slot) ── */}
-            {heroBonuses.map((hb, heroIdx) => {
+            {isPaid && heroBonuses.map((hb, heroIdx) => {
               const accentColor = heroIdx === 0 ? "#0d7c5f" : "#2563eb"
               return hb.kind === "custom" ? (
                 // Custom bonus hero card
@@ -2218,7 +2249,7 @@ export default function RoadmapClient({ userEmail, userId }: { userEmail: string
             })()}
 
             {/* ── Available next ── */}
-            {queueItems.length > 0 && (
+            {isPaid && queueItems.length > 0 && (
               <div style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

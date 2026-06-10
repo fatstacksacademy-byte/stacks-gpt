@@ -35,7 +35,7 @@ function calcYield(deposit: string, apy: string, holdingDays: string): number {
   return Math.round(d * a * (days / 365))
 }
 
-export default function SavingsClient({ userEmail, userId }: { userEmail: string; userId: string }) {
+export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [profile, setProfile] = useState<SavingsProfile>({ user_id: userId, ...DEFAULT_SAVINGS_PROFILE, updated_at: "" })
   const [loading, setLoading] = useState(true)
@@ -79,8 +79,9 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
     return localStorage.getItem("stacks_show_business") === "true"
   })
   const [showBrokerage, setShowBrokerage] = useState(() => {
-    if (typeof window === "undefined") return false
-    return localStorage.getItem("stacks_show_brokerage") === "true"
+    if (typeof window === "undefined") return true
+    const stored = localStorage.getItem("stacks_show_brokerage")
+    return stored === null ? true : stored === "true"
   })
 
   // Form state
@@ -739,16 +740,44 @@ export default function SavingsClient({ userEmail, userId }: { userEmail: string
               Start here
             </div>
             <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0a5c47", margin: "0 0 4px" }}>
-              Pick your first savings bonus
+              {isPaid ? "Pick your first savings bonus" : "Track your first savings bonus"}
             </h2>
             <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
-              The recommended offers below are ranked by effective APY for your balance. Tap the green &ldquo;Start&rdquo; button on one to begin — or add a custom one with &ldquo;+ Add savings bonus&rdquo; further down.
+              {isPaid
+                ? "The recommended offers below are ranked by effective APY for your balance. Tap the green “Start” button on one to begin — or add a custom one with “+ Add savings bonus” further down."
+                : "Add a savings bonus or HYSA you’re working on with “+ Add savings bonus / opportunity” below. Stacks tracks deposits, deadlines, and your lifetime earnings."}
             </p>
           </div>
         )}
 
+        {!isPaid && (
+          <div style={{
+            background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+            padding: "20px 22px", marginBottom: 24,
+            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
+          }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Pro feature
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                Get savings bonuses ranked for your balance
+              </div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                Stacks ranks every savings bonus and HYSA promotion by effective APY for your specific balance and sequences them across the year.
+              </div>
+            </div>
+            <a href="/onboarding" style={{
+              fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
+            }}>
+              Upgrade to Pro →
+            </a>
+          </div>
+        )}
+
         {/* ── Recommended Savings Bonuses ── */}
-        {(sequencerResult.entries.length > 0 || recSearchQ) && (
+        {isPaid && (sequencerResult.entries.length > 0 || recSearchQ) && (
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
