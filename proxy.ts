@@ -4,7 +4,7 @@ import { updateSession } from "@/lib/supabase/middleware"
 // Routes that require authentication
 const PROTECTED_ROUTES = ["/stacksos/spending", "/stacksos/savings", "/stacksos/history", "/stacksos/sequencer"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
 
   const pathname = request.nextUrl.pathname

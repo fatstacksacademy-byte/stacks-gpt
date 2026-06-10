@@ -400,6 +400,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "wells-fargo-400-everyday-checking-2026",
+    "expired": true,
     "bank_name": "Wells Fargo",
     "product_type": "checking",
     "bonus_amount": 400,
@@ -1716,7 +1717,7 @@ export const bonuses: any[] = [
     "eligibility": { "state_restricted": true, "states_allowed": ["AZ","CA","FL","IN","MI","NJ","NY","OH"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Expires May 31, 2026." },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://www.flagstar.com/personal/checking/checking-offer.html",
+      "https://www.flagstar.com/promo/retail/checking-cash-offer.html",
       "https://www.doctorofcredit.com/flagstar-bank-500-checking-bonus/"
     ],
     "raw_excerpt": "Ready Checking $300 or Elite Checking $500. $500 DD + $500 balance for 90 days. 8 states."
@@ -6656,6 +6657,90 @@ export const bonuses: any[] = [
       "https://www.profitablecontent.com/horizon-bank-250-checking-bonus/"
     ],
     "raw_excerpt": "Horizon Bank Everyday Checking $250. IN/MI only. Promo code America250. $500+ DD + 10 debit transactions within 90 days. Bonus posts 30 days after. Expires 07/31/2026.",
+    "missing_fields": []
+  },
+  {
+    "id": "provident-bank-300-checking-2026",
+    "bank_name": "Provident Bank",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 1000 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 1000, "min_direct_deposit_per_deposit": 500, "dd_count_required": 2, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": 50, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Two qualifying direct deposits of $500+ within 60 days. Open with $50 minimum. Expires July 19, 2026." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly service fees.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "unknown", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard verification reported." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["NJ","NY","PA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New Provident Bank checking customers only. NJ/NY/PA residency required." },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": null },
+    "source_links": [
+      "https://www.provident.bank/basic-offer",
+      "https://www.hustlermoneyblog.com/provident-bank-promotions/"
+    ],
+    "raw_excerpt": "Provident Bank $300 Checking. NJ/NY/PA. Two DDs of $500+ within 60 days. $50 min open. No monthly fee. Bonus posts within 120 days. Expires 07/19/2026.",
+    "missing_fields": []
+  },
+  {
+    "id": "ascend-bank-300-checking-2026",
+    "bank_name": "Ascend Bank",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 300, "min_dd_total": 100 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 100, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 30, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Qualifying direct deposit + active debit card use within 30 days. Spring personal checking offer. Expires June 28, 2026." },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Access Checking $15/mo waived with qualifying DD + active debit use. Preferred and Prime tiers have $25/mo with balance-based waivers ($1,500 / $2,500).", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "unknown", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard verification reported." },
+    "eligibility": { "state_restricted": true, "states_allowed": ["CT"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "Connecticut residents only. New Ascend Bank checking customers." },
+    "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
+    "source_links": [
+      "https://ascend.bank/spring-personal-checking-offer/",
+      "https://www.hustlermoneyblog.com/ascend-bank-promotions/"
+    ],
+    "raw_excerpt": "Ascend Bank Spring Personal Checking $300. CT only. Qualifying DD + active debit use within 30 days. Expires 06/28/2026.",
+    "missing_fields": []
+  },
+  {
+    "id": "greenfi-75-checking-2026",
+    "bank_name": "GreenFi",
+    "product_type": "checking",
+    "bonus_amount": 75,
+    "cooldown_months": null,
+    "tiers": [
+      { "bonus": 75, "min_dd_total": 200 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 200, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 45, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Qualifying direct deposit of $200+ within 45 days of account opening." },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "Fee-free checking and savings.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "unknown", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard verification reported." },
+    "eligibility": { "state_restricted": false, "states_allowed": [], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "Nationwide. New GreenFi customers." },
+    "timeline": { "bonus_posting_days_est": 5, "must_remain_open_days": null },
+    "source_links": [
+      "https://www.greenfi.com/join/u04pVA",
+      "https://www.profitablecontent.com/greenfi-75-checking-bonus/"
+    ],
+    "raw_excerpt": "GreenFi $75 Checking. Nationwide. $200 DD within 45 days. Fee-free. Bonus posts within 5 days of qualifying.",
+    "missing_fields": []
+  },
+  {
+    "id": "wells-fargo-325-everyday-checking-2026",
+    "bank_name": "Wells Fargo",
+    "product_type": "checking",
+    "bonus_amount": 325,
+    "cooldown_months": 12,
+    "tiers": [
+      { "bonus": 325, "min_dd_total": 1000 }
+    ],
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 1000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Open new Everyday Checking and receive $1,000+ qualifying electronic deposits within 90 days. Expires 07/14/2026." },
+    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waive with $500+ qualifying electronic deposits, $1,500 minimum daily balance, $5,000 combined qualifying balances, age 17-24, or qualifying military direct deposit.", "early_closure_fee": 0 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull (or no pull) datapoints reported; Chex sensitivity appears low/mixed." },
+    "eligibility": { "state_restricted": false, "states_allowed": [], "states_excluded": [], "lifetime_language": true, "eligibility_notes": "No new Wells Fargo consumer checking in past 12 months. Nationwide." },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
+    "source_links": [
+      "https://www.wellsfargo.com/checking/everyday/",
+      "https://www.hustlermoneyblog.com/wells-fargo-checking-bonus/"
+    ],
+    "raw_excerpt": "Wells Fargo Everyday Checking $325. Nationwide. $1,000+ qualifying electronic deposits within 90 days. Bonus posts ~30 days after qualifying. Expires 07/14/2026.",
     "missing_fields": []
   }
 ]

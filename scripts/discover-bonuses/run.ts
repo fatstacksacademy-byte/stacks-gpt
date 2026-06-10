@@ -11,6 +11,7 @@ import { pullReddit } from "./sources/reddit"
 import { pullSitemap } from "./sources/sitemap"
 import { classify, claudeCallsUsed, claudeBudgetRemaining } from "./classify"
 import { dedupe, rawToLead } from "./dedupe"
+import { matchesLiveCatalog } from "./catalog-match"
 import { enrich, pickCanonical } from "./enrich"
 import { loadLeads, upsertLeads, writeQueue, writeDigest } from "./queue"
 import { applyApproved } from "./apply"
@@ -95,9 +96,32 @@ async function main() {
     leads.push(lead)
   }
 
-  // 3. Dedupe
+  // 3. Dedupe within the batch, then suppress anything that already
+  // lives in lib/data/bonuses.ts / savingsBonuses.ts. The in-run
+  // dedupe doesn't know about the live catalog, so without this
+  // filter every run re-surfaces bonuses we already track (HSBC,
+  // Citadel, etc.).
   let deduped = dedupe(leads)
   log("info", "run.deduped", { before: leads.length, after: deduped.length })
+
+  const beforeCatalog = deduped.length
+  deduped = deduped.filter((l) => {
+    const m = matchesLiveCatalog(l)
+    if (!m) return true
+    log("info", "run.skip_live_catalog_match", {
+      lead_id: l.id,
+      catalog_id: m.id,
+      bank: l.bank,
+      amount: l.bonus_amount,
+    })
+    return false
+  })
+  if (beforeCatalog !== deduped.length) {
+    log("info", "run.catalog_filtered", {
+      before: beforeCatalog,
+      after: deduped.length,
+    })
+  }
 
   if (LIMIT_LEADS > 0) deduped = deduped.slice(0, LIMIT_LEADS)
 

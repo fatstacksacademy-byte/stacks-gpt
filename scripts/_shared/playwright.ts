@@ -2,6 +2,7 @@
 import type { BrowserContext } from "playwright"
 import { createHash } from "node:crypto"
 import { existsSync, mkdirSync } from "node:fs"
+import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 // Stealth-patched chromium. playwright-extra layers the puppeteer-extra stealth
@@ -59,7 +60,15 @@ let _contextUA: string | null = null
 // Must use launchPersistentContext (not launch + --user-data-dir) — recent
 // Playwright refuses the flag-based form and directs callers to this API.
 async function launchContext(userAgent: string): Promise<BrowserContext> {
-  const profileDir = join(process.cwd(), ".cache", "playwright-profile")
+  // Profile dir lives in os.tmpdir() instead of {cwd}/.cache so Turbopack's
+  // static analyzer doesn't treat the path as a project-relative glob. The
+  // old `.cache/playwright-profile` location was matching 26k+ files during
+  // build analysis and emitting an "overly broad pattern" warning. Vercel
+  // serverless restarts wipe /tmp anyway, so the cache lifetime is
+  // appropriate for both local (persisted across script invocations) and
+  // serverless (recreated per cold start) — exactly what stealth cookies
+  // need without leaking into the deploy bundle.
+  const profileDir = join(tmpdir(), "fsa-playwright-profile")
   if (!existsSync(profileDir)) mkdirSync(profileDir, { recursive: true })
 
   return chromium.launchPersistentContext(profileDir, {
