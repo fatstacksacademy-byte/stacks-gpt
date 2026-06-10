@@ -6,6 +6,7 @@ import PortalStacksToggle from "../components/PortalStacksToggle"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
+import { CategoryCrossNav } from "../components/BonusBrowseSections"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -57,10 +58,14 @@ export default function MasterBonusList() {
       `}</style>
 
       <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0", position: "sticky", top: 0, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", zIndex: 10 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
-          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/bonuses" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>Bonuses</Link>
+          <nav className="bbs-nav" style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+            <Link href="/checking" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Checking</Link>
+            <Link href="/savings" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Savings</Link>
+            <Link href="/spending" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Spending</Link>
+            <Link href="/brokerage" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Brokerage</Link>
+            <Link href="/bonuses" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>All bonuses</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Reviews</Link>
             <Link href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Stacks OS</Link>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>

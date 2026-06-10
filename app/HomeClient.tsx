@@ -40,8 +40,11 @@ export default function HomeClient() {
       <nav className="hp-nav" style={{ padding: "20px 40px", maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", textDecoration: "none" }}>Fat Stacks Academy</Link>
         <div className="hp-nav-links" style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <Link href="/checking" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Checking</Link>
+          <Link href="/savings" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Savings</Link>
+          <Link href="/spending" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Spending</Link>
+          <Link href="/brokerage" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Brokerage</Link>
           <Link href="/blog" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Blog</Link>
-          <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Bonus Rankings</Link>
           <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
           {loggedIn ? (
             <Link href="/stacksos" style={{ fontSize: 14, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "8px 20px", borderRadius: 8, textDecoration: "none" }}>Open Stacks OS</Link>

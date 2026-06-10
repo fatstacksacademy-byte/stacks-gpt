@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next"
 import { blogPosts } from "../lib/data/blogPosts"
+import { monthlyBankPicks } from "../lib/data/monthlyBankPicks"
 
 const BASE = "https://fatstacksacademy.com"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
+    { url: `${BASE}/bonuses`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${BASE}/checking`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${BASE}/savings`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${BASE}/spending`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${BASE}/brokerage`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
     { url: `${BASE}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE}/blog/best-bank-account-bonuses-2026`, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/blog/best-checking-bonuses-2026`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95 },
@@ -23,5 +29,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  return [...staticPages, ...blogPages]
+  const monthlyPages: MetadataRoute.Sitemap = monthlyBankPicks.map(m => ({
+    url: `${BASE}/blog/best-bank-bonuses-${m.monthSlug}`,
+    lastModified: new Date(m.publishedDate),
+    changeFrequency: "monthly" as const,
+    priority: 0.9,
+  }))
+
+  return [...staticPages, ...blogPages, ...monthlyPages]
 }
