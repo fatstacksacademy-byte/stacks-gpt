@@ -400,10 +400,9 @@ export const bonuses: any[] = [
   },
   {
     "id": "wells-fargo-400-everyday-checking-2026",
-    "expired": true,
     "bank_name": "Wells Fargo",
     "product_type": "checking",
-    "bonus_amount": 400,
+    "bonus_amount": 325,
     "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
@@ -416,11 +415,11 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open new Everyday Checking with offer code by 2026-02-24 and receive $1,000+ qualifying electronic deposits within 90 days."
+      "other_requirements_text": "Open new Everyday Checking and receive $1,000+ qualifying electronic deposits within 90 days. Expires 07/14/2026."
     },
     "fees": {
       "monthly_fee": 15,
-      "monthly_fee_waiver_text": "Waive with $1,500 daily balance, $5,000 combined balances, $500+ qualifying electronic deposits, age-based waiver, or qualifying military direct deposit.",
+      "monthly_fee_waiver_text": "Waive with $500+ qualifying electronic deposits, $1,500 minimum daily balance, $5,000 combined qualifying balances, age 17-24, or qualifying military direct deposit.",
       "early_closure_fee": 0
     },
     "screening": {
@@ -6720,27 +6719,6 @@ export const bonuses: any[] = [
       "https://www.profitablecontent.com/greenfi-75-checking-bonus/"
     ],
     "raw_excerpt": "GreenFi $75 Checking. Nationwide. $200 DD within 45 days. Fee-free. Bonus posts within 5 days of qualifying.",
-    "missing_fields": []
-  },
-  {
-    "id": "wells-fargo-325-everyday-checking-2026",
-    "bank_name": "Wells Fargo",
-    "product_type": "checking",
-    "bonus_amount": 325,
-    "cooldown_months": 12,
-    "tiers": [
-      { "bonus": 325, "min_dd_total": 1000 }
-    ],
-    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 1000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Open new Everyday Checking and receive $1,000+ qualifying electronic deposits within 90 days. Expires 07/14/2026." },
-    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waive with $500+ qualifying electronic deposits, $1,500 minimum daily balance, $5,000 combined qualifying balances, age 17-24, or qualifying military direct deposit.", "early_closure_fee": 0 },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Soft pull (or no pull) datapoints reported; Chex sensitivity appears low/mixed." },
-    "eligibility": { "state_restricted": false, "states_allowed": [], "states_excluded": [], "lifetime_language": true, "eligibility_notes": "No new Wells Fargo consumer checking in past 12 months. Nationwide." },
-    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
-    "source_links": [
-      "https://www.wellsfargo.com/checking/everyday/",
-      "https://www.hustlermoneyblog.com/wells-fargo-checking-bonus/"
-    ],
-    "raw_excerpt": "Wells Fargo Everyday Checking $325. Nationwide. $1,000+ qualifying electronic deposits within 90 days. Bonus posts ~30 days after qualifying. Expires 07/14/2026.",
     "missing_fields": []
   }
 ]
