@@ -108,7 +108,13 @@ export function runSavingsSequencer({
     if (bonus.business && !includeBusiness) continue
     if (bonus.brokerage && !includeBrokerage) continue
 
-    if (userState && bonus.eligibility?.state_restricted) {
+    // State filter: when no state is set, hide all state-restricted bonuses
+    // (default to nationwide only — picking a state unlocks more, not fewer).
+    if (bonus.eligibility?.state_restricted) {
+      if (!userState) {
+        skipped.push({ bank_name: bonus.bank_name, reason: "State-specific — set your state to unlock" })
+        continue
+      }
       const allowed = bonus.eligibility.states_allowed ?? []
       if (allowed.length > 0 && !allowed.some(s => s === userState || s === "Nationwide (U.S.)")) {
         skipped.push({ bank_name: bonus.bank_name, reason: `Not available in ${userState}` })

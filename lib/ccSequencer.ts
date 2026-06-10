@@ -77,7 +77,10 @@ export function sequenceCards(
   const available = cards.filter(c => {
     if (c.expired) return false
     if (!c.offer_link || c.offer_link.length === 0) return false
-    if (userState && c.state_restricted && c.state_restricted.length > 0) {
+    // State filter: when no state is set, hide all state-restricted cards
+    // (default to nationwide only — picking a state unlocks more, not fewer).
+    if (c.state_restricted && c.state_restricted.length > 0) {
+      if (!userState) return false
       if (!c.state_restricted.includes(userState)) return false
     }
     // Military-only cards (USAA / Navy Federal / AAFES) — hide unless

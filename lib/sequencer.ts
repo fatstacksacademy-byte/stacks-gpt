@@ -227,8 +227,15 @@ export function runSequencer({
     if (skippedBonusIds.includes(b.id)) { skipped.push({ bank_name: b.bank_name, reason: "Skipped by user" }); continue }
     if ((b as any).business && !includeBusiness) continue
 
-    // State filter: skip state-restricted bonuses if user's state doesn't match
-    if (userState && b.eligibility?.state_restricted) {
+    // State filter: when no state is set, hide all state-restricted bonuses
+    // (default to nationwide only — picking a state unlocks more, not fewer).
+    // When a state is set, skip restricted bonuses whose states_allowed
+    // doesn't include the user's state.
+    if (b.eligibility?.state_restricted) {
+      if (!userState) {
+        skipped.push({ bank_name: b.bank_name, reason: "State-specific — set your state to unlock" })
+        continue
+      }
       const allowed = b.eligibility.states_allowed ?? []
       if (allowed.length > 0 && !allowed.includes(userState)) {
         skipped.push({ bank_name: b.bank_name, reason: `Not available in ${userState}` })

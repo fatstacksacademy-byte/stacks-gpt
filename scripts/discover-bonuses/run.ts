@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
+// Auto-load .env.local so Reddit/Supabase/Anthropic keys are visible.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local")
+
 import { join } from "node:path"
 import pLimit from "p-limit"
 import { closeBrowser } from "../_shared/playwright"

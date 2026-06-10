@@ -20,6 +20,7 @@ export type AnalyticsEvent =
   | "bonus_completed"
   | "bonus_skipped"
   | "custom_bonus_added"
+  | "custom_bonus_modal_opened"
   // Smart Import
   | "smart_import_opened"
   | "smart_import_extracted"
