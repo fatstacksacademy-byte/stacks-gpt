@@ -42,6 +42,8 @@ import {
   type DebtScenario,
 } from "../../../lib/debtStore"
 import { createClient } from "../../../lib/supabase/client"
+import { matchStatementCardToCatalog, type CardCatalogMatch } from "../../../lib/cardCatalogMatch"
+import { markBonusAlreadyHad, getCompletedBonuses } from "../../../lib/completedBonuses"
 
 // ----------------------------------------------------------------------------
 // Shared style constants (matching the codebase aesthetic)
@@ -149,6 +151,7 @@ export default function DebtClient() {
   const [scenario, setScenario] = useState<DebtScenario | null>(null)
   const [loading, setLoading] = useState(true)
   const [startISO, setStartISO] = useState<string>("")
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     // Scope storage to the signed-in user BEFORE reading, so one account's
@@ -160,6 +163,7 @@ export default function DebtClient() {
       const { data } = await supabase.auth.getUser()
       if (cancelled) return
       configureUserScope(data.user?.id ?? null)
+      setUserId(data.user?.id ?? null)
       setStartISO(todayISO())
       setScenario(loadScenario())
       setLoading(false)
@@ -213,7 +217,7 @@ export default function DebtClient() {
   return (
     <>
       <CheckpointNav />
-      <Dashboard scenario={scenario} startISO={startISO || todayISO()} update={update} onReset={resetAll} />
+      <Dashboard scenario={scenario} startISO={startISO || todayISO()} update={update} onReset={resetAll} userId={userId} />
     </>
   )
 }
@@ -256,12 +260,13 @@ function SetupScreen({ onDemo, onEmpty }: { onDemo: () => void; onEmpty: () => v
 // ----------------------------------------------------------------------------
 
 function Dashboard({
-  scenario, startISO, update, onReset,
+  scenario, startISO, update, onReset, userId,
 }: {
   scenario: DebtScenario
   startISO: string
   update: (patch: Partial<DebtScenario>) => void
   onReset: () => void
+  userId: string | null
 }) {
   const picture: FinancialPicture = useMemo(() => ({
     debts: scenario.debts,
@@ -316,7 +321,7 @@ function Dashboard({
         update={update}
       />
 
-      <StatementImportSection debts={scenario.debts} update={update} />
+      <StatementImportSection debts={scenario.debts} update={update} userId={userId} />
 
       <DebtsSection debts={scenario.debts} update={update} />
 
@@ -493,7 +498,7 @@ function NoticeBox({ severity, children }: { severity: StrategyWarning["severity
   )
 }
 
-function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; update: (patch: Partial<DebtScenario>) => void }) {
+function StatementImportSection({ debts, update, userId }: { debts: DebtInstrument[]; update: (patch: Partial<DebtScenario>) => void; userId: string | null }) {
   const [file, setFile] = useState<File | null>(null)
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -503,16 +508,42 @@ function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; up
   const [review, setReview] = useState<CreditCardDebt[] | null>(null)
   // Bump to force-clear the file input after a successful add/discard.
   const [inputKey, setInputKey] = useState(0)
+  // Per-review-debt opt-in to also track a recognized card in the churning
+  // profile. Keyed by debt.id; true means "write a held-card record on add".
+  const [churnOptIn, setChurnOptIn] = useState<Record<string, boolean>>({})
+  // Brief note shown after the churning write completes.
+  const [churnNote, setChurnNote] = useState<string | null>(null)
+
+  // Catalog matches for the current review list, computed once per list. The
+  // matcher is pure and conservative (returns null unless confident).
+  const matches = useMemo<Record<string, CardCatalogMatch>>(() => {
+    if (!review) return {}
+    const out: Record<string, CardCatalogMatch> = {}
+    for (const d of review) {
+      const m = matchStatementCardToCatalog(d.name)
+      if (m) out[d.id] = m
+    }
+    return out
+  }, [review])
+
+  // When a fresh review list arrives, default every matched card to checked.
+  useEffect(() => {
+    const next: Record<string, boolean> = {}
+    for (const id of Object.keys(matches)) next[id] = true
+    setChurnOptIn(next)
+  }, [matches])
 
   function resetTransient() {
     setError(null)
     setWarnings([])
     setReview(null)
+    setChurnNote(null)
   }
 
   function clearAll() {
     resetTransient()
     setFile(null)
+    setChurnOptIn({})
     setInputKey(k => k + 1)
   }
 
@@ -563,10 +594,65 @@ function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; up
     setReview(prev => (prev ? prev.map(d => (d.id === id ? { ...d, ...patch } : d)) : prev))
   }
 
+  // Collect the deduped set of catalogIds the user opted into, captured before
+  // we clear the review state.
+  function selectedCatalogIds(reviewList: CreditCardDebt[], optIn: Record<string, boolean>, matchMap: Record<string, CardCatalogMatch>): string[] {
+    const ids = new Set<string>()
+    for (const d of reviewList) {
+      const m = matchMap[d.id]
+      if (m && optIn[d.id]) ids.add(m.catalogId)
+    }
+    return [...ids]
+  }
+
+  // Persist opted-in cards as incomplete held-card records, skipping any
+  // catalogId already present. Best-effort: failures never block the debt add.
+  async function writeChurnProfile(catalogIds: string[]) {
+    if (!userId || catalogIds.length === 0) return
+
+    let toWrite = catalogIds
+    try {
+      const existing = await getCompletedBonuses(userId)
+      const have = new Set(existing.map(b => b.bonus_id))
+      toWrite = catalogIds.filter(id => !have.has(id))
+    } catch {
+      // If the dedupe lookup fails, fall back to writing everything opted-in.
+    }
+
+    if (toWrite.length === 0) {
+      setChurnNote("Those cards are already in your churning profile.")
+      return
+    }
+
+    const results = await Promise.all(
+      toWrite.map(id =>
+        markBonusAlreadyHad(userId, id, {
+          opened_date: null,
+          closed_date: null,
+          bonus_received: false,
+          actual_amount: null,
+          incomplete_info: true,
+        }),
+      ),
+    )
+    const added = results.filter(r => r != null).length
+    const failed = results.length - added
+    if (added > 0) {
+      const base = `Added ${added} card${added === 1 ? "" : "s"} to your churning profile. Set each open date in the Roadmap for accurate 5/24.`
+      setChurnNote(failed > 0 ? `${base} (${failed} couldn't be saved.)` : base)
+    } else if (failed > 0) {
+      setChurnNote(`Couldn't add ${failed} card${failed === 1 ? "" : "s"} to your churning profile.`)
+    }
+  }
+
   function addToDebts() {
     if (!review || review.length === 0) return
+    // Capture selections before clearAll() wipes the review/opt-in state.
+    const catalogIds = selectedCatalogIds(review, churnOptIn, matches)
     update({ debts: [...debts, ...review] })
     clearAll()
+    // Fire-and-forget; the debt add above already succeeded regardless.
+    void writeChurnProfile(catalogIds)
   }
 
   return (
@@ -624,7 +710,14 @@ function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; up
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {review.map(d => (
-              <ImportReviewRow key={d.id} debt={d} onChange={patch => editRow(d.id, patch)} />
+              <ImportReviewRow
+                key={d.id}
+                debt={d}
+                onChange={patch => editRow(d.id, patch)}
+                match={matches[d.id] ?? null}
+                churnChecked={churnOptIn[d.id] ?? false}
+                onToggleChurn={checked => setChurnOptIn(prev => ({ ...prev, [d.id]: checked }))}
+              />
             ))}
           </div>
           <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
@@ -635,11 +728,25 @@ function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; up
           </div>
         </div>
       )}
+
+      {churnNote && (
+        <div style={{ marginTop: 12 }}>
+          <NoticeBox severity="info">ℹ {churnNote}</NoticeBox>
+        </div>
+      )}
     </div>
   )
 }
 
-function ImportReviewRow({ debt, onChange }: { debt: CreditCardDebt; onChange: (patch: Partial<CreditCardDebt>) => void }) {
+function ImportReviewRow({
+  debt, onChange, match, churnChecked, onToggleChurn,
+}: {
+  debt: CreditCardDebt
+  onChange: (patch: Partial<CreditCardDebt>) => void
+  match: CardCatalogMatch | null
+  churnChecked: boolean
+  onToggleChurn: (checked: boolean) => void
+}) {
   const aprMissing = debt.apr === 0
   const hasPromo = debt.promoApr != null || debt.promoEndsOn != null || debt.postPromoApr != null
   return (
@@ -691,6 +798,24 @@ function ImportReviewRow({ debt, onChange }: { debt: CreditCardDebt; onChange: (
           </>
         )}
       </div>
+      {match && (
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${ACCENT}22` }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "#333", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={churnChecked}
+              onChange={e => onToggleChurn(e.target.checked)}
+              style={{ marginTop: 2 }}
+            />
+            <span>Also track in your churning profile: <b>{match.label}</b></span>
+          </label>
+          <div style={{ ...muted, marginTop: 4 }}>
+            Recognized from our card catalog ({Math.round(match.confidence * 100)}%). Statements don&rsquo;t show the
+            account open date, so this is recorded as incomplete — set the open date in your Roadmap so it counts
+            toward 5/24.
+          </div>
+        </div>
+      )}
     </div>
   )
 }
