@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import {
   getLiveCatalog,
+  getStrictlyLiveCatalog,
   isEligibleInState,
   bucketByState,
   reportDataQuality,
@@ -13,6 +14,7 @@ import {
   type Availability,
   type TrackingKind,
   type EligibilityConfidence,
+  type ExpirationStatus,
 } from "./catalogTaxonomy"
 
 // ── Helpers for building synthetic items in tests ────────────────────
@@ -39,6 +41,7 @@ function makeItem(over: Partial<CatalogItem>): CatalogItem {
     eligibilityNotes: null,
     militaryOnly: false,
     expired: false,
+    expirationStatus: "unknown",
     raw: {},
     ...over,
   }
@@ -252,10 +255,73 @@ describe("reportDataQuality", () => {
 // ── Type-level checks (smoke) ────────────────────────────────────────
 
 describe("enum stability", () => {
-  it("Availability + EligibilityConfidence enums are exhaustive", () => {
+  it("Availability + EligibilityConfidence + ExpirationStatus enums are exhaustive", () => {
     const a: Availability[] = ["nationwide", "state_restricted", "branch_only", "unknown"]
     const e: EligibilityConfidence[] = ["verified", "incomplete", "unknown"]
+    const x: ExpirationStatus[] = ["live", "expired", "unknown"]
     expect(a.length).toBe(4)
     expect(e.length).toBe(3)
+    expect(x.length).toBe(3)
+  })
+})
+
+// ── ExpirationStatus + strict catalog filter ─────────────────────────
+
+describe("expirationStatus + getStrictlyLiveCatalog", () => {
+  const live = makeItem({
+    id: "live-1",
+    expired: false,
+    expirationDate: "2099-12-31",
+    expirationStatus: "live",
+  })
+  const expired = makeItem({
+    id: "exp-1",
+    expired: true,
+    expirationDate: null,
+    expirationStatus: "expired",
+  })
+  const unknown = makeItem({
+    id: "unk-1",
+    expired: false,
+    expirationDate: null,
+    expirationStatus: "unknown",
+  })
+  void [live, expired, unknown]
+
+  it("getLiveCatalog excludes expired but includes unknown (preserves main browse)", () => {
+    const live = getLiveCatalog()
+    const statuses = new Set(live.map(i => i.expirationStatus))
+    expect(statuses.has("expired")).toBe(false)
+    // Real catalog ships almost everything as "unknown" — the main
+    // browse page intentionally includes those rather than ship empty.
+    expect(statuses.has("unknown")).toBe(true)
+  })
+
+  it("getStrictlyLiveCatalog only returns items whose expirationStatus === 'live'", () => {
+    const strict = getStrictlyLiveCatalog()
+    for (const it of strict) {
+      expect(it.expirationStatus).toBe("live")
+    }
+  })
+
+  it("strict variant is a subset of the inclusive variant (never adds anything)", () => {
+    const inclusive = new Set(getLiveCatalog().map(i => i.id))
+    const strict = getStrictlyLiveCatalog().map(i => i.id)
+    for (const id of strict) expect(inclusive.has(id)).toBe(true)
+  })
+
+  it("normalization computes a non-undefined expirationStatus for every real catalog row", () => {
+    for (const it of getLiveCatalog()) {
+      expect(["live", "expired", "unknown"]).toContain(it.expirationStatus)
+    }
+  })
+
+  it("strict + state-page bucket never surfaces unverified-expiration offers", () => {
+    // Hawaii is a safe pick — small surface area, easy to inspect by hand.
+    const strict = getStrictlyLiveCatalog()
+    const { nationwide, local, unverified } = bucketByState(strict, "HI")
+    for (const it of [...nationwide, ...local, ...unverified]) {
+      expect(it.expirationStatus).toBe("live")
+    }
   })
 })

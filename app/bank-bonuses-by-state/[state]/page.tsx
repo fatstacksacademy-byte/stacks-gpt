@@ -5,7 +5,7 @@ import TrackBonusButton from "../../components/TrackBonusButton"
 import {
   US_STATES,
   findStateBySlug,
-  getLiveCatalog,
+  getStrictlyLiveCatalog,
   bucketByState,
   type CatalogItem,
 } from "../../../lib/data/catalogTaxonomy"
@@ -55,7 +55,7 @@ export async function generateMetadata(
   const state = findStateBySlug(slug)
   if (!state) return { title: "State not found" }
 
-  const all = getLiveCatalog()
+  const all = getStrictlyLiveCatalog()
   const { nationwide, local } = bucketByState(all, state.code)
   const total = nationwide.length + local.length
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
@@ -91,7 +91,7 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
   const state = findStateBySlug(slug)
   if (!state) notFound()
 
-  const all = getLiveCatalog()
+  const all = getStrictlyLiveCatalog()
   const { nationwide, local, unverified } = bucketByState(all, state.code)
 
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })

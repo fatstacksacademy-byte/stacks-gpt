@@ -52,6 +52,19 @@ export type Availability =
 export type EligibilityConfidence = "verified" | "incomplete" | "unknown"
 
 /**
+ * Live/expired/unknown classification for the offer's expiration.
+ *
+ *   live     — explicit expirationDate parsed and in the future
+ *   expired  — raw `expired: true` flag OR expirationDate in the past
+ *   unknown  — no `expired` flag and no expirationDate at all. The
+ *              catalog doesn't tell us. Surfaced explicitly so safety-
+ *              sensitive consumers (state pages, anywhere we claim
+ *              eligibility) can filter these out instead of pretending
+ *              they're live.
+ */
+export type ExpirationStatus = "live" | "expired" | "unknown"
+
+/**
  * Stable identifier for routing tracked items into the right Stacks OS
  * module. Maps onto `lib/trackBonus.ts > TrackKind` extensions.
  */
@@ -88,6 +101,13 @@ export type CatalogItem = {
   militaryOnly: boolean
   /** Whether the offer expired or was flagged expired in raw catalog. */
   expired: boolean
+  /**
+   * Classification of the offer's freshness — `unknown` means the
+   * catalog ships no expirationDate AND no `expired` flag, which is the
+   * common case for nearly every row. Treat as "we don't know if this
+   * is still running" instead of pretending it's live.
+   */
+  expirationStatus: ExpirationStatus
   /** Pointer back to the raw catalog row for downstream rendering that
    *  needs fields we don't normalize yet (timeline, screening, etc.). */
   raw: unknown
@@ -250,11 +270,25 @@ function parseExpiration(value: unknown): string | null {
   return parsed.toISOString().slice(0, 10)
 }
 
-function isLive(item: { expired?: boolean; expirationDate: string | null }, today: Date): boolean {
-  if (item.expired) return false
-  if (!item.expirationDate) return true
+/**
+ * Classify an offer's expiration status. Used both at normalization
+ * time (sets CatalogItem.expirationStatus) and at filter time.
+ *
+ *   expired  — raw `expired: true` flag OR expirationDate parsed and in
+ *              the past. We never want to ship these.
+ *   live     — expirationDate parsed and in the future. Safe.
+ *   unknown  — no `expired` flag, no expirationDate. The catalog
+ *              doesn't tell us either way.
+ */
+function classifyExpiration(
+  item: { expired?: boolean; expirationDate: string | null },
+  today: Date,
+): ExpirationStatus {
+  if (item.expired) return "expired"
+  if (!item.expirationDate) return "unknown"
   const exp = new Date(item.expirationDate + "T23:59:59")
-  return Number.isNaN(exp.getTime()) ? true : exp >= today
+  if (Number.isNaN(exp.getTime())) return "unknown"
+  return exp >= today ? "live" : "expired"
 }
 
 /**
@@ -395,6 +429,7 @@ function normalizeChecking(row: RawCheckingRow): CatalogItem {
     ?? parseExpiration(row.offer_expiration)
     ?? parseExpiration(row.requirements?.expiration_date)
 
+  const expired = row.expired === true
   return {
     id: row.id,
     bankName: row.bank_name,
@@ -415,7 +450,8 @@ function normalizeChecking(row: RawCheckingRow): CatalogItem {
     eligibilityConfidence: eligibility.confidence,
     eligibilityNotes: row.eligibility?.eligibility_notes ?? null,
     militaryOnly: row.eligibility?.military_only === true,
-    expired: row.expired === true,
+    expired,
+    expirationStatus: classifyExpiration({ expired, expirationDate }, new Date()),
     raw: row,
   }
 }
@@ -440,6 +476,8 @@ function normalizeSavings(row: RawSavingsRow): CatalogItem {
   const minDeposit = row.tiers?.[0]?.min_deposit ?? null
   const tierBonus = row.tiers?.[0]?.bonus_amount ?? row.bonus_amount ?? 0
 
+  const expirationDate = parseExpiration(row.expiration_date)
+  const expired = row.expired === true
   return {
     id: row.id,
     bankName: row.bank_name,
@@ -456,11 +494,12 @@ function normalizeSavings(row: RawSavingsRow): CatalogItem {
     minimumCashDeposit: minDeposit,
     bonusAmount: tierBonus,
     monthlyFee: row.fees?.monthly_fee ?? null,
-    expirationDate: parseExpiration(row.expiration_date),
+    expirationDate,
     eligibilityConfidence: eligibility.confidence,
     eligibilityNotes: row.eligibility?.eligibility_notes ?? null,
     militaryOnly: row.eligibility?.military_only === true,
-    expired: row.expired === true,
+    expired,
+    expirationStatus: classifyExpiration({ expired, expirationDate }, new Date()),
     raw: row,
   }
 }
@@ -481,10 +520,39 @@ export function getNormalizedCatalog(): CatalogItem[] {
   return cached
 }
 
+/**
+ * Catalog excluding offers we KNOW are expired. Includes offers with
+ * unknown expiration — preserves the pre-existing behavior for the main
+ * browse surface, where filtering out everything unverified would empty
+ * the page (most catalog rows ship no expirationDate).
+ *
+ * Recomputes `expirationStatus` against `referenceDate` so a "live" cache
+ * doesn't stay live after its date passes.
+ */
 export function getLiveCatalog(referenceDate: Date = new Date()): CatalogItem[] {
-  return getNormalizedCatalog().filter(item =>
-    isLive({ expired: item.expired, expirationDate: item.expirationDate }, referenceDate),
+  return getNormalizedCatalog()
+    .map(item => withFreshExpirationStatus(item, referenceDate))
+    .filter(item => item.expirationStatus !== "expired")
+}
+
+/**
+ * Strict variant: only offers with a confirmed live expiration. Use on
+ * surfaces that make eligibility claims (state pages) where surfacing
+ * an unverified offer is worse than surfacing none. Items with
+ * `expirationStatus: "unknown"` are deliberately excluded.
+ */
+export function getStrictlyLiveCatalog(referenceDate: Date = new Date()): CatalogItem[] {
+  return getNormalizedCatalog()
+    .map(item => withFreshExpirationStatus(item, referenceDate))
+    .filter(item => item.expirationStatus === "live")
+}
+
+function withFreshExpirationStatus(item: CatalogItem, referenceDate: Date): CatalogItem {
+  const status = classifyExpiration(
+    { expired: item.expired, expirationDate: item.expirationDate },
+    referenceDate,
   )
+  return status === item.expirationStatus ? item : { ...item, expirationStatus: status }
 }
 
 /** Lean shape suitable for crossing the server→client boundary: drops

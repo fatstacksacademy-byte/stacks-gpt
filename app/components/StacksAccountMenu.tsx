@@ -27,13 +27,28 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? null)
-    })
+    let cancelled = false
+
+    // Hydrate from the cached session immediately — Supabase keeps the
+    // session in localStorage, so this resolves synchronously after a
+    // single microtask. We deliberately do NOT call getUser() here:
+    // getUser() makes a network roundtrip and can hang indefinitely on
+    // a flaky connection, which used to leave the menu hidden forever.
+    // The onAuthStateChange subscription catches every subsequent
+    // sign-in / sign-out / token refresh, so freshness is preserved.
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return
+      const sessionEmail = data.session?.user?.email
+      if (sessionEmail) setEmail(sessionEmail)
+    }).catch(() => { /* swallow — auth listener below is the source of truth */ })
+
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user?.email ?? null)
     })
-    return () => { sub.subscription.unsubscribe() }
+    return () => {
+      cancelled = true
+      sub.subscription.unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
