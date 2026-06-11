@@ -47,8 +47,21 @@ function LoginInner() {
     setIsError(false)
 
     if (mode === "forgot") {
+      // Route the email link through /auth/callback (not /reset-password
+      // directly) for two reasons:
+      //   1. The callback exchanges the PKCE code server-side, so the
+      //      session is established before any client-side rendering —
+      //      no race with the page's getSession() / event listener.
+      //   2. The callback already detects `type=recovery` and routes to
+      //      /reset-password?recovery=true with the session in place
+      //      (see app/auth/callback/route.ts).
+      // We use window.location.origin so dev/preview/prod all match —
+      // hardcoded www.fatstacksacademy.com previously meant Supabase
+      // would silently fall back to its Site URL when the requester was
+      // on a different host (localhost, vercel preview, root domain).
+      const callbackUrl = `${window.location.origin}/auth/callback?type=recovery&next=/stacksos`
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://www.fatstacksacademy.com/reset-password",
+        redirectTo: callbackUrl,
       })
       setLoading(false)
       if (error) { setIsError(true); setMessage(error.message) }
