@@ -1,0 +1,112 @@
+[
+  {
+    "name": "bankbonus",
+    "sitemap_url": "https://bankbonus.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "primary_specialist",
+    "throttle_seconds": 10,
+    "include_path": "^/(best|reviews|promotions-by-state)/",
+    "exclude_sitemap": "author|category|tag|podcast"
+  },
+  {
+    "name": "doctor-of-credit",
+    "sitemap_url": "https://www.doctorofcredit.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "primary_specialist",
+    "throttle_seconds": 3,
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "hustler-money-blog",
+    "sitemap_url": "https://www.hustlermoneyblog.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "wallethacks",
+    "sitemap_url": "https://wallethacks.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "bonus|promo|offer|credit-union|checking|savings|bank",
+    "exclude_sitemap": "author|category|tag|web-story"
+  },
+  {
+    "name": "mymillennialguide",
+    "sitemap_url": "https://www.mymillennialguide.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "bonus|promo|offer|credit-union|checking|savings|bank",
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "moneysmylife",
+    "sitemap_url": "https://www.moneysmylife.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "bonus|promo|offer|credit-union|checking|savings|bank",
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "thecollegeinvestor",
+    "sitemap_url": "https://thecollegeinvestor.com/sitemap_index.xml",
+    "enabled": false,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "bonus|promo|offer|bank|checking|savings|business",
+    "exclude_sitemap": "author|category|tag|news"
+  },
+  {
+    "name": "fitsmallbusiness-banking",
+    "sitemap_url": "https://fitsmallbusiness.com/sitemaps/banking.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3
+  },
+  {
+    "name": "moneycrashers",
+    "sitemap_url": "https://www.moneycrashers.com/sitemap.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "bonus|promo|offer|bank|checking|savings"
+  },
+  {
+    "name": "frequentmiler",
+    "sitemap_url": "https://frequentmiler.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "primary_specialist",
+    "throttle_seconds": 3,
+    "include_path": "bonus|offer|card",
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "uscreditcardguide",
+    "sitemap_url": "https://www.uscreditcardguide.com/sitemap_index.xml",
+    "enabled": true,
+    "authority": "primary_specialist",
+    "throttle_seconds": 3,
+    "include_path": "bonus|offer|card|review",
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "awardwallet",
+    "sitemap_url": "https://awardwallet.com/sitemap.xml",
+    "enabled": true,
+    "authority": "discovery_only",
+    "throttle_seconds": 3,
+    "include_path": "credit-card|offer|bonus",
+    "exclude_sitemap": "author|category|tag"
+  },
+  {
+    "name": "citi-cards",
+    "sitemap_url": "https://www.citi.com/credit-cards/cards-sitemap.xml",
+    "enabled": true,
+    "authority": "official",
+    "throttle_seconds": 3
+  }
+]

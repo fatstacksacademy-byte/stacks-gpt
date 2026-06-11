@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import StacksAccountMenu from "./StacksAccountMenu"
 
 const tabs = [
   { label: "Dashboard", href: "/stacksos", exact: true },
@@ -27,40 +28,55 @@ export default function CheckpointNav() {
           margin: "0 auto",
           width: "100%",
           display: "flex",
+          alignItems: "center",
           gap: 0,
           padding: "0 32px",
-          overflowX: "auto",
-          scrollbarWidth: "none",
         }}
         className="cpnav-inner"
       >
-        {tabs.map(tab => {
-          const active = isActive(tab.href, "exact" in tab ? tab.exact : undefined)
-          return (
-            <a
-              key={tab.href}
-              href={tab.href}
-              style={{
-                padding: "10px 16px",
-                fontSize: 13,
-                fontWeight: active ? 700 : 500,
-                color: active ? "#0d7c5f" : "#999",
-                textDecoration: "none",
-                borderBottom: active ? "2px solid #0d7c5f" : "2px solid transparent",
-                transition: "color 0.15s, border-color 0.15s",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-              }}
-            >
-              {tab.label}
-            </a>
-          )
-        })}
+        <div
+          style={{
+            display: "flex",
+            gap: 0,
+            flex: 1,
+            minWidth: 0,
+            overflowX: "auto",
+            scrollbarWidth: "none",
+          }}
+          className="cpnav-tabs"
+        >
+          {tabs.map(tab => {
+            const active = isActive(tab.href, "exact" in tab ? tab.exact : undefined)
+            return (
+              <a
+                key={tab.href}
+                href={tab.href}
+                style={{
+                  padding: "10px 16px",
+                  fontSize: 13,
+                  fontWeight: active ? 700 : 500,
+                  color: active ? "#0d7c5f" : "#999",
+                  textDecoration: "none",
+                  borderBottom: active ? "2px solid #0d7c5f" : "2px solid transparent",
+                  transition: "color 0.15s, border-color 0.15s",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+              >
+                {tab.label}
+              </a>
+            )
+          })}
+        </div>
+        <div style={{ marginLeft: 12, flexShrink: 0 }} className="cpnav-account">
+          <StacksAccountMenu compact />
+        </div>
       </div>
       <style>{`
-        .cpnav-inner::-webkit-scrollbar { display: none; }
+        .cpnav-tabs::-webkit-scrollbar { display: none; }
         @media (max-width: 768px) {
           .cpnav-inner { padding: 0 12px !important; }
+          .cpnav-account { margin-left: 8px !important; }
         }
       `}</style>
     </div>

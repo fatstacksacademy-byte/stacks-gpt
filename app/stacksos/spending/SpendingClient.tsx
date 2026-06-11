@@ -244,11 +244,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     return { canHit: true, monthsNeeded: months }
   }
 
-  async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = "/login"
-  }
+  // Logout lives in the shared StacksAccountMenu rendered by CheckpointNav.
 
   if (loading) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
@@ -289,7 +285,6 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
             const data = await res.json()
             if (data.url) window.location.href = data.url
           }} style={topBtn}>Subscription</button>
-          <button onClick={handleLogout} style={topBtn}>Log out</button>
         </div>
       </div>
 

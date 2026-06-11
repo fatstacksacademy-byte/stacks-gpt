@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { createClient } from "../../lib/supabase/client"
-import { trackCatalogBonus, type TrackKind } from "../../lib/trackBonus"
+import { trackCatalogBonus, type TrackKind, type TrackResult } from "../../lib/trackBonus"
+import { track } from "../../lib/analytics"
 
 type Props = {
   bonusId: string
@@ -12,14 +14,40 @@ type Props = {
   compact?: boolean
 }
 
+/**
+ * Returns the Stacks OS module a tracked bonus lands in, so the success
+ * link can deep-link the user straight to the right surface.
+ */
+function moduleHrefFor(kind: TrackKind): string {
+  switch (kind) {
+    case "personal-savings":
+    case "business-savings":
+    case "brokerage":
+      return "/stacksos/savings"
+    case "credit-card":
+      return "/stacksos/spending"
+    case "personal-checking":
+    case "business":
+    case "business-checking":
+    default:
+      return "/stacksos/paycheck"
+  }
+}
+
 export default function TrackBonusButton({ bonusId, bonusType, bankName, sourcePage, compact }: Props) {
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "added" | "duplicate" | "error">("idle")
   const [userId, setUserId] = useState<string | null>(null)
   const [doneMessage, setDoneMessage] = useState<string>("")
 
-  // Detect logged-in user so we can write directly to completed_bonuses
+  // The TrackKind we route by. Defaults to checking for catalog rows that
+  // don't ship an explicit bonusType (kept for back-compat with older
+  // call sites that were checking-only).
+  const kind: TrackKind = (bonusType as TrackKind) || "personal-checking"
+  const moduleHref = moduleHrefFor(kind)
+
+  // Detect logged-in user so we can write directly to the right module
   // instead of taking the email-capture lead-magnet path.
   useEffect(() => {
     const supabase = createClient()
@@ -31,13 +59,14 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
   async function trackAsLoggedInUser() {
     if (!userId) return
     setStatus("loading")
-    // Default unknown bonusType to checking — that's where /bonuses
-    // historically routed everything before per-table support landed.
-    const kind: TrackKind = (bonusType as TrackKind) || "personal-checking"
-    const ok = await trackCatalogBonus(userId, bonusId, kind)
-    if (ok) {
+    track("custom_bonus_added", { source: sourcePage ?? "catalog_track_button", kind, bonusId })
+    const result: TrackResult = await trackCatalogBonus(userId, bonusId, kind)
+    if (result === "added") {
       setDoneMessage(`✓ ${bankName} added to your dashboard`)
-      setStatus("done")
+      setStatus("added")
+    } else if (result === "duplicate") {
+      setDoneMessage(`Already tracking ${bankName}`)
+      setStatus("duplicate")
     } else {
       setStatus("error")
     }
@@ -51,11 +80,11 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
       const res = await fetch("/api/bonus-interest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, bonusId, bonusType, sourcePage }),
+        body: JSON.stringify({ email, bonusId, bonusType: kind, sourcePage }),
       })
       if (res.ok) {
         setDoneMessage(`✓ Saved — we'll add ${bankName} to your account when you sign up`)
-        setStatus("done")
+        setStatus("added")
       } else {
         setStatus("error")
       }
@@ -64,15 +93,28 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
     }
   }
 
-  if (status === "done") {
+  // ── Terminal states (logged-in user only) — success / duplicate ──
+  if (status === "added" || status === "duplicate") {
+    const bg = status === "duplicate" ? "#fff7ed" : "#e6f5f0"
+    const border = status === "duplicate" ? "#fed7aa" : "#a7f3d0"
+    const fg = status === "duplicate" ? "#9a3412" : "#0d7c5f"
     return (
       <div style={{
-        display: "flex", alignItems: "center", gap: 8,
+        display: "flex", flexDirection: "column", gap: 4,
         padding: compact ? "8px 12px" : "10px 14px",
-        background: "#e6f5f0", border: "1px solid #a7f3d0", borderRadius: 8,
-        fontSize: compact ? 12 : 13, color: "#0d7c5f", fontWeight: 600,
+        background: bg, border: `1px solid ${border}`, borderRadius: 8,
+        fontSize: compact ? 12 : 13, color: fg, fontWeight: 600,
       }}>
-        {doneMessage}
+        <span>{doneMessage}</span>
+        {userId && (
+          <Link
+            href={moduleHref}
+            onClick={(e) => e.stopPropagation()}
+            style={{ fontSize: 11, color: fg, textDecoration: "underline", fontWeight: 500 }}
+          >
+            View in Stacks OS →
+          </Link>
+        )}
       </div>
     )
   }

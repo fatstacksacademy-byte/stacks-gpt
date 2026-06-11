@@ -44,7 +44,15 @@ verification-output/
 .cache/
 review-queue/
 logs/
+scripts/canary/snapshots/
 lib/data/*.draft.ts
 
 # claude code internal
+.claude/
 .claude/scheduled_tasks.lock
+
+# personal scratch space — throwaway experiments, never to be tracked
+scratch/
+
+# env-var checklist with secret names; keep out of source control
+PRIME_TIME_SETUP.md

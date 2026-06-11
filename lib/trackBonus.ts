@@ -1,15 +1,24 @@
-import { markBonusStarted } from "./completedBonuses"
-import { addSavingsEntry } from "./savingsEntries"
+import { markBonusStarted, getCompletedBonuses } from "./completedBonuses"
+import { addSavingsEntry, getSavingsEntries } from "./savingsEntries"
 import { addOwnedCard } from "./ownedCards"
 import { savingsBonuses } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
 
 export type TrackKind =
   | "personal-checking"
-  | "business" // business checking — same table as personal-checking
+  | "business" // legacy alias for business-checking; both route to completed_bonuses
+  | "business-checking" // explicit — same module as personal-checking
   | "personal-savings"
+  | "business-savings" // explicit — same module as personal-savings
   | "brokerage"
   | "credit-card"
+
+/**
+ * Outcome of an attempted track. `duplicate` means the user already has
+ * this bonus open — we surface that to the UI so it can render an
+ * "Already tracking" state instead of a fake success.
+ */
+export type TrackResult = "added" | "duplicate" | "error"
 
 function today(): string {
   return new Date().toISOString().slice(0, 10)
@@ -22,26 +31,36 @@ function addDays(iso: string, days: number): string {
 }
 
 /**
- * Add a catalog bonus to the correct Stacks OS table based on its kind.
- * - personal-checking → completed_bonuses (paycheck module)
- * - personal-savings + brokerage → savings_entries (savings module)
- * - credit-card → owned_cards (spending module)
+ * Routing table for every TrackKind:
+ *  - checking variants     → completed_bonuses (paycheck module)
+ *  - savings variants      → savings_entries  (savings module)
+ *  - brokerage             → savings_entries  (savings module — sits in the same model)
+ *  - credit-card           → owned_cards      (spending module)
  *
- * Returns true on success, false on failure (including unknown bonusId).
+ * Returns "added" on success, "duplicate" when the user already has an
+ * open record for this bonus, and "error" on failure or unknown bonusId.
  */
 export async function trackCatalogBonus(
   userId: string,
   bonusId: string,
   kind: TrackKind,
-): Promise<boolean> {
-  if (kind === "personal-checking" || kind === "business") {
+): Promise<TrackResult> {
+  if (kind === "personal-checking" || kind === "business" || kind === "business-checking") {
+    // Duplicate guard: an existing open completed_bonuses row for this
+    // catalog id means we should NOT create a second one.
+    const existing = await getCompletedBonuses(userId)
+    const open = existing.find(r => r.bonus_id === bonusId && !r.closed_date)
+    if (open) return "duplicate"
     const result = await markBonusStarted(userId, bonusId, today())
-    return result !== null
+    return result ? "added" : "error"
   }
 
-  if (kind === "personal-savings" || kind === "brokerage") {
+  if (kind === "personal-savings" || kind === "business-savings" || kind === "brokerage") {
     const bonus = savingsBonuses.find(b => b.id === bonusId)
-    if (!bonus) return false
+    if (!bonus) return "error"
+    const existing = await getSavingsEntries(userId)
+    const open = existing.find(e => e.bonus_name === bonus.id && e.status !== "completed" && e.status !== "canceled")
+    if (open) return "duplicate"
     const tier = bonus.tiers[0]
     const interestEarned = Math.round(tier.min_deposit * bonus.base_apy * (bonus.total_hold_days / 365))
     const expectedTotal = tier.bonus_amount + interestEarned
@@ -63,12 +82,12 @@ export async function trackCatalogBonus(
       source_type: "system",
       canonical_offer_id: null,
     })
-    return result !== null
+    return result ? "added" : "error"
   }
 
   if (kind === "credit-card") {
     const card = creditCardBonuses.find(c => c.id === bonusId)
-    if (!card) return false
+    if (!card) return "error"
     const signupCash = Math.round(card.bonus_amount * card.cpp_value)
     const feeY1 = card.annual_fee_waived_first_year ? 0 : card.annual_fee
     const expected = signupCash + card.statement_credits_year1 - feeY1
@@ -88,8 +107,8 @@ export async function trackCatalogBonus(
       notes: null,
       incomplete_info: false,
     })
-    return result !== null
+    return result ? "added" : "error"
   }
 
-  return false
+  return "error"
 }

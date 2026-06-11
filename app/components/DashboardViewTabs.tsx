@@ -16,7 +16,7 @@ export default function DashboardViewTabs({
   counts: { active: number; history: number }
 }) {
   const tabs: { id: DashboardView; label: string; badge?: number }[] = [
-    { id: "active", label: "In progress", badge: counts.active },
+    { id: "active", label: "Next actions", badge: counts.active },
     { id: "projection", label: "Projection" },
     { id: "history", label: "History", badge: counts.history },
   ]

@@ -22,6 +22,14 @@ export type NextStepInfo = {
   nextStep: string | null
   deadline: string | null      // ISO yyyy-mm-dd
   urgency: BonusUrgency
+  /**
+   * Optional identifier for the milestone the next step is driving toward.
+   * Lets the deadline-reminder cron dedupe per-stage instead of per-bonus:
+   * once an "open account" reminder fires, the user can still receive a
+   * separate "fund the account" reminder later without the dedupe key
+   * blocking it.
+   */
+  stage?: string | null
 }
 
 export const URGENCY_RANK: Record<BonusUrgency, number> = {
@@ -66,6 +74,16 @@ function money(n: number | null | undefined): string {
 // ─── Catalog checking bonuses ────────────────────────────────────────
 // We don't track partial DD progress here, so the "next step" is a
 // passive reminder of what still needs to happen by the deposit window.
+//
+// Stages (used by the deadline-reminder cron for per-stage dedupe):
+//   stage="dd"      → inside deposit window, asking for direct deposit
+//   stage="hold"    → past deposit window but holding period still running
+//   stage="posting" → waiting for the cash bonus to post
+//   stage="confirm" → past expected posting date, nudge to confirm
+//
+// Note: `stage` is the dedupe granularity, not the user-facing label. Two
+// different bonuses both in stage="dd" get independent reminder slots
+// because the cron's bonus_key incorporates the record id.
 export function checkingBonusStep(
   record: CompletedBonus,
   bonus: unknown,
@@ -104,7 +122,7 @@ export function checkingBonusStep(
       : total
       ? `Hit ${money(total)} direct deposit`
       : "Set up direct deposit"
-    return { nextStep: label, deadline: depositDeadline, urgency: urgencyFor(depositDeadline) }
+    return { nextStep: label, deadline: depositDeadline, urgency: urgencyFor(depositDeadline), stage: "dd" }
   }
 
   // Past deposit window or no DD required — waiting on bonus posting
@@ -119,21 +137,39 @@ export function checkingBonusStep(
 
   const remainingHold = daysUntil(holdDeadline)
   if (holdDeadline && remainingHold != null && remainingHold > 0) {
-    return { nextStep: `Keep account open ${remainingHold} more day${remainingHold !== 1 ? "s" : ""}`, deadline: holdDeadline, urgency: urgencyFor(holdDeadline) }
+    return {
+      nextStep: `Keep account open ${remainingHold} more day${remainingHold !== 1 ? "s" : ""}`,
+      deadline: holdDeadline,
+      urgency: urgencyFor(holdDeadline),
+      stage: "hold",
+    }
   }
 
   if (postDeadline) {
     const remaining = daysUntil(postDeadline)
-    const lbl = remaining != null && remaining > 0
+    const isOverdue = !(remaining != null && remaining > 0)
+    const lbl = !isOverdue
       ? `Wait for bonus to post (~${remaining} day${remaining !== 1 ? "s" : ""})`
       : "Bonus should have posted — confirm"
-    return { nextStep: lbl, deadline: postDeadline, urgency: urgencyFor(postDeadline) }
+    return {
+      nextStep: lbl,
+      deadline: postDeadline,
+      urgency: urgencyFor(postDeadline),
+      stage: isOverdue ? "confirm" : "posting",
+    }
   }
 
-  return { nextStep: "Confirm bonus posted", deadline: null, urgency: "none" }
+  return { nextStep: "Confirm bonus posted", deadline: null, urgency: "none", stage: "confirm" }
 }
 
 // ─── Custom-tracked checking bonuses ─────────────────────────────────
+// Stages mirror checkingBonusStep so the cron's dedupe key shape is
+// uniform across modules:
+//   stage="dd"      → asking for direct deposit (or generic "Meet requirements"
+//                      when DD isn't required for this user-tracked bonus)
+//   stage="posting" → requirements met, waiting for bonus to post
+//   stage="hold"    → bonus posted, holding period still running
+//   stage="close"   → ready to close the account
 export function customBonusStep(c: CustomBonus): NextStepInfo {
   const opened = c.opened_date
   const depositDeadline = opened && c.deposit_window_days
@@ -154,18 +190,23 @@ export function customBonusStep(c: CustomBonus): NextStepInfo {
           : total
           ? `Hit ${money(total)} direct deposit`
           : "Set up direct deposit"
-        return { nextStep: label, deadline: depositDeadline, urgency: urgencyFor(depositDeadline) }
+        return { nextStep: label, deadline: depositDeadline, urgency: urgencyFor(depositDeadline), stage: "dd" }
       }
-      return { nextStep: "Meet requirements", deadline: depositDeadline, urgency: urgencyFor(depositDeadline) }
+      return { nextStep: "Meet requirements", deadline: depositDeadline, urgency: urgencyFor(depositDeadline), stage: "dd" }
     }
     case "requirements_met":
-      return { nextStep: "Wait for bonus to post", deadline: holdDeadline, urgency: urgencyFor(holdDeadline) }
+      return { nextStep: "Wait for bonus to post", deadline: holdDeadline, urgency: urgencyFor(holdDeadline), stage: "posting" }
     case "bonus_posted": {
       const remaining = daysUntil(holdDeadline)
       if (holdDeadline && remaining != null && remaining > 0) {
-        return { nextStep: `Hold ${remaining} more day${remaining !== 1 ? "s" : ""}`, deadline: holdDeadline, urgency: urgencyFor(holdDeadline) }
+        return {
+          nextStep: `Hold ${remaining} more day${remaining !== 1 ? "s" : ""}`,
+          deadline: holdDeadline,
+          urgency: urgencyFor(holdDeadline),
+          stage: "hold",
+        }
       }
-      return { nextStep: "Safe to close", deadline: null, urgency: "none" }
+      return { nextStep: "Safe to close", deadline: null, urgency: "none", stage: "close" }
     }
     default:
       return { nextStep: null, deadline: null, urgency: "none" }
@@ -188,20 +229,99 @@ export function spendingCardStep(c: OwnedCard): NextStepInfo {
 }
 
 // ─── Savings entries ─────────────────────────────────────────────────
-export function savingsEntryStep(e: SavingsEntry): NextStepInfo {
-  const holdDeadline = e.deadline ?? (e.opened_date && e.holding_period_days
-    ? addDays(e.opened_date, e.holding_period_days)
-    : null)
+// Milestone-aware: progresses through five stages tied to the three
+// `*_at` columns on savings_entries. Each stage has its own deadline and
+// `stage` identifier so the deadline-reminder cron sends one reminder per
+// stage rather than one per bonus for its lifetime.
+//
+//   stage="open"     → account_opened_at is null
+//   stage="fund"     → opened ✓ but funded_at is null
+//   stage="hold"     → funded ✓ but holding period still running
+//   stage="confirm"  → hold complete but bonus_posted_at is null
+//   stage="close"    → bonus posted, ready to rotate cash (no deadline)
+//
+// Falls back to legacy behavior (Hold until deadline) when none of the
+// milestone columns are populated AND no opened_date is set, which keeps
+// pre-migration rows working.
+//
+// Soft deadlines used when the catalog/user didn't supply one:
+//   open  → opened_date + 14 days (or null if no opened_date)
+//   fund  → account_opened_at + 14 days
+//   confirm → expected payout date + 7 days
+const SOFT_OPEN_DAYS = 14
+const SOFT_FUND_DAYS = 14
+const SOFT_CONFIRM_DAYS = 7
 
-  if (e.deposit_required && holdDeadline) {
+function isoDay(value: string | null | undefined): string | null {
+  if (!value) return null
+  // Tolerate both date and timestamptz strings.
+  return value.slice(0, 10)
+}
+
+export function savingsEntryStep(e: SavingsEntry): NextStepInfo {
+  const openedAt = isoDay(e.account_opened_at)
+  const fundedAt = isoDay(e.funded_at)
+  const bonusPostedAt = isoDay(e.bonus_posted_at)
+
+  // Stage 1 — account not opened yet
+  if (!openedAt) {
+    const softDeadline = e.opened_date ? addDays(e.opened_date, SOFT_OPEN_DAYS) : null
     return {
-      nextStep: `Hold ${money(e.deposit_required)} until deadline`,
-      deadline: holdDeadline,
-      urgency: urgencyFor(holdDeadline),
+      nextStep: `Open the ${e.institution_name} account`,
+      deadline: softDeadline,
+      urgency: urgencyFor(softDeadline),
+      stage: "open",
     }
   }
-  if (holdDeadline) {
-    return { nextStep: "Hold until deadline", deadline: holdDeadline, urgency: urgencyFor(holdDeadline) }
+
+  // Stage 2 — opened but not funded
+  if (!fundedAt) {
+    const softDeadline = addDays(openedAt, SOFT_FUND_DAYS)
+    const amountLabel = e.deposit_required ? `Move ${money(e.deposit_required)} into the account` : "Fund the account"
+    return {
+      nextStep: amountLabel,
+      deadline: softDeadline,
+      urgency: urgencyFor(softDeadline),
+      stage: "fund",
+    }
   }
-  return { nextStep: null, deadline: null, urgency: "none" }
+
+  // Stage 3 — funded, holding period running
+  const holdDeadline = e.holding_period_days
+    ? addDays(fundedAt, e.holding_period_days)
+    : (e.deadline ?? (e.opened_date && e.holding_period_days
+        ? addDays(e.opened_date, e.holding_period_days)
+        : null))
+  if (holdDeadline && (daysUntil(holdDeadline) ?? 0) > 0) {
+    const label = e.deposit_required
+      ? `Hold ${money(e.deposit_required)} until deadline`
+      : "Hold until deadline"
+    return {
+      nextStep: label,
+      deadline: holdDeadline,
+      urgency: urgencyFor(holdDeadline),
+      stage: "hold",
+    }
+  }
+
+  // Stage 4 — hold complete but bonus not yet confirmed posted
+  if (!bonusPostedAt) {
+    const expected = holdDeadline ?? fundedAt
+    const softDeadline = expected ? addDays(expected, SOFT_CONFIRM_DAYS) : null
+    return {
+      nextStep: `Confirm bonus posted at ${e.institution_name}`,
+      deadline: softDeadline,
+      urgency: urgencyFor(softDeadline),
+      stage: "confirm",
+    }
+  }
+
+  // Stage 5 — bonus posted; nothing time-sensitive left, just a nudge to
+  // rotate the cash. No deadline so the cron stays quiet.
+  return {
+    nextStep: "Safe to close — rotate this cash into your next bonus",
+    deadline: null,
+    urgency: "none",
+    stage: "close",
+  }
 }
