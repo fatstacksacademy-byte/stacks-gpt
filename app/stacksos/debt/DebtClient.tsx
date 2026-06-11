@@ -316,6 +316,8 @@ function Dashboard({
         update={update}
       />
 
+      <StatementImportSection debts={scenario.debts} update={update} />
+
       <DebtsSection debts={scenario.debts} update={update} />
 
       <BalanceTransferSection offers={scenario.balanceTransfers} startISO={startISO} update={update} />
@@ -460,6 +462,234 @@ function InputsPanel({
           <div style={{ ...computedStyle, color: "#0d7c5f", fontWeight: 700 }}>{formatMoney(usableCash)}</div>
           <div style={{ ...muted, marginTop: 4 }}>max(0, available − buffer).</div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 3b. Import from a statement
+// ----------------------------------------------------------------------------
+
+// API response shapes (POST /api/debt-import). The route owns this contract;
+// we only read it here.
+type ImportSuccess = { debts: CreditCardDebt[]; warnings: string[]; accountsFound: number }
+type ImportFailure = { error: string; warnings?: string[] }
+
+const MAX_IMPORT_BYTES = 15 * 1024 * 1024 // 15 MB — mirrors the route's limit
+
+// A small inline notice that reuses the StrategyWarning severity look.
+function NoticeBox({ severity, children }: { severity: StrategyWarning["severity"]; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        fontSize: 12.5, lineHeight: 1.45, padding: "8px 10px", borderRadius: 6,
+        background: severityBg(severity), color: severityColor(severity),
+        border: `1px solid ${severityColor(severity)}22`,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function StatementImportSection({ debts, update }: { debts: DebtInstrument[]; update: (patch: Partial<DebtScenario>) => void }) {
+  const [file, setFile] = useState<File | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  // Warnings can come from a failed response (error path) or a successful one.
+  const [warnings, setWarnings] = useState<string[]>([])
+  // Pending review list — null means no review in progress.
+  const [review, setReview] = useState<CreditCardDebt[] | null>(null)
+  // Bump to force-clear the file input after a successful add/discard.
+  const [inputKey, setInputKey] = useState(0)
+
+  function resetTransient() {
+    setError(null)
+    setWarnings([])
+    setReview(null)
+  }
+
+  function clearAll() {
+    resetTransient()
+    setFile(null)
+    setInputKey(k => k + 1)
+  }
+
+  async function extract(f: File) {
+    if (f.size > MAX_IMPORT_BYTES) {
+      setReview(null)
+      setWarnings([])
+      setError("That file is larger than 15 MB. Try a single-statement PDF or a clearer photo.")
+      return
+    }
+    setImporting(true)
+    resetTransient()
+    try {
+      const body = new FormData()
+      body.append("file", f)
+      const res = await fetch("/api/debt-import", { method: "POST", body })
+      const data = (await res.json().catch(() => null)) as ImportSuccess | ImportFailure | null
+      if (!res.ok || !data) {
+        const fail = (data ?? {}) as ImportFailure
+        setError(fail.error || "We couldn't read that statement. Try a clearer file or add the card manually.")
+        setWarnings(Array.isArray(fail.warnings) ? fail.warnings : [])
+        return
+      }
+      const ok = data as ImportSuccess
+      setWarnings(Array.isArray(ok.warnings) ? ok.warnings : [])
+      if (!ok.debts || ok.debts.length === 0) {
+        setError("No usable credit-card accounts were found in that file. Add the card manually below.")
+        return
+      }
+      setReview(ok.debts)
+    } catch {
+      setError("Something went wrong uploading that file. Check your connection and try again.")
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null
+    setFile(f)
+    setReview(null)
+    setError(null)
+    setWarnings([])
+    if (f) void extract(f) // auto-submit on pick
+  }
+
+  function editRow(id: string, patch: Partial<CreditCardDebt>) {
+    setReview(prev => (prev ? prev.map(d => (d.id === id ? { ...d, ...patch } : d)) : prev))
+  }
+
+  function addToDebts() {
+    if (!review || review.length === 0) return
+    update({ debts: [...debts, ...review] })
+    clearAll()
+  }
+
+  return (
+    <div style={cardBox}>
+      <h3 style={sectionTitle}>Import from a statement</h3>
+      <div style={{ ...muted, marginBottom: 14 }}>
+        Upload a credit-card statement (PDF or photo). We read the balance, APR, minimum payment, and promo
+        terms with AI — then YOU review before anything is added. Your file isn&rsquo;t stored.
+      </div>
+
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <input
+          key={inputKey}
+          type="file"
+          accept="application/pdf,image/png,image/jpeg,image/webp,image/gif"
+          onChange={onPick}
+          disabled={importing}
+          style={{ fontSize: 13, color: "#444" }}
+        />
+        <button
+          style={{ ...secondaryBtn, opacity: importing || !file ? 0.6 : 1, cursor: importing || !file ? "default" : "pointer" }}
+          disabled={importing || !file}
+          onClick={() => file && void extract(file)}
+        >
+          {importing ? "Reading your statement…" : review ? "Re-extract" : "Extract"}
+        </button>
+      </div>
+
+      {importing && (
+        <div style={{ ...muted, marginTop: 12 }}>Reading your statement… this can take a few seconds.</div>
+      )}
+
+      {error && (
+        <div style={{ marginTop: 12 }}>
+          <NoticeBox severity="critical">⛔ {error}</NoticeBox>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+          {warnings.map((w, i) => (
+            <NoticeBox key={i} severity="warn">⚠ {w}</NoticeBox>
+          ))}
+        </div>
+      )}
+
+      {review && review.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ ...label, color: ACCENT, marginBottom: 8 }}>
+            Review {review.length} card{review.length === 1 ? "" : "s"} before adding
+          </div>
+          <div style={{ ...muted, marginBottom: 12 }}>
+            Nothing has been added yet. Edit anything that looks off, then add them to your debts. Rows where the
+            APR couldn&rsquo;t be read are flagged — enter the rate before trusting the projection.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {review.map(d => (
+              <ImportReviewRow key={d.id} debt={d} onChange={patch => editRow(d.id, patch)} />
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <button style={primaryBtn} onClick={addToDebts}>
+              Add {review.length} card{review.length === 1 ? "" : "s"} to my debts
+            </button>
+            <button style={ghostBtn} onClick={clearAll}>Discard</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ImportReviewRow({ debt, onChange }: { debt: CreditCardDebt; onChange: (patch: Partial<CreditCardDebt>) => void }) {
+  const aprMissing = debt.apr === 0
+  const hasPromo = debt.promoApr != null || debt.promoEndsOn != null || debt.postPromoApr != null
+  return (
+    <div style={{ padding: 16, border: `1px solid ${aprMissing ? "#dc262644" : `${ACCENT}44`}`, borderRadius: 8, background: aprMissing ? "#fef2f2" : "#fafafa" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+        <div>
+          <label style={fieldLabel}>Name</label>
+          <input style={inputStyle} value={debt.name} onChange={e => onChange({ name: e.target.value })} />
+        </div>
+        <div>
+          <label style={fieldLabel}>Balance</label>
+          <input style={inputStyle} type="number" value={debt.balance} onChange={e => onChange({ balance: num(e.target.value) })} />
+        </div>
+        <div>
+          <label style={fieldLabel}>APR</label>
+          <input
+            style={{ ...inputStyle, borderColor: aprMissing ? "#dc2626" : "#e0e0e0" }}
+            type="number"
+            step="0.0001"
+            value={debt.apr}
+            onChange={e => onChange({ apr: num(e.target.value) })}
+          />
+          {aprMissing
+            ? <div style={{ fontSize: 11, color: "#dc2626", fontWeight: 600, marginTop: 4 }}>Enter APR — the rate couldn&rsquo;t be read.</div>
+            : <div style={{ ...muted, marginTop: 4 }}>{APR_HINT}</div>}
+        </div>
+        <div>
+          <label style={fieldLabel}>Minimum payment</label>
+          <input style={inputStyle} type="number" value={debt.minPayment} onChange={e => onChange({ minPayment: num(e.target.value) })} />
+        </div>
+        <div>
+          <label style={fieldLabel}>Credit limit (optional)</label>
+          <input style={inputStyle} type="number" value={debt.creditLimit ?? ""} onChange={e => onChange({ creditLimit: e.target.value === "" ? undefined : num(e.target.value) })} />
+        </div>
+        {hasPromo && (
+          <>
+            <div>
+              <label style={fieldLabel}>Promo APR (optional)</label>
+              <input style={inputStyle} type="number" step="0.0001" value={debt.promoApr ?? ""} onChange={e => onChange({ promoApr: e.target.value === "" ? null : num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Promo ends on (optional)</label>
+              <input style={inputStyle} type="date" value={debt.promoEndsOn ?? ""} onChange={e => onChange({ promoEndsOn: e.target.value || null })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Post-promo APR (optional)</label>
+              <input style={inputStyle} type="number" step="0.0001" value={debt.postPromoApr ?? ""} onChange={e => onChange({ postPromoApr: e.target.value === "" ? null : num(e.target.value) })} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
