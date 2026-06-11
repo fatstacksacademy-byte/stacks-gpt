@@ -12,11 +12,12 @@
 //
 // Server-only: reads process.env. Do not import into client components.
 
-export type BetaFeature = "debt"
+export type BetaFeature = "debt" | "cards"
 
 // Fallback allowlist when no env override is configured for a feature.
 const DEFAULT_ALLOWLIST: Record<BetaFeature, string[]> = {
   debt: ["booth.nathaniel@gmail.com", "fatstacksacademy@gmail.com"],
+  cards: ["booth.nathaniel@gmail.com", "fatstacksacademy@gmail.com"],
 }
 
 function parseEmails(raw: string | undefined | null): string[] {
