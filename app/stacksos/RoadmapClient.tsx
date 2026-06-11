@@ -353,11 +353,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
   useEffect(() => { loadRecords() }, [loadRecords])
 
-  async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = "/login"
-  }
+  // Logout lives in the shared StacksAccountMenu rendered by CheckpointNav.
 
   function buildCustomSlotBlocks(): number[] {
     const today = new Date(); today.setHours(0, 0, 0, 0)
@@ -878,7 +874,6 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             const data = await res.json()
             if (data.url) window.location.href = data.url
           }} style={topBtn}>Subscription</button>
-          <button onClick={handleLogout} style={topBtn}>Log out</button>
         </div>
       </div>
 

@@ -3,17 +3,18 @@ import Link from "next/link"
 import NewsletterCTA from "../blog/components/NewsletterCTA"
 import TrackBonusButton from "../components/TrackBonusButton"
 import PortalStacksToggle from "../components/PortalStacksToggle"
+import FilterableCatalog from "../components/FilterableCatalog"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
-import { CategoryCrossNav } from "../components/BonusBrowseSections"
+import { getLiveCatalogForClient } from "../../lib/data/catalogTaxonomy"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
 
 export const metadata: Metadata = {
   title: "The Master Bank Bonus List — Every Live Offer (2026) | Fat Stacks Academy",
-  description: "Every live bank account bonus worth doing in 2026 — personal checking, savings, business, and brokerage. Updated continuously with requirements, fees, and ChexSystems sensitivity.",
+  description: "Every live bank account bonus worth doing in 2026 — personal checking, savings, business, and brokerage. Filter by state, requirement, and category. Track any offer in one click.",
   alternates: { canonical: `${BASE}/bonuses` },
   openGraph: {
     type: "article",
@@ -35,11 +36,27 @@ function slugForBonus(bonusId: string): string | null {
   return post?.slug ?? null
 }
 
+function buildReviewHrefMap(): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const p of blogPosts) {
+    if (p.bonusId) out[p.bonusId] = `/blog/${p.slug}`
+  }
+  return out
+}
+
 export default function MasterBonusList() {
   const { personalChecking, personalSavings, businessChecking, businessSavings, brokerage } = getCategorizedBonuses()
   const totalBonuses = personalChecking.length + personalSavings.length + businessChecking.length + businessSavings.length + brokerage.length
   const updated = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
+
+  // Normalized catalog for the client-side filter — single source of
+  // truth for category, eligibility, tracking kind, etc. We pass the
+  // LEAN shape (no `raw` blob) since FilterableCatalog never reads the
+  // raw row and a server→client serialization of every raw bonus JSON
+  // would blow the response payload.
+  const normalized = getLiveCatalogForClient()
+  const reviewHrefs = buildReviewHrefMap()
 
   return (
     <>
@@ -66,6 +83,7 @@ export default function MasterBonusList() {
             <Link href="/spending" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Spending</Link>
             <Link href="/brokerage" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Brokerage</Link>
             <Link href="/bonuses" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>All bonuses</Link>
+            <Link href="/bank-bonuses-by-state" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>By state</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Reviews</Link>
             <Link href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Stacks OS</Link>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
@@ -104,7 +122,7 @@ export default function MasterBonusList() {
         </div>
 
         {/* CATEGORY NAV */}
-        <div className="cat-nav" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 48 }}>
+        <div className="cat-nav" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
             { id: "personal-checking", emoji: "🏦", label: "Personal Checking", count: personalChecking.length },
             { id: "savings", emoji: "💰", label: "Savings", count: personalSavings.length },
@@ -125,12 +143,40 @@ export default function MasterBonusList() {
           ))}
         </div>
 
+        {/* BY-STATE CTA */}
+        <div style={{ marginBottom: 40 }}>
+          <Link href="/bank-bonuses-by-state" style={{
+            padding: "16px 20px",
+            background: "#fafafa",
+            border: "1px solid #e8e8e8",
+            borderRadius: 12,
+            textDecoration: "none",
+            color: "#111",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Looking for offers in your state?</div>
+              <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>Browse bank bonuses available by state — nationwide + local picks.</div>
+            </div>
+            <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 700 }}>By state →</span>
+          </Link>
+        </div>
+
         {/* NEWSLETTER */}
         <div style={{ marginBottom: 56 }}>
           <NewsletterCTA />
         </div>
 
-        {/* ── PERSONAL CHECKING ── */}
+        {/* ── FILTERABLE BROWSE ── */}
+        <section id="browse" className="master-section" style={{ marginBottom: 64 }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Browse every offer</h2>
+          <p style={{ fontSize: 14, color: "#888", margin: "0 0 18px" }}>Search by bank, filter by state, category, or requirement. {totalBonuses} live offers ready to track.</p>
+          <FilterableCatalog initialItems={normalized} reviewHrefs={reviewHrefs} />
+        </section>
+
+        {/* ── PERSONAL CHECKING (TOP 6 — SEO + CONTEXT) ── */}
         <Section
           anchorId="personal-checking"
           emoji="🏦"
@@ -150,14 +196,17 @@ export default function MasterBonusList() {
             summary: blogContent[b.id]?.summary,
           }))} />
           <BonusTable
+            sourcePage="/bonuses#personal-checking"
             rows={personalChecking.map((b, i) => ({
               i: i + 1,
               bank: shortBankName(b),
               bonus: money(b.bonus_amount),
-              col3: b.requirements?.min_direct_deposit_total ? money(b.requirements.min_direct_deposit_total) : "—",
+              col3: b.requirements?.min_direct_deposit_total ? money(b.requirements.min_direct_deposit_total) : "See terms",
               col4: b.requirements?.deposit_window_days ? `${b.requirements.deposit_window_days}d` : "—",
-              col5: b.fees?.monthly_fee === 0 ? "$0" : b.fees?.monthly_fee != null ? `$${b.fees.monthly_fee}` : "—",
+              col5: b.fees?.monthly_fee === 0 ? "$0" : b.fees?.monthly_fee != null ? `$${b.fees.monthly_fee}` : "See terms",
               href: slugForBonus(b.id) ? `/blog/${slugForBonus(b.id)}` : undefined,
+              bonusId: b.id,
+              bonusType: "personal-checking",
             }))}
             headers={["#", "Bank", "Bonus", "DD Required", "Window", "Fee"]}
           />
@@ -184,6 +233,7 @@ export default function MasterBonusList() {
             }
           })} />
           <BonusTable
+            sourcePage="/bonuses#savings"
             rows={personalSavings.map(({ bonus: b, effApy }, i) => {
               const t = b.tiers[0]
               return {
@@ -194,6 +244,8 @@ export default function MasterBonusList() {
                 col4: `${b.total_hold_days}d`,
                 col5: `${effApy.toFixed(1)}%`,
                 href: slugForBonus(b.id) ? `/blog/${slugForBonus(b.id)}` : undefined,
+                bonusId: b.id,
+                bonusType: "personal-savings",
               }
             })}
             headers={["#", "Bank", "Bonus", "Min Deposit", "Hold", "Eff. APY"]}
@@ -209,7 +261,7 @@ export default function MasterBonusList() {
         >
           <TopPicksGrid sourcePage="/bonuses#business" items={businessChecking.slice(0, 6).map(b => ({
             bonusId: b.id,
-            bonusType: "business",
+            bonusType: "business-checking",
             bank: shortBankName(b),
             value: money(b.bonus_amount),
             sub: b.raw_excerpt ? String(b.raw_excerpt).slice(0, 100) : "Business checking · see offer",
@@ -217,14 +269,17 @@ export default function MasterBonusList() {
             summary: undefined,
           }))} />
           <BonusTable
+            sourcePage="/bonuses#business"
             rows={businessChecking.map((b, i) => ({
               i: i + 1,
               bank: shortBankName(b),
               bonus: money(b.bonus_amount),
               col3: "Business",
-              col4: b.expiration_date ? `Exp ${b.expiration_date}` : "—",
-              col5: b.fees?.monthly_fee === 0 ? "$0" : b.fees?.monthly_fee != null ? `$${b.fees.monthly_fee}` : "—",
+              col4: b.expiration_date ? `Exp ${b.expiration_date}` : "See terms",
+              col5: b.fees?.monthly_fee === 0 ? "$0" : b.fees?.monthly_fee != null ? `$${b.fees.monthly_fee}` : "See terms",
               href: undefined,
+              bonusId: b.id,
+              bonusType: "business-checking",
             }))}
             headers={["#", "Bank", "Bonus", "Type", "Expires", "Fee"]}
           />
@@ -250,6 +305,7 @@ export default function MasterBonusList() {
             }
           })} />
           <BonusTable
+            sourcePage="/bonuses#brokerage"
             rows={brokerage.map(({ bonus: b, effApy }, i) => {
               const t = b.tiers[0]
               return {
@@ -260,6 +316,8 @@ export default function MasterBonusList() {
                 col4: `${b.total_hold_days}d`,
                 col5: `${effApy.toFixed(1)}%`,
                 href: slugForBonus(b.id) ? `/blog/${slugForBonus(b.id)}` : undefined,
+                bonusId: b.id,
+                bonusType: "brokerage",
               }
             })}
             headers={["#", "Platform", "Bonus", "Min Deposit", "Hold", "Eff. APY"]}
@@ -291,6 +349,7 @@ export default function MasterBonusList() {
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
             <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
+            <Link href="/bank-bonuses-by-state" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>By state</Link>
           </div>
         </div>
       </footer>
@@ -360,10 +419,12 @@ function TopPicksGrid({ items, sourcePage }: { items: TopPick[]; sourcePage: str
   )
 }
 
-function BonusTable({ rows, headers }: {
-  rows: Array<{ i: number; bank: string; bonus: string; col3: string; col4: string; col5: string; href?: string }>
+function BonusTable({ rows, headers, sourcePage }: {
+  rows: Array<{ i: number; bank: string; bonus: string; col3: string; col4: string; col5: string; href?: string; bonusId?: string; bonusType?: string }>
   headers: string[]
+  sourcePage?: string
 }) {
+  const anyTrackable = rows.some(r => r.bonusId)
   return (
     <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, overflow: "hidden" }}>
       <div style={{ overflowX: "auto" }}>
@@ -377,6 +438,13 @@ function BonusTable({ rows, headers }: {
                   borderBottom: "1px solid #e8e8e8", whiteSpace: "nowrap",
                 }}>{h}</th>
               ))}
+              {anyTrackable && (
+                <th style={{
+                  textAlign: "right", padding: "12px 16px", fontSize: 11, fontWeight: 700,
+                  color: "#888", textTransform: "uppercase", letterSpacing: "0.06em",
+                  borderBottom: "1px solid #e8e8e8", whiteSpace: "nowrap",
+                }}>Track</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -390,6 +458,19 @@ function BonusTable({ rows, headers }: {
                 <td style={{ padding: "12px 16px", color: "#666" }}>{r.col3}</td>
                 <td style={{ padding: "12px 16px", color: "#888" }}>{r.col4}</td>
                 <td style={{ padding: "12px 16px", color: "#666" }}>{r.col5}</td>
+                {anyTrackable && (
+                  <td style={{ padding: "10px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
+                    {r.bonusId ? (
+                      <TrackBonusButton
+                        bonusId={r.bonusId}
+                        bonusType={r.bonusType}
+                        bankName={r.bank}
+                        sourcePage={sourcePage}
+                        compact
+                      />
+                    ) : null}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
