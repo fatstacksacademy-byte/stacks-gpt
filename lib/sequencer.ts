@@ -190,6 +190,7 @@ export function runSequencer({
   slotBlockedUntilWeeks = [],
   userState,
   includeBusiness = false,
+  militaryAffiliated = false,
 }: {
   slots: number
   payFrequency: string
@@ -200,6 +201,8 @@ export function runSequencer({
   slotBlockedUntilWeeks?: number[]
   userState?: string | null
   includeBusiness?: boolean
+  /** USAA / Navy Federal / AAFES-type offers gate on this. */
+  militaryAffiliated?: boolean
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -241,6 +244,13 @@ export function runSequencer({
         skipped.push({ bank_name: b.bank_name, reason: `Not available in ${userState}` })
         continue
       }
+    }
+
+    // Military-only bonuses (USAA / Navy Federal / AAFES) — hide unless the
+    // user has flagged themselves military_affiliated in their profile.
+    if ((b as { eligibility?: { military_only?: boolean } }).eligibility?.military_only === true && !militaryAffiliated) {
+      skipped.push({ bank_name: b.bank_name, reason: "Military members and families only" })
+      continue
     }
 
     const cooldownMonths = (b as any).cooldown_months ?? null

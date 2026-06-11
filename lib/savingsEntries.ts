@@ -22,8 +22,35 @@ export type SavingsEntry = {
   notes: string | null
   /** User said "already have" but skipped entering dates. */
   incomplete_info: boolean
+  /** Timestamp the user confirmed the account is open and live. */
+  account_opened_at?: string | null
+  /** Timestamp the required deposit hit the account. */
+  funded_at?: string | null
+  /** Timestamp the cash bonus posted (the moment it's "earned"). */
+  bonus_posted_at?: string | null
   created_at: string
   updated_at: string
+}
+
+export type SavingsMilestone = "account_opened_at" | "funded_at" | "bonus_posted_at"
+
+/**
+ * Mark or unmark a single milestone on a savings entry. Pass `null` to
+ * undo (the column nullably tracks when it was hit, so null === not done).
+ */
+export async function setSavingsMilestone(
+  id: string,
+  milestone: SavingsMilestone,
+  hit: boolean,
+): Promise<boolean> {
+  const supabase = createClient()
+  const value = hit ? new Date().toISOString() : null
+  const { error } = await supabase
+    .from("savings_entries")
+    .update({ [milestone]: value })
+    .eq("id", id)
+  if (error) { reportError("Could not update milestone", error); return false }
+  return true
 }
 
 export async function getSavingsEntries(userId: string): Promise<SavingsEntry[]> {

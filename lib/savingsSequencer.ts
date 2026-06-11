@@ -15,6 +15,17 @@ export type SavingsSequencedEntry = {
   start_day: number
   end_day: number
   rotation: number // which rotation this falls in (1, 2, 3...)
+  /**
+   * Profit ABOVE what the same capital would have earned in the user's
+   * current HYSA during the holding period. This is the honest "did this
+   * bonus actually beat my current account" number — it accounts for the
+   * opportunity cost of locking the deposit at the bonus bank's base APY
+   * instead of the user's higher HYSA. May be negative when a bonus's
+   * combined (bonus + base APY) doesn't beat the user's HYSA.
+   */
+  incremental_vs_hysa: number
+  /** What the user's current HYSA would have earned on this deposit over the same hold window. */
+  hysa_baseline_earnings: number
 }
 
 export type SavingsSequencerResult = {
@@ -73,6 +84,7 @@ export function runSavingsSequencer({
   currentHysaApy = 0,
   includeBusiness = false,
   includeBrokerage = false,
+  militaryAffiliated = false,
 }: {
   availableBalance: number
   completedBonusIds?: string[]
@@ -81,6 +93,8 @@ export function runSavingsSequencer({
   currentHysaApy?: number
   includeBusiness?: boolean
   includeBrokerage?: boolean
+  /** USAA / Navy Federal / AAFES-type offers gate on this. */
+  militaryAffiliated?: boolean
 }): SavingsSequencerResult {
   const skipped: { bank_name: string; reason: string }[] = []
   const candidates: {
@@ -120,6 +134,13 @@ export function runSavingsSequencer({
         skipped.push({ bank_name: bonus.bank_name, reason: `Not available in ${userState}` })
         continue
       }
+    }
+
+    // Military-only bonuses — hide unless the user has flagged themselves
+    // military_affiliated in their profile.
+    if ((bonus as { eligibility?: { military_only?: boolean } }).eligibility?.military_only === true && !militaryAffiliated) {
+      skipped.push({ bank_name: bonus.bank_name, reason: "Military members and families only" })
+      continue
     }
 
     // Evaluate ALL affordable tiers and pick the one with the best effective APY
@@ -231,6 +252,13 @@ export function runSavingsSequencer({
       const startDay = currentDay
       const endDay = startDay + bonus.total_hold_days
 
+      // What would the same deposit have earned in the user's current HYSA
+      // over the same hold window? This is the opportunity-cost baseline.
+      // When currentHysaApy isn't set, baseline is 0 and incremental ==
+      // total_earnings (consistent with previous behavior).
+      const hysaBaseline = Math.round(tier.min_deposit * currentHysaApy * (bonus.total_hold_days / 365))
+      const incremental = totalEarnings - hysaBaseline
+
       entries.push({
         id: bonus.id,
         bank_name: bonus.bank_name,
@@ -246,6 +274,8 @@ export function runSavingsSequencer({
         start_day: startDay,
         end_day: endDay,
         rotation,
+        incremental_vs_hysa: incremental,
+        hysa_baseline_earnings: hysaBaseline,
       })
 
       active.push({ endDay, amount: tier.min_deposit })

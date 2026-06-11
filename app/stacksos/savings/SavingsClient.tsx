@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
-import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, SavingsEntry } from "../../../lib/savingsEntries"
+import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, setSavingsMilestone, SavingsEntry, type SavingsMilestone } from "../../../lib/savingsEntries"
+import LiquidityTimeline from "../../components/LiquidityTimeline"
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
 import { runSavingsSequencer, SavingsSequencedEntry } from "../../../lib/savingsSequencer"
@@ -53,27 +54,26 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
-  // Manual milestone state for savings entries, persisted to localStorage so
-  // users can click checkboxes to advance their own progress. Previously
-  // "Account opened" and "$X deposited" were auto-checked on Start — but
-  // clicking Start only means "I'm committing to this plan," not "I've
-  // actually opened the account and deposited the money."
-  // Key shape: stacks:savings:{entryId}:{step}=1 where step ∈ opened|deposited
-  const [manualStepsVersion, setManualStepsVersion] = useState(0)
-  const getManualStep = (entryId: string, step: "opened" | "deposited"): boolean => {
-    if (typeof window === "undefined") return false
-    return localStorage.getItem(`stacks:savings:${entryId}:${step}`) === "1"
+  // Milestone state is now persisted on the savings_entries row itself
+  // (account_opened_at / funded_at / bonus_posted_at), so a click writes
+  // to the DB and survives across devices / cron / sessions. The earlier
+  // behavior stored these in localStorage; we backfill any leftover keys
+  // into the DB the first time we see them (see useEffect below).
+  // TODO(server-persistence): this requires migration 028_savings_milestones
+  // to be applied before deploy — until those columns exist, setSavingsMilestone
+  // writes fail and milestones silently no-op. Verify the migration has run in
+  // each environment as part of the release checklist.
+  async function handleMilestoneToggle(entry: SavingsEntry, milestone: SavingsMilestone, hit: boolean) {
+    const ok = await setSavingsMilestone(entry.id, milestone, hit)
+    if (ok) await loadData()
   }
-  const toggleManualStep = (entryId: string, step: "opened" | "deposited") => {
-    if (typeof window === "undefined") return
-    const key = `stacks:savings:${entryId}:${step}`
-    const current = localStorage.getItem(key) === "1"
-    if (current) localStorage.removeItem(key)
-    else localStorage.setItem(key, "1")
-    setManualStepsVersion(v => v + 1) // trigger re-render
+  // Legacy localStorage milestone shape mapped to the new columns.
+  const LEGACY_MILESTONE_MAP: Record<"opened" | "deposited", SavingsMilestone> = {
+    opened: "account_opened_at",
+    deposited: "funded_at",
   }
-  void manualStepsVersion // tracked so react knows to re-render when localStorage flips
   const [userState, setUserState] = useState<string | null>(null)
+  const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [showBusiness, setShowBusiness] = useState(() => {
     if (typeof window === "undefined") return false
     return localStorage.getItem("stacks_show_business") === "true"
@@ -108,17 +108,45 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     const [e, p, { data: userProfile }, vStates] = await Promise.all([
       getSavingsEntries(userId),
       getSavingsProfile(userId),
-      supabaseClient.from("user_profiles").select("state").eq("user_id", userId).single(),
+      supabaseClient.from("user_profiles").select("state, military_affiliated").eq("user_id", userId).single(),
       getVerificationStateMap(),
     ])
     setEntries(e)
     setProfile(p)
     if (userProfile?.state) setUserState(userProfile.state)
+    const up = userProfile as { military_affiliated?: boolean | null } | null
+    setMilitaryAffiliated(up?.military_affiliated === true)
     setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
 
   useEffect(() => { loadData() }, [loadData])
+
+  // One-shot migration: for any entry whose milestone column is null but
+  // whose localStorage flag is set, lift the timestamp into the DB and
+  // remove the local key. Runs whenever entries load and bails out fast
+  // when there's nothing to do.
+  useEffect(() => {
+    if (typeof window === "undefined" || entries.length === 0) return
+    async function backfill() {
+      let touched = false
+      for (const e of entries) {
+        for (const [legacy, column] of Object.entries(LEGACY_MILESTONE_MAP) as Array<["opened" | "deposited", SavingsMilestone]>) {
+          const key = `stacks:savings:${e.id}:${legacy}`
+          const hit = localStorage.getItem(key) === "1"
+          const alreadyInDb = (e as Record<string, unknown>)[column] != null
+          if (hit && !alreadyInDb) {
+            await setSavingsMilestone(e.id, column, true)
+            touched = true
+          }
+          if (hit) localStorage.removeItem(key)
+        }
+      }
+      if (touched) await loadData()
+    }
+    void backfill()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries.length])
 
   function resetForm() {
     setFInstitution(""); setFBonusName(""); setFBonusAmount(""); setFDepositRequired("")
@@ -187,9 +215,22 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
 
   const totalEarned = completedEntries.reduce((s, e) => s + (e.actual_value ?? e.expected_total_value ?? 0), 0)
 
+  // Balance is null until the user sets it. Treat 0 as "unknown" too — we
+  // explicitly want to avoid making up a placeholder balance and producing
+  // a misleading projection (the previous code silently fell back to a
+  // $50,000 placeholder).
+  const hasBalance = profile.current_balance != null && profile.current_balance > 0
   const currentBalance = profile.current_balance ?? 0
   const currentApy = profile.current_apy ?? 0
   const currentAnnualYield = currentBalance * currentApy
+
+  // Protected cash never gets recommended for bonuses. Emergency fund and
+  // cash reserves both come out of the same pool — sum them, then floor at
+  // zero so recommendations can't ever allocate into the protected bucket.
+  const emergencyFund = profile.emergency_fund ?? 0
+  const cashReserves = profile.cash_reserves ?? 0
+  const protectedCash = emergencyFund + cashReserves
+  const deployableCash = Math.max(0, currentBalance - protectedCash)
 
   const potentialFromOpportunities = [...activeEntries, ...plannedEntries].reduce((s, e) => {
     return s + (e.expected_total_value ?? (e.bonus_amount ?? 0) + (e.estimated_yield ?? 0))
@@ -210,15 +251,20 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     .map(e => e.bonus_name)
     .filter(Boolean) as string[]
 
-  const sequencerResult = runSavingsSequencer({
-    availableBalance: currentBalance || 50000,
-    completedBonusIds,
-    skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
-    userState,
-    currentHysaApy: currentApy || 0,
-    includeBusiness: showBusiness,
-    includeBrokerage: showBrokerage,
-  })
+  // Only run the sequencer when there's deployable cash. Running it with a
+  // zero balance just returns "skipped, need $X" for every bonus.
+  const sequencerResult = hasBalance && deployableCash > 0
+    ? runSavingsSequencer({
+        availableBalance: deployableCash,
+        completedBonusIds,
+        skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
+        userState,
+        currentHysaApy: currentApy || 0,
+        includeBusiness: showBusiness,
+        includeBrokerage: showBrokerage,
+        militaryAffiliated,
+      })
+    : { entries: [] as SavingsSequencedEntry[], total_earnings: 0, total_days: 0, skipped: [] as { bank_name: string; reason: string }[] }
 
   // Sequencer now handles business/brokerage filtering.
   // Also hide anything the user *just* clicked start on — the DB write is
@@ -311,7 +357,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
             await sb.from("user_profiles").update({ state: newState }).eq("user_id", userId)
           }}
             style={{ fontSize: 12, color: userState ? "#0d7c5f" : "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
-            <option value="">All states</option>
+            <option value="">Nationwide bonuses only</option>
             {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -443,9 +489,70 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           </div>
         )}
 
+        {/* ── Cash Allocation: total / protected / deployable ── */}
+        {!hasBalance ? (
+          <div style={{
+            background: "#fff", border: "2px solid #fde68a",
+            borderRadius: 14, padding: "20px 24px", marginBottom: 20,
+            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
+          }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#854d0e", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Set your savings balance
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                Recommendations need a real balance to be useful.
+              </div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                Open Savings Profile and enter your current balance, plus emergency fund and reserves you want to keep untouched.
+              </div>
+            </div>
+            <button onClick={() => setShowProfile(true)} style={{
+              fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              padding: "11px 18px", borderRadius: 10, border: "none", cursor: "pointer", flexShrink: 0,
+            }}>
+              Set balance →
+            </button>
+          </div>
+        ) : (
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: 12, marginBottom: 20,
+          }}>
+            <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px" }}>
+              <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total cash</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{money(currentBalance)}</div>
+              {profile.current_institution && (
+                <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>at {profile.current_institution}</div>
+              )}
+            </div>
+            <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 18px" }}>
+              <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Protected</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: protectedCash > 0 ? "#854d0e" : "#bbb", marginTop: 2 }}>{money(protectedCash)}</div>
+              <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>
+                {emergencyFund > 0 && cashReserves > 0 ? `${money(emergencyFund)} fund + ${money(cashReserves)} reserves` :
+                 emergencyFund > 0 ? "emergency fund" :
+                 cashReserves > 0 ? "reserves" :
+                 "none set"}
+              </div>
+            </div>
+            <div style={{
+              background: deployableCash > 0 ? "#f0faf5" : "#fff",
+              border: `1px solid ${deployableCash > 0 ? "#a7f3d0" : "#e8e8e8"}`,
+              borderRadius: 10, padding: "14px 18px",
+            }}>
+              <div style={{ fontSize: 10, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.05em" }}>Deployable</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: deployableCash > 0 ? "#0d7c5f" : "#bbb", marginTop: 2 }}>{money(deployableCash)}</div>
+              <div style={{ fontSize: 11, color: "#999", marginTop: 3 }}>
+                {deployableCash > 0 ? "available for bonuses" : "all cash is protected"}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Projection Hero ── */}
-        {(() => {
-          const balance = currentBalance || 50000
+        {hasBalance && deployableCash > 0 && (() => {
+          const balance = deployableCash
           const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
           const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
           let y1Bonus = 0, y1Interest = 0, y2Bonus = 0, y2Interest = 0
@@ -583,25 +690,12 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 const openDate = e.opened_date ? new Date(e.opened_date + "T00:00:00") : null
                 const daysElapsed = openDate ? Math.floor((Date.now() - openDate.getTime()) / 86400000) : 0
                 const daysRemaining = holdDays > 0 ? Math.max(0, holdDays - daysElapsed) : 0
-                const progress = holdDays > 0 ? Math.min(100, Math.round((daysElapsed / holdDays) * 100)) : 0
                 const holdComplete = daysRemaining === 0 && holdDays > 0
                 const bonusReceived = e.actual_value != null && e.actual_value > 0
-                const openedConfirmed = getManualStep(e.id, "opened")
-                const depositedConfirmed = getManualStep(e.id, "deposited")
+                const openedConfirmed = e.account_opened_at != null
+                const depositedConfirmed = e.funded_at != null
 
-                // Allow the catalog entry to override the generic "$X deposited"
-                // step label. Ally, for example, isn't a single $60 deposit — it's
-                // 3 recurring monthly transfers of $20+.
                 const catalogEntry = savingsBonusesCatalog.find(b => b.id === e.bonus_name)
-                const depositedLabel = catalogEntry?.deposit_action_label ?? `$${deposit.toLocaleString()} deposited`
-
-                const steps = [
-                  { key: "opened" as const, label: "Account opened", done: openedConfirmed, clickable: true },
-                  { key: "deposited" as const, label: depositedLabel, done: depositedConfirmed, clickable: true },
-                  { key: "hold" as const, label: `Hold period (${holdDays} days)`, done: holdComplete, clickable: false },
-                  { key: "received" as const, label: "Bonus received", done: bonusReceived, clickable: false },
-                ]
-
                 const offerLink = catalogEntry?.source_links?.[0] ?? null
 
                 return (
@@ -627,57 +721,26 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                       </div>
                     </div>
 
-                    {/* Progress bar */}
-                    {holdDays > 0 && (
-                      <div style={{ background: "#e8e8e8", borderRadius: 4, height: 6, marginBottom: 14 }}>
-                        <div style={{ background: "#0d7c5f", borderRadius: 4, height: 6, width: `${progress}%`, transition: "width 0.3s" }} />
-                      </div>
-                    )}
-
-                    {/* Checklist — opened + deposited are user-clickable,
-                        the latter two auto-compute from opened_date / actual_value. */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {steps.map((step) => {
-                        const interactive = step.clickable && !step.done
-                        return (
-                          <div
-                            key={step.key}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 10,
-                              cursor: step.clickable ? "pointer" : "default",
-                            }}
-                            onClick={step.clickable ? () => toggleManualStep(e.id, step.key as "opened" | "deposited") : undefined}
-                            title={
-                              step.clickable
-                                ? step.done
-                                  ? "Click to uncheck"
-                                  : "Click when you've done this step"
-                                : undefined
-                            }
-                          >
-                            <div style={{
-                              width: 20, height: 20, borderRadius: 10, flexShrink: 0,
-                              background: step.done ? "#0d7c5f" : "#fff",
-                              border: step.done ? "none" : interactive ? "2px solid #2563eb" : "2px solid #ddd",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 11, color: "#fff", fontWeight: 700,
-                            }}>
-                              {step.done && "✓"}
-                            </div>
-                            <span style={{
-                              fontSize: 13,
-                              color: step.done ? "#111" : interactive ? "#2563eb" : "#bbb",
-                              fontWeight: step.done ? 500 : 400,
-                            }}>
-                              {step.label}
-                              {interactive && <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>— click when done</span>}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
+                    {/* Liquidity timeline replaces the legacy checklist +
+                        progress bar. The timeline component renders all six
+                        milestones (Opened → Funded → Holding → Bonus posted
+                        → Safe to withdraw → Next move) with click-to-mark
+                        on the user-actionable ones. */}
+                    <LiquidityTimeline
+                      entry={e}
+                      onToggle={(milestone, hit) => handleMilestoneToggle(e, milestone, hit)}
+                      recommendation={
+                        bonusReceived
+                          ? "Close & rotate this cash into your next bonus"
+                          : holdComplete && !bonusReceived
+                          ? "Confirm the bonus posted in your account"
+                          : !openedConfirmed
+                          ? "Open the account at the bank to begin"
+                          : !depositedConfirmed && deposit > 0
+                          ? `Move ${money(deposit)} into the account to start the hold clock`
+                          : null
+                      }
+                    />
 
                     {/* Actions */}
                     <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
@@ -705,11 +768,6 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <button
                           onClick={async () => {
                             if (!confirm(`Undo "${e.institution_name}"? This removes the entry — only do this if you didn't actually start the bonus.`)) return
-                            // Cleanup any stray localStorage flags too.
-                            if (typeof window !== "undefined") {
-                              localStorage.removeItem(`stacks:savings:${e.id}:opened`)
-                              localStorage.removeItem(`stacks:savings:${e.id}:deposited`)
-                            }
                             await deleteSavingsEntry(e.id)
                             await loadData()
                           }}
@@ -900,6 +958,20 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Base APY</div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{(rec.base_apy * 100).toFixed(2)}%</div>
                       </div>
+                      {currentApy > 0 && (
+                        <div>
+                          <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>vs your HYSA</div>
+                          <div style={{
+                            fontSize: 14, fontWeight: 700,
+                            color: rec.incremental_vs_hysa > 0 ? "#0d7c5f" : "#dc2626",
+                          }}>
+                            {rec.incremental_vs_hysa > 0 ? "+" : ""}{money(rec.incremental_vs_hysa)}
+                          </div>
+                          <div style={{ fontSize: 10, color: "#bbb", marginTop: 2 }}>
+                            {(currentApy * 100).toFixed(2)}% baseline · {money(rec.hysa_baseline_earnings)}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Rotation indicator */}
@@ -1032,135 +1104,6 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{sequencerResult.entries.length}</div>
               </div>
             </div>
-
-            {/* Old projection removed — now at top of page */}
-            {false && sequencerResult.entries.length > 0 && (() => {
-              const balance = currentBalance || 50000
-              const today = new Date()
-              const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
-              const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
-              let year1TotalBonus = 0
-              let year1TotalInterest = 0
-              let year2TotalBonus = 0
-              let year2TotalInterest = 0
-              for (const e of year1Entries) { year1TotalBonus += e.bonus_amount; year1TotalInterest += e.interest_earned }
-              for (const e of year2Entries) { year2TotalBonus += e.bonus_amount; year2TotalInterest += e.interest_earned }
-              const year1Total = year1TotalBonus + year1TotalInterest
-              const year2Total = year2TotalBonus + year2TotalInterest
-
-              function addDays(d: Date, n: number) { const r = new Date(d); r.setDate(r.getDate() + n); return r }
-              function fmtDate(d: Date) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) }
-
-              return (
-                <div style={{ marginTop: 16 }}>
-                  {/* Year 1 summary + table */}
-                  <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 10, padding: "16px 20px", marginBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <div>
-                        <div style={{ fontSize: 10, color: "#0d7c5f", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 1 — 12-Month Projection</div>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", marginTop: 4 }}>{money(year1Total)}</div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 11, color: "#888" }}>{(year1Total / balance * 100).toFixed(1)}% return on {money(balance)}</div>
-                        <div style={{ fontSize: 11, color: "#888" }}>{year1Entries.length} rotation{year1Entries.length !== 1 ? "s" : ""}</div>
-                      </div>
-                    </div>
-                    {/* Table */}
-                    <div style={{ overflowX: "auto" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                        <thead>
-                          <tr style={{ borderBottom: "1px solid #a7f3d0" }}>
-                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>#</th>
-                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bank</th>
-                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Open</th>
-                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Close</th>
-                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Deposit</th>
-                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bonus</th>
-                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Interest</th>
-                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Total</th>
-                            <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Eff. APY</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {year1Entries.map((e, i) => (
-                            <tr key={e.id} style={{ borderBottom: "1px solid #e8f5e9" }}>
-                              <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
-                              <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
-                              <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.start_day))}</td>
-                              <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.end_day))}</td>
-                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.deposit)}</td>
-                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 600 }}>{money(e.bonus_amount)}</td>
-                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.interest_earned)}</td>
-                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(e.total_earnings)}</td>
-                              <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{(e.effective_apy * 100).toFixed(1)}%</td>
-                            </tr>
-                          ))}
-                          <tr style={{ background: "#e6f5f0" }}>
-                            <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Year 1 Total</td>
-                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(year1TotalBonus)}</td>
-                            <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(year1TotalInterest)}</td>
-                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 800 }}>{money(year1Total)}</td>
-                            <td style={{ padding: "8px" }}></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Year 2 */}
-                  {year2Entries.length > 0 && (
-                    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "16px 20px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                        <div>
-                          <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Year 2 Projection</div>
-                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 4 }}>{money(year2Total)}</div>
-                        </div>
-                        <div style={{ fontSize: 11, color: "#888", textAlign: "right" }}>{year2Entries.length} rotation{year2Entries.length !== 1 ? "s" : ""}</div>
-                      </div>
-                      <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                          <thead>
-                            <tr style={{ borderBottom: "1px solid #e8e8e8" }}>
-                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>#</th>
-                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bank</th>
-                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Open</th>
-                              <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Close</th>
-                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Deposit</th>
-                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Bonus</th>
-                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Interest</th>
-                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Total</th>
-                              <th style={{ textAlign: "right", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Eff. APY</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {year2Entries.map((e, i) => (
-                              <tr key={e.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
-                                <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
-                                <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
-                                <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.start_day))}</td>
-                                <td style={{ padding: "8px", color: "#555" }}>{fmtDate(addDays(today, e.end_day))}</td>
-                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.deposit)}</td>
-                                <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 600 }}>{money(e.bonus_amount)}</td>
-                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{money(e.interest_earned)}</td>
-                                <td style={{ padding: "8px", color: "#111", textAlign: "right", fontWeight: 700 }}>{money(e.total_earnings)}</td>
-                                <td style={{ padding: "8px", color: "#555", textAlign: "right" }}>{(e.effective_apy * 100).toFixed(1)}%</td>
-                              </tr>
-                            ))}
-                            <tr style={{ background: "#f9f9f9" }}>
-                              <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Year 2 Total</td>
-                              <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(year2TotalBonus)}</td>
-                              <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(year2TotalInterest)}</td>
-                              <td style={{ padding: "8px", color: "#111", textAlign: "right", fontWeight: 800 }}>{money(year2Total)}</td>
-                              <td style={{ padding: "8px" }}></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            })()}
 
             {/* Skipped bonuses */}
             {sequencerResult.skipped.length > 0 && (

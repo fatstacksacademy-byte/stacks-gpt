@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
+import { checkingBonusStep, customBonusStep, URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { bonuses as allBonuses } from "../../lib/data/bonuses"
@@ -375,7 +376,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     }
     if (!projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false, militaryAffiliated: profile.military_affiliated === true })
       setProjectionResult(result)
     }
     setShowProjection(true)
@@ -740,15 +741,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
   useEffect(() => {
     setProjectionResult(null)
-  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, showBusinessBonuses, onlyLowChex, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [profile.pay_frequency, profile.paycheck_amount, profile.state, profile.military_affiliated, showBusinessBonuses, onlyLowChex, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   useEffect(() => {
     if (mounted && !loadingRecords && loaded && !projectionResult) {
       const slotBlockedUntilWeeks = buildCustomSlotBlocks()
-      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false })
+      const result = runSequencer({ slots: buildIncomeSources().length, payFrequency: profile.pay_frequency, paycheckAmount: profile.paycheck_amount, completedRecords, incomeSources: buildIncomeSources(), skippedBonusIds: skippedIds, slotBlockedUntilWeeks, userState: profile.state, includeBusiness: false, militaryAffiliated: profile.military_affiliated === true })
       setProjectionResult(result)
     }
-  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
+  }, [mounted, loadingRecords, loaded, profile.pay_frequency, profile.paycheck_amount, profile.state, profile.military_affiliated, completedRecords, projectionResult, income2Freq, income2Amt, income3Freq, income3Amt, skippedIds, customBonuses])
 
   const today730End = addDays(todayStr(), 730)
   // Project custom bonuses into the plan (active + future churnable cycles only — pending stay in queue until started)
@@ -864,7 +865,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
           <span className="rm-topbar-email">{userEmail}</span>
           <select value={profile.state ?? ""} onChange={e => setProfile({ state: e.target.value || null })}
             style={{ fontSize: 12, color: profile.state ? "#0d7c5f" : "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
-            <option value="">All states</option>
+            <option value="">Nationwide bonuses only</option>
             {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -955,7 +956,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div>
                 <div style={settingsLabel}>Your state</div>
                 <select value={profile.state ?? ""} onChange={e => setProfile({ state: e.target.value || null })} style={settingsSelectLight}>
-                  <option value="">All states</option>
+                  <option value="">Nationwide bonuses only</option>
                   {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
@@ -1127,6 +1128,176 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             </a>
           </div>
         )}
+
+        {/* ── PROMINENT NEXT ACTION ─────────────────────────────────
+             Single most-urgent action across active catalog + custom
+             bonuses. Reuses bonusNextStep so the labels match the
+             dashboard Next Actions list. Skipped when nothing is in
+             progress (the Start-here banner above handles that case).
+             ============================================================ */}
+        {(() => {
+          type Candidate = {
+            name: string
+            amount: number
+            nextStep: string
+            deadline: string | null
+            urgency: BonusUrgency
+            expectedPayout: string | null
+            safeClose: string | null
+            depositProgress?: { done: number; total: number; label: string } | null
+          }
+          function addDaysISO(iso: string, days: number): string {
+            const d = new Date(iso + "T00:00:00")
+            d.setDate(d.getDate() + days)
+            return d.toISOString().slice(0, 10)
+          }
+          function fmtDate(iso: string | null): string | null {
+            if (!iso) return null
+            const d = new Date(iso + "T00:00:00")
+            return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+          }
+          const cands: Candidate[] = []
+          for (const { bonus: b } of inProgress) {
+            const rec = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+            if (!rec) continue
+            const step = checkingBonusStep(rec, b)
+            if (!step.nextStep) continue
+            const reqHold = (b as { requirements?: { holding_period_days?: number | null } }).requirements?.holding_period_days ?? null
+            const tlHold = (b as { timeline?: { must_remain_open_days?: number | null } }).timeline?.must_remain_open_days ?? null
+            const postEst = (b as { timeline?: { bonus_posting_days_est?: number | null } }).timeline?.bonus_posting_days_est ?? null
+            const expected = rec.opened_date && postEst ? addDaysISO(rec.opened_date, postEst) : null
+            const safe = rec.opened_date && (reqHold ?? tlHold) ? addDaysISO(rec.opened_date, (reqHold ?? tlHold)!) : null
+            // Deposit progress when DD requirement and tracked deposits exist
+            const reqs = (b as { requirements?: { min_direct_deposit_total?: number | null; dd_count_required?: number | null } }).requirements ?? {}
+            const userDeposits = deposits.filter(d => d.bonus_id === b.id)
+            let progress: Candidate["depositProgress"] = null
+            if (reqs.min_direct_deposit_total) {
+              const done = userDeposits.reduce((s, d) => s + (d.amount ?? 0), 0)
+              progress = { done, total: reqs.min_direct_deposit_total, label: `$${done.toLocaleString()} of $${reqs.min_direct_deposit_total.toLocaleString()}` }
+            } else if (reqs.dd_count_required) {
+              const done = userDeposits.length
+              progress = { done, total: reqs.dd_count_required, label: `${done} of ${reqs.dd_count_required} deposits` }
+            }
+            cands.push({
+              name: b.bank_name,
+              amount: b.bonus_amount,
+              nextStep: step.nextStep,
+              deadline: step.deadline,
+              urgency: step.urgency,
+              expectedPayout: expected,
+              safeClose: safe,
+              depositProgress: progress,
+            })
+          }
+          for (const c of activeCustom) {
+            const step = customBonusStep(c)
+            if (!step.nextStep) continue
+            const safe = c.opened_date && c.holding_period_days ? addDaysISO(c.opened_date, c.holding_period_days) : null
+            cands.push({
+              name: c.bank_name,
+              amount: c.bonus_amount,
+              nextStep: step.nextStep,
+              deadline: step.deadline,
+              urgency: step.urgency,
+              expectedPayout: null,
+              safeClose: safe,
+            })
+          }
+          if (cands.length === 0) return null
+
+          cands.sort((a, b) => {
+            const ua = URGENCY_RANK[a.urgency], ub = URGENCY_RANK[b.urgency]
+            if (ua !== ub) return ua - ub
+            const da = daysUntil(a.deadline), db = daysUntil(b.deadline)
+            if (da != null && db != null) return da - db
+            if (da != null) return -1
+            if (db != null) return 1
+            return 0
+          })
+          const top = cands[0]
+          const daysLeft = daysUntil(top.deadline)
+          const urgencyColor =
+            top.urgency === "overdue" ? "#dc2626" :
+            top.urgency === "urgent" ? "#f59e0b" :
+            top.urgency === "soon" ? "#0d7c5f" :
+            "#999"
+          const urgencyLabel =
+            top.urgency === "overdue" ? "Overdue" :
+            top.urgency === "urgent" ? "Urgent" :
+            top.urgency === "soon" ? "Soon" : null
+
+          return (
+            <div style={{
+              background: "#fff",
+              border: `2px solid ${urgencyColor}`,
+              borderRadius: 14,
+              padding: "20px 22px",
+              marginBottom: 20,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: urgencyColor, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                      Next action
+                    </span>
+                    {urgencyLabel && (
+                      <span style={{ fontSize: 10, fontWeight: 700, background: urgencyColor, color: "#fff", padding: "2px 8px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        {urgencyLabel}
+                      </span>
+                    )}
+                  </div>
+                  <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: "0 0 4px", letterSpacing: "-0.01em" }}>
+                    {top.nextStep}
+                  </h2>
+                  <div style={{ fontSize: 13, color: "#666", marginBottom: 10 }}>
+                    {top.name}
+                    {top.deadline && (
+                      <>
+                        {" "}· by {fmtDate(top.deadline)}
+                        {daysLeft != null && (
+                          <span style={{ color: urgencyColor, fontWeight: 600 }}>
+                            {" "}({daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "today" : `${daysLeft}d left`})
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  {top.depositProgress && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>
+                        Progress · {top.depositProgress.label}
+                      </div>
+                      <div style={{ height: 6, background: "#f0f0f0", borderRadius: 3, overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%",
+                          width: `${Math.min(100, Math.round((top.depositProgress.done / top.depositProgress.total) * 100))}%`,
+                          background: urgencyColor,
+                          transition: "width 0.3s",
+                        }} />
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12, color: "#777", marginTop: 6 }}>
+                    {top.expectedPayout && (
+                      <span><strong style={{ color: "#666" }}>Estimated payout:</strong> {fmtDate(top.expectedPayout)}</span>
+                    )}
+                    {top.safeClose && (
+                      <span><strong style={{ color: "#111" }}>Estimated safe date:</strong> {fmtDate(top.safeClose)}</span>
+                    )}
+                  </div>
+                </div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: "#0d7c5f", flexShrink: 0 }}>
+                  ${top.amount.toLocaleString()}
+                </div>
+              </div>
+              {cands.length > 1 && (
+                <div style={{ fontSize: 11, color: "#bbb", marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+                  {cands.length - 1} more action{cands.length - 1 !== 1 ? "s" : ""} below
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>

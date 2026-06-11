@@ -116,6 +116,7 @@ export default function HubClient({
       paycheckAmount: profile.paycheck_amount,
       incomeSources: getIncomeSources(profile),
       userState: profile.state,
+      militaryAffiliated: profile.military_affiliated === true,
     })
     const allBonuses: SequencedBonus[] = result.slots
       .flat()
@@ -137,12 +138,13 @@ export default function HubClient({
       userState: profile.state,
       currentHysaApy: savingsProfile.current_apy ?? 0,
       includeBrokerage: true,
+      militaryAffiliated: profile.military_affiliated === true,
     })
     const items = [...(result.entries ?? [])]
       .sort((a, b) => (b.total_earnings ?? 0) - (a.total_earnings ?? 0))
       .map((e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) }))
     return { total: Math.round(result.total_earnings ?? 0), items }
-  }, [savingsProfile, profile.state])
+  }, [savingsProfile, profile.state, profile.military_affiliated])
 
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
@@ -159,14 +161,14 @@ export default function HubClient({
       useTravel = localStorage.getItem("stacks_cc_rewards_mode") === "travel"
     }
     const overrides = spendingProfile?.cpp_overrides ?? null
-    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace, useTravel, overrides)
+    const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace, useTravel, overrides, profile.military_affiliated === true)
     const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
     const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
     const items = [...year1List]
       .sort((a, b) => b.net_value - a.net_value)
       .map((s) => ({ label: s.card.card_name, amount: Math.round(s.net_value) }))
     return { total: Math.round(year1), items }
-  }, [spendingProfile, profile.state])
+  }, [spendingProfile, profile.state, profile.military_affiliated])
 
   const portfolio12mo =
     paycheckProjection.total + savingsProjection.total + spendingProjection.total
@@ -175,22 +177,43 @@ export default function HubClient({
   const startedBonuses = useMemo<StartedBonus[]>(() => {
     const out: StartedBonus[] = []
 
+    function addDaysISO(iso: string, days: number): string {
+      const d = new Date(iso + "T00:00:00")
+      d.setDate(d.getDate() + days)
+      return d.toISOString().slice(0, 10)
+    }
+
     // 1) Paycheck checking bonuses: completed_bonuses WHERE closed_date IS NULL
     for (const r of completedRecords) {
       if (r.closed_date) continue
       const b = bonuses.find((x) => (x as { id?: string }).id === r.bonus_id)
       if (!b) continue
       const step = checkingBonusStep(r, b)
+      const cat = b as {
+        bank_name?: string
+        bonus_amount?: number
+        timeline?: { bonus_posting_days_est?: number | null; must_remain_open_days?: number | null }
+        requirements?: { holding_period_days?: number | null }
+      }
+      const expectedPayout = r.opened_date && cat.timeline?.bonus_posting_days_est
+        ? addDaysISO(r.opened_date, cat.timeline.bonus_posting_days_est)
+        : null
+      const holdDays = cat.requirements?.holding_period_days ?? cat.timeline?.must_remain_open_days ?? null
+      const safeClose = r.opened_date && holdDays
+        ? addDaysISO(r.opened_date, holdDays)
+        : null
       out.push({
         module: "paycheck",
-        name: (b as { bank_name?: string }).bank_name ?? r.bonus_id,
-        amount: r.actual_amount ?? (b as { bonus_amount?: number }).bonus_amount ?? 0,
+        name: cat.bank_name ?? r.bonus_id,
+        amount: r.actual_amount ?? cat.bonus_amount ?? 0,
         started_date: r.opened_date,
         nextStep: step.nextStep,
         deadline: step.deadline,
         urgency: step.urgency,
         href: "/stacksos/paycheck",
         bonus_id: r.bonus_id,
+        expected_payout_date: expectedPayout,
+        safe_close_date: safeClose,
       })
     }
 
@@ -199,6 +222,9 @@ export default function HubClient({
       if (c.closed_date) continue
       if (c.current_step && NON_ACTIVE_CUSTOM_STEPS.has(c.current_step)) continue
       const step = customBonusStep(c)
+      const safeClose = c.opened_date && c.holding_period_days
+        ? addDaysISO(c.opened_date, c.holding_period_days)
+        : null
       out.push({
         module: "paycheck",
         name: c.bank_name,
@@ -208,6 +234,7 @@ export default function HubClient({
         deadline: step.deadline,
         urgency: step.urgency,
         href: "/stacksos/paycheck",
+        safe_close_date: safeClose,
       })
     }
 
@@ -215,6 +242,8 @@ export default function HubClient({
     for (const c of ownedCards) {
       if (c.status !== "active") continue
       const step = spendingCardStep(c)
+      // Card "expected payout" = spend deadline + ~30d billing-cycle posting.
+      const expectedPayout = c.spend_deadline ? addDaysISO(c.spend_deadline, 30) : null
       out.push({
         module: "spending",
         name: c.card_name,
@@ -224,6 +253,7 @@ export default function HubClient({
         deadline: step.deadline,
         urgency: step.urgency,
         href: "/stacksos/spending",
+        expected_payout_date: expectedPayout,
       })
     }
 
@@ -231,6 +261,9 @@ export default function HubClient({
     for (const e of savingsEntries) {
       if (e.status !== "active") continue
       const step = savingsEntryStep(e)
+      const expectedPayout = e.opened_date && e.holding_period_days
+        ? addDaysISO(e.opened_date, e.holding_period_days)
+        : null
       out.push({
         module: "savings",
         name: e.institution_name,
@@ -241,6 +274,8 @@ export default function HubClient({
         urgency: step.urgency,
         href: "/stacksos/savings",
         bonus_id: e.canonical_offer_id,
+        expected_payout_date: expectedPayout,
+        safe_close_date: expectedPayout, // for savings, payout date IS safe-to-withdraw
       })
     }
 

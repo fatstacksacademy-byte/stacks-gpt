@@ -94,6 +94,7 @@ function OnboardingInner() {
       completedRecords: [],
       incomeSources: [{ pay_frequency: frequency, paycheck_amount: amt }],
       userState: userState || undefined,
+      militaryAffiliated,
     })
 
     const allBonusEntries = result.slots.flat().filter(

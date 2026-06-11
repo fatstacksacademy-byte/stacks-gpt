@@ -14,6 +14,8 @@ export type UserProfile = {
   pay_frequency: PayFrequency
   paycheck_amount: number
   state?: string | null
+  /** Active duty, veteran, dependent, etc. Gates USAA / Navy Federal / AAFES offers. */
+  military_affiliated?: boolean | null
   income_2_frequency?: PayFrequency | null
   income_2_amount?: number | null
   income_3_frequency?: PayFrequency | null
