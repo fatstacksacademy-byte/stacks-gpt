@@ -12,6 +12,7 @@
     "verify:bonuses": "tsx scripts/verify-bonuses/run.ts",
     "verify:cards": "tsx scripts/verify-cards/run.ts",
     "discover:bonuses": "tsx scripts/discover-bonuses/run.ts",
+    "canary:scan": "tsx scripts/canary/run.ts",
     "test:reddit-oauth": "tsx scripts/discover-bonuses/test-reddit-oauth.ts",
     "discover:cards": "tsx scripts/discover-cards/run.ts",
     "catalog:apply-decisions": "tsx scripts/apply-decisions-to-catalog.ts",

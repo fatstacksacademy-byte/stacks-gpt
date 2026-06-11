@@ -44,6 +44,7 @@ verification-output/
 .cache/
 review-queue/
 logs/
+scripts/canary/snapshots/
 lib/data/*.draft.ts
 
 # claude code internal
