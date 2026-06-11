@@ -76,6 +76,13 @@ export default function DiscoverReviewPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const [drafterRunning, setDrafterRunning] = useState(false)
   const [drafterResult, setDrafterResult] = useState<{ count: number; files: string[] } | null>(null)
+  const [promoterRunning, setPromoterRunning] = useState(false)
+  const [promoterResult, setPromoterResult] = useState<{
+    appliedCount: number
+    dismissedCount: number
+    claudeCalls: number
+    outcomes: { kind: "applied" | "dismissed"; line: string; detail?: string }[]
+  } | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -116,6 +123,36 @@ export default function DiscoverReviewPage() {
     setSuccessMsg(`Drafted ${body.appliedCount ?? 0} approved lead(s).`)
     setTimeout(() => setSuccessMsg(null), 2400)
   }, [])
+
+  // The Claude-powered alternative: writes complete entries straight to
+  // lib/data/bonuses.ts (etc.), dedupes against the live catalog, and
+  // updates leads.json with structured dispositions. Replaces the
+  // legacy "drafter" workflow that emitted hand-copy stubs into
+  // .draft.ts files.
+  const runPromoter = useCallback(async () => {
+    setPromoterRunning(true)
+    setError(null)
+    setPromoterResult(null)
+    const res = await fetch("/api/admin?action=run-promote-leads", { method: "POST" })
+    const body = await res.json().catch(() => ({}))
+    setPromoterRunning(false)
+    if (!res.ok || !body.ok) {
+      setError(body.error ?? `Promoter exited ${body.exitCode}. ${body.stderr ?? ""}`.slice(0, 240))
+      return
+    }
+    setPromoterResult({
+      appliedCount: body.appliedCount ?? 0,
+      dismissedCount: body.dismissedCount ?? 0,
+      claudeCalls: body.claudeCalls ?? 0,
+      outcomes: body.outcomes ?? [],
+    })
+    setSuccessMsg(
+      `Promoted ${body.appliedCount ?? 0} to catalog (${body.dismissedCount ?? 0} dismissed, ${body.claudeCalls ?? 0} Claude calls).`,
+    )
+    // Refresh the queue so applied/dismissed leads update inline.
+    await load()
+    setTimeout(() => setSuccessMsg(null), 3600)
+  }, [load])
 
   const decide = useCallback(
     async (lead: Lead, status: "approved" | "dismissed" | "snoozed" | "new") => {
@@ -211,45 +248,99 @@ export default function DiscoverReviewPage() {
           <StatTile label="Snoozed" value={statusCounts.snoozed} color="#5b21b6" />
         </div>
 
-        {/* Draft generator */}
-        <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <div style={{ fontSize: 13, color: "#333" }}>
-            <span style={{ fontWeight: 700 }}>{statusCounts.approved}</span> approved lead{statusCounts.approved === 1 ? "" : "s"} ready to draft into <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3, fontSize: 11 }}>lib/data/*.draft.ts</code>.
+        {/* Catalog promoter (Claude-powered, writes directly to live catalog). */}
+        <div style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 13, color: "#333", flex: 1, minWidth: 240 }}>
+            <div style={{ fontWeight: 700, marginBottom: 2 }}>
+              <span style={{ background: "#e6f5f0", color: "#065f46", padding: "1px 6px", borderRadius: 3, marginRight: 6, fontSize: 10, fontWeight: 700, letterSpacing: "0.04em" }}>RECOMMENDED</span>
+              Promote {statusCounts.approved} approved → live catalog
+            </div>
+            <div style={{ fontSize: 11, color: "#666" }}>
+              Runs the dedup gate against the live catalog, then asks Claude to extract a complete entry for each survivor. Writes directly to <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3, fontSize: 10 }}>bonuses.ts</code> / <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3, fontSize: 10 }}>savingsBonuses.ts</code> / <code style={{ background: "#f5f5f5", padding: "1px 4px", borderRadius: 3, fontSize: 10 }}>creditCardBonuses.ts</code>. Takes ~10s per Claude call.
+            </div>
           </div>
           <button
-            onClick={runDrafter}
-            disabled={drafterRunning || statusCounts.approved === 0}
+            onClick={runPromoter}
+            disabled={promoterRunning || statusCounts.approved === 0}
             style={{
-              padding: "8px 14px",
+              padding: "10px 18px",
               fontSize: 13,
               fontWeight: 700,
               color: "#fff",
               background: statusCounts.approved === 0 ? "#bbb" : "#0d7c5f",
               border: "none",
               borderRadius: 6,
-              cursor: drafterRunning || statusCounts.approved === 0 ? "not-allowed" : "pointer",
-              opacity: drafterRunning ? 0.7 : 1,
+              cursor: promoterRunning || statusCounts.approved === 0 ? "not-allowed" : "pointer",
+              opacity: promoterRunning ? 0.7 : 1,
             }}
           >
-            {drafterRunning ? "Drafting…" : `⚙ Run drafter`}
+            {promoterRunning ? "Promoting…" : `✨ Promote to catalog`}
           </button>
         </div>
-        {drafterResult && (
-          <div style={{ background: "#e6f5f0", border: "1px solid #a7f3d0", color: "#065f46", borderRadius: 8, padding: "10px 12px", marginBottom: 14, fontSize: 12 }}>
-            <div style={{ fontWeight: 700, marginBottom: 4 }}>
-              Drafted {drafterResult.count} lead{drafterResult.count === 1 ? "" : "s"}. Review + hand-copy into the live data file.
+        {promoterResult && (
+          <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", color: "#065f46", borderRadius: 8, padding: "12px 14px", marginBottom: 14, fontSize: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>
+              ✨ Promoter result — {promoterResult.appliedCount} applied · {promoterResult.dismissedCount} dismissed · {promoterResult.claudeCalls} Claude call{promoterResult.claudeCalls === 1 ? "" : "s"}
             </div>
-            {drafterResult.files.length > 0 ? (
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {drafterResult.files.map((f) => (
-                  <li key={f} style={{ fontFamily: "monospace", fontSize: 11 }}>{f}</li>
+            {promoterResult.outcomes.length > 0 && (
+              <ul style={{ margin: 0, paddingLeft: 16, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontSize: 11, lineHeight: 1.55 }}>
+                {promoterResult.outcomes.map((o, i) => (
+                  <li key={i} style={{ marginBottom: 4 }}>
+                    <span style={{ color: o.kind === "applied" ? "#065f46" : "#9a3412" }}>{o.line}</span>
+                    {o.detail && <div style={{ color: "#666", marginLeft: 18 }}>{o.detail}</div>}
+                  </li>
                 ))}
               </ul>
-            ) : (
-              <div style={{ fontStyle: "italic", color: "#065f46" }}>(no draft files were written)</div>
             )}
           </div>
         )}
+
+        {/* Legacy drafter — emits hand-copy stubs into *.draft.ts. Kept for now in
+            case the user wants to inspect raw stubs before promoting; will fully
+            replace once the promoter has run for a few weeks without surprises. */}
+        <details style={{ background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 10, padding: 8, marginBottom: 14 }}>
+          <summary style={{ fontSize: 11, color: "#888", cursor: "pointer" }}>
+            Legacy: write hand-copy draft stubs to <code style={{ background: "#f0f0f0", padding: "1px 4px", borderRadius: 3 }}>lib/data/*.draft.ts</code> instead
+          </summary>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: "#666" }}>
+              {statusCounts.approved} approved lead{statusCounts.approved === 1 ? "" : "s"} → drafts you copy into the live data file by hand.
+            </div>
+            <button
+              onClick={runDrafter}
+              disabled={drafterRunning || statusCounts.approved === 0}
+              style={{
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#666",
+                background: "#fff",
+                border: "1px solid #ccc",
+                borderRadius: 6,
+                cursor: drafterRunning || statusCounts.approved === 0 ? "not-allowed" : "pointer",
+                opacity: drafterRunning ? 0.7 : 1,
+              }}
+            >
+              {drafterRunning ? "Drafting…" : "Run drafter"}
+            </button>
+          </div>
+          {drafterResult && (
+            <div style={{ background: "#fff", border: "1px solid #e8e8e8", color: "#555", borderRadius: 6, padding: "8px 10px", marginTop: 8, fontSize: 11 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>
+                Drafted {drafterResult.count} lead{drafterResult.count === 1 ? "" : "s"}. Hand-copy into live data file.
+              </div>
+              {drafterResult.files.length > 0 ? (
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {drafterResult.files.map((f) => (
+                    <li key={f} style={{ fontFamily: "monospace", fontSize: 10 }}>{f}</li>
+                  ))}
+                </ul>
+              ) : (
+                <div style={{ fontStyle: "italic", fontSize: 10 }}>(no draft files were written)</div>
+              )}
+            </div>
+          )}
+        </details>
 
         {/* Filter bar */}
         <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", flexDirection: "column", gap: 10 }}>

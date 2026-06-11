@@ -900,4 +900,52 @@ export const savingsBonuses: SavingsBonus[] = [
     raw_excerpt: "Rho business checking tiered bonus: $250 ($10k), $500 ($20k), $1,000 ($100k). 90-day window, 30-day hold. LLC+ only (no sole prop). Nationwide.",
     notes: "Sole-prop excluded — this restricts most solo bank-bonus chasers from claiming.",
   },
+
+  {
+    "id": "centier-bank-high-yield-savings-2026",
+    "bank_name": "Centier Bank",
+    "product_type": "savings",
+    "base_apy": 0.039,
+    "funding_window_days": 14,
+    "maintenance_days": 90,
+    "total_hold_days": 104,
+    "tiers": [
+      {
+        "min_deposit": 10000,
+        "bonus_amount": 60
+      },
+      {
+        "min_deposit": 25000,
+        "bonus_amount": 150
+      },
+      {
+        "min_deposit": 50000,
+        "bonus_amount": 300
+      },
+      {
+        "min_deposit": 100000,
+        "bonus_amount": 600
+      },
+      {
+        "min_deposit": 200000,
+        "bonus_amount": 1200
+      }
+    ],
+    "cooldown_months": null,
+    "fees": {
+      "monthly_fee": 0,
+      "early_closure_fee": 0
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": [],
+      "lifetime_language": true,
+      "eligibility_notes": "New customers only. Offer valid for deposits made between June 1-30, 2026 using promo code SUMMER26. Powered by Raisin platform."
+    },
+    "source_links": [
+      "https://www.hustlermoneyblog.com/centier-bank-high-yield-savings-review/"
+    ],
+    "raw_excerpt": "Centier Bank offers up to $1200 bonus (includes optional $200 recurring deposit boost) on tiered deposits from $10k-$200k+, maintained for 90 days, with 3.90% APY. Promo code SUMMER26 required by 6/30/26.",
+    "notes": "Bonus structure includes base bonus plus optional recurring deposit bonus. For max tier ($200k+): $1000 base + $200 recurring bonus = $1200 total. Recurring deposits must be set up within 14 days and execute at least 2 times within 90 days. Bonus posts within 30 days after 90-day hold period. Operated through Raisin platform."
+  }
 ]

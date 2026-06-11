@@ -925,6 +925,78 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  if (action === "run-promote-leads") {
+    // The Claude-powered version of the apply pipeline. Spawns
+    // `npm run catalog:promote-leads -- --write`, which:
+    //   1. Reads approved leads from review-queue/leads.json
+    //   2. Runs dedup gate against the live catalog (saves Claude calls)
+    //   3. For survivors: calls Claude with the full catalog schema +
+    //      page content → either an `entry` or a structured `dismiss`
+    //   4. Appends the entry directly to bonuses.ts / savingsBonuses.ts /
+    //      creditCardBonuses.ts via file-mutator
+    //   5. Updates leads.json with dispositions (applied / dismissed +
+    //      reason / Claude audit trail)
+    //
+    // Local-dev only — Vercel functions can't spawn npm and the script
+    // writes to repo files. Hardcoded args, no shell injection vector.
+    // The script can take ~30-60s for a batch of leads (Claude + Playwright).
+    const { spawn } = await import("node:child_process")
+    return await new Promise<Response>((resolve) => {
+      const child = spawn("npm", ["run", "catalog:promote-leads", "--", "--write"], {
+        cwd: process.cwd(),
+        stdio: ["ignore", "pipe", "pipe"],
+      })
+      let stdout = ""
+      let stderr = ""
+      child.stdout?.on("data", (d) => { stdout += d.toString() })
+      child.stderr?.on("data", (d) => { stderr += d.toString() })
+      child.on("error", (err) => {
+        resolve(NextResponse.json({ ok: false, error: err.message, stdout, stderr }, { status: 500 }))
+      })
+      child.on("close", (code) => {
+        // Parse the script's summary block:
+        //   "applied              N"
+        //   "dismissed            M"
+        //   "Claude calls (enrichment): K"
+        // Also pluck individual ✅/⏭/🧠 lines so the UI can show what
+        // landed where.
+        const appliedMatch = stdout.match(/^\s*applied\s+(\d+)\s*$/m)
+        const dismissedMatch = stdout.match(/^\s*dismissed\s+(\d+)\s*$/m)
+        const claudeMatch = stdout.match(/Claude calls\s*\(enrichment\):\s*(\d+)/i)
+        const appliedCount = appliedMatch ? Number(appliedMatch[1]) : 0
+        const dismissedCount = dismissedMatch ? Number(dismissedMatch[1]) : 0
+        const claudeCalls = claudeMatch ? Number(claudeMatch[1]) : 0
+        // Capture per-lead outcome lines. Format examples:
+        //   "✅  Bank Name: Product..."
+        //   "     → savingsBonuses.ts as some-id (mechanic)"
+        //   "⏭  Bank Name: Product..."
+        //   "     dedup → dismissed (matched some-id in bonuses.ts)"
+        const lines = stdout.split("\n")
+        const outcomes: { kind: "applied" | "dismissed"; line: string; detail?: string }[] = []
+        for (let i = 0; i < lines.length; i++) {
+          const trimmed = lines[i].trim()
+          if (/^✅\s/.test(trimmed)) {
+            const detail = (lines[i + 1] ?? "").trim()
+            outcomes.push({ kind: "applied", line: trimmed, detail })
+          } else if (/^⏭\s/.test(trimmed)) {
+            const detail = (lines[i + 1] ?? "").trim()
+            outcomes.push({ kind: "dismissed", line: trimmed, detail })
+          }
+        }
+        resolve(NextResponse.json({
+          ok: code === 0,
+          exitCode: code,
+          appliedCount,
+          dismissedCount,
+          claudeCalls,
+          outcomes,
+          stdout,
+          stderr,
+        }))
+      })
+    })
+  }
+
   if (action === "discover-decide") {
     // Update a lead's status in review-queue/leads.json. Status values match
     // what the discover apply pipeline already understands:
