@@ -56,42 +56,42 @@ export default function HomeClient() {
 
       {/* ── Hero ── */}
       <section className="hp-section hp-hero" style={{ paddingTop: 100, paddingBottom: 60 }}>
-        <div style={{ maxWidth: 640 }}>
+        <div style={{ maxWidth: 760 }}>
           <h1 style={{ fontSize: 52, fontWeight: 800, color: "#111", lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 24px" }}>
-            Bank bonuses, credit card rewards, and the strategy behind it all.
+            Earn more from your paycheck, spending, and savings—without hours of research.
           </h1>
           <p style={{ fontSize: 18, color: "#666", lineHeight: 1.7, margin: "0 0 32px" }}>
-            Fat Stacks Academy is where I share how I earn thousands of dollars a year from bank sign-up bonuses, credit card welcome offers, and high-yield savings strategies. Free on YouTube. In-depth guides on the blog.
+            Fat Stacks Academy makes bonus strategy accessible: find worthwhile bank and brokerage offers, understand the requirements, and use Stacks OS to build a personalized step-by-step plan.
           </p>
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{
-              fontSize: 16, fontWeight: 700, color: "#fff", background: "#111",
+            <Link href="/bank-bonuses-by-state" style={{
+              fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
               padding: "14px 28px", borderRadius: 10, textDecoration: "none",
             }}>
-              Subscribe on YouTube
-            </a>
-            <Link href="/blog" style={{
-              fontSize: 16, fontWeight: 600, color: "#666",
+              Find bonuses in my state
+            </Link>
+            <Link href="/stacksos" style={{
+              fontSize: 16, fontWeight: 700, color: "#0d7c5f",
               padding: "14px 28px", borderRadius: 10, textDecoration: "none",
-              border: "1px solid #ddd",
+              border: "1px solid #0d7c5f",
             }}>
-              Read the blog
+              Build my plan with Stacks OS
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Latest Video ── */}
+      {/* ── Start Here Video ── */}
       <section className="hp-section" style={{ paddingTop: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#bbb", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 20 }}>Latest Video</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 20 }}>Start Here</div>
         <div className="hp-yt-row" style={{ display: "flex", gap: 40, alignItems: "flex-start" }}>
           <div className="hp-yt-embed" style={{ maxWidth: 560, width: "100%", flexShrink: 0 }}>
             <div style={{ background: "#000", borderRadius: 12, overflow: "hidden", aspectRatio: "16/9" }}>
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/cS9xRWycQQk"
-                title="Latest video"
+                src="https://www.youtube.com/embed/axbwbRy4p0A?start=9"
+                title="How to Make $12,885 in 2026 With Your Paycheck, Spending, and Savings"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -100,10 +100,16 @@ export default function HomeClient() {
             </div>
           </div>
           <div className="hp-yt-text" style={{ maxWidth: 400 }}>
+            <h2 style={{ fontSize: 25, fontWeight: 800, color: "#111", lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 12px" }}>
+              How to make $12,885 with money you already move
+            </h2>
             <p style={{ fontSize: 15, color: "#555", lineHeight: 1.7, margin: "0 0 16px" }}>
-              I post new videos every week covering individual bonus breakdowns, application strategy, and my real results. If you want to see how this works in practice, the channel is the best place to start.
+              This walkthrough shows how paycheck bonuses, credit card welcome offers, and savings promotions fit together—and how Stacks OS turns them into one manageable plan.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <a href="https://www.youtube.com/watch?v=axbwbRy4p0A&t=9s" target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#111", fontWeight: 700, textDecoration: "none" }}>
+                Watch on YouTube &rarr;
+              </a>
               <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#ff0000", fontWeight: 600, textDecoration: "none" }}>
                 Subscribe on YouTube &rarr;
               </a>
