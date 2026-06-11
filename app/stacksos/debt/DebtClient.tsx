@@ -111,6 +111,44 @@ const num = (v: string): number => {
 }
 const pctStr = (decimal: number): string => `${round2(decimal * 100)}%`
 
+// Rate/fee inputs store DECIMALS (0.2499 = 24.99%) but users type a PERCENT.
+// This control shows the decimal as a percent and stores back a decimal,
+// clamped to [0,100]%, so a typed "29.99" becomes 0.2999 — not 2999% APR.
+function PercentInput({
+  value,
+  onChange,
+  allowNull = false,
+  style,
+}: {
+  value: number | null
+  onChange: (decimal: number | null) => void
+  allowNull?: boolean
+  style?: React.CSSProperties
+}) {
+  const display = value == null ? "" : String(round2(value * 100))
+  return (
+    <div style={{ position: "relative", display: "block" }}>
+      <input
+        type="number"
+        step="0.01"
+        min={0}
+        inputMode="decimal"
+        value={display}
+        onChange={e => {
+          const raw = e.target.value
+          if (raw === "") { onChange(allowNull ? null : 0); return }
+          const pct = parseFloat(raw)
+          if (!Number.isFinite(pct)) { onChange(allowNull ? null : 0); return }
+          const clamped = Math.max(0, Math.min(100, pct))
+          onChange(round2(clamped / 100))
+        }}
+        style={{ ...inputStyle, paddingRight: 24, ...style }}
+      />
+      <span style={{ position: "absolute", right: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12, pointerEvents: "none" }}>%</span>
+    </div>
+  )
+}
+
 function severityColor(s: StrategyWarning["severity"]): string {
   if (s === "critical") return "#dc2626"
   if (s === "warn") return "#b45309"
@@ -762,12 +800,10 @@ function ImportReviewRow({
         </div>
         <div>
           <label style={fieldLabel}>APR</label>
-          <input
-            style={{ ...inputStyle, borderColor: aprMissing ? "#dc2626" : "#e0e0e0" }}
-            type="number"
-            step="0.0001"
+          <PercentInput
+            style={{ borderColor: aprMissing ? "#dc2626" : "#e0e0e0" }}
             value={debt.apr}
-            onChange={e => onChange({ apr: num(e.target.value) })}
+            onChange={v => onChange({ apr: v ?? 0 })}
           />
           {aprMissing
             ? <div style={{ fontSize: 11, color: "#dc2626", fontWeight: 600, marginTop: 4 }}>Enter APR — the rate couldn&rsquo;t be read.</div>
@@ -785,7 +821,7 @@ function ImportReviewRow({
           <>
             <div>
               <label style={fieldLabel}>Promo APR (optional)</label>
-              <input style={inputStyle} type="number" step="0.0001" value={debt.promoApr ?? ""} onChange={e => onChange({ promoApr: e.target.value === "" ? null : num(e.target.value) })} />
+              <PercentInput allowNull value={debt.promoApr ?? null} onChange={v => onChange({ promoApr: v })} />
             </div>
             <div>
               <label style={fieldLabel}>Promo ends on (optional)</label>
@@ -793,7 +829,7 @@ function ImportReviewRow({
             </div>
             <div>
               <label style={fieldLabel}>Post-promo APR (optional)</label>
-              <input style={inputStyle} type="number" step="0.0001" value={debt.postPromoApr ?? ""} onChange={e => onChange({ postPromoApr: e.target.value === "" ? null : num(e.target.value) })} />
+              <PercentInput allowNull value={debt.postPromoApr ?? null} onChange={v => onChange({ postPromoApr: v })} />
             </div>
           </>
         )}
@@ -824,7 +860,7 @@ function ImportReviewRow({
 // 4. Debts CRUD
 // ----------------------------------------------------------------------------
 
-const APR_HINT = "Decimal — e.g. 0.2499 for 24.99%"
+const APR_HINT = "Enter the purchase APR, e.g. 24.99"
 
 function emptyCreditCard(): CreditCardDebt {
   return { kind: "credit_card", id: newId("debt"), name: "New card", balance: 0, apr: 0.2499, minPayment: 25, creditLimit: undefined, promoApr: null, promoEndsOn: null, postPromoApr: null }
@@ -914,7 +950,7 @@ function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: 
         </div>
         <div>
           <label style={fieldLabel}>APR</label>
-          <input style={inputStyle} type="number" step="0.0001" value={draft.apr} onChange={e => setDraft({ ...draft, apr: num(e.target.value) })} />
+          <PercentInput value={draft.apr} onChange={v => setDraft({ ...draft, apr: v ?? 0 })} />
           <div style={{ ...muted, marginTop: 4 }}>{APR_HINT}</div>
         </div>
 
@@ -930,7 +966,7 @@ function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: 
             </div>
             <div>
               <label style={fieldLabel}>Promo APR (optional)</label>
-              <input style={inputStyle} type="number" step="0.0001" value={draft.promoApr ?? ""} onChange={e => setCard({ promoApr: e.target.value === "" ? null : num(e.target.value) })} />
+              <PercentInput allowNull value={draft.promoApr ?? null} onChange={v => setCard({ promoApr: v })} />
             </div>
             <div>
               <label style={fieldLabel}>Promo ends on (optional)</label>
@@ -938,7 +974,7 @@ function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: 
             </div>
             <div>
               <label style={fieldLabel}>Post-promo APR (optional)</label>
-              <input style={inputStyle} type="number" step="0.0001" value={draft.postPromoApr ?? ""} onChange={e => setCard({ postPromoApr: e.target.value === "" ? null : num(e.target.value) })} />
+              <PercentInput allowNull value={draft.postPromoApr ?? null} onChange={v => setCard({ postPromoApr: v })} />
             </div>
           </>
         ) : (
@@ -1038,10 +1074,10 @@ function BTEditor({ offer, onSave, onCancel }: { offer: BalanceTransferOffer; on
         <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
         <div><label style={fieldLabel}>Credit limit</label><input style={inputStyle} type="number" value={d.creditLimit} onChange={e => set({ creditLimit: num(e.target.value) })} /></div>
         <div><label style={fieldLabel}>Approved transfer amount</label><input style={inputStyle} type="number" value={d.approvedTransferAmount} onChange={e => set({ approvedTransferAmount: num(e.target.value) })} /></div>
-        <div><label style={fieldLabel}>Promo APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.promoApr} onChange={e => set({ promoApr: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Promo APR</label><PercentInput value={d.promoApr} onChange={v => set({ promoApr: v ?? 0 })} /></div>
         <div><label style={fieldLabel}>Promo months</label><input style={inputStyle} type="number" value={d.promoMonths} onChange={e => set({ promoMonths: num(e.target.value) })} /></div>
-        <div><label style={fieldLabel}>Post-promo APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.postPromoApr} onChange={e => set({ postPromoApr: num(e.target.value) })} /></div>
-        <div><label style={fieldLabel}>Transfer fee (decimal, 0.03 = 3%)</label><input style={inputStyle} type="number" step="0.001" value={d.transferFeePct} onChange={e => set({ transferFeePct: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Post-promo APR</label><PercentInput value={d.postPromoApr} onChange={v => set({ postPromoApr: v ?? 0 })} /></div>
+        <div><label style={fieldLabel}>Transfer fee</label><PercentInput value={d.transferFeePct} onChange={v => set({ transferFeePct: v ?? 0 })} /></div>
         <div><label style={fieldLabel}>Minimum payment</label><input style={inputStyle} type="number" value={d.minPayment} onChange={e => set({ minPayment: num(e.target.value) })} /></div>
         <div><label style={fieldLabel}>Available on</label><input style={inputStyle} type="date" value={d.availableOn} onChange={e => set({ availableOn: e.target.value })} /></div>
         <div>
@@ -1139,9 +1175,9 @@ function LoanEditor({ offer, onSave, onCancel }: { offer: ConsolidationLoanOffer
         <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
         <div><label style={fieldLabel}>Requested amount</label><input style={inputStyle} type="number" value={d.requestedAmount} onChange={e => set({ requestedAmount: num(e.target.value) })} /></div>
         <div><label style={fieldLabel}>Approved amount</label><input style={inputStyle} type="number" value={d.approvedAmount} onChange={e => set({ approvedAmount: num(e.target.value) })} /></div>
-        <div><label style={fieldLabel}>APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.apr} onChange={e => set({ apr: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>APR</label><PercentInput value={d.apr} onChange={v => set({ apr: v ?? 0 })} /></div>
         <div><label style={fieldLabel}>Term (months)</label><input style={inputStyle} type="number" value={d.termMonths} onChange={e => set({ termMonths: num(e.target.value) })} /></div>
-        <div><label style={fieldLabel}>Origination fee (decimal)</label><input style={inputStyle} type="number" step="0.001" value={d.originationFeePct} onChange={e => set({ originationFeePct: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Origination fee</label><PercentInput value={d.originationFeePct} onChange={v => set({ originationFeePct: v ?? 0 })} /></div>
         <div>
           <label style={fieldLabel}>Fee mode</label>
           <select style={selectStyle} value={d.feeMode} onChange={e => set({ feeMode: e.target.value as ConsolidationLoanFeeMode })}>
@@ -1252,7 +1288,7 @@ function CreditProfileSection({ profile, update }: { profile: CreditProfile; upd
             <div><label style={fieldLabel}>Annual income</label><input style={inputStyle} type="number" value={optNum(profile.annualIncome)} onChange={e => set({ annualIncome: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
             <div><label style={fieldLabel}>Monthly housing</label><input style={inputStyle} type="number" value={optNum(profile.monthlyHousing)} onChange={e => set({ monthlyHousing: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
             <div><label style={fieldLabel}>Total min debt payments</label><input style={inputStyle} type="number" value={optNum(profile.totalMinDebtPayments)} onChange={e => set({ totalMinDebtPayments: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
-            <div><label style={fieldLabel}>Revolving utilization (decimal)</label><input style={inputStyle} type="number" step="0.01" value={optNum(profile.revolvingUtilization)} onChange={e => set({ revolvingUtilization: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Revolving utilization</label><PercentInput allowNull value={profile.revolvingUtilization ?? null} onChange={v => set({ revolvingUtilization: v ?? undefined })} /></div>
             <div><label style={fieldLabel}>Hard inquiries (6 mo)</label><input style={inputStyle} type="number" value={optNum(profile.hardInquiries6mo)} onChange={e => set({ hardInquiries6mo: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
             <div><label style={fieldLabel}>Card apps (12 mo)</label><input style={inputStyle} type="number" value={optNum(profile.cardApps12mo)} onChange={e => set({ cardApps12mo: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
           </div>
@@ -1524,7 +1560,7 @@ function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 14 }}>
         <div><label style={fieldLabel}>Principal</label><input style={inputStyle} type="number" defaultValue={principal} onBlur={e => setPrincipal(num(e.target.value))} /></div>
         <div><label style={fieldLabel}>Term (months)</label><input style={inputStyle} type="number" defaultValue={termMonths} onBlur={e => setTermMonths(num(e.target.value))} /></div>
-        <div><label style={fieldLabel}>Origination fee (decimal)</label><input style={inputStyle} type="number" step="0.001" defaultValue={originationFeePct} onBlur={e => setOriginationFeePct(num(e.target.value))} /></div>
+        <div><label style={fieldLabel}>Origination fee</label><PercentInput value={originationFeePct} onChange={v => setOriginationFeePct(v ?? 0)} /></div>
         <div>
           <label style={fieldLabel}>Fee mode</label>
           <select style={selectStyle} value={feeMode} onChange={e => setFeeMode(e.target.value as ConsolidationLoanFeeMode)}>
