@@ -4,13 +4,15 @@ import NewsletterCTA from "../blog/components/NewsletterCTA"
 import TrackBonusButton from "../components/TrackBonusButton"
 import PortalStacksToggle from "../components/PortalStacksToggle"
 import FilterableCatalog from "../components/FilterableCatalog"
+import StateBonusFinder from "../components/StateBonusFinder"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
-import { getLiveCatalogForClient } from "../../lib/data/catalogTaxonomy"
+import { getLiveCatalogForClient, US_STATES } from "../../lib/data/catalogTaxonomy"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
+const CATALOG_REFRESH = process.env.NEXT_PUBLIC_CATALOG_REFRESH_DATE || "2026-06-09"
 
 export const metadata: Metadata = {
   title: "The Master Bank Bonus List — Every Live Offer (2026) | Fat Stacks Academy",
@@ -46,8 +48,13 @@ function buildReviewHrefMap(): Record<string, string> {
 
 export default function MasterBonusList() {
   const { personalChecking, personalSavings, businessChecking, businessSavings, brokerage } = getCategorizedBonuses()
-  const totalBonuses = personalChecking.length + personalSavings.length + businessChecking.length + businessSavings.length + brokerage.length
-  const updated = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+  const normalized = getLiveCatalogForClient()
+  const totalBonuses = normalized.length
+  const personalCheckingCount = normalized.filter(item => item.category === "personal_checking").length
+  const savingsCount = normalized.filter(item => item.category === "personal_savings").length
+  const businessCount = normalized.filter(item => item.category === "business_checking" || item.category === "business_savings").length
+  const brokerageCount = normalized.filter(item => item.category === "brokerage").length
+  const updated = new Date(`${CATALOG_REFRESH}T00:00:00`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
 
   // Normalized catalog for the client-side filter — single source of
@@ -55,7 +62,6 @@ export default function MasterBonusList() {
   // LEAN shape (no `raw` blob) since FilterableCatalog never reads the
   // raw row and a server→client serialization of every raw bonus JSON
   // would blow the response payload.
-  const normalized = getLiveCatalogForClient()
   const reviewHrefs = buildReviewHrefMap()
 
   return (
@@ -100,7 +106,7 @@ export default function MasterBonusList() {
             Every live bank bonus<br/>worth doing in 2026
           </h1>
           <p style={{ fontSize: 17, color: "#666", lineHeight: 1.6, margin: "0 auto 24px", maxWidth: 640 }}>
-            {totalBonuses} active offers across personal checking, savings, business, and brokerage — ranked, reviewed,
+            {totalBonuses} currently listed offers across personal checking, savings, business, and brokerage — ranked, reviewed,
             and continuously updated. Last refreshed {updated}.
           </p>
         </div>
@@ -108,11 +114,11 @@ export default function MasterBonusList() {
         {/* STATS BANNER */}
         <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 40 }}>
           {[
-            { label: "Total live bonuses", value: String(totalBonuses), color: "#0d7c5f" },
-            { label: "Personal checking", value: String(personalChecking.length), color: "#0d7c5f" },
-            { label: "Savings", value: String(personalSavings.length), color: "#0d7c5f" },
-            { label: "Business", value: String(businessChecking.length + businessSavings.length), color: "#0d7c5f" },
-            { label: "Brokerage", value: String(brokerage.length), color: "#0d7c5f" },
+            { label: "Currently listed", value: String(totalBonuses), color: "#0d7c5f" },
+            { label: "Personal checking", value: String(personalCheckingCount), color: "#0d7c5f" },
+            { label: "Savings", value: String(savingsCount), color: "#0d7c5f" },
+            { label: "Business", value: String(businessCount), color: "#0d7c5f" },
+            { label: "Brokerage", value: String(brokerageCount), color: "#0d7c5f" },
           ].map((s, i) => (
             <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 12px", textAlign: "center" }}>
               <div className="stat-num" style={{ fontSize: 32, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
@@ -121,47 +127,8 @@ export default function MasterBonusList() {
           ))}
         </div>
 
-        {/* CATEGORY NAV */}
-        <div className="cat-nav" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
-          {[
-            { id: "personal-checking", emoji: "🏦", label: "Personal Checking", count: personalChecking.length },
-            { id: "savings", emoji: "💰", label: "Savings", count: personalSavings.length },
-            { id: "business", emoji: "💼", label: "Business", count: businessChecking.length + businessSavings.length },
-            { id: "brokerage", emoji: "📈", label: "Brokerage", count: brokerage.length },
-          ].map(c => (
-            <a key={c.id} href={`#${c.id}`} className="cat-pill" style={{
-              padding: "16px 18px", background: "#f8faf9", border: "1px solid #e8e8e8",
-              borderRadius: 12, textDecoration: "none", color: "#111",
-              display: "flex", alignItems: "center", gap: 12,
-            }}>
-              <span style={{ fontSize: 22 }}>{c.emoji}</span>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>{c.label}</div>
-                <div style={{ fontSize: 12, opacity: 0.7 }}>{c.count} offers</div>
-              </div>
-            </a>
-          ))}
-        </div>
-
-        {/* BY-STATE CTA */}
         <div style={{ marginBottom: 40 }}>
-          <Link href="/bank-bonuses-by-state" style={{
-            padding: "16px 20px",
-            background: "#fafafa",
-            border: "1px solid #e8e8e8",
-            borderRadius: 12,
-            textDecoration: "none",
-            color: "#111",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>Looking for offers in your state?</div>
-              <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>Browse bank bonuses available by state — nationwide + local picks.</div>
-            </div>
-            <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 700 }}>By state →</span>
-          </Link>
+          <StateBonusFinder states={US_STATES} />
         </div>
 
         {/* NEWSLETTER */}
@@ -172,9 +139,15 @@ export default function MasterBonusList() {
         {/* ── FILTERABLE BROWSE ── */}
         <section id="browse" className="master-section" style={{ marginBottom: 64 }}>
           <h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Browse every offer</h2>
-          <p style={{ fontSize: 14, color: "#888", margin: "0 0 18px" }}>Search by bank, filter by state, category, or requirement. {totalBonuses} live offers ready to track.</p>
+          <p style={{ fontSize: 14, color: "#888", margin: "0 0 18px" }}>Search by bank, filter by state, category, or requirement. {totalBonuses} currently listed offers ready to track.</p>
           <FilterableCatalog initialItems={normalized} reviewHrefs={reviewHrefs} />
         </section>
+
+        <details style={{ borderTop: "1px solid #e8e8e8", paddingTop: 18, marginBottom: 48 }}>
+          <summary style={{ cursor: "pointer", fontSize: 14, color: "#555", fontWeight: 800 }}>
+            View detailed category rankings and comparison tables
+          </summary>
+          <div style={{ paddingTop: 28 }}>
 
         {/* ── PERSONAL CHECKING (TOP 6 — SEO + CONTEXT) ── */}
         <Section
@@ -323,6 +296,9 @@ export default function MasterBonusList() {
             headers={["#", "Platform", "Bonus", "Min Deposit", "Hold", "Eff. APY"]}
           />
         </Section>
+
+          </div>
+        </details>
 
         {/* STACKS OS CTA */}
         <div style={{ background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "1px solid #a7f3d0", borderRadius: 16, padding: "40px 32px", marginBottom: 48, textAlign: "center" }}>

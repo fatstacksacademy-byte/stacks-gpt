@@ -316,6 +316,19 @@ describe("expirationStatus + getStrictlyLiveCatalog", () => {
     }
   })
 
+  it("extracts obvious offer deadlines from catalog text", () => {
+    const catalog = getLiveCatalog(new Date("2026-06-11T12:00:00Z"))
+    expect(catalog.find(item => item.id === "hsbc-premier-checking-2026")).toBeUndefined()
+    expect(catalog.find(item => item.id === "wells-fargo-business-checking-825-2026")).toBeUndefined()
+    expect(catalog.find(item => item.id === "bmo-business-checking-1000-2026")).toBeUndefined()
+  })
+
+  it("keeps state browsing populated when expiration is unknown", () => {
+    const catalog = getLiveCatalog(new Date("2026-06-11T12:00:00Z"))
+    const { nationwide, local } = bucketByState(catalog, "HI")
+    expect(nationwide.length + local.length).toBeGreaterThan(10)
+  })
+
   it("strict + state-page bucket never surfaces unverified-expiration offers", () => {
     // Hawaii is a safe pick — small surface area, easy to inspect by hand.
     const strict = getStrictlyLiveCatalog()
