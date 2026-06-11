@@ -192,13 +192,20 @@ async function collectCandidates(
     supabase.from("savings_entries").select("*").eq("user_id", userId).eq("status", "active"),
   ])
 
+  // Suffix bonusKey with `step.stage` (when present) so a single bonus
+  // can receive reminders for each distinct milestone instead of
+  // burning its one-and-only dedupe slot on the first stage that fires.
+  function keyOf(prefix: string, id: string, stage: string | null | undefined): string {
+    return stage ? `${prefix}:${id}:${stage}` : `${prefix}:${id}`
+  }
+
   for (const r of checking.data ?? []) {
     const b = catalogBonuses.find(x => (x as { id?: string }).id === r.bonus_id)
     if (!b) continue
     const step = checkingBonusStep(r, b)
     if (!step.nextStep || !step.deadline) continue
     out.push({
-      bonusKey: `checking:${r.id}`,
+      bonusKey: keyOf("checking", r.id, step.stage),
       bonusName: (b as { bank_name?: string }).bank_name ?? r.bonus_id,
       bonusAmount: r.actual_amount ?? (b as { bonus_amount?: number }).bonus_amount ?? 0,
       nextStep: step.nextStep,
@@ -213,7 +220,7 @@ async function collectCandidates(
     const step = customBonusStep(c)
     if (!step.nextStep || !step.deadline) continue
     out.push({
-      bonusKey: `custom:${c.id}`,
+      bonusKey: keyOf("custom", c.id, step.stage),
       bonusName: c.bank_name,
       bonusAmount: c.actual_amount ?? c.bonus_amount,
       nextStep: step.nextStep,
@@ -226,7 +233,7 @@ async function collectCandidates(
     const step = spendingCardStep(c)
     if (!step.nextStep || !step.deadline) continue
     out.push({
-      bonusKey: `card:${c.id}`,
+      bonusKey: keyOf("card", c.id, step.stage),
       bonusName: c.card_name,
       bonusAmount: c.expected_value ?? c.signup_bonus_value ?? 0,
       nextStep: step.nextStep,
@@ -239,7 +246,7 @@ async function collectCandidates(
     const step = savingsEntryStep(e)
     if (!step.nextStep || !step.deadline) continue
     out.push({
-      bonusKey: `savings:${e.id}`,
+      bonusKey: keyOf("savings", e.id, step.stage),
       bonusName: e.institution_name,
       bonusAmount: e.expected_total_value ?? e.bonus_amount ?? 0,
       nextStep: step.nextStep,

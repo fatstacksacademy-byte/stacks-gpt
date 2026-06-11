@@ -20,6 +20,10 @@ export type StartedBonus = {
   urgency?: BonusUrgency        // overdue | urgent | soon | none
   href: string
   bonus_id?: string | null      // catalog ID for portal-stack lookup; null when no catalog match
+  /** ISO yyyy-mm-dd of when the cash bonus is expected to post. */
+  expected_payout_date?: string | null
+  /** ISO yyyy-mm-dd of when the account can be safely closed. */
+  safe_close_date?: string | null
 }
 
 const MODULE_COLORS: Record<StartedBonus["module"], { fg: string; bg: string; label: string }> = {
@@ -83,7 +87,7 @@ export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>In progress</h2>
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>Next actions</h2>
         <div style={{ fontSize: 11, color: "#888" }}>
           {sorted.length} bonus{sorted.length !== 1 ? "es" : ""} active
         </div>
@@ -181,8 +185,20 @@ export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[
                     <PortalStacksBadge bonusId={b.bonus_id} />
                   </div>
                 )}
-                <div style={{ fontSize: 11, color: "#999", marginTop: 3 }}>
-                  {days != null && `Started ${days} day${days !== 1 ? "s" : ""} ago`}
+                <div style={{ fontSize: 11, color: "#999", marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {days != null && (
+                    <span>Started {days} day{days !== 1 ? "s" : ""} ago</span>
+                  )}
+                  {b.expected_payout_date && (
+                    <span style={{ color: "#666" }}>
+                      Estimated payout {fmtDeadline(b.expected_payout_date)}
+                    </span>
+                  )}
+                  {b.safe_close_date && (
+                    <span style={{ color: "#666" }}>
+                      Estimated safe date {fmtDeadline(b.safe_close_date)}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="sbl-amount" style={{
