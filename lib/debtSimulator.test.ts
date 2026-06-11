@@ -7,6 +7,7 @@ import {
   monthIndexOf,
   addMonthsISO,
   round2,
+  formatMoney,
   totalDebt,
   type FinancialPicture,
   type DebtInstrument,
@@ -568,6 +569,51 @@ describe("consolidation helpers", () => {
     expect(grid).toHaveLength(6)
     // A cheap short loan should beat baseline; an expensive one need not.
     expect(grid.find(g => g.apr === 0.08 && g.termMonths === 36)!.beatsBaseline).toBe(true)
+  })
+})
+
+describe("runaway / bad-input guard", () => {
+  it("REGRESSION: a percent-entered APR (29.99 = 2999%) doesn't explode to Infinity", () => {
+    // The exact shape that broke production: a card whose post-promo APR was
+    // typed as a percent (29.99) instead of a decimal (0.2999).
+    const c = compareStrategies(
+      base({
+        debts: [
+          {
+            kind: "credit_card",
+            id: "x",
+            name: "Blue Business Cash",
+            balance: 39729,
+            apr: 0,
+            minPayment: 985,
+            promoApr: 0,
+            promoEndsOn: "2026-07-20",
+            postPromoApr: 29.99, // <- 2999% if taken literally
+          },
+        ],
+        monthlyBudget: 1500,
+        startDateISO: "2026-06-11",
+      }),
+    )
+    const nnc = pick(c, "no_new_credit")
+    expect(Number.isFinite(nnc.totalInterest)).toBe(true)
+    expect(Number.isFinite(nnc.totalCost)).toBe(true)
+    // It never pays off, and the user is told why.
+    expect(nnc.monthsToDebtFree).toBeNull()
+    expect(nnc.warnings.some(w => w.severity === "critical" && /growing/.test(w.message))).toBe(true)
+  })
+
+  it("clamps absurd APRs but leaves normal ones untouched", () => {
+    const sane = compareStrategies(base({ debts: [card("a", 10000, 0.2499, 300)], monthlyBudget: 600 }))
+    expect(sane.baseline.monthsToDebtFree).not.toBeNull()
+    expect(Number.isFinite(sane.baseline.totalInterest)).toBe(true)
+  })
+
+  it("formatMoney renders non-finite values as a dash, never $Infinity/$NaN", () => {
+    expect(formatMoney(Infinity)).toBe("—")
+    expect(formatMoney(NaN)).toBe("—")
+    expect(formatMoney(-Infinity)).toBe("—")
+    expect(formatMoney(1234)).toBe("$1,234")
   })
 })
 

@@ -25,6 +25,7 @@ export function round2(n: number): number {
 }
 
 export function formatMoney(n: number): string {
+  if (!Number.isFinite(n)) return "—"
   const r = Math.round(n)
   return r < 0 ? `-$${Math.abs(r).toLocaleString()}` : `$${r.toLocaleString()}`
 }
@@ -268,12 +269,19 @@ type SimEvent = TransferEvent | LoanEvent
 const DEFAULT_HORIZON = 600 // 50 years — long enough to always reach zero
 const MIN_PAYMENT_PCT = 0.01
 const MIN_PAYMENT_FLOOR = 25
+// Sanity ceiling on the APR the engine will simulate. No real consumer debt
+// exceeds ~60%; anything above this is almost certainly a data-entry error
+// (e.g. a rate typed as "29.99" instead of 0.2999). Clamping keeps a bad input
+// from producing Infinity; a runaway warning (below) still flags it.
+const MAX_SIM_APR = 1.0
 
 function effectiveApr(acc: SimAccount, monthIdx: number): number {
-  if (acc.promoApr != null && acc.promoEndsIdx != null && monthIdx < acc.promoEndsIdx) {
-    return acc.promoApr
-  }
-  return acc.apr
+  const raw =
+    acc.promoApr != null && acc.promoEndsIdx != null && monthIdx < acc.promoEndsIdx
+      ? acc.promoApr
+      : acc.apr
+  if (!Number.isFinite(raw) || raw <= 0) return 0
+  return Math.min(raw, MAX_SIM_APR)
 }
 
 function minimumDue(acc: SimAccount): number {
@@ -501,6 +509,13 @@ function runSimulation(accounts: SimAccount[], opts: SimOptions): SimRun {
     )
   }
 
+  // Runaway guard: if payments never cover interest, balances grow without
+  // bound over the long horizon. Cap at a multiple of the starting debt (with
+  // an absolute floor) so a bad input surfaces as a clear warning instead of an
+  // astronomical, layout-breaking number.
+  const initialTotalDebt = round2(accounts.reduce((s, a) => s + Math.max(0, a.balance), 0))
+  const runawayCeiling = Math.max(initialTotalDebt * 20, 5_000_000)
+
   for (let idx = 0; idx < opts.horizonMonths; idx++) {
     const feesBeforeMonth = totalFees
     const monthEvents = events.filter(e => e.atIdx === idx)
@@ -598,6 +613,17 @@ function runSimulation(accounts: SimAccount[], opts: SimOptions): SimRun {
 
     if (endingBalance <= 0.005) {
       monthsToDebtFree = idx + 1
+      break
+    }
+
+    if (endingBalance > runawayCeiling) {
+      // Debt is growing without bound — payments don't cover interest. Stop
+      // here; monthsToDebtFree stays null ("never pays off") and we flag it.
+      warnings.push({
+        severity: "critical",
+        message:
+          "Balances are growing instead of shrinking — your payments don't cover the interest at these APRs. Double-check that each APR is entered correctly (e.g. 24.99%, not 2,999%) and that your monthly budget covers the minimums.",
+      })
       break
     }
   }
