@@ -1,28 +1,51 @@
 "use client"
 
+// Stacks OS — Debt Payoff Strategy Simulator (UI)
+//
+// Educational simulator only. Not financial, lending, or tax advice. The math
+// engine (lib/debtSimulator) and persistence (lib/debtStore) are tested and
+// owned elsewhere — this file is purely the UI over them.
+
 import React, { useEffect, useMemo, useState } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
 import {
-  runDebtSequencer,
-  DebtAccount,
-  Lever,
-  DebtPlan,
-  NextMove,
-} from "../../../lib/debtSequencer"
+  compareStrategies,
+  loanScenarioGrid,
+  maxBeneficialLoanApr,
+  amortizedPayment,
+  formatMoney,
+  round2,
+  totalDebt,
+  STRATEGY_GOAL_LABEL,
+  FICO_BAND_LABEL,
+  type FinancialPicture,
+  type DebtInstrument,
+  type CreditCardDebt,
+  type InstallmentDebt,
+  type BalanceTransferOffer,
+  type ConsolidationLoanOffer,
+  type CreditProfile,
+  type StrategyGoal,
+  type StrategyResult,
+  type StrategyWarning,
+  type FicoBand,
+  type ApprovalStatus,
+  type ConsolidationLoanFeeMode,
+} from "../../../lib/debtSimulator"
 import {
-  getDebts, setDebts,
-  getLevers, setLevers,
-  getCapacityPersonal, setCapacityPersonal,
-  getCapacityBusiness, setCapacityBusiness,
-  isInitialized, markInitialized,
-  seedFromYnabSnapshot,
-  resetAll,
-} from "../../../lib/debtState"
+  loadScenario,
+  saveScenario,
+  clearScenario,
+  emptyScenario,
+  demoScenario,
+  configureUserScope,
+  type DebtScenario,
+} from "../../../lib/debtStore"
+import { createClient } from "../../../lib/supabase/client"
 
-const HORIZON_MONTHS = 84
-
-const moneyShort = (n: number) => n >= 0 ? `$${Math.round(n).toLocaleString()}` : `-$${Math.round(Math.abs(n)).toLocaleString()}`
-const pct = (n: number) => `${(n * 100).toFixed(1)}%`
+// ----------------------------------------------------------------------------
+// Shared style constants (matching the codebase aesthetic)
+// ----------------------------------------------------------------------------
 
 const cardBox: React.CSSProperties = {
   background: "#fff",
@@ -52,67 +75,122 @@ const ghostBtn: React.CSSProperties = {
   padding: "6px 12px", fontSize: 12, cursor: "pointer",
 }
 
+const inputStyle: React.CSSProperties = {
+  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
+  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+}
+
+const selectStyle: React.CSSProperties = {
+  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
+  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+}
+
+const computedStyle: React.CSSProperties = {
+  padding: "8px 12px", fontSize: 13, background: "#f9f9f9", color: "#555",
+  border: "1px solid #e8e8e8", borderRadius: 6, width: "100%",
+}
+
+const fieldLabel: React.CSSProperties = { fontSize: 11, color: "#777", marginBottom: 4, display: "block" }
+const sectionTitle: React.CSSProperties = { fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }
+const muted: React.CSSProperties = { fontSize: 12, color: "#999", lineHeight: 1.5 }
+
+const ACCENT = "#0d7c5f"
+
+// ----------------------------------------------------------------------------
+// Small helpers
+// ----------------------------------------------------------------------------
+
+const todayISO = () => new Date().toISOString().split("T")[0]
+const newId = (prefix: string) =>
+  `${prefix}-${typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)}`
+const num = (v: string): number => {
+  const n = parseFloat(v)
+  return Number.isFinite(n) ? n : 0
+}
+const pctStr = (decimal: number): string => `${round2(decimal * 100)}%`
+
+function severityColor(s: StrategyWarning["severity"]): string {
+  if (s === "critical") return "#dc2626"
+  if (s === "warn") return "#b45309"
+  return "#6b7280"
+}
+function severityBg(s: StrategyWarning["severity"]): string {
+  if (s === "critical") return "#fef2f2"
+  if (s === "warn") return "#fffbeb"
+  return "#f9fafb"
+}
+
+function WarningList({ warnings }: { warnings: StrategyWarning[] }) {
+  if (warnings.length === 0) return null
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+      {warnings.map((w, i) => (
+        <div
+          key={i}
+          style={{
+            fontSize: 12.5, lineHeight: 1.45, padding: "8px 10px", borderRadius: 6,
+            background: severityBg(w.severity), color: severityColor(w.severity),
+            border: `1px solid ${severityColor(w.severity)}22`,
+          }}
+        >
+          {w.severity === "critical" ? "⛔ " : w.severity === "warn" ? "⚠ " : "ℹ "}
+          {w.message}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// Root component
+// ----------------------------------------------------------------------------
+
 export default function DebtClient() {
-  const [debts, setLocalDebts] = useState<DebtAccount[]>([])
-  const [levers, setLocalLevers] = useState<Lever[]>([])
-  const [capPersonal, setCapPersonal] = useState(2000)
-  const [capBusiness, setCapBusiness] = useState(1000)
-  const [initialized, setInitializedState] = useState(false)
+  const [scenario, setScenario] = useState<DebtScenario | null>(null)
   const [loading, setLoading] = useState(true)
-  const [expandedPool, setExpandedPool] = useState<"personal" | "business" | null>(null)
-  const [completedMoves, setCompletedMoves] = useState<Set<string>>(new Set())
+  const [startISO, setStartISO] = useState<string>("")
 
   useEffect(() => {
+    // Scope storage to the signed-in user BEFORE reading, so one account's
+    // financial data never loads under another on a shared browser. The await
+    // also keeps state writes out of the synchronous effect body.
     let cancelled = false
-    Promise.resolve().then(() => {
+    ;(async () => {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
       if (cancelled) return
-      const init = isInitialized()
-      if (init) {
-        setLocalDebts(getDebts())
-        setLocalLevers(getLevers())
-        setCapPersonal(getCapacityPersonal())
-        setCapBusiness(getCapacityBusiness())
-      }
-      setInitializedState(init)
+      configureUserScope(data.user?.id ?? null)
+      setStartISO(todayISO())
+      setScenario(loadScenario())
       setLoading(false)
-    })
+    })()
     return () => { cancelled = true }
   }, [])
 
-  function seedNow() {
-    const { debts: seedDebts, levers: seedLevers } = seedFromYnabSnapshot()
-    setLocalDebts(seedDebts); setDebts(seedDebts)
-    setLocalLevers(seedLevers); setLevers(seedLevers)
-    setCapacityPersonal(capPersonal); setCapacityBusiness(capBusiness)
-    markInitialized()
-    setInitializedState(true)
-  }
-
-  function handleCapPersonal(v: number) { setCapPersonal(v); setCapacityPersonal(v) }
-  function handleCapBusiness(v: number) { setCapBusiness(v); setCapacityBusiness(v) }
-
-  function markMoveDone(move: NextMove) {
-    const key = `${move.debt_id}:${move.source_lever_id}:${move.amount}`
-    const nextDebts = debts.map(d => d.id === move.debt_id ? { ...d, balance: Math.max(0, d.balance - move.amount) } : d)
-    const nextLevers = levers.map(l => l.id === move.source_lever_id
-      ? { ...l, amount_available: Math.max(0, l.amount_available - move.amount) }
-      : l)
-    setLocalDebts(nextDebts); setDebts(nextDebts)
-    setLocalLevers(nextLevers); setLevers(nextLevers)
-    setCompletedMoves(prev => new Set(prev).add(key))
-  }
-
-  const result = useMemo(() => {
-    if (!initialized) return null
-    return runDebtSequencer({
-      debts,
-      levers,
-      monthly_capacity_personal: capPersonal,
-      monthly_capacity_business: capBusiness,
-      horizon_months: HORIZON_MONTHS,
-      today: new Date().toISOString().split("T")[0],
+  // Single centralized mutation helper: merge patch, set state, persist.
+  function update(patch: Partial<DebtScenario>) {
+    setScenario(prev => {
+      if (!prev) return prev
+      const next = { ...prev, ...patch }
+      saveScenario(next)
+      return next
     })
-  }, [debts, levers, capPersonal, capBusiness, initialized])
+  }
+
+  function startDemo() {
+    const s = demoScenario()
+    saveScenario(s)
+    setScenario(s)
+  }
+  function startEmpty() {
+    const s = emptyScenario()
+    saveScenario(s)
+    setScenario(s)
+  }
+  function resetAll() {
+    clearScenario()
+    setScenario(null)
+  }
 
   if (loading) {
     return (
@@ -123,285 +201,1037 @@ export default function DebtClient() {
     )
   }
 
-  if (!initialized) {
+  if (!scenario) {
     return (
       <>
         <CheckpointNav />
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: 32 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Debt Sequencer</h1>
-          <p style={{ color: "#666", marginBottom: 24, lineHeight: 1.5 }}>
-            One-time setup. Seed with a snapshot of your debts and levers, then iterate.
-            All data stays in your browser (localStorage).
-          </p>
-          <div style={cardBox}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>What gets seeded</h3>
-            <ul style={{ fontSize: 14, color: "#555", lineHeight: 1.8, paddingLeft: 18, margin: 0 }}>
-              <li>11 credit card balances from your YNAB snapshot (personal + business)</li>
-              <li>0% promo end dates per card</li>
-              <li>Levers: cash on hand, TSP, HSA receipts, MR points, NFCU BT, Solo 401(k) loan</li>
-              <li>Considered-but-ineligible levers: home equity, vehicle equity</li>
-            </ul>
-          </div>
-          <div style={{ display: "flex", gap: 12 }}>
-            <button style={primaryBtn} onClick={seedNow}>Seed from YNAB snapshot</button>
-            <button style={secondaryBtn} onClick={() => alert("Manual entry not yet built. Use the seed and edit after.")}>Enter manually</button>
-          </div>
-        </div>
+        <SetupScreen onDemo={startDemo} onEmpty={startEmpty} />
       </>
     )
   }
 
-  const { personal, business } = result!
-
   return (
     <>
       <CheckpointNav />
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Debt Sequencer</h1>
-          <button style={ghostBtn} onClick={() => { if (confirm("Reset all debt data?")) { resetAll(); setInitializedState(false) } }}>Reset</button>
-        </div>
-
-        <PoolHero
-          plan={personal}
-          accent="#0d7c5f"
-          capacity={capPersonal}
-          onCapacity={handleCapPersonal}
-          expanded={expandedPool === "personal"}
-          onToggleExpand={() => setExpandedPool(expandedPool === "personal" ? null : "personal")}
-          onMoveDone={markMoveDone}
-          completedMoves={completedMoves}
-        />
-
-        <PoolHero
-          plan={business}
-          accent="#2563eb"
-          capacity={capBusiness}
-          onCapacity={handleCapBusiness}
-          expanded={expandedPool === "business"}
-          onToggleExpand={() => setExpandedPool(expandedPool === "business" ? null : "business")}
-          onMoveDone={markMoveDone}
-          completedMoves={completedMoves}
-        />
-
-        <LeverInventory personal={personal} business={business} />
-        <AccountList debts={debts} onEdit={(id, patch) => {
-          const next = debts.map(d => d.id === id ? { ...d, ...patch } : d)
-          setLocalDebts(next); setDebts(next)
-        }} />
-      </div>
+      <Dashboard scenario={scenario} startISO={startISO || todayISO()} update={update} onReset={resetAll} />
     </>
   )
 }
 
-function PoolHero({
-  plan, accent, capacity, onCapacity, expanded, onToggleExpand, onMoveDone, completedMoves,
-}: {
-  plan: DebtPlan
-  accent: string
-  capacity: number
-  onCapacity: (v: number) => void
-  expanded: boolean
-  onToggleExpand: () => void
-  onMoveDone: (m: NextMove) => void
-  completedMoves: Set<string>
-}) {
-  const scopeName = plan.scope === "personal" ? "Personal Debt" : "Business Debt"
-  const monthsLabel = plan.projection.months_to_zero
-    ? `${plan.projection.months_to_zero} months`
-    : capacity === 0 ? "Set a monthly amount" : `${plan.projection.timeline.length}+ months`
-  const nm = plan.next_move
+// ----------------------------------------------------------------------------
+// 1. Setup / empty state
+// ----------------------------------------------------------------------------
 
+function SetupScreen({ onDemo, onEmpty }: { onDemo: () => void; onEmpty: () => void }) {
   return (
-    <div style={{ ...cardBox, borderTop: `3px solid ${accent}` }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-        <div>
-          <div style={{ ...label, color: accent }}>{scopeName}</div>
-          <div style={{ fontSize: 32, fontWeight: 700, color: "#111" }}>{moneyShort(plan.total_debt)}</div>
+    <div style={{ maxWidth: 720, margin: "0 auto", padding: 32 }}>
+      <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Debt Payoff Strategy Simulator</h1>
+      <p style={{ color: "#555", marginBottom: 20, lineHeight: 1.6 }}>
+        Model how avalanche payoff, balance transfers, and consolidation loans compare for your
+        situation, with an auditable month-by-month schedule. This is an{" "}
+        <b>educational simulator — not financial, lending, or tax advice.</b> Projected dates and
+        savings are estimates, never guarantees. All data stays in your browser.
+      </p>
+      <div style={cardBox}>
+        <h3 style={{ ...sectionTitle, marginBottom: 8 }}>Get started</h3>
+        <p style={{ ...muted, marginBottom: 16 }}>
+          Pick a starting point. You can edit everything afterward, and nothing leaves your device.
+        </p>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <button style={primaryBtn} onClick={onEmpty}>Start from scratch</button>
+          <button style={secondaryBtn} onClick={onDemo}>Load fictional demo data</button>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={label}>Debt-free in</div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: "#111" }}>{monthsLabel}</div>
-        </div>
+        <p style={{ ...muted, marginTop: 14 }}>
+          The demo loads a completely <b>fictional</b> &ldquo;Sam Sample&rdquo;-style dataset (invented
+          balances, offers, and a credit profile) so you can explore the tool. It is{" "}
+          <b>not real data</b> and is never loaded automatically.
+        </p>
       </div>
-
-      {plan.total_debt === 0 ? (
-        <div style={{ padding: 20, background: "#f0f9f4", borderRadius: 8, color: "#0d7c5f", fontWeight: 600 }}>
-          🎉 No {plan.scope} debt remaining.
-        </div>
-      ) : nm ? (
-        <NextMoveCard move={nm} accent={accent} onDone={() => onMoveDone(nm)} completed={completedMoves.has(`${nm.debt_id}:${nm.source_lever_id}:${nm.amount}`)} />
-      ) : (
-        <div style={{ padding: 20, background: "#fff7ed", borderRadius: 8, color: "#9a3412", fontSize: 14 }}>
-          No lever fits the remaining {plan.scope} balances. Add a new BT card, cash inflow, or raise monthly capacity.
-        </div>
-      )}
-
-      <div style={{ marginTop: 20 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <span style={{ fontSize: 13, color: "#666" }}>Monthly capacity</span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{moneyShort(capacity)}/mo</span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={10000}
-          step={50}
-          value={capacity}
-          onChange={e => onCapacity(parseInt(e.target.value, 10))}
-          style={{ width: "100%", accentColor: accent }}
-        />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#999" }}>
-          <span>$0</span>
-          <span>$10k/mo</span>
-        </div>
-      </div>
-
-      {plan.projection.months_to_zero != null && (
-        <div style={{ display: "flex", gap: 24, marginTop: 16, fontSize: 13, color: "#666" }}>
-          <span>Total interest: <b style={{ color: "#111" }}>{moneyShort(plan.projection.total_interest)}</b></span>
-          <span>Total fees: <b style={{ color: "#111" }}>{moneyShort(plan.projection.total_fees)}</b></span>
-        </div>
-      )}
-
-      {plan.warnings.length > 0 && (
-        <div style={{ marginTop: 16, padding: 12, background: "#fef3c7", borderRadius: 8, fontSize: 13, color: "#92400e" }}>
-          {plan.warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}
-        </div>
-      )}
-
-      {plan.upcoming_moves.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <button onClick={onToggleExpand} style={{ ...ghostBtn, width: "100%", textAlign: "left", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>{expanded ? "Hide" : "Show"} next {plan.upcoming_moves.length} move{plan.upcoming_moves.length === 1 ? "" : "s"}</span>
-            <span>{expanded ? "▴" : "▾"}</span>
-          </button>
-          {expanded && (
-            <div style={{ marginTop: 12 }}>
-              {plan.upcoming_moves.map((m, i) => (
-                <div key={i} style={{ padding: 12, borderTop: "1px solid #f0f0f0", fontSize: 13 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontWeight: 600, color: "#111" }}>
-                      {moveTypeLabel(m.type)} {moneyShort(m.amount)} → {m.debt_name}
-                    </span>
-                    <span style={{ color: "#999", fontSize: 12 }}>{m.deadline ?? ""}</span>
-                  </div>
-                  <div style={{ color: "#666", fontSize: 12 }}>via {m.source_label}{m.fee ? ` (${moneyShort(m.fee)} fee)` : ""}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }
 
-function NextMoveCard({ move, accent, onDone, completed }: { move: NextMove; accent: string; onDone: () => void; completed: boolean }) {
-  const headline = `${moveTypeLabel(move.type)} ${moneyShort(move.amount)} → ${move.debt_name}`
-  const urgencyTag = move.urgency === "cliff" ? "🔥 Cliff defense" : move.urgency === "high_apr" ? "💸 High APR" : "🧹 Cleanup"
+// ----------------------------------------------------------------------------
+// Dashboard
+// ----------------------------------------------------------------------------
+
+function Dashboard({
+  scenario, startISO, update, onReset,
+}: {
+  scenario: DebtScenario
+  startISO: string
+  update: (patch: Partial<DebtScenario>) => void
+  onReset: () => void
+}) {
+  const picture: FinancialPicture = useMemo(() => ({
+    debts: scenario.debts,
+    monthlyBudget: scenario.monthlyBudget,
+    availableCash: scenario.availableCash,
+    emergencyBuffer: scenario.emergencyBuffer,
+    balanceTransfers: scenario.balanceTransfers,
+    consolidationLoans: scenario.consolidationLoans,
+    creditProfile: scenario.creditProfile,
+    goal: scenario.goal,
+    startDateISO: startISO,
+  }), [scenario, startISO])
+
+  const comparison = useMemo(() => compareStrategies(picture), [picture])
+
+  const minPaymentsSum = useMemo(
+    () => round2(scenario.debts.reduce((s, d) =>
+      s + (d.kind === "credit_card" ? d.minPayment : d.monthlyPayment), 0)),
+    [scenario.debts],
+  )
+  const extraCapacity = round2(scenario.monthlyBudget - minPaymentsSum)
+  const usableCash = Math.max(0, round2(scenario.availableCash - scenario.emergencyBuffer))
+
   return (
-    <div style={{ padding: 20, background: "#fafafa", borderRadius: 10, border: `1px solid ${accent}22` }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: accent, marginBottom: 6 }}>{urgencyTag} · Your Next Move</div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8 }}>{headline}</div>
-      <div style={{ fontSize: 13, color: "#666", marginBottom: 12, lineHeight: 1.5 }}>
-        {move.reason}
-        {move.deadline && <> Deadline: <b style={{ color: "#111" }}>{move.deadline}</b>.</>}
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 64px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Debt Payoff Strategy Simulator</h1>
+          <div style={{ ...muted, marginTop: 4 }}>
+            Total debt: <b style={{ color: "#111" }}>{formatMoney(totalDebt(picture))}</b>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {scenario.isDemo && (
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#b45309", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 999, padding: "4px 12px" }}>
+              Viewing fictional demo data
+            </span>
+          )}
+          <button style={ghostBtn} onClick={() => { if (confirm("Clear all debt data and start over?")) onReset() }}>
+            Reset / clear data
+          </button>
+        </div>
       </div>
-      <div style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>
-        Source: <b style={{ color: "#111" }}>{move.source_label}</b>
-        {move.fee ? <> · Fee: <b style={{ color: "#111" }}>{moneyShort(move.fee)}</b></> : null}
+
+      <GoalSelector goal={scenario.goal} onChange={g => update({ goal: g })} />
+
+      <InputsPanel
+        scenario={scenario}
+        minPaymentsSum={minPaymentsSum}
+        extraCapacity={extraCapacity}
+        usableCash={usableCash}
+        update={update}
+      />
+
+      <DebtsSection debts={scenario.debts} update={update} />
+
+      <BalanceTransferSection offers={scenario.balanceTransfers} startISO={startISO} update={update} />
+
+      <ConsolidationLoanSection offers={scenario.consolidationLoans} startISO={startISO} update={update} />
+
+      <CreditProfileSection profile={scenario.creditProfile} update={update} />
+
+      <ResultsSection comparison={comparison} />
+
+      <NextMovePanel comparison={comparison} />
+
+      <ScheduleSection strategies={comparison.strategies} recommendedKind={comparison.recommended.kind} />
+
+      <LoanSimulatorWidget picture={picture} />
+
+      <GuardrailFooter />
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 2. Goal selector
+// ----------------------------------------------------------------------------
+
+const GOALS: StrategyGoal[] = ["lowest_cost", "fastest", "lowest_payment", "protect_credit"]
+
+function GoalSelector({ goal, onChange }: { goal: StrategyGoal; onChange: (g: StrategyGoal) => void }) {
+  return (
+    <div style={cardBox}>
+      <div style={label}>Optimize for</div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {GOALS.map(g => {
+          const active = g === goal
+          return (
+            <button
+              key={g}
+              onClick={() => onChange(g)}
+              style={{
+                padding: "9px 16px", fontSize: 13, fontWeight: 600, borderRadius: 999, cursor: "pointer",
+                border: active ? `1px solid ${ACCENT}` : "1px solid #e0e0e0",
+                background: active ? ACCENT : "#fff",
+                color: active ? "#fff" : "#555",
+              }}
+            >
+              {STRATEGY_GOAL_LABEL[g]}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 3. Inputs panel
+// ----------------------------------------------------------------------------
+
+function NumberField({
+  labelText, value, onCommit, hint, prefix,
+}: {
+  labelText: string
+  value: number
+  onCommit: (n: number) => void
+  hint?: string
+  prefix?: string
+}) {
+  return (
+    <div>
+      <label style={fieldLabel}>{labelText}</label>
+      <div style={{ position: "relative" }}>
+        {prefix && (
+          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>
+            {prefix}
+          </span>
+        )}
+        <input
+          type="number"
+          defaultValue={value}
+          onBlur={e => onCommit(num(e.target.value))}
+          style={{ ...inputStyle, paddingLeft: prefix ? 22 : 12 }}
+        />
+      </div>
+      {hint && <div style={{ ...muted, marginTop: 4 }}>{hint}</div>}
+    </div>
+  )
+}
+
+function InputsPanel({
+  scenario, minPaymentsSum, extraCapacity, usableCash, update,
+}: {
+  scenario: DebtScenario
+  minPaymentsSum: number
+  extraCapacity: number
+  usableCash: number
+  update: (patch: Partial<DebtScenario>) => void
+}) {
+  return (
+    <div style={cardBox}>
+      <h3 style={sectionTitle}>Your budget & cash</h3>
+      <div style={{ ...muted, marginBottom: 16 }}>
+        Strategies never spend below your emergency buffer.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+        <NumberField
+          labelText="Total monthly debt budget"
+          value={scenario.monthlyBudget}
+          prefix="$"
+          onCommit={n => update({ monthlyBudget: n })}
+          hint="Everything you put toward debt each month (minimums + extra)."
+        />
+        <div>
+          <label style={fieldLabel}>Sum of current minimum payments</label>
+          <div style={computedStyle}>{formatMoney(minPaymentsSum)}/mo</div>
+          <div style={{ ...muted, marginTop: 4 }}>Required minimums across all debts.</div>
+        </div>
+        <div>
+          <label style={fieldLabel}>Extra monthly payment capacity</label>
+          <div style={{ ...computedStyle, color: extraCapacity < 0 ? "#dc2626" : "#0d7c5f", fontWeight: 700 }}>
+            {formatMoney(extraCapacity)}/mo
+          </div>
+          <div style={{ ...muted, marginTop: 4 }}>
+            Budget − minimums. {extraCapacity < 0 ? "Negative: minimums exceed your budget." : "Extra that attacks the highest-APR debt."}
+          </div>
+        </div>
+        <NumberField
+          labelText="Available cash on hand"
+          value={scenario.availableCash}
+          prefix="$"
+          onCommit={n => update({ availableCash: n })}
+          hint="Lump cash you could deploy now."
+        />
+        <NumberField
+          labelText="Emergency buffer (never spent)"
+          value={scenario.emergencyBuffer}
+          prefix="$"
+          onCommit={n => update({ emergencyBuffer: n })}
+          hint="Cash strategies will preserve."
+        />
+        <div>
+          <label style={fieldLabel}>Usable cash</label>
+          <div style={{ ...computedStyle, color: "#0d7c5f", fontWeight: 700 }}>{formatMoney(usableCash)}</div>
+          <div style={{ ...muted, marginTop: 4 }}>max(0, available − buffer).</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 4. Debts CRUD
+// ----------------------------------------------------------------------------
+
+const APR_HINT = "Decimal — e.g. 0.2499 for 24.99%"
+
+function emptyCreditCard(): CreditCardDebt {
+  return { kind: "credit_card", id: newId("debt"), name: "New card", balance: 0, apr: 0.2499, minPayment: 25, creditLimit: undefined, promoApr: null, promoEndsOn: null, postPromoApr: null }
+}
+function emptyInstallment(): InstallmentDebt {
+  return { kind: "installment", id: newId("debt"), name: "New loan", balance: 0, apr: 0.08, monthlyPayment: 0, termRemainingMonths: null }
+}
+
+function DebtsSection({ debts, update }: { debts: DebtInstrument[]; update: (patch: Partial<DebtScenario>) => void }) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+
+  const upsert = (d: DebtInstrument) => {
+    const exists = debts.some(x => x.id === d.id)
+    update({ debts: exists ? debts.map(x => (x.id === d.id ? d : x)) : [...debts, d] })
+  }
+  const remove = (id: string) => update({ debts: debts.filter(d => d.id !== id) })
+
+  function addCard() { const d = emptyCreditCard(); upsert(d); setEditingId(d.id) }
+  function addLoan() { const d = emptyInstallment(); upsert(d); setEditingId(d.id) }
+
+  return (
+    <div style={cardBox}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <h3 style={sectionTitle}>Debts</h3>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button style={secondaryBtn} onClick={addCard}>+ Credit card</button>
+          <button style={secondaryBtn} onClick={addLoan}>+ Installment loan</button>
+        </div>
+      </div>
+      {debts.length === 0 && <div style={muted}>No debts yet. Add a credit card or installment loan.</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {debts.map(d =>
+          editingId === d.id ? (
+            <DebtEditor key={d.id} debt={d} onSave={dd => { upsert(dd); setEditingId(null) }} onCancel={() => setEditingId(null)} />
+          ) : (
+            <DebtRow key={d.id} debt={d} onEdit={() => setEditingId(d.id)} onDelete={() => remove(d.id)} />
+          ),
+        )}
+      </div>
+    </div>
+  )
+}
+
+function DebtRow({ debt, onEdit, onDelete }: { debt: DebtInstrument; onEdit: () => void; onDelete: () => void }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8 }}>
+      <div>
+        <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
+          {debt.name} <span style={{ ...muted, fontSize: 11 }}>· {debt.kind === "credit_card" ? "Credit card" : "Installment"}</span>
+        </div>
+        <div style={{ ...muted, marginTop: 2 }}>
+          {formatMoney(debt.balance)} @ {pctStr(debt.apr)}
+          {debt.kind === "credit_card"
+            ? ` · min ${formatMoney(debt.minPayment)}${debt.promoApr != null ? ` · promo ${pctStr(debt.promoApr)} until ${debt.promoEndsOn ?? "?"}` : ""}`
+            : ` · ${formatMoney(debt.monthlyPayment)}/mo${debt.termRemainingMonths ? ` · ${debt.termRemainingMonths} mo left` : ""}`}
+        </div>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
-        <button style={{ ...primaryBtn, background: completed ? "#999" : accent }} onClick={onDone} disabled={completed}>
-          {completed ? "Marked done" : "Mark done"}
-        </button>
+        <button style={ghostBtn} onClick={onEdit}>Edit</button>
+        <button style={{ ...ghostBtn, color: "#dc2626" }} onClick={onDelete}>Delete</button>
       </div>
     </div>
   )
 }
 
-function moveTypeLabel(t: NextMove["type"]): string {
-  switch (t) {
-    case "bt": return "BT"
-    case "loan_payoff": return "Pay (from loan)"
-    case "withdraw_to_pay": return "Withdraw + pay"
-    case "pay": return "Pay"
+function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: (d: DebtInstrument) => void; onCancel: () => void }) {
+  const [draft, setDraft] = useState<DebtInstrument>(debt)
+
+  // Type-narrowed setters keep the discriminated union intact.
+  function setCard(patch: Partial<CreditCardDebt>) {
+    setDraft(prev => (prev.kind === "credit_card" ? { ...prev, ...patch } : prev))
+  }
+  function setLoan(patch: Partial<InstallmentDebt>) {
+    setDraft(prev => (prev.kind === "installment" ? { ...prev, ...patch } : prev))
+  }
+
+  return (
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+        <div>
+          <label style={fieldLabel}>Name</label>
+          <input style={inputStyle} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} />
+        </div>
+        <div>
+          <label style={fieldLabel}>Balance</label>
+          <input style={inputStyle} type="number" value={draft.balance} onChange={e => setDraft({ ...draft, balance: num(e.target.value) })} />
+        </div>
+        <div>
+          <label style={fieldLabel}>APR</label>
+          <input style={inputStyle} type="number" step="0.0001" value={draft.apr} onChange={e => setDraft({ ...draft, apr: num(e.target.value) })} />
+          <div style={{ ...muted, marginTop: 4 }}>{APR_HINT}</div>
+        </div>
+
+        {draft.kind === "credit_card" ? (
+          <>
+            <div>
+              <label style={fieldLabel}>Minimum payment</label>
+              <input style={inputStyle} type="number" value={draft.minPayment} onChange={e => setCard({ minPayment: num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Credit limit (optional)</label>
+              <input style={inputStyle} type="number" value={draft.creditLimit ?? ""} onChange={e => setCard({ creditLimit: e.target.value === "" ? undefined : num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Promo APR (optional)</label>
+              <input style={inputStyle} type="number" step="0.0001" value={draft.promoApr ?? ""} onChange={e => setCard({ promoApr: e.target.value === "" ? null : num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Promo ends on (optional)</label>
+              <input style={inputStyle} type="date" value={draft.promoEndsOn ?? ""} onChange={e => setCard({ promoEndsOn: e.target.value || null })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Post-promo APR (optional)</label>
+              <input style={inputStyle} type="number" step="0.0001" value={draft.postPromoApr ?? ""} onChange={e => setCard({ postPromoApr: e.target.value === "" ? null : num(e.target.value) })} />
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <label style={fieldLabel}>Monthly payment</label>
+              <input style={inputStyle} type="number" value={draft.monthlyPayment} onChange={e => setLoan({ monthlyPayment: num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Term remaining (months, optional)</label>
+              <input style={inputStyle} type="number" value={draft.termRemainingMonths ?? ""} onChange={e => setLoan({ termRemainingMonths: e.target.value === "" ? null : num(e.target.value) })} />
+            </div>
+          </>
+        )}
+      </div>
+      <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+        <button style={primaryBtn} onClick={() => onSave(draft)}>Save</button>
+        <button style={secondaryBtn} onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// Approval helper text (shared by both offer kinds)
+// ----------------------------------------------------------------------------
+
+function ApprovalNote({ status }: { status: ApprovalStatus }) {
+  if (status === "approved") return null
+  const labelText = status === "prequalified" ? "Prequalified" : "Estimated"
+  return (
+    <div style={{ ...muted, marginTop: 8, color: "#b45309" }}>
+      {labelText} ≠ approved. Approval and final terms are not guaranteed. Enter your actual offer to compare it accurately.
+    </div>
+  )
+}
+
+const APPROVAL_OPTIONS: ApprovalStatus[] = ["approved", "prequalified", "estimated"]
+
+// ----------------------------------------------------------------------------
+// 5a. Balance transfer offers CRUD
+// ----------------------------------------------------------------------------
+
+function emptyBT(startISO: string): BalanceTransferOffer {
+  return {
+    id: newId("bt"), name: "New balance transfer", enabled: true,
+    creditLimit: 0, approvedTransferAmount: 0, promoApr: 0, promoMonths: 18,
+    postPromoApr: 0.2699, transferFeePct: 0.03, minPayment: 25,
+    availableOn: startISO, payFeeWithCash: false, approvalStatus: "estimated",
   }
 }
 
-function LeverInventory({ personal, business }: { personal: DebtPlan; business: DebtPlan }) {
-  const all = [...personal.unused_levers, ...business.unused_levers]
-  const dedup = Array.from(new Map(all.map(l => [l.id, l])).values())
-  if (dedup.length === 0) return null
-  const eligible = dedup.filter(l => l.eligible && l.amount_available > 0)
-  const considered = dedup.filter(l => !l.eligible || l.amount_available === 0)
+function BalanceTransferSection({ offers, startISO, update }: { offers: BalanceTransferOffer[]; startISO: string; update: (patch: Partial<DebtScenario>) => void }) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const upsert = (o: BalanceTransferOffer) => {
+    const exists = offers.some(x => x.id === o.id)
+    update({ balanceTransfers: exists ? offers.map(x => (x.id === o.id ? o : x)) : [...offers, o] })
+  }
+  const remove = (id: string) => update({ balanceTransfers: offers.filter(o => o.id !== id) })
+  function add() { const o = emptyBT(startISO); upsert(o); setEditingId(o.id) }
+
   return (
     <div style={cardBox}>
-      <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#111" }}>Untapped levers</h3>
-      {eligible.length === 0 ? (
-        <div style={{ fontSize: 13, color: "#666", marginBottom: considered.length ? 16 : 0 }}>All eligible levers fully deployed.</div>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: considered.length ? 16 : 0 }}>
-          {eligible.map(l => (
-            <div key={l.id} style={{ padding: 12, border: "1px solid #eee", borderRadius: 8, fontSize: 13 }}>
-              <div style={{ fontWeight: 600, color: "#111" }}>{l.label}</div>
-              <div style={{ color: "#666", fontSize: 12 }}>{moneyShort(l.amount_available)} available · {pct(l.cost_apr)} cost</div>
-              {l.notes && <div style={{ color: "#999", fontSize: 11, marginTop: 4 }}>{l.notes}</div>}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <h3 style={sectionTitle}>Balance transfer offers</h3>
+        <button style={secondaryBtn} onClick={add}>+ Add offer</button>
+      </div>
+      {offers.length === 0 && <div style={muted}>No balance-transfer offers. Add one to model a 0%-promo transfer.</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {offers.map(o =>
+          editingId === o.id ? (
+            <BTEditor key={o.id} offer={o} onSave={oo => { upsert(oo); setEditingId(null) }} onCancel={() => setEditingId(null)} />
+          ) : (
+            <OfferRow
+              key={o.id}
+              title={o.name}
+              enabled={o.enabled}
+              status={o.approvalStatus}
+              summary={`${formatMoney(o.approvedTransferAmount)} approved · ${pctStr(o.promoApr)} for ${o.promoMonths} mo, then ${pctStr(o.postPromoApr)} · ${pctStr(o.transferFeePct)} fee · avail ${o.availableOn}`}
+              onToggle={() => upsert({ ...o, enabled: !o.enabled })}
+              onEdit={() => setEditingId(o.id)}
+              onDelete={() => remove(o.id)}
+            />
+          ),
+        )}
+      </div>
+    </div>
+  )
+}
+
+function BTEditor({ offer, onSave, onCancel }: { offer: BalanceTransferOffer; onSave: (o: BalanceTransferOffer) => void; onCancel: () => void }) {
+  const [d, setD] = useState<BalanceTransferOffer>(offer)
+  const set = (patch: Partial<BalanceTransferOffer>) => setD(prev => ({ ...prev, ...patch }))
+  return (
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+        <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
+        <div><label style={fieldLabel}>Credit limit</label><input style={inputStyle} type="number" value={d.creditLimit} onChange={e => set({ creditLimit: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Approved transfer amount</label><input style={inputStyle} type="number" value={d.approvedTransferAmount} onChange={e => set({ approvedTransferAmount: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Promo APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.promoApr} onChange={e => set({ promoApr: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Promo months</label><input style={inputStyle} type="number" value={d.promoMonths} onChange={e => set({ promoMonths: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Post-promo APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.postPromoApr} onChange={e => set({ postPromoApr: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Transfer fee (decimal, 0.03 = 3%)</label><input style={inputStyle} type="number" step="0.001" value={d.transferFeePct} onChange={e => set({ transferFeePct: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Minimum payment</label><input style={inputStyle} type="number" value={d.minPayment} onChange={e => set({ minPayment: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Available on</label><input style={inputStyle} type="date" value={d.availableOn} onChange={e => set({ availableOn: e.target.value })} /></div>
+        <div>
+          <label style={fieldLabel}>Approval status</label>
+          <select style={selectStyle} value={d.approvalStatus} onChange={e => set({ approvalStatus: e.target.value as ApprovalStatus })}>
+            {APPROVAL_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+          <input type="checkbox" checked={d.payFeeWithCash} onChange={e => set({ payFeeWithCash: e.target.checked })} />
+          Pay fee with cash
+        </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+          <input type="checkbox" checked={d.enabled} onChange={e => set({ enabled: e.target.checked })} />
+          Enabled (include in comparison)
+        </label>
+      </div>
+      <ApprovalNote status={d.approvalStatus} />
+      <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+        <button style={primaryBtn} onClick={() => onSave(d)}>Save</button>
+        <button style={secondaryBtn} onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 5b. Consolidation loan offers CRUD
+// ----------------------------------------------------------------------------
+
+function emptyLoan(startISO: string): ConsolidationLoanOffer {
+  return {
+    id: newId("loan"), name: "New consolidation loan", enabled: true,
+    requestedAmount: 0, approvedAmount: 0, apr: 0.12, termMonths: 48,
+    originationFeePct: 0.05, feeMode: "deducted", monthlyPayment: null,
+    availableOn: startISO, status: "estimated",
+  }
+}
+
+const FEE_MODE_OPTIONS: ConsolidationLoanFeeMode[] = ["financed", "deducted"]
+
+function ConsolidationLoanSection({ offers, startISO, update }: { offers: ConsolidationLoanOffer[]; startISO: string; update: (patch: Partial<DebtScenario>) => void }) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const upsert = (o: ConsolidationLoanOffer) => {
+    const exists = offers.some(x => x.id === o.id)
+    update({ consolidationLoans: exists ? offers.map(x => (x.id === o.id ? o : x)) : [...offers, o] })
+  }
+  const remove = (id: string) => update({ consolidationLoans: offers.filter(o => o.id !== id) })
+  function add() { const o = emptyLoan(startISO); upsert(o); setEditingId(o.id) }
+
+  return (
+    <div style={cardBox}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <h3 style={sectionTitle}>Consolidation loan offers</h3>
+        <button style={secondaryBtn} onClick={add}>+ Add offer</button>
+      </div>
+      {offers.length === 0 && <div style={muted}>No consolidation-loan offers. Add one to model paying off debt with a personal loan.</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {offers.map(o =>
+          editingId === o.id ? (
+            <LoanEditor key={o.id} offer={o} onSave={oo => { upsert(oo); setEditingId(null) }} onCancel={() => setEditingId(null)} />
+          ) : (
+            <OfferRow
+              key={o.id}
+              title={o.name}
+              enabled={o.enabled}
+              status={o.status}
+              summary={`${formatMoney(o.approvedAmount || o.requestedAmount)} @ ${pctStr(o.apr)} · ${o.termMonths} mo · ${pctStr(o.originationFeePct)} orig (${o.feeMode}) · ${formatMoney(loanPayment(o))}/mo · avail ${o.availableOn}`}
+              onToggle={() => upsert({ ...o, enabled: !o.enabled })}
+              onEdit={() => setEditingId(o.id)}
+              onDelete={() => remove(o.id)}
+            />
+          ),
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Payment the engine would use: explicit if provided, else amortized.
+function loanPayment(o: ConsolidationLoanOffer): number {
+  if (o.monthlyPayment != null && o.monthlyPayment > 0) return o.monthlyPayment
+  const base = o.approvedAmount > 0 ? o.approvedAmount : o.requestedAmount
+  const principal = o.feeMode === "financed" ? round2(base * (1 + o.originationFeePct)) : base
+  return amortizedPayment(principal, o.apr, o.termMonths)
+}
+
+function LoanEditor({ offer, onSave, onCancel }: { offer: ConsolidationLoanOffer; onSave: (o: ConsolidationLoanOffer) => void; onCancel: () => void }) {
+  const [d, setD] = useState<ConsolidationLoanOffer>(offer)
+  const set = (patch: Partial<ConsolidationLoanOffer>) => setD(prev => ({ ...prev, ...patch }))
+  const amortized = loanPayment({ ...d, monthlyPayment: null })
+  return (
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+        <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
+        <div><label style={fieldLabel}>Requested amount</label><input style={inputStyle} type="number" value={d.requestedAmount} onChange={e => set({ requestedAmount: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Approved amount</label><input style={inputStyle} type="number" value={d.approvedAmount} onChange={e => set({ approvedAmount: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>APR (decimal)</label><input style={inputStyle} type="number" step="0.0001" value={d.apr} onChange={e => set({ apr: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Term (months)</label><input style={inputStyle} type="number" value={d.termMonths} onChange={e => set({ termMonths: num(e.target.value) })} /></div>
+        <div><label style={fieldLabel}>Origination fee (decimal)</label><input style={inputStyle} type="number" step="0.001" value={d.originationFeePct} onChange={e => set({ originationFeePct: num(e.target.value) })} /></div>
+        <div>
+          <label style={fieldLabel}>Fee mode</label>
+          <select style={selectStyle} value={d.feeMode} onChange={e => set({ feeMode: e.target.value as ConsolidationLoanFeeMode })}>
+            {FEE_MODE_OPTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={fieldLabel}>Monthly payment (blank = amortize)</label>
+          <input
+            style={inputStyle}
+            type="number"
+            value={d.monthlyPayment ?? ""}
+            placeholder={String(amortized)}
+            onChange={e => set({ monthlyPayment: e.target.value === "" ? null : num(e.target.value) })}
+          />
+          <div style={{ ...muted, marginTop: 4 }}>Amortized: <b>{formatMoney(amortized)}/mo</b></div>
+        </div>
+        <div><label style={fieldLabel}>Available on</label><input style={inputStyle} type="date" value={d.availableOn} onChange={e => set({ availableOn: e.target.value })} /></div>
+        <div>
+          <label style={fieldLabel}>Status</label>
+          <select style={selectStyle} value={d.status} onChange={e => set({ status: e.target.value as ApprovalStatus })}>
+            {APPROVAL_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+          <input type="checkbox" checked={d.enabled} onChange={e => set({ enabled: e.target.checked })} />
+          Enabled (include in comparison)
+        </label>
+      </div>
+      <ApprovalNote status={d.status} />
+      <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+        <button style={primaryBtn} onClick={() => onSave(d)}>Save</button>
+        <button style={secondaryBtn} onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+function OfferRow({
+  title, enabled, status, summary, onToggle, onEdit, onDelete,
+}: {
+  title: string
+  enabled: boolean
+  status: ApprovalStatus
+  summary: string
+  onToggle: () => void
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  return (
+    <div style={{ padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8, opacity: enabled ? 1 : 0.6 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <input type="checkbox" checked={enabled} onChange={onToggle} title="Include in comparison" />
+          <div>
+            <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
+              {title}{" "}
+              <span style={{
+                fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em",
+                padding: "2px 7px", borderRadius: 999, marginLeft: 4,
+                color: status === "approved" ? "#0d7c5f" : "#b45309",
+                background: status === "approved" ? "#ecfdf5" : "#fffbeb",
+              }}>{status}</span>
             </div>
-          ))}
+            <div style={{ ...muted, marginTop: 2 }}>{summary}</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button style={ghostBtn} onClick={onEdit}>Edit</button>
+          <button style={{ ...ghostBtn, color: "#dc2626" }} onClick={onDelete}>Delete</button>
+        </div>
+      </div>
+      {status !== "approved" && <ApprovalNote status={status} />}
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 6. Credit profile (collapsible)
+// ----------------------------------------------------------------------------
+
+const FICO_OPTIONS: FicoBand[] = ["poor", "fair", "good", "very_good", "exceptional"]
+
+function CreditProfileSection({ profile, update }: { profile: CreditProfile; update: (patch: Partial<DebtScenario>) => void }) {
+  const [open, setOpen] = useState(false)
+  const set = (patch: Partial<CreditProfile>) => update({ creditProfile: { ...profile, ...patch } })
+  const optNum = (v: number | undefined) => (v == null ? "" : v)
+
+  return (
+    <div style={cardBox}>
+      <button onClick={() => setOpen(o => !o)} style={{ ...ghostBtn, width: "100%", textAlign: "left", display: "flex", justifyContent: "space-between", alignItems: "center", border: "none", padding: 0 }}>
+        <span style={sectionTitle}>Credit profile (optional)</span>
+        <span style={{ fontSize: 16 }}>{open ? "▴" : "▾"}</span>
+      </button>
+      {open && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ ...muted, marginBottom: 14 }}>
+            All optional and used only for cautions. We never claim you&rsquo;ll qualify based on score alone.
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+            <div>
+              <label style={fieldLabel}>FICO band</label>
+              <select style={selectStyle} value={profile.ficoBand ?? ""} onChange={e => set({ ficoBand: e.target.value === "" ? undefined : (e.target.value as FicoBand) })}>
+                <option value="">—</option>
+                {FICO_OPTIONS.map(b => <option key={b} value={b}>{FICO_BAND_LABEL[b]}</option>)}
+              </select>
+            </div>
+            <div><label style={fieldLabel}>Annual income</label><input style={inputStyle} type="number" value={optNum(profile.annualIncome)} onChange={e => set({ annualIncome: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Monthly housing</label><input style={inputStyle} type="number" value={optNum(profile.monthlyHousing)} onChange={e => set({ monthlyHousing: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Total min debt payments</label><input style={inputStyle} type="number" value={optNum(profile.totalMinDebtPayments)} onChange={e => set({ totalMinDebtPayments: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Revolving utilization (decimal)</label><input style={inputStyle} type="number" step="0.01" value={optNum(profile.revolvingUtilization)} onChange={e => set({ revolvingUtilization: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Hard inquiries (6 mo)</label><input style={inputStyle} type="number" value={optNum(profile.hardInquiries6mo)} onChange={e => set({ hardInquiries6mo: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+            <div><label style={fieldLabel}>Card apps (12 mo)</label><input style={inputStyle} type="number" value={optNum(profile.cardApps12mo)} onChange={e => set({ cardApps12mo: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+              <input type="checkbox" checked={!!profile.majorDerogatory} onChange={e => set({ majorDerogatory: e.target.checked })} />
+              Major derogatory mark (collection, charge-off, bankruptcy)
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+              <input type="checkbox" checked={!!profile.willingToOpenCredit} onChange={e => set({ willingToOpenCredit: e.target.checked })} />
+              Willing to open new credit
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+              <input type="checkbox" checked={!!profile.preserveChurningEligibility} onChange={e => set({ preserveChurningEligibility: e.target.checked })} />
+              Preserve card / churning eligibility
+            </label>
+          </div>
         </div>
       )}
-      {considered.length > 0 && (
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 7. Results — strategy comparison
+// ----------------------------------------------------------------------------
+
+function metric(labelText: string, value: string, accent?: boolean) {
+  return (
+    <div>
+      <div style={{ ...muted, fontSize: 10.5, textTransform: "uppercase", letterSpacing: "0.04em" }}>{labelText}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: accent ? ACCENT : "#111" }}>{value}</div>
+    </div>
+  )
+}
+
+function signedMoney(n: number): string {
+  if (n > 0) return `+${formatMoney(n)}`
+  return formatMoney(n)
+}
+
+function StrategyCard({ s, recommended, goal }: { s: StrategyResult; recommended: boolean; goal: StrategyGoal }) {
+  const [showAccounts, setShowAccounts] = useState(false)
+  return (
+    <div style={{
+      border: recommended ? `2px solid ${ACCENT}` : "1px solid #e8e8e8",
+      borderRadius: 10, padding: 16, background: recommended ? "#f6fbf9" : "#fff",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{s.label}</div>
+        {recommended && (
+          <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: ACCENT, borderRadius: 999, padding: "3px 10px" }}>
+            Recommended for {STRATEGY_GOAL_LABEL[goal]}
+          </span>
+        )}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 }}>
+        {metric("Debt-free date", s.debtFreeDateISO ?? "Beyond horizon")}
+        {metric("Months to debt-free", s.monthsToDebtFree != null ? String(s.monthsToDebtFree) : "—")}
+        {metric("Total interest", formatMoney(s.totalInterest))}
+        {metric("Total fees", formatMoney(s.totalFees))}
+        {metric("Total cost", formatMoney(s.totalCost), recommended)}
+        {metric("Required monthly", `${formatMoney(s.requiredMonthlyPayment)}/mo`)}
+        {metric("Months saved vs baseline", s.monthsSavedVsBaseline != null ? String(s.monthsSavedVsBaseline) : "—")}
+        {metric("$ saved vs baseline", signedMoney(s.dollarsSavedVsBaseline))}
+        {metric("New accounts", String(s.newAccounts))}
+        {metric("Remaining after promos", formatMoney(s.remainingAfterPromos))}
+      </div>
+
+      {s.newAccountDetails.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <button style={ghostBtn} onClick={() => setShowAccounts(o => !o)}>
+            {showAccounts ? "Hide" : "Show"} {s.newAccountDetails.length} new account detail(s)
+          </button>
+          {showAccounts && (
+            <ul style={{ margin: "8px 0 0", paddingLeft: 18, fontSize: 12.5, color: "#555", lineHeight: 1.6 }}>
+              {s.newAccountDetails.map((d, i) => <li key={i}>{d}</li>)}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <WarningList warnings={s.warnings} />
+    </div>
+  )
+}
+
+function ResultsSection({ comparison }: { comparison: ReturnType<typeof compareStrategies> }) {
+  return (
+    <div style={cardBox}>
+      <h3 style={sectionTitle}>Strategy comparison</h3>
+      <div style={{ ...muted, marginBottom: 14 }}>
+        Ranked for your goal: <b>{STRATEGY_GOAL_LABEL[comparison.goal]}</b>.
+      </div>
+      <WarningList warnings={comparison.globalWarnings} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginTop: 14 }}>
+        {comparison.strategies.map(s => (
+          <StrategyCard
+            key={s.kind}
+            s={s}
+            recommended={s.kind === comparison.recommended.kind}
+            goal={comparison.goal}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 8. Your next move
+// ----------------------------------------------------------------------------
+
+function NextMovePanel({ comparison }: { comparison: ReturnType<typeof compareStrategies> }) {
+  const rec = comparison.recommended
+  const nm = rec.nextMove
+  return (
+    <div style={{ ...cardBox, borderTop: `3px solid ${ACCENT}` }}>
+      <div style={{ ...label, color: ACCENT }}>Your next move</div>
+      {nm ? (
+        <div style={{ padding: 16, background: "#fafafa", borderRadius: 10, border: `1px solid ${ACCENT}22`, marginBottom: 16 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, color: "#111", marginBottom: 6 }}>{nm.headline}</div>
+          <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.55, marginBottom: 8 }}>{nm.detail}</div>
+          <div style={{ display: "flex", gap: 18, flexWrap: "wrap", fontSize: 13, color: "#666" }}>
+            <span>Type: <b style={{ color: "#111" }}>{nm.type}</b></span>
+            {nm.amount > 0 && <span>Amount: <b style={{ color: "#111" }}>{formatMoney(nm.amount)}</b></span>}
+            {nm.deadline && <span>Deadline: <b style={{ color: "#111" }}>{nm.deadline}</b></span>}
+          </div>
+          <div style={{ ...muted, marginTop: 8 }}>{nm.reason}</div>
+        </div>
+      ) : (
+        <div style={{ ...muted, marginBottom: 16 }}>No specific next move — add debts or offers to generate one.</div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+        <div>
+          <div style={label}>Why {rec.label} is recommended</div>
+          <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{comparison.whyRecommended}</div>
+        </div>
+        <div>
+          <div style={label}>What would change the recommendation</div>
+          <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{comparison.whatWouldChange}</div>
+        </div>
+      </div>
+
+      {rec.assumptions.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <div style={label}>Assumptions</div>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: "#555", lineHeight: 1.65 }}>
+            {rec.assumptions.map((a, i) => <li key={i}>{a}</li>)}
+          </ul>
+        </div>
+      )}
+
+      <WarningList warnings={rec.warnings} />
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// 9. Month-by-month schedule
+// ----------------------------------------------------------------------------
+
+const ROW_CAP = 120
+
+function ScheduleSection({ strategies, recommendedKind }: { strategies: StrategyResult[]; recommendedKind: string }) {
+  const [selectedKind, setSelectedKind] = useState<string>(recommendedKind)
+  const [open, setOpen] = useState(false)
+
+  // Keep selection valid if the strategy set changes.
+  const selected = strategies.find(s => s.kind === selectedKind) ?? strategies.find(s => s.kind === recommendedKind) ?? strategies[0]
+  if (!selected) return null
+
+  const rows = selected.timeline
+  const capped = rows.length > ROW_CAP
+  const shown = capped ? rows.slice(0, ROW_CAP) : rows
+
+  return (
+    <div style={cardBox}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+        <h3 style={{ ...sectionTitle, marginBottom: 0 }}>Auditable month-by-month schedule</h3>
+        <button style={ghostBtn} onClick={() => setOpen(o => !o)}>{open ? "Hide schedule ▴" : "Show schedule ▾"}</button>
+      </div>
+      <div style={{ ...muted, marginTop: 6 }}>Every row shows interest, fees, payment, and principal so the math is auditable.</div>
+
+      {open && (
         <>
-          <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Considered, ruled out</div>
-          {considered.map(l => (
-            <div key={l.id} style={{ fontSize: 12, color: "#888", paddingLeft: 8, marginBottom: 4 }}>
-              <b>{l.label}:</b> {l.ineligible_reason ?? "Not currently deployable."}
+          <div style={{ marginTop: 12, marginBottom: 8 }}>
+            <label style={fieldLabel}>Strategy</label>
+            <select style={{ ...selectStyle, maxWidth: 320 }} value={selected.kind} onChange={e => setSelectedKind(e.target.value)}>
+              {strategies.map(s => <option key={s.kind} value={s.kind}>{s.label}{s.kind === recommendedKind ? " (recommended)" : ""}</option>)}
+            </select>
+          </div>
+
+          {capped && (
+            <div style={{ ...muted, color: "#b45309", marginBottom: 8 }}>
+              Showing the first {ROW_CAP} of {rows.length} months. The remaining {rows.length - ROW_CAP} are not rendered.
             </div>
-          ))}
+          )}
+
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+              <thead>
+                <tr style={{ textAlign: "right", color: "#999", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>#</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Date</th>
+                  <th style={{ padding: "6px 8px" }}>Start bal</th>
+                  <th style={{ padding: "6px 8px" }}>Interest</th>
+                  <th style={{ padding: "6px 8px" }}>Fees</th>
+                  <th style={{ padding: "6px 8px" }}>Payment</th>
+                  <th style={{ padding: "6px 8px" }}>Principal</th>
+                  <th style={{ padding: "6px 8px" }}>End bal</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Events</th>
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map(r => (
+                  <tr key={r.month} style={{ borderTop: "1px solid #f2f2f2" }}>
+                    <td style={{ padding: "5px 8px" }}>{r.month}</td>
+                    <td style={{ padding: "5px 8px" }}>{r.dateISO}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.startingBalance)}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.interest)}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right" }}>{r.fees ? formatMoney(r.fees) : "—"}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.payment)}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.principal)}</td>
+                    <td style={{ padding: "5px 8px", textAlign: "right", fontWeight: 600 }}>{formatMoney(r.endingBalance)}</td>
+                    <td style={{ padding: "5px 8px", color: "#0d7c5f", fontSize: 11 }}>{r.events.join(" · ")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>
   )
 }
 
-function AccountList({ debts, onEdit }: { debts: DebtAccount[]; onEdit: (id: string, patch: Partial<DebtAccount>) => void }) {
-  const [editingId, setEditingId] = useState<string | null>(null)
+// ----------------------------------------------------------------------------
+// 10. Consolidation loan simulator widget
+// ----------------------------------------------------------------------------
+
+const GRID_APRS = [0.08, 0.12, 0.16, 0.2]
+const GRID_TERMS = [36, 48, 60]
+
+function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
+  const defaultPrincipal = round2(totalDebt(picture))
+  const [principal, setPrincipal] = useState<number>(defaultPrincipal)
+  const [termMonths, setTermMonths] = useState<number>(48)
+  const [originationFeePct, setOriginationFeePct] = useState<number>(0.05)
+  const [feeMode, setFeeMode] = useState<ConsolidationLoanFeeMode>("deducted")
+
+  const maxApr = useMemo(
+    () => maxBeneficialLoanApr(picture, { principal, termMonths, originationFeePct, feeMode }),
+    [picture, principal, termMonths, originationFeePct, feeMode],
+  )
+  const grid = useMemo(
+    () => loanScenarioGrid(picture, principal, GRID_APRS, GRID_TERMS, originationFeePct, feeMode),
+    [picture, principal, originationFeePct, feeMode],
+  )
+
   return (
     <div style={cardBox}>
-      <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#111" }}>Accounts</h3>
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 60px", gap: 8, fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", paddingBottom: 6, borderBottom: "1px solid #f0f0f0" }}>
-          <div>Card</div><div>Balance</div><div>APR</div><div>Promo ends</div><div>Use</div><div></div>
+      <h3 style={sectionTitle}>Consolidation loan simulator</h3>
+      <div style={{ ...muted, marginBottom: 14 }}>
+        Stress-test a hypothetical loan against your current baseline. No lenders are ranked or recommended here.
       </div>
-      {debts.map(d => (
-        <div key={d.id} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 60px", gap: 8, padding: "10px 0", borderBottom: "1px solid #f5f5f5", fontSize: 13, alignItems: "center" }}>
-          <div style={{ color: "#111", fontWeight: 500 }}>{d.display_name}</div>
-          {editingId === d.id ? (
-            <>
-              <input type="number" defaultValue={d.balance} onBlur={e => onEdit(d.id, { balance: parseFloat(e.target.value) || 0 })} style={inputCellStyle} />
-              <input type="number" step="0.001" defaultValue={d.apr} onBlur={e => onEdit(d.id, { apr: parseFloat(e.target.value) || 0 })} style={inputCellStyle} />
-              <input type="date" defaultValue={d.promo_ends_on ?? ""} onBlur={e => onEdit(d.id, { promo_ends_on: e.target.value || null })} style={inputCellStyle} />
-              <select defaultValue={d.use_for} onChange={e => onEdit(d.id, { use_for: e.target.value as "personal" | "business" })} style={inputCellStyle}>
-                <option value="personal">personal</option><option value="business">business</option>
-              </select>
-              <button style={ghostBtn} onClick={() => setEditingId(null)}>Done</button>
-            </>
-          ) : (
-            <>
-              <div style={{ color: "#111" }}>{moneyShort(d.balance)}</div>
-              <div style={{ color: d.promo_ends_on ? "#0d7c5f" : "#dc2626" }}>{d.promo_ends_on ? `0% → ${pct(d.apr)}` : pct(d.apr)}</div>
-              <div style={{ color: "#666" }}>{d.promo_ends_on ?? "n/a"}</div>
-              <div style={{ color: "#666" }}>{d.use_for}</div>
-              <button style={ghostBtn} onClick={() => setEditingId(d.id)}>Edit</button>
-            </>
-          )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 14 }}>
+        <div><label style={fieldLabel}>Principal</label><input style={inputStyle} type="number" defaultValue={principal} onBlur={e => setPrincipal(num(e.target.value))} /></div>
+        <div><label style={fieldLabel}>Term (months)</label><input style={inputStyle} type="number" defaultValue={termMonths} onBlur={e => setTermMonths(num(e.target.value))} /></div>
+        <div><label style={fieldLabel}>Origination fee (decimal)</label><input style={inputStyle} type="number" step="0.001" defaultValue={originationFeePct} onBlur={e => setOriginationFeePct(num(e.target.value))} /></div>
+        <div>
+          <label style={fieldLabel}>Fee mode</label>
+          <select style={selectStyle} value={feeMode} onChange={e => setFeeMode(e.target.value as ConsolidationLoanFeeMode)}>
+            {FEE_MODE_OPTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
         </div>
-      ))}
+      </div>
+
+      <div style={{ padding: 14, borderRadius: 8, background: maxApr == null ? "#fef2f2" : "#ecfdf5", border: `1px solid ${maxApr == null ? "#fecaca" : "#a7f3d0"}`, marginBottom: 14 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: maxApr == null ? "#b91c1c" : "#0d7c5f" }}>
+          {maxApr == null
+            ? "No positive-APR loan beats your baseline at these terms."
+            : `A loan only beats your baseline below ~${pctStr(maxApr)} APR.`}
+        </div>
+      </div>
+
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
+          <thead>
+            <tr style={{ color: "#999", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
+              <th style={{ textAlign: "left", padding: "6px 8px" }}>APR</th>
+              <th style={{ textAlign: "left", padding: "6px 8px" }}>Term</th>
+              <th style={{ textAlign: "right", padding: "6px 8px" }}>Monthly</th>
+              <th style={{ textAlign: "right", padding: "6px 8px" }}>Total cost</th>
+              <th style={{ textAlign: "left", padding: "6px 8px" }}>Beats baseline?</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grid.map((g, i) => (
+              <tr key={i} style={{ borderTop: "1px solid #f2f2f2" }}>
+                <td style={{ padding: "5px 8px" }}>{pctStr(g.apr)}</td>
+                <td style={{ padding: "5px 8px" }}>{g.termMonths} mo</td>
+                <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(g.monthlyPayment)}</td>
+                <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(g.totalCost)}</td>
+                <td style={{ padding: "5px 8px", fontWeight: 600, color: g.beatsBaseline ? "#0d7c5f" : "#dc2626" }}>
+                  {g.beatsBaseline ? "Yes" : "No"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{ ...muted, marginTop: 12 }}>
+        Check your real rate with lenders that offer soft-pull prequalification, then enter your actual offer above
+        to compare it accurately.
+      </div>
     </div>
   )
 }
 
-const inputCellStyle: React.CSSProperties = {
-  padding: "4px 6px", fontSize: 12, border: "1px solid #ddd", borderRadius: 4, width: "100%",
+// ----------------------------------------------------------------------------
+// 11. Global guardrail footer
+// ----------------------------------------------------------------------------
+
+function GuardrailFooter() {
+  return (
+    <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#f9fafb", border: "1px solid #eee" }}>
+      <div style={{ fontSize: 12.5, color: "#777", lineHeight: 1.6 }}>
+        <b>Educational simulator — not financial, lending, or tax advice.</b> Actual lender disclosures and signed
+        loan documents control. Projected dates and savings are estimates, never guarantees.
+      </div>
+    </div>
+  )
 }
