@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { getStrictlyLiveCatalog, isEligibleInState, US_STATES } from "../../lib/data/catalogTaxonomy"
+import { getLiveCatalog, isEligibleInState, US_STATES } from "../../lib/data/catalogTaxonomy"
 
 /**
  * Directory of state pages.
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
 }
 
 export default function StateDirectory() {
-  // Strict variant: only offers with a confirmed live expirationDate
-  // count toward per-state numbers. The main /bonuses page can show
-  // unverified-expiration offers; state pages cannot, because we'd
-  // claim "X is available in Hawaii" without knowing if X is still
-  // running at all.
-  const items = getStrictlyLiveCatalog()
+  // The catalog ships almost every row with no expirationDate (the
+  // curator only flags `expired: true` when an offer dies, never sets
+  // an explicit end-date). Using the strict variant here would show 0
+  // bonuses on every state page. Use the inclusive variant and rely
+  // on the "verify before applying" caveat already in the UI.
+  const items = getLiveCatalog()
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
 
   // Per-state count of items eligible AT ALL (nationwide + local). We use

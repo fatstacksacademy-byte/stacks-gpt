@@ -40,8 +40,8 @@ export default function HomeClient() {
       <nav className="hp-nav" style={{ padding: "20px 40px", maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", textDecoration: "none" }}>Fat Stacks Academy</Link>
         <div className="hp-nav-links" style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <Link href="/checking" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Checking</Link>
-          <Link href="/savings" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Savings</Link>
+          <Link href="/bonuses" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>All bonuses</Link>
+          <Link href="/bank-bonuses-by-state" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>By state</Link>
           <Link href="/spending" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Spending</Link>
           <Link href="/brokerage" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Brokerage</Link>
           <Link href="/blog" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Blog</Link>

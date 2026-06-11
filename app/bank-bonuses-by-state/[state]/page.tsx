@@ -2,10 +2,11 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import TrackBonusButton from "../../components/TrackBonusButton"
+import StateSwitcher from "../../components/StateSwitcher"
 import {
   US_STATES,
   findStateBySlug,
-  getStrictlyLiveCatalog,
+  getLiveCatalog,
   bucketByState,
   type CatalogItem,
 } from "../../../lib/data/catalogTaxonomy"
@@ -55,7 +56,7 @@ export async function generateMetadata(
   const state = findStateBySlug(slug)
   if (!state) return { title: "State not found" }
 
-  const all = getStrictlyLiveCatalog()
+  const all = getLiveCatalog()
   const { nationwide, local } = bucketByState(all, state.code)
   const total = nationwide.length + local.length
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
@@ -91,7 +92,7 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
   const state = findStateBySlug(slug)
   if (!state) notFound()
 
-  const all = getStrictlyLiveCatalog()
+  const all = getLiveCatalog()
   const { nationwide, local, unverified } = bucketByState(all, state.code)
 
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
@@ -122,8 +123,11 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
         </nav>
 
         <header style={{ marginBottom: 28 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
-            {state.name} · {monthLabel}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              {state.name} · {monthLabel}
+            </div>
+            <StateSwitcher currentSlug={state.slug} />
           </div>
           <h1 style={{ fontSize: 42, fontWeight: 800, color: "#111", margin: "0 0 12px", letterSpacing: "-0.025em" }}>
             Best bank bonuses in {state.name}
