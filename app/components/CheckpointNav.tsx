@@ -9,6 +9,7 @@ const tabs = [
   { label: "Spending", href: "/stacksos/spending" },
   { label: "Savings", href: "/stacksos/savings" },
   { label: "Debt", href: "/stacksos/debt" },
+  { label: "Cards", href: "/stacksos/cards" },
   { label: "Base", href: "/stacksos/base" },
 ] as const
 
