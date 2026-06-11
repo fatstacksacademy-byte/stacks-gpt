@@ -107,6 +107,63 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "No foreign transaction fees",
     ],
   },
+  // ── Canary-flagged 2026-06-11: DoC announced 100k SUB on both no-AF
+  // Chase Ink cards starting June 14-15, 2026. Both subject to Chase 5/24
+  // and a lifetime SUB cap per card. Application URLs were dark at
+  // article publication; using the Chase product pages until referral
+  // links materialize. Flagged `expired: true` until the launch confirms
+  // (scheduled recheck via canary + verify on June 15).
+  {
+    id: "chase-ink-business-cash-100k-2026",
+    card_name: "Chase Ink Business Cash",
+    issuer: "chase",
+    card_type: "business",
+    bonus_amount: 100000,
+    bonus_currency: "Ultimate Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 8000,
+    spend_months: 4,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/cash",
+    expired: true,
+    key_benefits: [
+      "5% cashback on office supplies, internet, phone, cable (up to $25K/yr)",
+      "2% cashback on gas + restaurants (up to $25K/yr)",
+      "1% cashback on everything else",
+      "0% intro APR for 12 months on purchases",
+      "No annual fee",
+      "Subject to Chase 5/24; lifetime SUB cap per card",
+      "Announced 2026-06-11; goes live 2026-06-14",
+    ],
+  },
+  {
+    id: "chase-ink-business-unlimited-100k-2026",
+    card_name: "Chase Ink Business Unlimited",
+    issuer: "chase",
+    card_type: "business",
+    bonus_amount: 100000,
+    bonus_currency: "Ultimate Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 8000,
+    spend_months: 4,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/unlimited",
+    expired: true,
+    key_benefits: [
+      "1.5% flat cashback on all purchases",
+      "0% intro APR for 12 months on purchases",
+      "Points transfer to airline/hotel partners when paired with a premium UR card",
+      "No annual fee",
+      "Subject to Chase 5/24; lifetime SUB cap per card",
+      "Announced 2026-06-11; goes live 2026-06-14",
+    ],
+  },
   {
     id: "chase-marriott-boundless-5nights",
     card_name: "Chase Marriott Bonvoy Boundless",
