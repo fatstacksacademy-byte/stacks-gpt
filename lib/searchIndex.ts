@@ -112,13 +112,33 @@ const cardEntries: SearchEntry[] = creditCardBonuses
         : `Credit Card · ${c.bonus_amount.toLocaleString()} ${
             c.bonus_currency ?? "pts"
           }`
+    // Surface the new comparison-resource fields under intent-driven
+    // queries: searching "lounge" or "Centurion" should pull premium
+    // cards even when those words aren't in the card name. Same for
+    // "companion fare", "credits", "Hyatt", etc.
+    const featureTags: string[] = []
+    if (c.lounge_network) featureTags.push("lounge", c.lounge_network)
+    if (c.companion_benefit) featureTags.push("companion", c.companion_benefit.kind)
+    if (c.anniversary_bonus?.free_night_cert_cap_points) {
+      featureTags.push("free night certificate", c.anniversary_bonus.program ?? "")
+    }
+    if (c.anniversary_bonus?.points) featureTags.push("anniversary points")
+    if (c.annual_credits_detail && c.annual_credits_detail.length > 0) {
+      featureTags.push("credits")
+      for (const cr of c.annual_credits_detail) featureTags.push(cr.label)
+    }
+    if (c.travel?.transfer_partners) {
+      featureTags.push(...c.travel.transfer_partners)
+    }
+    if (c.travel_insurance?.rental_cdw_primary) featureTags.push("primary cdw rental")
+    if (c.travel?.no_foreign_tx_fee) featureTags.push("no foreign transaction fee")
     return {
       id: c.id,
       kind: "card" as const,
       label: c.card_name,
       subtitle,
       searchText:
-        `${c.card_name} ${c.issuer} ${c.bonus_amount} ${c.id} ${introAprTags.join(" ")}`.toLowerCase(),
+        `${c.card_name} ${c.issuer} ${c.bonus_amount} ${c.id} ${introAprTags.join(" ")} ${featureTags.join(" ")}`.toLowerCase(),
       href: "/spending",
       applyHref: `/go/${c.id}`,
     }

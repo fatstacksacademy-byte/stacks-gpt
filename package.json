@@ -17,6 +17,7 @@
     "discover:cards": "tsx scripts/discover-cards/run.ts",
     "backfill:intro-apr": "tsx scripts/backfill-intro-apr/run.ts",
     "backfill:credit-score": "tsx scripts/backfill-credit-score/run.ts",
+    "annotate:premium": "tsx scripts/annotate-premium-cards/run.ts",
     "catalog:apply-decisions": "tsx scripts/apply-decisions-to-catalog.ts",
     "catalog:promote-leads": "tsx scripts/promote-approved-leads/run.ts",
     "generate:card-blog": "tsx scripts/generate-card-blog/run.ts",

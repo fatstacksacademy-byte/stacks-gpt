@@ -143,9 +143,306 @@ export type CreditCardBonus = {
     /** Year cadence: "annual" (resets every year), "monthly" (12 × monthly cap), "biennial" (every other year). */
     cadence?: "annual" | "monthly" | "biennial"
   }[]
+  /**
+   * Airport lounge access network. `lounge_access` (bool) on TravelValue
+   * tells you whether ANY lounge access exists; this field says WHICH
+   * — load-bearing because Centurion (Amex Plat) >> Admirals Club only
+   * (Citi AAdvantage Executive) >> Priority Pass alone (Sapphire Reserve
+   * lost this in 2024).
+   */
+  lounge_network?:
+    | "priority pass"
+    | "centurion"
+    | "admirals club"
+    | "delta sky club"
+    | "united club"
+    | "alaska lounge"
+    | "capital one lounge"
+    | "chase sapphire lounge"
+  /**
+   * Travel insurance protections that a card actually carries. Premium
+   * cards bundle several; mid-tier cards often have only baggage-delay
+   * or rental-CDW. Absent fields are NOT "false" — they're "not yet
+   * researched".
+   */
+  travel_insurance?: {
+    /** Trip delay reimbursement (per-traveler cap when delay > X hours). */
+    trip_delay?: boolean
+    /** Trip cancellation / interruption coverage. */
+    trip_cancellation?: boolean
+    /** Lost / delayed baggage reimbursement. */
+    baggage_delay?: boolean
+    /** Primary (not secondary) rental car collision damage waiver. */
+    rental_cdw_primary?: boolean
+    /** Secondary rental CDW (only kicks in after your auto insurance). */
+    rental_cdw_secondary?: boolean
+    /** Emergency medical / evacuation coverage. */
+    emergency_medical?: boolean
+  }
+  /**
+   * Alternate signup-bonus tiers for cards that advertise multiple
+   * choices. Catalog's headline `bonus_amount` + `min_spend` is the
+   * BEST tier; this lists the others verbatim so a low-spend user can
+   * see they could qualify for a smaller bonus with less spend.
+   *
+   * Example — Amex Gold's "60K after $6K in 6mo OR 90K after $6K in
+   * 6mo with referrer" → store the alternates here.
+   */
+  bonus_tiers?: {
+    points: number
+    min_spend: number
+    spend_months: number
+    /** Free-text qualifier ("with referral link", "for current Amex customers"). */
+    note?: string
+  }[]
+  /**
+   * Foreign-transaction fee percent. Distinct from TravelValue's
+   * `no_foreign_tx_fee` boolean — when it's NOT zero, the actual rate
+   * matters (1% vs 3% vs 5%).
+   *
+   * Convention: omit this field for cards with no FX fee — use
+   * travel.no_foreign_tx_fee = true. Set this only when fee > 0.
+   */
+  foreign_tx_fee_pct?: number
+  /**
+   * Companion / partner benefits — Alaska Companion Fare, Southwest
+   * Companion Pass, Delta Companion Cert, Hawaiian companion deal.
+   * These can be worth $200–$1,500/year on their own and don't fit
+   * cleanly into travel_credit.
+   */
+  companion_benefit?: {
+    /** "fare" = dollar-amount companion ticket. "pass" = unlimited companion (Southwest). "certificate" = one round-trip cert/yr. */
+    kind: "fare" | "pass" | "certificate"
+    /** Typical realized value of the benefit per year, in $. */
+    estimated_value: number
+    /** "annual" (every year), "first_year" (Y1 only), "earn" (must hit spend threshold to earn). */
+    cadence?: "annual" | "first_year" | "earn"
+    /** Short human-readable label, e.g. "Alaska Companion Fare ($99 + taxes)". */
+    label?: string
+  }
+  /**
+   * Anniversary perk awarded at every account renewal. Bonus points,
+   * free-night certificate, status maintenance, etc. Separate from the
+   * one-time signup bonus and from statement credits.
+   */
+  anniversary_bonus?: {
+    /** Bonus points awarded each year on the account anniversary. */
+    points?: number
+    /** Free-night certificate value cap, in points (hotel cards). */
+    free_night_cert_cap_points?: number
+    /** Issuer's loyalty program ("Marriott Bonvoy", "World of Hyatt", "IHG One"). */
+    program?: string
+    /** Statement credit awarded annually (e.g. CSR's $300 travel reset). Cleaner than burying in annual_credits_detail when it's a single one-line item. */
+    annual_credit?: number
+  }
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [
+  // ─── PREMIUM CORE (top 4 most-compared cards) ───────────────────
+  // These were missing from the catalog and are the cards most users
+  // arrive looking for. Added with full new-field annotations.
+
+  {
+    id: "chase-sapphire-preferred-75k",
+    card_name: "Chase Sapphire Preferred",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 75000,
+    bonus_currency: "Ultimate Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 5000,
+    spend_months: 3,
+    annual_fee: 95,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 50,
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
+    expired: false,
+    key_benefits: [
+      "$50 annual hotel credit (book via Chase Travel)",
+      "Anniversary points (10% of prior-year spend)",
+      "Transfer to Hyatt, United, Southwest, et al.",
+      "Trip cancellation + delay insurance",
+      "Primary rental car CDW",
+    ],
+    rewards: [
+      { categories: ["dining"], multiplier: 3, unit: "points" },
+      { categories: ["online_grocery"], multiplier: 3, unit: "points" },
+      { categories: ["streaming"], multiplier: 3, unit: "points" },
+      { categories: ["chase_travel_portal"], multiplier: 5, unit: "points" },
+      { categories: ["travel"], multiplier: 2, unit: "points" },
+      { categories: ["everything_else"], multiplier: 1, unit: "points" },
+    ],
+    travel: {
+      transfer_partners: ["united", "southwest", "jetblue", "aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "emirates", "singapore", "hyatt", "marriott", "ihg"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 50,
+      lounge_access: false,
+      global_entry_credit: false,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+    travel_insurance: {
+      trip_delay: true,
+      trip_cancellation: true,
+      baggage_delay: true,
+      rental_cdw_primary: true,
+    },
+    annual_credits_detail: [
+      { label: "Hotel (book via Chase Travel)", amount: 50, cadence: "annual" },
+    ],
+    anniversary_bonus: { points: 0, annual_credit: 0 },
+  },
+  {
+    id: "amex-gold-100k",
+    card_name: "American Express Gold",
+    issuer: "amex",
+    card_type: "personal",
+    bonus_amount: 100000,
+    bonus_currency: "Membership Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 6000,
+    spend_months: 6,
+    annual_fee: 325,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 424,
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
+    expired: false,
+    key_benefits: [
+      "$120 annual dining credit ($10/mo)",
+      "$120 Uber Cash ($10/mo)",
+      "$84 Dunkin' credit ($7/mo)",
+      "$100 Resy credit (biannual)",
+      "4x Membership Rewards on restaurants and U.S. supermarkets",
+      "Transfer to 18+ travel partners",
+    ],
+    rewards: [
+      { categories: ["dining"], multiplier: 4, unit: "points" },
+      { categories: ["us_supermarkets"], multiplier: 4, unit: "points" },
+      { categories: ["flights"], multiplier: 3, unit: "points" },
+      { categories: ["everything_else"], multiplier: 1, unit: "points" },
+    ],
+    travel: {
+      transfer_partners: ["delta", "ana", "british-airways", "aeromexico", "flying-blue", "virgin-atlantic", "iberia", "qantas", "qatar", "singapore", "hilton", "marriott", "choice"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 0,
+      lounge_access: false,
+      global_entry_credit: false,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+    travel_insurance: {
+      baggage_delay: true,
+      trip_delay: true,
+      rental_cdw_secondary: true,
+    },
+    annual_credits_detail: [
+      { label: "Dining (Cheesecake Factory, Goldbelly, Wine.com, etc.)", amount: 120, cadence: "monthly" },
+      { label: "Uber Cash", amount: 120, cadence: "monthly" },
+      { label: "Dunkin'", amount: 84, cadence: "monthly" },
+      { label: "Resy dining", amount: 100, cadence: "biennial" },
+    ],
+  },
+  {
+    id: "amex-green-60k",
+    card_name: "American Express Green",
+    issuer: "amex",
+    card_type: "personal",
+    bonus_amount: 60000,
+    bonus_currency: "Membership Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 3000,
+    spend_months: 6,
+    annual_fee: 150,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 299,
+    offer_link: "https://www.americanexpress.com/us/credit-cards/card/green-card/",
+    expired: false,
+    key_benefits: [
+      "$199 CLEAR Plus credit",
+      "$100 LoungeBuddy credit",
+      "3x on travel (broad definition incl. rideshare, public transit)",
+      "3x on dining (incl. delivery)",
+      "Transfer to 18+ travel partners",
+    ],
+    rewards: [
+      { categories: ["travel"], multiplier: 3, unit: "points" },
+      { categories: ["dining"], multiplier: 3, unit: "points" },
+      { categories: ["everything_else"], multiplier: 1, unit: "points" },
+    ],
+    travel: {
+      transfer_partners: ["delta", "ana", "british-airways", "aeromexico", "flying-blue", "virgin-atlantic", "iberia", "qantas", "singapore", "hilton", "marriott"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 0,
+      lounge_access: true,
+      global_entry_credit: false,
+      no_foreign_tx_fee: true,
+    },
+    lounge_network: "priority pass",
+    credit_score_required: "good",
+    travel_insurance: {
+      baggage_delay: true,
+      trip_delay: true,
+    },
+    annual_credits_detail: [
+      { label: "CLEAR Plus membership", amount: 199, cadence: "annual" },
+      { label: "LoungeBuddy", amount: 100, cadence: "annual" },
+    ],
+  },
+  {
+    id: "capital-one-venture-x-100k",
+    card_name: "Capital One Venture X",
+    issuer: "capital one",
+    card_type: "personal",
+    bonus_amount: 100000,
+    bonus_currency: "Capital One miles",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 4000,
+    spend_months: 3,
+    annual_fee: 395,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 400,
+    offer_link: "https://www.capitalone.com/credit-cards/venture-x/",
+    expired: false,
+    key_benefits: [
+      "$300 annual Capital One Travel credit",
+      "10,000-mile anniversary bonus (~$180 value)",
+      "Capital One Lounges + Priority Pass + Plaza Premium",
+      "Authorized users free, with full lounge access",
+      "Primary rental car CDW",
+      "Global Entry/TSA PreCheck credit",
+    ],
+    rewards: [
+      { categories: ["capital_one_travel_hotels"], multiplier: 10, unit: "points" },
+      { categories: ["capital_one_travel_rental_cars"], multiplier: 10, unit: "points" },
+      { categories: ["capital_one_travel_flights"], multiplier: 5, unit: "points" },
+      { categories: ["everything_else"], multiplier: 2, unit: "points" },
+    ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "etihad", "flying-blue", "singapore", "turkish", "wyndham", "choice", "accor"],
+      max_transfer_cpp: 0.018,
+      travel_credit: 300,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
+    lounge_network: "capital one lounge",
+    credit_score_required: "excellent",
+    travel_insurance: {
+      trip_delay: true,
+      trip_cancellation: true,
+      baggage_delay: true,
+      rental_cdw_primary: true,
+    },
+    annual_credits_detail: [
+      { label: "Capital One Travel credit", amount: 300, cadence: "annual" },
+    ],
+    anniversary_bonus: { points: 10000, program: "Capital One Miles" },
+  },
+
   // ─── CHASE ──────────────────────────────────────────────────────
 
   {
@@ -182,6 +479,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       no_foreign_tx_fee: true,
     },
     credit_score_required: "excellent",
+    lounge_network: "chase sapphire lounge",
+    travel_insurance: {"trip_delay":true,"trip_cancellation":true,"baggage_delay":true,"rental_cdw_primary":true,"emergency_medical":true},
+    annual_credits_detail: [{"label":"Travel","amount":300,"cadence":"annual"},{"label":"Sapphire Reserve Tables (dining)","amount":300,"cadence":"annual"},{"label":"StubHub event credit","amount":300,"cadence":"annual"},{"label":"DashPass / DoorDash","amount":120,"cadence":"annual"},{"label":"Lyft","amount":120,"cadence":"monthly"},{"label":"Peloton","amount":60,"cadence":"monthly"}],
   },
   {
     id: "chase-ink-business-preferred-100k",
@@ -281,6 +581,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Global Entry/TSA PreCheck credit",
       "26x points at IHG properties",
     ],
+    travel_insurance: {"trip_cancellation":true,"baggage_delay":true,"rental_cdw_primary":true},
+    annual_credits_detail: [{"label":"IHG / United TravelBank","amount":50,"cadence":"annual"}],
+    anniversary_bonus: {"free_night_cert_cap_points":40000,"program":"IHG One Rewards"},
   },
   {
     id: "chase-united-explorer-85k",
@@ -342,6 +645,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       no_foreign_tx_fee: true,
     },
     credit_score_required: "excellent",
+    lounge_network: "centurion",
+    travel_insurance: {"trip_delay":true,"trip_cancellation":true,"baggage_delay":true,"rental_cdw_secondary":true,"emergency_medical":true},
+    annual_credits_detail: [{"label":"Airline incidental","amount":200,"cadence":"annual"},{"label":"Uber Cash","amount":200,"cadence":"monthly"},{"label":"Saks Fifth Avenue","amount":100,"cadence":"biennial"},{"label":"Digital entertainment","amount":240,"cadence":"monthly"},{"label":"CLEAR Plus","amount":199,"cadence":"annual"},{"label":"Walmart+ membership","amount":155,"cadence":"monthly"},{"label":"Equinox","amount":300,"cadence":"monthly"},{"label":"Fine Hotels + Resorts hotel credit","amount":200,"cadence":"annual"}],
   },
   {
     id: "amex-business-platinum-200k",
@@ -375,6 +681,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       no_foreign_tx_fee: true,
     },
     credit_score_required: "excellent",
+    lounge_network: "centurion",
+    travel_insurance: {"trip_delay":true,"trip_cancellation":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Dell Technologies","amount":400,"cadence":"biennial"},{"label":"Indeed hiring credit","amount":360,"cadence":"annual"},{"label":"Adobe","amount":250,"cadence":"annual"},{"label":"Wireless","amount":120,"cadence":"monthly"},{"label":"Airline incidental","amount":200,"cadence":"annual"}],
   },
   {
     id: "amex-hilton-honors-70k",
@@ -444,6 +753,10 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Priority Pass lounge access",
     ],
     credit_score_required: "excellent",
+    lounge_network: "priority pass",
+    travel_insurance: {"trip_delay":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Hilton resort credit","amount":400,"cadence":"biennial"},{"label":"Airline (flights)","amount":200,"cadence":"biennial"},{"label":"CLEAR Plus","amount":199,"cadence":"annual"}],
+    anniversary_bonus: {"free_night_cert_cap_points":0,"program":"Hilton Honors","annual_credit":0},
   },
   {
     id: "amex-hilton-business-175k",
@@ -489,6 +802,10 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Platinum Elite status",
     ],
     credit_score_required: "excellent",
+    lounge_network: "priority pass",
+    travel_insurance: {"trip_delay":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Marriott dining credit","amount":300,"cadence":"monthly"}],
+    anniversary_bonus: {"free_night_cert_cap_points":85000,"program":"Marriott Bonvoy"},
   },
   {
     id: "amex-marriott-bevy-175k",
@@ -590,6 +907,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
       no_foreign_tx_fee: true,
     },
     credit_score_required: "excellent",
+    travel_insurance: {"trip_delay":true,"trip_cancellation":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Hotel (book via Citi Travel)","amount":100,"cadence":"annual"}],
   },
   {
     id: "citi-double-cash-200",
@@ -688,6 +1007,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    travel_insurance: {"trip_cancellation":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Global Entry / TSA PreCheck","amount":100,"cadence":"biennial"}],
   },
   {
     id: "capital-one-spark-cash-select-750",
@@ -807,6 +1128,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Global Entry/TSA PreCheck credit",
       "No foreign transaction fees",
     ],
+    lounge_network: "priority pass",
+    travel_insurance: {"trip_delay":true,"trip_cancellation":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Airline incidental","amount":300,"cadence":"annual"},{"label":"Lifestyle (rideshare, streaming, fitness)","amount":150,"cadence":"annual"}],
   },
   {
     id: "bofa-unlimited-cash-200",
@@ -3088,6 +3412,10 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
     credit_score_required: "excellent",
+    lounge_network: "delta sky club",
+    travel_insurance: {"trip_delay":true,"baggage_delay":true,"rental_cdw_secondary":true},
+    annual_credits_detail: [{"label":"Resy dining credit","amount":240,"cadence":"monthly"},{"label":"Rideshare","amount":120,"cadence":"monthly"},{"label":"Status Boost waiver","amount":0,"cadence":"annual"}],
+    companion_benefit: {"kind":"certificate","estimated_value":500,"cadence":"annual","label":"Delta companion cert (domestic Y/A/G fares)"},
   },
   {
     id: "discover-discover-it-miles-rwp",
@@ -6114,6 +6442,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","airfare_(portal)","dining","fitness_memberships","ridesharing","transit"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    travel_insurance: {"trip_cancellation":true,"baggage_delay":true,"rental_cdw_primary":true},
+    anniversary_bonus: {"free_night_cert_cap_points":0,"program":"World of Hyatt"},
   },
   {
     id: "barclays-wyndham-earner-rwp",

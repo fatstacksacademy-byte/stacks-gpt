@@ -524,6 +524,8 @@ function ResultBlock({ heading, note, children }: { heading: string; note: strin
 function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string }) {
   const earnChips = topEarnChips(card)
   const score = creditScoreChip(card)
+  const detail = detailChips(card)
+  const hasAnyChip = earnChips.length > 0 || score || detail.length > 0
   return (
     <div style={{ display: "grid", gridTemplateColumns: "auto auto 1fr auto", gap: 14, alignItems: "center", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 16px" }}>
       <div style={{ fontSize: 13, fontWeight: 800, color: "#bbb", width: 22, textAlign: "center" }}>{rank}</div>
@@ -531,7 +533,7 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</div>
         <div style={{ fontSize: 12, color: "#777", marginTop: 2 }}>{secondary}</div>
-        {(earnChips.length > 0 || score) && (
+        {hasAnyChip && (
           <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
             {earnChips.map((chip, i) => (
               <span
@@ -549,6 +551,25 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
                 }}
               >
                 {chip}
+              </span>
+            ))}
+            {detail.map((chip, i) => (
+              <span
+                key={`d${i}`}
+                title={chip.title}
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  background: chip.bg,
+                  color: chip.fg,
+                  border: `1px solid ${chip.border}`,
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {chip.label}
               </span>
             ))}
             {score && (
@@ -583,6 +604,124 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       </div>
     </div>
   )
+}
+
+/**
+ * Detail chips — one per non-null premium feature on the card. These
+ * encode the comparison signals that compete with NerdWallet / TPG:
+ *   - Lounge network ("Centurion lounges", "Priority Pass")
+ *   - Annual-credits total ("$2,200/yr credits") when itemized
+ *   - Companion benefit ("Companion cert")
+ *   - Travel insurance bundle ("Full travel insurance" — when 3+ are true)
+ *   - Foreign tx fee % when nonzero
+ *   - No-FX-fee (only when explicitly true and not a premium-bundle card)
+ */
+type DetailChip = { label: string; title: string; bg: string; fg: string; border: string }
+
+function detailChips(card: CreditCardBonus): DetailChip[] {
+  const out: DetailChip[] = []
+  if (card.lounge_network) {
+    const map: Record<NonNullable<CreditCardBonus["lounge_network"]>, string> = {
+      "priority pass": "Priority Pass",
+      centurion: "Centurion lounges",
+      "admirals club": "Admirals Club",
+      "delta sky club": "Delta Sky Club",
+      "united club": "United Club",
+      "alaska lounge": "Alaska Lounge",
+      "capital one lounge": "Capital One Lounges",
+      "chase sapphire lounge": "Sapphire Lounges",
+    }
+    out.push({
+      label: map[card.lounge_network] || card.lounge_network,
+      title: "Airport lounge network",
+      bg: "#eef0fb",
+      fg: "#3b46a0",
+      border: "#d7dcf2",
+    })
+  }
+  if (card.annual_credits_detail && card.annual_credits_detail.length > 0) {
+    const total = card.annual_credits_detail.reduce((s, c) => s + (c.amount || 0), 0)
+    if (total >= 100) {
+      out.push({
+        label: `$${total.toLocaleString()}/yr credits`,
+        title: card.annual_credits_detail
+          .map((c) => `$${c.amount} ${c.label}${c.cadence === "monthly" ? " (monthly)" : c.cadence === "biennial" ? " (biennial)" : ""}`)
+          .join("\n"),
+        bg: "#eafaf3",
+        fg: "#0d6e51",
+        border: "#cae8db",
+      })
+    }
+  }
+  if (card.companion_benefit) {
+    const v = card.companion_benefit.estimated_value
+    out.push({
+      label: `Companion ~$${v.toLocaleString()}`,
+      title: card.companion_benefit.label || "Companion benefit",
+      bg: "#fff1ea",
+      fg: "#a14620",
+      border: "#f3d4be",
+    })
+  }
+  if (card.anniversary_bonus?.free_night_cert_cap_points) {
+    const k = Math.round((card.anniversary_bonus.free_night_cert_cap_points || 0) / 1000)
+    out.push({
+      label: `Free night up to ${k}k pts`,
+      title: `Anniversary free-night certificate (${card.anniversary_bonus.program || "loyalty program"})`,
+      bg: "#fdf6e0",
+      fg: "#8a6d00",
+      border: "#f0e2a8",
+    })
+  } else if (card.anniversary_bonus?.points && card.anniversary_bonus.points > 0) {
+    out.push({
+      label: `${(card.anniversary_bonus.points / 1000).toFixed(0)}k anniversary pts`,
+      title: `Bonus points awarded each account anniversary`,
+      bg: "#fdf6e0",
+      fg: "#8a6d00",
+      border: "#f0e2a8",
+    })
+  }
+  // Travel insurance — show one chip when the bundle is comprehensive
+  // (3+ protections) so the row doesn't get bloated with one chip per.
+  if (card.travel_insurance) {
+    const t = card.travel_insurance
+    const protections = [
+      t.trip_delay,
+      t.trip_cancellation,
+      t.baggage_delay,
+      t.rental_cdw_primary,
+      t.rental_cdw_secondary,
+      t.emergency_medical,
+    ].filter(Boolean).length
+    if (protections >= 3) {
+      out.push({
+        label: t.rental_cdw_primary ? "Full insurance + 1° CDW" : "Full travel insurance",
+        title: [
+          t.trip_delay && "Trip delay",
+          t.trip_cancellation && "Trip cancellation",
+          t.baggage_delay && "Baggage delay",
+          t.rental_cdw_primary && "Primary rental CDW",
+          t.rental_cdw_secondary && "Secondary rental CDW",
+          t.emergency_medical && "Emergency medical",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        bg: "#eef5fb",
+        fg: "#1d5fa6",
+        border: "#d4e4f3",
+      })
+    }
+  }
+  if (card.foreign_tx_fee_pct && card.foreign_tx_fee_pct > 0) {
+    out.push({
+      label: `${card.foreign_tx_fee_pct}% FX fee`,
+      title: "Foreign transaction fee — applies on every non-USD purchase",
+      bg: "#fbeaea",
+      fg: "#a32424",
+      border: "#f3cccc",
+    })
+  }
+  return out.slice(0, 4) // Cap so the row stays readable
 }
 
 /**
