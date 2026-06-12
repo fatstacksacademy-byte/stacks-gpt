@@ -7,6 +7,38 @@
     "max_items": 40
   },
   {
+    "name": "dansdeals",
+    "type": "rss",
+    "url": "https://www.dansdeals.com/feed/",
+    "enabled": true,
+    "throttle_seconds": 2,
+    "max_items": 30
+  },
+  {
+    "name": "frequent-miler",
+    "type": "rss",
+    "url": "https://frequentmiler.com/feed/",
+    "enabled": true,
+    "throttle_seconds": 2,
+    "max_items": 30
+  },
+  {
+    "name": "the-points-guy",
+    "type": "rss",
+    "url": "https://thepointsguy.com/feed/",
+    "enabled": true,
+    "throttle_seconds": 2,
+    "max_items": 30
+  },
+  {
+    "name": "one-mile-at-a-time",
+    "type": "rss",
+    "url": "https://onemileatatime.com/feed/",
+    "enabled": true,
+    "throttle_seconds": 2,
+    "max_items": 30
+  },
+  {
     "name": "r-churning",
     "type": "reddit",
     "url": "https://www.reddit.com/r/churning/new.json?limit=50",

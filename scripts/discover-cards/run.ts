@@ -38,6 +38,7 @@ import {
   extractRewardsTiers,
   type ExtractedRewardsTier,
 } from "../verify-cards/extract"
+import { scrapeAllIssuerIndexes, type IssuerLead } from "./issuer-index"
 
 const args = process.argv.slice(2)
 const DRY_RUN = args.includes("--dry-run")
@@ -46,6 +47,10 @@ const DRY_RUN = args.includes("--dry-run")
 // land in the catalog. Pass --apply to actually append to creditCardBonuses.ts.
 const APPLY = args.includes("--apply")
 const LIMIT = Number(args.find(a => a.startsWith("--limit="))?.split("=")[1] ?? 40) || 40
+// Issuer-index scraping is opt-in for now since markup changes at chase.com /
+// americanexpress.com can produce zero results without warning. Pass
+// --skip-issuer-indexes to fall back to the curated SEED_CARDS list only.
+const SKIP_ISSUER_INDEXES = args.includes("--skip-issuer-indexes")
 
 const ROOT = process.cwd()
 
@@ -290,18 +295,43 @@ function appendCatalog(entries: string[]): void {
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
 
-  // Build leads from the curated seed list (richwithpoints SPA isn't scrapable
-  // without auth). Each seed entry already has the issuer URL, so we skip the
-  // lead-discovery step and go straight to per-card enrichment.
-  const leads: Lead[] = SEED_CARDS.map((c) => ({
+  // Two lead sources:
+  //   - Curated SEED_CARDS list (hand-maintained; one row per known card)
+  //   - Issuer-index scrapers (Chase + Amex public "all cards" pages)
+  // Both feed into the same dedup + per-card enrichment pipeline.
+  const seedLeads: Lead[] = SEED_CARDS.map((c) => ({
     source: "richwithpoints",
     source_url: "seed://curated",
     card_name: c.card_name,
     issuer_link: c.issuer_link,
   }))
+
+  let issuerLeads: Lead[] = []
+  if (!SKIP_ISSUER_INDEXES) {
+    const indexed: IssuerLead[] = await scrapeAllIssuerIndexes(UA)
+    console.log(`[issuer-index] scraped ${indexed.length} candidates from issuer pages`)
+    issuerLeads = indexed.map((l) => ({
+      source: "richwithpoints" as const,
+      source_url: l.source_url,
+      card_name: l.card_name,
+      issuer_link: l.issuer_link,
+    }))
+  }
+
+  // Merge + per-name dedupe BEFORE catalog dedupe so we don't double-process
+  // a card that's in both the seed list and an issuer index.
+  const seenNames = new Set<string>()
+  const leads: Lead[] = []
+  for (const l of [...seedLeads, ...issuerLeads]) {
+    const k = normalizeName(l.card_name)
+    if (!k || seenNames.has(k)) continue
+    seenNames.add(k)
+    leads.push(l)
+  }
+  console.log(`[merge] ${seedLeads.length} seed + ${issuerLeads.length} issuer-index → ${leads.length} unique leads`)
   const newLeads = leads.filter((l) => !cardAlreadyInCatalog(l.card_name))
   console.log(
-    `[seed] ${leads.length} cards in seed list, ${leads.length - newLeads.length} already in catalog, ${newLeads.length} net-new`,
+    `[catalog-dedup] ${leads.length} unique leads, ${leads.length - newLeads.length} already in catalog, ${newLeads.length} net-new`,
   )
 
   const capped = newLeads.slice(0, LIMIT)
