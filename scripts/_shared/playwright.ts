@@ -106,6 +106,60 @@ export async function closeBrowser() {
 }
 
 /**
+ * Fetch a page and return its post-hydration HTML — the full DOM
+ * markup including every anchor — instead of the readable-text form
+ * that fetchPage() returns.
+ *
+ * Use this for scraping anchor lists on SPA-rendered pages
+ * (Amex, Citi, BofA "all credit cards" indexes) where a naive
+ * `fetch()` only sees the React shell. fetchPage() runs
+ * `main.innerText` which strips <a> markup and breaks anchor regexes.
+ *
+ * Caller responsibility: this returns LARGE strings (Amex card index
+ * is ~800KB). Run a tight href regex over the result and discard.
+ */
+export async function fetchRenderedHtml(
+  url: string,
+  opts: { userAgent?: string; timeoutMs?: number; waitForSelector?: string } = {},
+): Promise<{ ok: boolean; status: number; html: string; finalUrl: string; error?: string }> {
+  const ctx = await getContext(opts.userAgent ?? DEFAULT_UA)
+  const page = await ctx.newPage()
+  try {
+    const response = await page.goto(url, {
+      waitUntil: "domcontentloaded",
+      timeout: opts.timeoutMs ?? 30000,
+    })
+    // Wait for either an opt-in selector or a brief network-idle window so
+    // SPA hydration has a chance to render the card grid. We give up
+    // after a short bound — pages that never settle still return useful
+    // HTML, we just won't have the fully populated grid.
+    if (opts.waitForSelector) {
+      await page.waitForSelector(opts.waitForSelector, { timeout: 12000 }).catch(() => {})
+    } else {
+      await page.waitForLoadState("networkidle", { timeout: 12000 }).catch(() => {})
+    }
+    const html = await page.content()
+    const status = response?.status() ?? 0
+    return {
+      ok: status >= 200 && status < 400 && html.length > 0,
+      status,
+      html,
+      finalUrl: page.url(),
+    }
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      html: "",
+      finalUrl: url,
+      error: err instanceof Error ? err.message : String(err),
+    }
+  } finally {
+    await page.close()
+  }
+}
+
+/**
  * Fetch a page with retries. Anti-bot protection layers sometimes require
  * a second request with slightly different timing — the stealth plugin
  * survives this, naive Playwright doesn't.

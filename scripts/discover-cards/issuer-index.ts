@@ -23,10 +23,13 @@
  * ones. The downstream pipeline (per-card enrichment, dedup against
  * catalog) is the safety net for anything that slips through.
  */
-// We use Node's native fetch() here instead of the shared Playwright
-// helper because that helper returns `main.innerText` — all anchor
-// markup is stripped. The issuer "all cards" indexes are server-rendered
-// HTML, so a plain fetch gives us the <a href> tags directly.
+// We use Node's native fetch() here instead of fetchPage because
+// fetchPage returns `main.innerText` — all anchor markup is stripped.
+// Most issuer "all cards" indexes are server-rendered HTML where a
+// plain fetch surfaces the <a href> tags directly. For SPA-rendered
+// indexes (Amex, Citi, BofA) we use fetchRenderedHtml from
+// _shared/playwright, which returns the full post-hydration DOM.
+import { fetchRenderedHtml } from "../_shared/playwright"
 
 export type IssuerLead = {
   card_name: string
@@ -38,6 +41,8 @@ export type IssuerLead = {
     | "discover"
     | "wells fargo"
     | "us bank"
+    | "citi"
+    | "bofa"
   source_url: string
 }
 
@@ -238,49 +243,178 @@ export async function scrapeChaseIndex(userAgent: string): Promise<IssuerLead[]>
 
 const AMEX_INDEX = "https://www.americanexpress.com/us/credit-cards/"
 
+const AMEX_NON_CARDS = new Set([
+  "all-credit-cards",
+  "personal",
+  "business",
+  "rewards-points",
+  "compare",
+])
+
 /**
- * Amex's /us/credit-cards/ index is a fully client-rendered React SPA —
- * the initial HTML is just a shell with one anchor. A static fetch
- * here surfaces nothing. To make this actually return cards we'd need
- * a Playwright-backed fetcher that returns the post-hydration HTML
- * (not main.innerText, which is what the existing shared helper does).
- *
- * For now this function still exists and is wired up — it just emits
- * a clean "0 anchors" warning instead of crashing. When someone adds
- * a proper Playwright-HTML extractor, swap fetchHtml() here.
+ * Amex's /us/credit-cards/ index is a client-rendered React SPA —
+ * the initial HTML is just a shell with one anchor, so we use the
+ * Playwright HTML helper to get the post-hydration DOM. Detail-page
+ * shape is `/us/credit-cards/card/{slug}/`.
  */
 export async function scrapeAmexIndex(userAgent: string): Promise<IssuerLead[]> {
-  const html = await fetchHtml(AMEX_INDEX, userAgent)
-  if (!html) return []
-  // Amex card-detail pages live under
-  //   /us/credit-cards/card/blue-cash-everyday/
-  //   /us/credit-cards/card/platinum/
-  // …all containing the "/credit-cards/card/" segment.
-  const hrefRe = /\/us\/credit-cards\/card\//
-  const cleaner = (raw: string) => raw
-    .replace(/®|℠|™|©/g, "")
-    .replace(/\bApply Now\b/gi, "")
-    .replace(/\bLearn More\b/gi, "")
-    .replace(/\bThe\s+/i, "")
-    .replace(/American Express ®?/gi, "American Express ")
-    .replace(/\s+/g, " ")
-    .trim()
-  const anchors = extractAnchors(html, hrefRe, cleaner)
-  if (anchors.length < 3) {
-    console.error(`[issuer-index] Amex index returned ${anchors.length} anchors — markup may have changed. Skipping.`)
+  const r = await fetchRenderedHtml(AMEX_INDEX, {
+    userAgent,
+    waitForSelector: 'a[href*="/credit-cards/card/"]',
+  })
+  if (!r.ok || !r.html) {
+    console.error(`[issuer-index] Amex fetchRenderedHtml failed: ${r.error || r.status}`)
     return []
   }
-  const leads: IssuerLead[] = anchors.map((a) => {
-    const name = a.text.toLowerCase().includes("american express")
-      ? a.text
-      : `American Express ${a.text}`
-    return {
-      card_name: name,
-      issuer_link: resolveUrl(a.href, AMEX_INDEX),
-      issuer: "amex" as const,
-      source_url: AMEX_INDEX,
-    }
+  // /us/credit-cards/card/platinum/, /us/credit-cards/card/blue-cash-everyday/, …
+  const hrefRe = /^\/us\/credit-cards\/card\/[a-z0-9-]+\/?(?:[?#]|$)/
+  const anchors = extractAnchors(r.html, hrefRe, (s) => s)
+  if (anchors.length < 3) {
+    console.error(`[issuer-index] Amex returned ${anchors.length} anchors — bot-blocked. Their card grid is rendered in shadow-DOM / lazy chunks and the all-cards index suppresses anchors. Defer to manual seed list.`)
+    return []
+  }
+  const leads: IssuerLead[] = anchors
+    .map((a) => {
+      const slug = lastPathSegment(a.href)
+      if (!slug || AMEX_NON_CARDS.has(slug)) return null
+      // Amex slugs are descriptive ("blue-cash-everyday", "delta-skymiles-gold",
+      // "platinum"). Title-case and prepend "American Express" for cards that
+      // don't include a co-brand in their slug (Delta/Hilton/Marriott already
+      // carry the brand prefix, but "platinum" → "American Express Platinum").
+      const titled = titleCaseFromSlug(slug)
+      const looksCoBranded = /^(?:Delta|Hilton|Marriott|Bonvoy|Cathay|British)\b/i.test(titled)
+      const cardName = looksCoBranded ? `American Express ${titled}` : `American Express ${titled}`
+      return {
+        card_name: cardName,
+        issuer_link: resolveUrl(a.href, AMEX_INDEX),
+        issuer: "amex" as const,
+        source_url: AMEX_INDEX,
+      }
+    })
+    .filter((l) => l !== null) as IssuerLead[]
+  return dedupeByName(leads)
+}
+
+// ─── Citi ─────────────────────────────────────────────────────────────
+
+const CITI_INDEX = "https://www.citi.com/credit-cards/compare-credit-cards"
+
+const CITI_NON_CARDS = new Set([
+  "compare-credit-cards",
+  "all-credit-cards",
+  "cash-back-credit-cards",
+  "rewards-credit-cards",
+  "travel-credit-cards",
+  "balance-transfer-credit-cards",
+  "business-credit-cards",
+  "student-credit-cards",
+  "low-intro-rate-credit-cards",
+])
+
+/**
+ * Citi's compare-credit-cards index is a SPA. Detail-page shape is
+ * `/credit-cards/citi-{slug}-credit-card` — we accept that shape and
+ * exclude obvious category hubs.
+ */
+export async function scrapeCitiIndex(userAgent: string): Promise<IssuerLead[]> {
+  const r = await fetchRenderedHtml(CITI_INDEX, {
+    userAgent,
+    waitForSelector: 'a[href*="-credit-card"]',
   })
+  if (!r.ok || !r.html) {
+    console.error(`[issuer-index] Citi fetchRenderedHtml failed: ${r.error || r.status}`)
+    return []
+  }
+  // /credit-cards/citi-double-cash-credit-card, /credit-cards/citi-strata-premier-credit-card, …
+  const hrefRe = /^\/credit-cards\/[a-z0-9-]+-credit-card(?:[/?#]|$)/
+  const anchors = extractAnchors(r.html, hrefRe, (s) => s)
+  if (anchors.length < 2) {
+    console.error(`[issuer-index] Citi returned ${anchors.length} anchors — bot-blocked. Their compare page only renders category-hub anchors, not individual cards.`)
+    return []
+  }
+  const leads: IssuerLead[] = anchors
+    .map((a) => {
+      const slug = lastPathSegment(a.href)
+      if (!slug || CITI_NON_CARDS.has(slug)) return null
+      // "citi-double-cash-credit-card" → "Citi Double Cash"
+      // "diamond-preferred-credit-card" → "Diamond Preferred" → prepend Citi.
+      const stripped = slug.replace(/-credit-card$/i, "")
+      const titled = titleCaseFromSlug(stripped)
+      const cardName = /^Citi\b/i.test(titled) ? titled : `Citi ${titled}`
+      return {
+        card_name: cardName,
+        issuer_link: resolveUrl(a.href, CITI_INDEX),
+        issuer: "citi" as const,
+        source_url: CITI_INDEX,
+      }
+    })
+    .filter((l) => l !== null) as IssuerLead[]
+  return dedupeByName(leads)
+}
+
+// ─── Bank of America ──────────────────────────────────────────────────
+
+const BOFA_INDEX = "https://www.bankofamerica.com/credit-cards/"
+
+const BOFA_NON_CARDS = new Set([
+  "airline-credit-cards",
+  "application-status-center",
+  "cash-back-credit-cards",
+  "compare-credit-cards",
+  "credit-card-account-information-faq",
+  "credit-card-agreements",
+  "credit-card-with-no-annual-fee",
+  "credit-cards-to-build-credit",
+  "low-interest-credit-cards",
+  "manage-your-credit-card-account",
+  "no-foreign-transaction-fee-credit-cards",
+  "point-rewards-credit-cards",
+  "promo-rate-balance-transfers-credit-cards",
+  "promo-rate-purchases-credit-cards",
+  "student-credit-cards",
+  "travel-credit-cards",
+])
+
+/**
+ * BofA's credit-cards index is a SPA — static fetch returns category
+ * pages only. With rendered HTML, the per-card detail anchors appear.
+ * Detail-page shape is `/credit-cards/{slug}/` (single segment under
+ * /credit-cards/).
+ */
+export async function scrapeBofaIndex(userAgent: string): Promise<IssuerLead[]> {
+  const r = await fetchRenderedHtml(BOFA_INDEX, {
+    userAgent,
+    waitForSelector: 'a[href*="/credit-cards/"]',
+  })
+  if (!r.ok || !r.html) {
+    console.error(`[issuer-index] BofA fetchRenderedHtml failed: ${r.error || r.status}`)
+    return []
+  }
+  // BofA's actual detail-page shape is /credit-cards/products/{slug}-credit-card/
+  // — the /products/ segment is what distinguishes a real card from a
+  // category hub like /credit-cards/cash-back-credit-cards/.
+  const hrefRe = /^\/credit-cards\/products\/[a-z0-9-]+-credit-card\/(?:[?#]|$)/
+  const anchors = extractAnchors(r.html, hrefRe, (s) => s)
+  if (anchors.length < 2) {
+    console.error(`[issuer-index] BofA returned ${anchors.length} anchors — skipping.`)
+    return []
+  }
+  const leads: IssuerLead[] = anchors
+    .map((a) => {
+      const slug = lastPathSegment(a.href)
+      if (!slug) return null
+      // Slug is "customized-cash-rewards-credit-card" — strip suffix,
+      // title-case, prepend "Bank of America".
+      const stripped = slug.replace(/-credit-card$/i, "")
+      const titled = titleCaseFromSlug(stripped)
+      return {
+        card_name: `Bank of America ${titled}`,
+        issuer_link: resolveUrl(a.href, BOFA_INDEX),
+        issuer: "bofa" as const,
+        source_url: BOFA_INDEX,
+      }
+    })
+    .filter((l) => l !== null) as IssuerLead[]
   return dedupeByName(leads)
 }
 
@@ -519,6 +653,8 @@ const SCRAPERS: Array<{ label: string; fn: ScraperFn }> = [
   { label: "Discover", fn: scrapeDiscoverIndex },
   { label: "Wells Fargo", fn: scrapeWellsFargoIndex },
   { label: "US Bank", fn: scrapeUSBankIndex },
+  { label: "Citi", fn: scrapeCitiIndex },
+  { label: "BofA", fn: scrapeBofaIndex },
 ]
 
 export async function scrapeAllIssuerIndexes(userAgent: string): Promise<IssuerLead[]> {
