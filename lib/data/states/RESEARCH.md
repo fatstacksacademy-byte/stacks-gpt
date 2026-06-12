@@ -186,4 +186,31 @@ state-anchored core (disclosed in eligibility_notes).
 - **Excluded:** Truity + Communication FCU + CommunityAmerica (already cover KS / inline); Credit Union of America (ACC backdoor), INTRUST (Elan white-label). Unresolved: Quest CU (site timed out).
 - **Sources:** mainstreetcu.org, azuracu.com, envistacu.com, gpcu.org, theq.org, meritrust.org.
 
+## Batch 5 — South/Gulf wave A (KY, TN, AL, MS, LA) · verified 2026-06-11
+
+### Kentucky (KY) — 10 cards, 7 institutions
+- **Added:** L&N FCU [KY/IN/OH] (Platinum Cash Back $50, Platinum Business), Class Act (Visa Platinum 1%), Abound/fmr Fort Knox (Visa Platinum 5% gas), Members Heritage (Visa), Service One (Signature Everyday Rewards 3x dining, Platinum), Transcend/fmr KY Telco (Prestige Visa), Republic Bank & Trust [KY/TN/OH/IN/FL] (Business Cash MC, Business Manager MC).
+- **Excluded:** Commonwealth CU + UK FCU (ACC nationwide backdoors), Centra (already under IN). Unresolved: Park Community + Greater Kentucky (no published terms).
+- **Sources:** lnfcu.com, classact.org, aboundcu.com, membersheritage.org, socu.com, transcendcu.com, republicbank.com.
+
+### Tennessee (TN) — 11 cards, 6 institutions
+- **Added:** ORNL FCU (Visa Platinum), KTVAECU (Visa Platinum, Share Secured), Y-12 FCU (Signature Rewards $200, Traditional, Secured), UT FCU (Platinum Rewards 5k), Leaders CU [TN/AR] (Compass Black 3%/2%, Compass Rewards, Compass Business), Old Hickory (Visa Platinum).
+- **Excluded:** Ascend FCU (Nature Conservancy nationwide backdoor). Unresolved: Eastman CU (Cloudflare 403), Tennessee Valley FCU (Elan, no terms).
+- **Sources:** ornlfcu.com, tvacreditunion.com, y12fcu.org, utfcu.org, leaderscu.com, ohcu.org.
+
+### Alabama (AL) — 13 cards, 8 institutions
+- **Added:** Redstone FCU [AL/TN] (Visa Signature $150 CashBack+, Traditional), Listerhill [AL/TN/MS] (Signature Rewards 2%, Business 2%), Bank Independent (Platinum Rewards $50, World $500/3%/$95AF), Alabama ONE (Milestone World 1.5pt), AmFirst (Platinum Plus 1%, Platinum Pro), MAX CU (Signature Cash Back 1.5% + $50, Smart Rewards), Alabama CU (Bama Card), Guardian CU (Rewards).
+- **Excluded/unresolved:** Avadian (403), All In/APCO/Family Security/Legacy (no verifiable card page).
+- **Sources:** redfcu.org, listerhill.com, bibank.com, alabamaone.org, amfirst.org, mymax.com, alabamacu.com, myguardiancu.com.
+
+### Mississippi (MS) — 11 cards, 6 institutions
+- **Added:** Keesler FCU [MS/LA/AL] (Visa Signature $100/2%, Platinum 10k, Classic), Hope CU [MS/LA/AL/AR/TN/GA] (Platinum, Platinum Rewards, Secured Platinum), Members Exchange (Visa Platinum), Magnolia FCU (Visa Platinum, Visa Classic), Statewide FCU (Visa Platinum), BankPlus [MS/LA/AL/FL] (Consumer Rewards 1.5pt + 10k).
+- **Note:** Hope is a 6-state Deep South CDFI (cards restricted to those states; national savings tier is not a card backdoor). Unresolved: Magnolia State Bank, Mississippi FCU (conn errors), 1st MS FCU (Elan).
+- **Sources:** kfcu.org, hopecu.org, mecuanywhere.com, magfedcu.org, statewidefcu.org, bankplus.net.
+
+### Louisiana (LA) — 11 cards, 6 institutions
+- **Added:** Pelican State CU (Premier Signature 30k/3x travel/$95AF + Global Entry, Points Visa 15k), Campus Federal (Prestige MC, Rewards MC), EFCU Financial (Platinum MC 1%), ANECA FCU (Rewards MC, Platinum MC), EPIC/fmr GNO FCU (Platinum Rewards 2%, Platinum), Home Bank [LA/MS/TX] (Platinum Rewards, Classic).
+- **Excluded:** Keesler + Hope (MS owns), Barksdale (FFA $8 backdoor), OnPath/fmr Louisiana FCU (foundation $5 backdoor), Jefferson Financial (merged into Keesler). Unresolved: Neighbors FCU, La Capitol FCU, b1BANK (all 403).
+- **Sources:** pelicancu.com, campusfederal.org, efcufinancial.org, aneca.org, epicfcu.com, home24bank.com.
+
 <!-- Batches appended below as they are completed. -->

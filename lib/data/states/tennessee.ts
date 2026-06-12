@@ -1,0 +1,218 @@
+import { buildStateCards } from "./_builder"
+
+const VERIFIED_AT = "2026-06-11"
+
+export const tennesseeCards = buildStateCards({
+  state: "TN",
+  verifiedAt: VERIFIED_AT,
+  eligibility: {
+    ornl: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "ORNL FCU membership is open to anyone who lives, works, worships, or attends school in 19 East Tennessee counties (Anderson, Blount, Campbell, Claiborne, Cocke, Grainger, Hamblen, Jefferson, Knox, Loudon, McMinn, Meigs, Monroe, Morgan, Rhea, Roane, Scott, Sevier, and Union), plus eligible businesses and immediate family. A $1 membership savings account establishes membership.",
+      eligibility_source: "https://www.ornlfcu.com/personal/loans/credit-cards",
+    },
+    ktvaecu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Knoxville TVA Employees Credit Union (KTVAECU) membership is open to people who live, work, worship, attend school, or own a business in the East Tennessee counties of Blount, Hamblen, Jefferson, Knox, Loudon, Roane, Sevier, or Sullivan, or in Johnson City, TN, plus family members of existing members.",
+      eligibility_source: "https://www.tvacreditunion.com/about-us.html",
+    },
+    y12: {
+      eligibility_scope: "mixed",
+      eligibility_notes:
+        "Y-12 FCU membership is open to people who live, work, worship, or attend school in the East Tennessee counties of Anderson, Blount, Campbell, Knox, Loudon, Roane, Sevier, or Union; current/retired employees of partner businesses; and immediate family of members. Those who don't otherwise qualify may join the Y-12 FCU Gives Foundation (a one-time childhood-hunger donation), whose own field of membership is the same eight East Tennessee counties. A $1 savings balance maintains membership.",
+      eligibility_source: "https://y12fcu.org/about/membership/",
+    },
+    utfcu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "UT Federal Credit Union is community-chartered and open to anyone who lives, works, worships, conducts business, or attends school in the Tennessee counties of Anderson, Blount, Knox, Loudon, and Union, plus immediate family of current members. A $5 primary savings account establishes membership.",
+      eligibility_source: "https://www.utfcu.org/about-utfcu/how-to-join",
+    },
+    leaders: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Leaders Credit Union membership is open to people who live, work, worship, or attend school in the West Tennessee counties of Madison, Chester, Dyer, Haywood, Lake, Lauderdale, and McNairy (and parts of Carroll, Crockett, Fayette, Gibson, Hardeman, Henderson, Henry, Shelby, Tipton, and Weakley), or Crittenden County, AR; Select Employer Groups; education/healthcare/communications workers; family of members; or via three local associations. Serves TN and a West Memphis, AR area.",
+      eligibility_source: "https://www.leaderscu.com/membership-benefits",
+    },
+    oldHickory: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Old Hickory Credit Union membership is open to people who live, work, or worship in the Middle Tennessee counties of Davidson, Sumner, Robertson, or Wilson, or in the communities of Smyrna or La Vergne, plus employees of Select Employee Groups and anyone related to a current member by blood or marriage. A $25 savings deposit establishes membership.",
+      eligibility_source: "https://www.ohcu.org/ABOUT-US/About-OHCU/Membership",
+    },
+  },
+  seeds: [
+    {
+      id: "ornl-fcu-visa-platinum",
+      card_name: "ORNL FCU Visa Platinum",
+      issuer: "ornl-fcu",
+      offer_link: "https://www.ornlfcu.com/personal/loans/credit-cards",
+      key_benefits: [
+        "Reward points earned on every dollar spent",
+        "Low variable APR of 13.49%-18.00% on purchases and balance transfers",
+        "No annual fee, no balance transfer fee, and no cash advance fee",
+        "Low 1% foreign transaction fee",
+      ],
+      eligibility: "ornl",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { go_to_apr_low: 13.49, go_to_apr_high: 18.0 },
+      foreign_tx_fee_pct: 1,
+    },
+    {
+      id: "ktvaecu-visa-platinum",
+      card_name: "KTVAECU Visa Platinum",
+      issuer: "ktvaecu",
+      offer_link: "https://www.tvacreditunion.com/spend/accounts-and-cards/credit-cards.html",
+      key_benefits: [
+        "uChoose Rewards points on signature-based purchases (every 1,000 points = $10 statement credit)",
+        "Rates as low as 9.99% APR based on creditworthiness",
+        "No annual fee and no balance transfer fees",
+        "Contactless tap-to-pay; instantly issued at any branch",
+      ],
+      eligibility: "ktvaecu",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "ktvaecu-share-secured-visa-platinum",
+      card_name: "KTVAECU Share Secured Visa Platinum",
+      issuer: "ktvaecu",
+      offer_link: "https://www.tvacreditunion.com/spend/accounts-and-cards/credit-cards.html",
+      key_benefits: [
+        "Secured by funds in your Credit Union account (deposit must be 110% of the card limit)",
+        "Rates starting as low as 5.99% APR",
+        "A great way to start building or rebuilding credit",
+      ],
+      eligibility: "ktvaecu",
+      credit_score_required: "poor",
+    },
+    {
+      id: "y12-fcu-visa-signature-rewards",
+      card_name: "Y-12 FCU Visa Signature Rewards",
+      issuer: "y12-fcu",
+      offer_link: "https://y12fcu.org/credit-cards/visa-signature-rewards-card/",
+      key_benefits: [
+        "$200 cash bonus (20,000 points) after $1,000 in purchases in the first 90 days",
+        "Guaranteed minimum 1.5% cash back, or 2% through the Loyalty Relationship Rewards program",
+        "0% intro APR on purchases for 12 months from account opening",
+        "No annual fee",
+      ],
+      eligibility: "y12",
+      bonus_amount: 200,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 14.99, go_to_apr_high: 18.0 },
+    },
+    {
+      id: "y12-fcu-visa-traditional",
+      card_name: "Y-12 FCU Visa Traditional",
+      issuer: "y12-fcu",
+      offer_link: "https://y12fcu.org/credit-cards/",
+      key_benefits: [
+        "Flexible, reliable everyday credit card",
+        "No annual fee",
+        "Contactless tap-to-pay",
+      ],
+      eligibility: "y12",
+    },
+    {
+      id: "y12-fcu-visa-secured",
+      card_name: "Y-12 FCU Visa Secured",
+      issuer: "y12-fcu",
+      offer_link: "https://y12fcu.org/credit-cards/",
+      key_benefits: [
+        "Secured by a linked cash deposit to safely establish or rebuild credit",
+        "Can be converted to a Signature Rewards card with an approved application",
+        "No annual fee",
+      ],
+      eligibility: "y12",
+      credit_score_required: "poor",
+    },
+    {
+      id: "utfcu-visa-platinum-rewards",
+      card_name: "UT Federal Credit Union Visa Platinum Rewards",
+      issuer: "ut-fcu",
+      offer_link: "https://www.utfcu.org/personal/credit-cards",
+      key_benefits: [
+        "5,000 bonus points after your first card purchase",
+        "1 point per $1 spent, redeemable for cash back, gift cards, merchandise, and travel with no blackout dates",
+        "3.99% intro APR on balance transfers for the first six billing cycles",
+        "No annual fee and a low 1% foreign transaction fee",
+      ],
+      eligibility: "utfcu",
+      bonus_amount: 5000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { bt_apr_months: 6, bt_fee_pct: 3, go_to_apr_low: 11.49, go_to_apr_high: 18.0 },
+      foreign_tx_fee_pct: 1,
+    },
+    {
+      id: "leaders-cu-compass-black-visa-signature",
+      card_name: "Leaders CU Compass Black Visa Signature",
+      issuer: "leaders-cu",
+      offer_link: "https://www.leaderscu.com/credit-cards/compass-black-cash-back",
+      state_restricted: ["TN", "AR"],
+      key_benefits: [
+        "Unlimited 3% cash back on all purchases for the first 15 months (with direct deposit), then unlimited 2% on all purchases",
+        "0% intro APR for the first 15 months from account opening",
+        "No annual fee and a low 1% foreign transaction fee",
+        "Balance transfer fee of 5% (or $10) during the intro period, then 2% (or $10)",
+      ],
+      eligibility: "leaders",
+      rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
+      intro_apr: { purchase_apr_months: 15, bt_apr_months: 15, bt_fee_pct: 5, go_to_apr_low: 22.4, go_to_apr_high: 28.4 },
+      foreign_tx_fee_pct: 1,
+    },
+    {
+      id: "leaders-cu-compass-rewards-visa-platinum",
+      card_name: "Leaders CU Compass Rewards Visa Platinum",
+      issuer: "leaders-cu",
+      offer_link: "https://www.leaderscu.com/credit-cards/compass-rewards",
+      state_restricted: ["TN", "AR"],
+      key_benefits: [
+        "1 point for every $1 spent",
+        "0% intro APR for the first 15 billing cycles",
+        "No annual fee",
+        "Balance transfer fee of 5% (or $10) during the intro period, then 2% (or $10)",
+      ],
+      eligibility: "leaders",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { purchase_apr_months: 15, bt_apr_months: 15, bt_fee_pct: 5, go_to_apr_low: 14.4, go_to_apr_high: 26.4 },
+    },
+    {
+      id: "leaders-cu-compass-business-visa-platinum",
+      card_name: "Leaders CU Compass Business Visa Platinum",
+      issuer: "leaders-cu",
+      card_type: "business",
+      offer_link: "https://www.leaderscu.com/business-loans/credit-card",
+      state_restricted: ["TN", "AR"],
+      key_benefits: [
+        "2% cash back on every business purchase",
+        "$49 annual fee, waived for the first 12 months",
+        "No-hassle rewards on everyday business expenses",
+      ],
+      eligibility: "leaders",
+      annual_fee: 49,
+      annual_fee_waived_first_year: true,
+      rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
+    },
+    {
+      id: "old-hickory-cu-visa-platinum",
+      card_name: "Old Hickory Credit Union Visa Platinum",
+      issuer: "old-hickory-cu",
+      offer_link: "https://www.ohcu.org/Loans/Consumer-Loans/Credit-Cards",
+      key_benefits: [
+        "Variable APR as low as 9.49% up to 17.99%, tied to the WSJ Prime Rate",
+        "Credit limits from $500 to $15,000 based on income and credit approval",
+        "In-house card program with local servicing; 3% balance transfer fee currently waived",
+      ],
+      eligibility: "oldHickory",
+      intro_apr: { go_to_apr_low: 9.49, go_to_apr_high: 17.99 },
+    },
+  ],
+})

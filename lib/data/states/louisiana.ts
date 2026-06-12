@@ -1,0 +1,223 @@
+import { buildStateCards } from "./_builder"
+
+const VERIFIED_AT = "2026-06-11"
+
+export const louisianaCards = buildStateCards({
+  state: "LA",
+  verifiedAt: VERIFIED_AT,
+  eligibility: {
+    pelican: {
+      eligibility_scope: "mixed",
+      eligibility_notes:
+        "Pelican State CU membership is open to residents of 46 Louisiana parishes (incl. East Baton Rouge, Ascension, Livingston, Lafayette, Acadia, Calcasieu, Iberia, Ouachita, Rapides, St. Landry, St. Tammany); employees/retirees of hundreds of partner employers; members of partner associations; Pelican employees; and immediate family of members. A $15 deposit ($10 join fee + $5 minimum) establishes membership.",
+      eligibility_source: "https://www.pelicancu.com/join-pelican",
+    },
+    campus: {
+      eligibility_scope: "mixed",
+      eligibility_notes:
+        "Campus Federal CU membership is open through LSU affiliation (employees, students, alumni association members and families); 'Business Partner' select employee groups; people who live, work, or worship in Baton Rouge, Orleans Parish, or the Shreveport MSA (Caddo, Bossier, Webster parishes); family of members; and - for Louisiana residents only - via American Consumer Council membership. A $5 share plus a one-time $10 fee establishes membership.",
+      eligibility_source: "https://www.campusfederal.org/about-us/membership-eligibility",
+    },
+    efcu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "EFCU Financial membership is open to people who live, work, worship, or attend school in nine Louisiana parishes (East Baton Rouge, West Baton Rouge, Ascension, East Feliciana, West Feliciana, Iberville, Livingston, Pointe Coupee, St. Helena); their immediate family/household; surviving spouses; and people in those parishes who join via a donation to the EFCU Financial Foundation or the Arc of Baton Rouge. The donation pathway is not nationwide - a Baton Rouge-area geographic connection is required.",
+      eligibility_source: "https://www.efcufinancial.org/join-us/",
+    },
+    aneca: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "ANECA Federal Credit Union (Shreveport) membership is open to people who live, work, worship, attend school, or operate a business or legal entity in Bossier, Caddo, or DeSoto Parish, Louisiana, plus their family once a member joins. Eligibility is primarily location-based within these three northwest-Louisiana parishes.",
+      eligibility_source: "https://aneca.org/About-Us",
+    },
+    epic: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "EPIC Federal Credit Union (formerly Greater New Orleans FCU) membership is open to people who live, work, worship, or attend school in Orleans, Jefferson, St. Charles, St. John, St. Bernard, or Plaquemines Parish; employees/staff/faculty/students of partner regional trade schools, colleges, and universities; and family of members. A $10 deposit ($5 share + $5 fee) establishes membership.",
+      eligibility_source: "https://www.epicfcu.com/services-tools/how-to-join/",
+    },
+    homeBank: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Home Bank, N.A. is a community bank headquartered in Lafayette, LA, with ~34 branches across 20 Louisiana cities/towns plus offices in Mississippi and Texas. Its consumer Visa cards are available to applicants in its South Louisiana / Mississippi / Texas footprint (no credit-union 'membership' required). Serves LA, MS, and TX.",
+      eligibility_source: "https://www.home24bank.com/about-us/about-home-bank.html",
+    },
+  },
+  seeds: [
+    {
+      id: "pelican-state-cu-premier-visa-signature",
+      card_name: "Pelican Premier Visa Signature",
+      issuer: "pelican-state-cu",
+      offer_link: "https://www.pelicancu.com/premier",
+      key_benefits: [
+        "30,000-point welcome bonus after $3,000 in purchases in the first 3 months (new Pelican cardholders only)",
+        "3x points on travel, 2x points on dining, 1x on everything else",
+        "10% anniversary bonus on points earned during the year (excludes the welcome bonus)",
+        "Up to $100/year Walmart+ credit and up to $100 every 5 years for TSA PreCheck/Global Entry",
+      ],
+      eligibility: "pelican",
+      bonus_amount: 30000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 3000,
+      spend_months: 3,
+      annual_fee: 95,
+      rewards: [
+        { categories: ["travel"], multiplier: 3 },
+        { categories: ["dining"], multiplier: 2 },
+        { categories: ["everything_else"], multiplier: 1 },
+      ],
+      travel: { global_entry_credit: true },
+      credit_score_required: "good",
+    },
+    {
+      id: "pelican-state-cu-points-visa",
+      card_name: "Pelican Points Visa",
+      issuer: "pelican-state-cu",
+      offer_link: "https://www.pelicancu.com/points",
+      key_benefits: [
+        "15,000 bonus points after $1,500 in purchases within 90 days of opening",
+        "1 point per $1 on all purchases, with Pelican Perks bonus-point offers at local businesses",
+        "0% intro APR for 12 months on balance transfers (transfers must post by Dec 31, 2026)",
+        "No annual fee; metal-card upgrade available for 3,000 points",
+      ],
+      eligibility: "pelican",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { bt_apr_months: 12, bt_fee_pct: 3.5 },
+    },
+    {
+      id: "campus-federal-prestige-mastercard",
+      card_name: "Campus Prestige Mastercard",
+      issuer: "campus-federal-cu",
+      offer_link: "https://www.campusfederal.org/products/campus-federal-mastercard",
+      key_benefits: [
+        "Low variable APR as low as 13.25% (Prime + 6.50%) on purchases and balance transfers",
+        "No annual fee",
+        "Low 2% foreign transaction fee",
+      ],
+      eligibility: "campus",
+      foreign_tx_fee_pct: 2,
+    },
+    {
+      id: "campus-federal-rewards-mastercard",
+      card_name: "Campus Rewards Mastercard",
+      issuer: "campus-federal-cu",
+      offer_link: "https://www.campusfederal.org/products/campus-federal-mastercard",
+      key_benefits: [
+        "1 uChoose Rewards point per $1 spent; redeem for travel, gift certificates, and cash back",
+        "Variable APR as low as 16.25% (Prime + 9.50%)",
+        "No annual fee",
+        "Low 2% foreign transaction fee",
+      ],
+      eligibility: "campus",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      foreign_tx_fee_pct: 2,
+    },
+    {
+      id: "efcu-financial-platinum-mastercard",
+      card_name: "EFCU Financial Platinum Mastercard",
+      issuer: "efcu-financial",
+      offer_link: "https://www.efcufinancial.org/loans/mastercard/",
+      key_benefits: [
+        "Reward points redeemable for 1% cash back on every purchase",
+        "No annual fee and no cash advance fee",
+        "Price protection up to $250 per claim (4 claims per year)",
+        "Fraud text alerts",
+      ],
+      eligibility: "efcu",
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
+      bonus_currency: "cash",
+      cpp_value: 1,
+      protections: { price_protection: true },
+    },
+    {
+      id: "aneca-fcu-rewards-mastercard",
+      card_name: "ANECA Rewards Mastercard",
+      issuer: "aneca-fcu",
+      offer_link: "https://aneca.org/Borrow/Credit-Card/Rewards-and-Platinum-Credit-Cards",
+      key_benefits: [
+        "1 MyRewardsPlus point per $1 spent; double points each year from October through December 31",
+        "Low 11.99% APR",
+        "0% intro APR for 12 months on balance transfers (5% or $50 fee, whichever is greater)",
+        "Redeem for gift cards or $0.50/gallon fuel discounts (up to 20 gallons)",
+      ],
+      eligibility: "aneca",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { bt_apr_months: 12, bt_fee_pct: 5 },
+    },
+    {
+      id: "aneca-fcu-platinum-mastercard",
+      card_name: "ANECA Platinum Mastercard",
+      issuer: "aneca-fcu",
+      offer_link: "https://aneca.org/Borrow/Credit-Card/Rewards-and-Platinum-Credit-Cards",
+      key_benefits: [
+        "1 point per $5 spent",
+        "Low rate as low as 13.24% APR",
+        "0% intro APR for 12 months on balance transfers (5% or $50 fee, whichever is greater)",
+        "No annual fee",
+      ],
+      eligibility: "aneca",
+      rewards: [{ categories: ["everything_else"], multiplier: 0.2 }],
+      intro_apr: { bt_apr_months: 12, bt_fee_pct: 5 },
+    },
+    {
+      id: "epic-fcu-visa-platinum-rewards",
+      card_name: "EPIC FCU Visa Platinum Rewards",
+      issuer: "epic-fcu",
+      offer_link: "https://www.epicfcu.com/loans/credit-cards/",
+      key_benefits: [
+        "Up to 2% cash back on net purchases (2% for EPIC/EPIC Platinum members, 1% otherwise)",
+        "Variable APR 6.99%-18.00%",
+        "No annual fee",
+      ],
+      eligibility: "epic",
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
+      bonus_currency: "cash",
+      cpp_value: 1,
+    },
+    {
+      id: "epic-fcu-visa-platinum",
+      card_name: "EPIC FCU Visa Platinum",
+      issuer: "epic-fcu",
+      offer_link: "https://www.epicfcu.com/loans/credit-cards/",
+      key_benefits: [
+        "Low variable APR 6.99%-18.00% with no rewards-program complexity",
+        "No annual fee",
+        "Visa Platinum security and contactless pay",
+      ],
+      eligibility: "epic",
+    },
+    {
+      id: "home-bank-visa-platinum-rewards",
+      card_name: "Home Bank Visa Platinum Rewards",
+      issuer: "home-bank",
+      offer_link: "https://www.home24bank.com/personal/personal-loans/visa-credit-card.html",
+      state_restricted: ["LA", "MS", "TX"],
+      key_benefits: [
+        "1 uChoose Rewards point per $1 spent in store or online",
+        "Redeem points for cash back, gift cards, merchandise, and travel",
+        "No annual fee stated; ask a banker for current rate information",
+      ],
+      eligibility: "homeBank",
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "home-bank-visa-classic",
+      card_name: "Home Bank Visa (Classic)",
+      issuer: "home-bank",
+      offer_link: "https://www.home24bank.com/personal/personal-loans/visa-credit-card.html",
+      state_restricted: ["LA", "MS", "TX"],
+      key_benefits: [
+        "Unsecured Visa credit card built for simplicity and flexibility",
+        "Use anywhere Visa is accepted",
+        "Ask a banker for current rate information",
+      ],
+      eligibility: "homeBank",
+    },
+  ],
+})
