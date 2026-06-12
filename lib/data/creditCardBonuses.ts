@@ -114,6 +114,35 @@ export type CreditCardBonus = {
   intro_apr?: IntroApr
   /** Award-travel value (transfer partners, credits, perks). Optional — absent until researched. */
   travel?: TravelValue
+  /**
+   * Typical credit score tier required for approval. Filled by reviewer
+   * (or eventually by an extractor that reads issuer FAQs).
+   *
+   *   "excellent" → ~740+ (premium travel cards: Sapphire Reserve, Platinum)
+   *   "good"      → ~670–739 (mid-tier earners: Sapphire Preferred, Active Cash)
+   *   "fair"      → ~580–669 (entry / second-chance cards)
+   *   "poor"      → secured cards, rebuilders
+   *
+   * Surfaces in the spending finder as a chip ("Needs 740+") so people
+   * with limited credit don't waste a hard pull on something they won't
+   * get. Absent = "not yet documented".
+   */
+  credit_score_required?: "excellent" | "good" | "fair" | "poor"
+  /**
+   * Itemized annual statement credits, broken out by category. Distinct
+   * from `statement_credits_year1` which is the total cash value. This
+   * lets the UI render the actual credit categories ("$300 travel +
+   * $200 hotel + $200 airline incidental") instead of one number that
+   * hides what the card actually pays for.
+   *
+   * Optional — absent today on most cards, gets populated as we research.
+   */
+  annual_credits_detail?: {
+    label: string
+    amount: number
+    /** Year cadence: "annual" (resets every year), "monthly" (12 × monthly cap), "biennial" (every other year). */
+    cadence?: "annual" | "monthly" | "biennial"
+  }[]
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [
@@ -152,6 +181,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    credit_score_required: "excellent",
   },
   {
     id: "chase-ink-business-preferred-100k",
@@ -311,6 +341,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    credit_score_required: "excellent",
   },
   {
     id: "amex-business-platinum-200k",
@@ -343,6 +374,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    credit_score_required: "excellent",
   },
   {
     id: "amex-hilton-honors-70k",
@@ -411,6 +443,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Free night certificate annually",
       "Priority Pass lounge access",
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-hilton-business-175k",
@@ -455,6 +488,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "$300 Marriott Bonvoy credit",
       "Platinum Elite status",
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-marriott-bevy-175k",
@@ -555,6 +589,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    credit_score_required: "excellent",
   },
   {
     id: "citi-double-cash-200",
@@ -1302,6 +1337,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","dining","foreign_purchases"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "chase-amazon-rwp",
@@ -1481,6 +1517,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)"], multiplier: 4, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "citi-american-airlines-aadvantage-mileup-rwp",
@@ -1592,6 +1629,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["large_purchases"], multiplier: 1.5, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-american-express-gold-rwp",
@@ -1667,6 +1705,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["car_rentals_(portal)","cruises_(portal)"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "fnbo-amtrak-guest-rewards-rwp",
@@ -2070,6 +2109,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","airfare_(portal)","car_rentals","car_rentals_(portal)","cruises","dining","hotels","hotels_(portal)","parking","toll_fees","transit","travel"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "bofa-bank-of-america-unlimited-cash-rewards-rwp",
@@ -2113,6 +2153,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","hotels_(portal)"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "bank-fund-fcu-bank-fund-fcu-beyond-rwp",
@@ -2225,6 +2266,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 2, unit: "points" },
       { categories: ["rent/mortgage"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "first-electronic-bank-booking-com-genius-rewards-rwp",
@@ -2427,6 +2469,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","travel_(portal)","travel_(portal)"], multiplier: 5, unit: "points" },
       { categories: ["all_other"], multiplier: 2, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "capital-one-capital-one-savor-rewards-rwp",
@@ -2864,6 +2907,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","airfare_(portal)","car_rentals","car_rentals_(portal)","dining","hotels","hotels_(portal)","ridesharing","transit"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "city-national-city-national-flex-rewards-rwp",
@@ -3043,6 +3087,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "discover-discover-it-miles-rwp",
@@ -3225,6 +3270,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
     intro_apr: { bt_apr_months: 12 },
+    credit_score_required: "excellent",
   },
   {
     id: "barclays-emirates-skywards-rewards-rwp",
@@ -3741,6 +3787,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","airfare_(portal)","car_rentals","car_rentals_(portal)","dining"], multiplier: 7, unit: "points" },
       { categories: ["all_other"], multiplier: 3, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-hilton-honors-surpass-rwp",
@@ -3788,6 +3835,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "hsbc-bank-hsbc-bank-premier-rwp",
@@ -3992,6 +4040,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining","groceries"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "barclays-jetblue-plus-rwp",
@@ -4106,6 +4155,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","car_rentals","dining","hotels"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "langley-fcu-langley-fcu-signature-cash-back-rwp",
@@ -4267,6 +4317,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","airfare_(portal)","dining"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 2, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "fnbo-mgm-resorts-rewards-rwp",
@@ -4748,6 +4799,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "cardless-qatar-airways-privilege-club-signature-rwp",
@@ -4929,6 +4981,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","dining"], multiplier: 5, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "celtic-bank-rocket-card-rwp",
@@ -5464,6 +5517,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["groceries","streaming_services"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "truist-truist-enjoy-travel-rwp",
@@ -5533,6 +5587,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare","car_rentals","car_rentals_(portal)","cruises","dining","hotels","hotels_(portal)","ridesharing","toll_fees","travel"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "chase-united-explorer-rwp",
@@ -6329,6 +6384,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["electronics_/_software","home_improvement_stores","large_purchases","shipping"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-american-express-business-plum-rwp",
@@ -6372,6 +6428,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["large_purchases"], multiplier: 1.5, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "amex-american-express-graphite-business-cash-unlimited-rwp",
@@ -6590,6 +6647,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","travel_(portal)"], multiplier: 5, unit: "points" },
       { categories: ["all_other"], multiplier: 2, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "capital-one-capital-one-ventureone-business-rwp",
@@ -6718,6 +6776,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
+    credit_score_required: "excellent",
   },
   {
     id: "citi-costco-anywhere-business-rwp",
@@ -6810,6 +6869,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "fnbo-fnbo-evergreen-business-rwp",
@@ -7211,6 +7271,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    credit_score_required: "excellent",
   },
   {
     id: "us-bank-us-bank-altitude-connect-business-rwp",
@@ -7516,6 +7577,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["everything_else"], multiplier: 1, unit: "%" }
     ],
     // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+    credit_score_required: "fair",
   },
 
   {
@@ -7541,6 +7603,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["everything_else"], multiplier: 1, unit: "%" }
     ],
     // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+    credit_score_required: "fair",
   },
 
   {
@@ -7611,5 +7674,92 @@ export const creditCardBonuses: CreditCardBonus[] = [
     intro_apr: { purchase_apr_months: 21 },
     key_benefits: [],
     // Auto-imported from https://creditcards.wellsfargo.com/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+
+  // ─── AUTO-IMPORTED FROM RICHWITHPOINTS ──────────────────────────
+  // These entries came from the discover-cards scraper. Fields are conservative
+  // (null/defaults where the regex couldn't extract a value). Review and
+  // calibrate before treating as trusted data.
+
+  {
+    id: "bofa-bank-of-america-alaska-airlines-auto",
+    card_name: "Bank of America Alaska Airlines",
+    issuer: "bofa",
+    card_type: "personal",
+    bonus_amount: 50000,
+    bonus_currency: "Points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 2000,
+    spend_months: 3,
+    annual_fee: 95,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://www.bankofamerica.com/credit-cards/ — verify before relying on: clean
+  },
+
+  {
+    id: "bofa-bank-of-america-alaska-airlines-infinite-auto",
+    card_name: "Bank of America Alaska Airlines Infinite",
+    issuer: "bofa",
+    card_type: "personal",
+    bonus_amount: 100000,
+    bonus_currency: "Points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 6500,
+    spend_months: 3,
+    annual_fee: 395,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://www.bankofamerica.com/credit-cards/ — verify before relying on: clean
+    credit_score_required: "excellent",
+  },
+
+  {
+    id: "bofa-bank-of-america-royal-one-auto",
+    card_name: "Bank of America Royal One",
+    issuer: "bofa",
+    card_type: "personal",
+    bonus_amount: 45000,
+    bonus_currency: "Points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 2000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/royal-one-credit-card/",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://www.bankofamerica.com/credit-cards/ — verify before relying on: no_annual_fee_found
+  },
+
+  {
+    id: "bofa-bank-of-america-royal-one-plus-auto",
+    card_name: "Bank of America Royal One Plus",
+    issuer: "bofa",
+    card_type: "personal",
+    bonus_amount: 70000,
+    bonus_currency: "Points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 3000,
+    spend_months: 3,
+    annual_fee: 99,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.bankofamerica.com/credit-cards/products/royal-one-plus-credit-card/",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://www.bankofamerica.com/credit-cards/ — verify before relying on: clean
   },
 ]

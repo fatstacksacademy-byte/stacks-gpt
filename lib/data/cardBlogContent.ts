@@ -37,6 +37,78 @@ export type CardBlogContent = {
 }
 
 export const cardBlogContent: Record<string, CardBlogContent> = {
+  "abound-fcu-abound-fcu-platinum-rwp": {
+    summary: "The Abound FCU Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Abound FCU Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$0 sign-up bonus",
+      "$0 annual fee",
+      "5x on gas_stations",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Among Abound-fcu personal cards in our catalog, the Abound FCU Platinum is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
+    faqs: [
+      { q: "What's the current Abound FCU Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the Abound FCU Platinum annual fee?", a: "There is no annual fee on the Abound FCU Platinum." },
+      { q: "How long does the Abound FCU Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:01.015Z",
+    verifiedUrl: "https://www.aboundcu.com/cards/credit-cards/visa-credit-cards/platinum-credit-card",
+  },
+
+  "affinity-fcu-affinity-fcu-cash-rewards-rwp": {
+    summary: "The Affinity FCU Cash Rewards is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Affinity FCU Cash Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$150 sign-up bonus",
+      "$0 annual fee",
+      "5x on amazon",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Affinity-fcu's personal lineup, the closest comparison is the Affinity FCU Pure Rewards (5,000 Points after $0/3mo, $0 AF). The Affinity FCU Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current Affinity FCU Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the Affinity FCU Cash Rewards annual fee?", a: "There is no annual fee on the Affinity FCU Cash Rewards." },
+      { q: "How long does the Affinity FCU Cash Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["affinity-fcu-pure-rewards-5000-points","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:01.017Z",
+    verifiedUrl: "https://www.affinityfcu.com/personal-banking/banking/credit-card/cash-rewards-visa",
+  },
+
+  "affinity-fcu-affinity-fcu-pure-rewards-rwp": {
+    summary: "The Affinity FCU Pure Rewards is currently offering 5,000 Points after $0 in purchases within 3 months. There's no annual fee, which makes the 5,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Affinity FCU Pure Rewards until you've earned the 5,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a 5,000 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "5,000 Points sign-up bonus",
+      "$0 annual fee",
+      "1x on all_other",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Affinity-fcu's personal lineup, the closest comparison is the Affinity FCU Cash Rewards ($150 after $3,000/3mo, $0 AF). The Affinity FCU Pure Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current Affinity FCU Pure Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 5,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the Affinity FCU Pure Rewards annual fee?", a: "There is no annual fee on the Affinity FCU Pure Rewards." },
+      { q: "How long does the Affinity FCU Pure Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["affinity-fcu-cash-rewards-150-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:01.019Z",
+    verifiedUrl: "https://www.affinityfcu.com/personal-banking/banking/credit-card/pure-rewards-visa",
+  },
+
   "amex-blue-cash-everyday-250": {
     summary: "The Amex Blue Cash Everyday is currently offering $250 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 100.0¢ per-point valuation.",
     strategy: "To hit the $2,000 requirement in 6 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amex Blue Cash Everyday until you've earned the $250 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -268,6 +340,115 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://cards.barclaycardus.com/banking/cards/upromise-world-mastercard/",
   },
 
+  "bofa-allegiant-allways-rewards-rwp": {
+    summary: "The Allegiant Allways Rewards is currently offering 25,000 Points after $0 in purchases within 3 months. It carries a $59 annual fee, with no first-year credits to soften it. Estimated net year-one value: $191 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Allegiant Allways Rewards until you've earned the 25,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 25,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $59 annual fee.",
+    pros: [
+      "25,000 Points sign-up bonus",
+      "3x on airfare_(portal)",
+      "Travel Portal Redemption",
+    ],
+    cons: [
+      "$59 annual fee",
+    ],
+    comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Allegiant Allways Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Allegiant Allways Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the Allegiant Allways Rewards annual fee?", a: "The annual fee is $59." },
+      { q: "How long does the Allegiant Allways Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
+    verifiedAt: "2026-06-12T04:03:01.019Z",
+    verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/allegiant-credit-card/",
+  },
+
+  "bofa-bank-of-america-alaska-airlines-auto": {
+    summary: "The Bank of America Alaska Airlines is currently offering 50,000 Points after $2,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $405 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Alaska Airlines until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    pros: [
+      "50,000 Points sign-up bonus",
+    ],
+    cons: [
+      "$95 annual fee",
+    ],
+    comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Alaska Airlines is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Bank of America Alaska Airlines sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the Bank of America Alaska Airlines annual fee?", a: "The annual fee is $95." },
+      { q: "How long does the Bank of America Alaska Airlines sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
+    verifiedAt: "2026-06-12T05:33:53.076Z",
+    verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
+  },
+
+  "bofa-bank-of-america-alaska-airlines-infinite-auto": {
+    summary: "The Bank of America Alaska Airlines Infinite is currently offering 100,000 Points after $6,500 in purchases within 3 months. It carries a $395 annual fee, with no first-year credits to soften it. Estimated net year-one value: $605 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $6,500 requirement in 3 months, you need about $2,167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Alaska Airlines Infinite until you've earned the 100,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 100,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $395 annual fee.",
+    pros: [
+      "100,000 Points sign-up bonus",
+    ],
+    cons: [
+      "$395 annual fee",
+      "High $6,500 minimum spend can be hard to hit organically",
+    ],
+    comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Alaska Airlines Infinite is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Bank of America Alaska Airlines Infinite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Points after spending $6,500 on purchases within 3 months of account opening." },
+      { q: "What's the Bank of America Alaska Airlines Infinite annual fee?", a: "The annual fee is $395." },
+      { q: "How long does the Bank of America Alaska Airlines Infinite sign-up bonus take to post?", a: "Once you cross the $6,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","american-airlines-aadvantage-globe-60000-miles"],
+    verifiedAt: "2026-06-12T05:33:56.472Z",
+    verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/",
+  },
+
+  "bofa-bank-of-america-royal-one-auto": {
+    summary: "The Bank of America Royal One is currently offering 45,000 Points after $2,000 in purchases within 3 months. There's no annual fee, which makes the 45,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $450 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Royal One until you've earned the 45,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a 45,000 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "45,000 Points sign-up bonus",
+      "$0 annual fee",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Royal One is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current Bank of America Royal One sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 45,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the Bank of America Royal One annual fee?", a: "There is no annual fee on the Bank of America Royal One." },
+      { q: "How long does the Bank of America Royal One sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T05:33:59.604Z",
+    verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/royal-one-credit-card/",
+  },
+
+  "bofa-bank-of-america-royal-one-plus-auto": {
+    summary: "The Bank of America Royal One Plus is currently offering 70,000 Points after $3,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $601 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Royal One Plus until you've earned the 70,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 70,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    pros: [
+      "70,000 Points sign-up bonus",
+    ],
+    cons: [
+      "$99 annual fee",
+    ],
+    comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Royal One Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Bank of America Royal One Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the Bank of America Royal One Plus annual fee?", a: "The annual fee is $99." },
+      { q: "How long does the Bank of America Royal One Plus sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
+    verifiedAt: "2026-06-12T05:34:02.934Z",
+    verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/royal-one-plus-credit-card/",
+  },
+
   "bofa-premium-rewards-60k": {
     summary: "The BofA Premium Rewards is currently offering 60,000 BofA points after $4,000 in purchases within 3 months. It carries a $95 annual fee, offset by roughly $100 in year-one statement credits. Estimated net year-one value: $605 based on a 1¢ per-point valuation.",
     strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the BofA Premium Rewards until you've earned the 60,000 BofA points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Use the year-one credits early — they often expire on a calendar cycle, not 12 months from account opening.",
@@ -390,6 +571,59 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["capital-one-spark-cash-select-750-cash","capital-one-spark-cash-1000-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
     verifiedAt: "2026-04-22T00:00:00.000Z",
     verifiedUrl: "https://www.capitalone.com/credit-cards/venture/",
+  },
+
+  "chase-aer-lingus-rwp": {
+    summary: "The Aer Lingus is currently offering 75,000 Points after $5,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $655 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aer Lingus until you've earned the 75,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 75,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    pros: [
+      "75,000 Points sign-up bonus",
+      "3x on airfare_(portal)",
+      "No Foreign Transaction Fees",
+      "Travel Portal Redemption",
+    ],
+    cons: [
+      "$95 annual fee",
+      "High $5,000 minimum spend can be hard to hit organically",
+      "Subject to Chase 5/24 — counts against your personal card velocity",
+    ],
+    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Reserve (125,000 Ultimate Rewards after $6,000/3mo, $795 AF). The Aer Lingus is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Aer Lingus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the Aer Lingus annual fee?", a: "The annual fee is $95." },
+      { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
+      { q: "How long does the Aer Lingus sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["chase-sapphire-reserve-125000-ultimate-rewards","chase-ink-business-preferred-100000-ultimate-rewards","amex-marriott-business-250000-marriott-bonvoy"],
+    verifiedAt: "2026-06-12T04:03:01.017Z",
+    verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/avios/aer-lingus?iCELL=61FY",
+  },
+
+  "chase-aeroplan-rwp": {
+    summary: "The Aeroplan is currently offering 60,000 Points after $3,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $505 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aeroplan until you've earned the 60,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    pros: [
+      "60,000 Points sign-up bonus",
+      "3x on airfare_(portal), dining, groceries, walmart",
+      "No Foreign Transaction Fees",
+      "Travel Portal Redemption",
+    ],
+    cons: [
+      "$95 annual fee",
+      "Subject to Chase 5/24 — counts against your personal card velocity",
+    ],
+    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Reserve (125,000 Ultimate Rewards after $6,000/3mo, $795 AF). The Aeroplan is the right pick when you value premium benefits and credits over a no-fee structure.",
+    faqs: [
+      { q: "What's the current Aeroplan sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the Aeroplan annual fee?", a: "The annual fee is $95." },
+      { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
+      { q: "How long does the Aeroplan sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["chase-sapphire-reserve-125000-ultimate-rewards","chase-ink-business-preferred-100000-ultimate-rewards","amex-marriott-business-250000-marriott-bonvoy"],
+    verifiedAt: "2026-06-12T04:03:01.018Z",
+    verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/aircanada/aeroplan?iCELL=6C1Y",
   },
 
   "chase-ink-business-preferred-100k": {
@@ -566,6 +800,78 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
     verifiedAt: "2026-04-19T22:03:18.538Z",
     verifiedUrl: "https://www.discover.com/credit-cards/cash-back/it-card.html",
+  },
+
+  "exchange-credit-program-aafes-military-star-rwp": {
+    summary: "The AAFES Military Star is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the AAFES Military Star until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$0 sign-up bonus",
+      "$0 annual fee",
+      "2x on all_other",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Among Exchange-credit-program personal cards in our catalog, the AAFES Military Star is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
+    faqs: [
+      { q: "What's the current AAFES Military Star sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the AAFES Military Star annual fee?", a: "There is no annual fee on the AAFES Military Star." },
+      { q: "How long does the AAFES Military Star sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:01.016Z",
+    verifiedUrl: "https://militarytimecharts.com/star-card-guide/",
+  },
+
+  "fidelity-visa-150": {
+    summary: "The Fidelity Rewards Visa is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fidelity Rewards Visa until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$150 sign-up bonus",
+      "$0 annual fee",
+      "No annual fee",
+      "2% cash back into Fidelity account",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Among Fidelity personal cards in our catalog, the Fidelity Rewards Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
+    faqs: [
+      { q: "What's the current Fidelity Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the Fidelity Rewards Visa annual fee?", a: "There is no annual fee on the Fidelity Rewards Visa." },
+      { q: "How long does the Fidelity Rewards Visa sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:00.983Z",
+    verifiedUrl: "https://www.fidelity.com/spend-save/visa-signature-card",
+  },
+
+  "pnc-cash-rewards-200": {
+    summary: "The PNC Cash Rewards Visa is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PNC Cash Rewards Visa until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$200 sign-up bonus",
+      "$0 annual fee",
+      "No annual fee",
+      "4% gas, 3% dining, 2% groceries, 1% everything else",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Pnc's personal lineup, the closest comparison is the PNC Bank Cash Rewards ($250 after $0/3mo, $0 AF). The PNC Cash Rewards Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current PNC Cash Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the PNC Cash Rewards Visa annual fee?", a: "There is no annual fee on the PNC Cash Rewards Visa." },
+      { q: "How long does the PNC Cash Rewards Visa sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["pnc-bank-cash-rewards-250-cash","pnc-bank-cash-unlimited-250-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    verifiedAt: "2026-06-12T04:03:00.992Z",
+    verifiedUrl: "https://www.pnc.com/en/personal-banking/banking/credit-cards/pnc-cash-rewards-visa-credit-card.html",
   },
 
   "sofi-credit-card-200": {

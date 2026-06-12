@@ -522,6 +522,8 @@ function ResultBlock({ heading, note, children }: { heading: string; note: strin
 
 // ── One card result row, with a faux card-art tile ───────────────────
 function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string }) {
+  const earnChips = topEarnChips(card)
+  const score = creditScoreChip(card)
   return (
     <div style={{ display: "grid", gridTemplateColumns: "auto auto 1fr auto", gap: 14, alignItems: "center", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 16px" }}>
       <div style={{ fontSize: 13, fontWeight: 800, color: "#bbb", width: 22, textAlign: "center" }}>{rank}</div>
@@ -529,6 +531,46 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</div>
         <div style={{ fontSize: 12, color: "#777", marginTop: 2 }}>{secondary}</div>
+        {(earnChips.length > 0 || score) && (
+          <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
+            {earnChips.map((chip, i) => (
+              <span
+                key={`r${i}`}
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  background: "#f0f7f4",
+                  color: "#0d7c5f",
+                  border: "1px solid #d6ebe2",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {chip}
+              </span>
+            ))}
+            {score && (
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  background: score.bg,
+                  color: score.fg,
+                  border: `1px solid ${score.border}`,
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  whiteSpace: "nowrap",
+                }}
+                title="Typical credit score required for approval"
+              >
+                {score.label}
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#0d7c5f" }}>{primary}</div>
@@ -541,6 +583,57 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       </div>
     </div>
   )
+}
+
+/**
+ * Compact credit-score chip rendered on each card row. Conveys the
+ * typical FICO tier needed for approval so people don't waste a hard
+ * pull on a card they won't get. Returns null when the catalog entry
+ * hasn't been annotated yet — UI degrades cleanly.
+ */
+function creditScoreChip(
+  card: CreditCardBonus,
+): { label: string; bg: string; fg: string; border: string } | null {
+  if (!card.credit_score_required) return null
+  const palette: Record<
+    NonNullable<CreditCardBonus["credit_score_required"]>,
+    { label: string; bg: string; fg: string; border: string }
+  > = {
+    excellent: { label: "Needs 740+", bg: "#eaf6ec", fg: "#1e7a3a", border: "#cee6d3" },
+    good: { label: "Needs 670+", bg: "#fdf6e0", fg: "#8a6d00", border: "#f0e2a8" },
+    fair: { label: "Needs 580+", bg: "#fdf1e0", fg: "#9a5400", border: "#f0d6b3" },
+    poor: { label: "No min credit", bg: "#f3f0fa", fg: "#534493", border: "#dcd2ee" },
+  }
+  return palette[card.credit_score_required]
+}
+
+/**
+ * Pull the top 2-3 earning tiers off `card.rewards` and render them as
+ * compact chips like "3x Dining" or "5% Groceries". The rewards array
+ * was populated by the discover/verify extractors but never surfaced
+ * in the UI — this brings the structured earning data into view next
+ * to every card.
+ */
+function topEarnChips(card: CreditCardBonus): string[] {
+  if (!card.rewards || card.rewards.length === 0) return []
+  // Sort by multiplier descending so the strongest earn rate leads.
+  const sorted = [...card.rewards].sort((a, b) => b.multiplier - a.multiplier)
+  const out: string[] = []
+  for (const tier of sorted) {
+    // Skip the "everything else" fallback tier — it's structural noise
+    // unless it's the only tier and the multiplier > 1.
+    const isFallback = tier.categories.length === 1 && tier.categories[0] === "everything_else"
+    if (isFallback && sorted.length > 1) continue
+    const unit = tier.unit === "%" ? "%" : "x"
+    const cats = tier.categories
+      .map((c) => c.replace(/_/g, " "))
+      .slice(0, 2)
+      .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+      .join("/")
+    out.push(`${tier.multiplier}${unit} ${cats || "Everything"}`)
+    if (out.length >= 3) break
+  }
+  return out
 }
 
 // ── Placeholder card art: issuer-colored tile with initials ──────────

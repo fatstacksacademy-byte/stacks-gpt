@@ -141,22 +141,41 @@ export function extractMinSpend(text: string): {
   spendMonths: number | null
   snippet: string | null
 } {
-  const patterns: RegExp[] = [
-    /\$(\d[\d,]{2,6})\s+(?:on\s+purchases?\s+)?(?:in|within)\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
-    /spend\s+\$(\d[\d,]{2,6})\s+in\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
+  // Two patterns of windows we accept: "X months" and "X days".
+  // BofA / Citi / some Capital One cards use "within the first 90 days"
+  // instead of "in 3 months" — convert by dividing by 30 (rounded).
+  const monthsPatterns: RegExp[] = [
+    /\$(\d[\d,]{2,6})\s+(?:or\s+more\s+)?(?:on\s+purchases?\s+)?(?:in|within)\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
+    /spend\s+\$(\d[\d,]{2,6})\s+(?:or\s+more\s+)?(?:on\s+purchases?\s+)?in\s+(?:the\s+first\s+)?(\d{1,2})\s+months/i,
     /after\s+spending\s+\$(\d[\d,]{2,6})\s+(?:in|within)\s+(\d{1,2})\s+months/i,
   ]
+  const daysPatterns: RegExp[] = [
+    /\$(\d[\d,]{2,6})\s+(?:or\s+more\s+)?(?:on\s+purchases?\s+)?(?:in|within)\s+(?:the\s+first\s+)?(\d{2,3})\s+days/i,
+    /spend\s+\$(\d[\d,]{2,6})\s+(?:or\s+more\s+)?(?:on\s+purchases?\s+)?(?:in|within)\s+(?:the\s+first\s+)?(\d{2,3})\s+days/i,
+  ]
   const candidates: Array<{ spend: number; months: number; snippet: string }> = []
-  for (const re of patterns) {
+  function pushMatch(spend: number | null, months: number, idx: number) {
+    if (spend === null || !Number.isFinite(months)) return
+    if (spend < 500 || spend > 50_000) return
+    if (months < 1 || months > 18) return
+    candidates.push({ spend, months, snippet: snippet(text, idx) })
+  }
+  for (const re of monthsPatterns) {
     const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
     let m: RegExpExecArray | null
     while ((m = globalRe.exec(text)) !== null) {
-      const spend = cleanAmount(m[1])
-      const months = Number(m[2])
-      if (spend === null || !Number.isFinite(months)) continue
-      if (spend < 500 || spend > 50_000) continue
-      if (months < 1 || months > 18) continue
-      candidates.push({ spend, months, snippet: snippet(text, m.index) })
+      pushMatch(cleanAmount(m[1]), Number(m[2]), m.index)
+    }
+  }
+  for (const re of daysPatterns) {
+    const globalRe = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g")
+    let m: RegExpExecArray | null
+    while ((m = globalRe.exec(text)) !== null) {
+      const days = Number(m[2])
+      if (!Number.isFinite(days) || days < 30 || days > 360) continue
+      // 90 days → 3 months; 60 → 2; 120 → 4. Round to the nearest month.
+      const months = Math.max(1, Math.round(days / 30))
+      pushMatch(cleanAmount(m[1]), months, m.index)
     }
   }
   if (candidates.length === 0) return { minSpend: null, spendMonths: null, snippet: null }

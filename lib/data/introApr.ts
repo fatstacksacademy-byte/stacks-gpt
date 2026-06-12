@@ -60,17 +60,30 @@ export function rankByIntroApr(cards: CreditCardBonus[], mode: IntroAprMode): Cr
     })
 }
 
-/** Human-readable summary of a card's intro terms, e.g. "21mo BT · 3% fee". */
+/** Human-readable summary of a card's intro terms, e.g. "21mo BT · 3% fee · then 17.99–28.49% APR". */
 export function introAprSummary(card: CreditCardBonus, mode: IntroAprMode): string {
   const a = card.intro_apr
   if (!a) return "No intro APR"
+  // Tail: post-intro variable APR range. Load-bearing for the debt
+  // payoff decision — knowing the runway length without knowing the
+  // post-intro rate is half the picture.
+  const goTo = goToAprTail(a)
   if (mode === "balance_transfer") {
     const m = a.bt_apr_months ?? 0
     if (!m) return "No balance-transfer offer"
     const fee = a.bt_fee_pct != null ? ` · ${a.bt_fee_pct}% fee` : ""
-    return `${m}mo 0% on transfers${fee}`
+    return `${m}mo 0% on transfers${fee}${goTo}`
   }
   const m = a.purchase_apr_months ?? 0
   if (!m) return "No purchase-APR offer"
-  return `${m}mo 0% on purchases`
+  return `${m}mo 0% on purchases${goTo}`
+}
+
+function goToAprTail(a: IntroApr): string {
+  const lo = a.go_to_apr_low
+  const hi = a.go_to_apr_high
+  if (lo == null && hi == null) return ""
+  if (lo != null && hi != null && lo !== hi) return ` · then ${lo}–${hi}% APR`
+  const rate = (hi ?? lo) as number
+  return ` · then ${rate}% APR`
 }
