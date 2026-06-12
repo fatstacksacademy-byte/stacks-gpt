@@ -22,6 +22,7 @@ import {
   travelPerkValue,
   travelTransferCpp,
   travelSummary,
+  transferKind,
   type TravelMode,
 } from "../../lib/data/travelValue"
 import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
@@ -46,7 +47,6 @@ const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, onl
 // A representative starting profile so the calculator shows something useful
 // before the user touches anything.
 const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online: 150, other: 800 }
-const STATE_PAGE_SIZE = 10
 // How many ranked rows each path shows before the "Show all" expander.
 const DEFAULT_VISIBLE = 12
 
@@ -56,7 +56,6 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
   const [mode, setMode] = useState<RankMode>("ongoing")
   const [stateSlug, setStateSlug] = useState<string>("")
-  const [statePage, setStatePage] = useState(0)
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
   const [balance, setBalance] = useState<number>(5000)
   const [travelMode, setTravelMode] = useState<TravelMode>("perks")
@@ -92,6 +91,9 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     [cards, stateCode],
   )
   const selectedState = stateSlug ? US_STATES.find(s => s.slug === stateSlug) : null
+  // Regional cards no longer get their own list — once unlocked they fold into
+  // the merit-ranked paths above (tagged with a "Regional" chip). We still
+  // compute the state's cards here to drive the email gate's count + preview.
   const stateCards = useMemo(
     () =>
       stateCode
@@ -101,15 +103,9 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
         : [],
     [cards, stateCode],
   )
-  const statePageCount = Math.max(1, Math.ceil(stateCards.length / STATE_PAGE_SIZE))
-  const visibleStateCards = stateCards.slice(
-    statePage * STATE_PAGE_SIZE,
-    (statePage + 1) * STATE_PAGE_SIZE,
-  )
 
   function changeState(slug: string) {
     setStateSlug(slug)
-    setStatePage(0)
   }
 
   const signupRanked = useMemo(
@@ -420,8 +416,12 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               </div>
             ) : (
               visible(travelRanked, "travel").map((c, i) => {
-                const perk = travelPerkValue(c.travel!)
+                const perk = travelPerkValue(c.travel)
                 const cpp = travelTransferCpp(c, travelProgram || undefined)
+                const indirect =
+                  travelMode === "transfer" &&
+                  travelProgram &&
+                  transferKind(c, travelProgram) === "indirect"
                 return (
                   <CardRow
                     key={c.id}
@@ -430,6 +430,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                     primary={travelMode === "transfer" ? `${(cpp * 100).toFixed(1)}¢` : `$${perk.toLocaleString()}`}
                     primaryLabel={travelMode === "transfer" ? (travelProgram ? "per point" : "best partner") : "travel value/yr"}
                     secondary={travelSummary(c, travelMode, travelProgram || undefined)}
+                    badge={indirect ? "Pool to transfer" : undefined}
                   />
                 )
               })
@@ -449,51 +450,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {path && <BuildPlanCta path={path} />}
 
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
-      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} />
-
-      {selectedState && stateCards.length > 0 && unlocked && (
-        <ResultBlock
-          heading={`${selectedState.name} regional cards`}
-          note={`Verified local bank and credit-union cards, shown ${STATE_PAGE_SIZE} at a time. Membership requirements still apply.`}
-        >
-          {visibleStateCards.map(({ card }, index) => {
-            const hasSignupBonus = card.bonus_amount > 0
-            return (
-              <CardRow
-                key={card.id}
-                rank={statePage * STATE_PAGE_SIZE + index + 1}
-                card={card}
-                primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
-                primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
-                secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
-              />
-            )
-          })}
-          {statePageCount > 1 && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 4 }}>
-              <button
-                type="button"
-                disabled={statePage === 0}
-                onClick={() => setStatePage(page => Math.max(0, page - 1))}
-                style={{ ...pagerButton, opacity: statePage === 0 ? 0.45 : 1 }}
-              >
-                ← Previous 10
-              </button>
-              <span style={{ fontSize: 12, color: "#777" }}>
-                Page {statePage + 1} of {statePageCount}
-              </span>
-              <button
-                type="button"
-                disabled={statePage >= statePageCount - 1}
-                onClick={() => setStatePage(page => Math.min(statePageCount - 1, page + 1))}
-                style={{ ...pagerButton, opacity: statePage >= statePageCount - 1 ? 0.45 : 1 }}
-              >
-                Next 10 →
-              </button>
-            </div>
-          )}
-        </ResultBlock>
-      )}
+      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked} />
 
       {/* ── Email gate: regional cards stay locked until the visitor unlocks ── */}
       {selectedState && stateCards.length > 0 && !unlocked && (
@@ -595,7 +552,7 @@ function BuildPlanCta({ path }: { path: Path }) {
 }
 
 // ── State card filter: pull in regional/credit-union cards for a state ──
-function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number }) {
+function StateCardFilter({ stateSlug, onChange, addedCount, unlocked }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number; unlocked: boolean }) {
   const selected = US_STATES.find(s => s.slug === stateSlug)
   return (
     <div style={{ marginTop: 28, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
@@ -604,8 +561,9 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       </div>
       <div style={{ fontSize: 13, color: "#666", lineHeight: 1.55, marginBottom: 14 }}>
         Most cards above are nationwide. Pick your state to add regional bank and credit-union
-        cards available in your area — they&apos;ll fold into the rankings above. Some require a
-        qualifying county, employer, family, military, or association membership.
+        cards available in your area — they&apos;ll fold straight into the ranked lists above,
+        ranked by the same value math and tagged with a <strong>Regional</strong> chip. Some require
+        a qualifying county, employer, family, military, or association membership.
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
         <select
@@ -630,7 +588,11 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       {selected && (
         <div style={{ fontSize: 13, color: addedCount > 0 ? "#0d7c5f" : "#888", marginTop: 12, lineHeight: 1.5 }}>
           {addedCount > 0 ? (
-            <>Added <strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Check each eligibility note before applying.</>
+            unlocked ? (
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} for {selected.name} {addedCount === 1 ? "is" : "are"} now mixed into the rankings above — look for the <strong>Regional</strong> chip. Check each eligibility note before applying.</>
+            ) : (
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Unlock below to fold {addedCount === 1 ? "it" : "them"} into the rankings above.</>
+            )
           ) : (
             <>No regional cards verified for {selected.name} yet — we add them as issuer and membership terms are confirmed. Nationwide cards above still apply.</>
           )}
@@ -638,17 +600,6 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       )}
     </div>
   )
-}
-
-const pagerButton: React.CSSProperties = {
-  border: "1px solid #d8d8d8",
-  borderRadius: 8,
-  background: "#fff",
-  color: "#0d7c5f",
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 700,
-  padding: "9px 12px",
 }
 
 // ── Path chooser card ────────────────────────────────────────────────
@@ -716,7 +667,7 @@ function MoreToggle({ total, expanded, onToggle }: { total: number; expanded: bo
 }
 
 // ── One card result row, with a faux card-art tile ───────────────────
-function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string }) {
+function CardRow({ rank, card, primary, primaryLabel, secondary, badge }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string; badge?: string }) {
   const earnChips = topEarnChips(card)
   const score = creditScoreChip(card)
   const detail = detailChips(card)
@@ -726,7 +677,17 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       <div style={{ fontSize: 13, fontWeight: 800, color: "#bbb", width: 22, textAlign: "center" }}>{rank}</div>
       <CardArt card={card} />
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</span>
+          {badge && (
+            <span
+              title="Earns this currency but doesn't transfer on its own — pool its points into a premium card of the same currency to transfer."
+              style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, letterSpacing: "0.02em", background: "#fff5e6", color: "#9a6400", border: "1px solid #f0dcb4", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap" }}
+            >
+              {badge}
+            </span>
+          )}
+        </div>
         <div style={{ fontSize: 12, color: "#777", marginTop: 2 }}>{secondary}</div>
         {hasAnyChip && (
           <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
