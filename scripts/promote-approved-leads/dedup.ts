@@ -114,6 +114,87 @@ function bonusAmountsClose(a: number | null, b: number | null): boolean {
   return ratio <= 0.5
 }
 
+// ─── Product-subtype discriminator ───────────────────────────────────
+// Same-bank false-positive guard. Chase has Total / Sapphire / Secure /
+// Premier / First / High School / Private Client checking, all of them
+// distinct products. The bank-name-only dedup will flag a "Chase High
+// School Checking" lead as a duplicate of "Chase Total Checking" — wrong.
+//
+// Strategy: derive a non-generic product-token set from both the lead's
+// product name and the catalog entry's id (stripping bank tokens, year,
+// dollar amounts, and very-generic words like "checking"). If both sides
+// have a non-empty distinguishing set AND they don't overlap at all →
+// these are different products; the bank-name match doesn't apply.
+const PRODUCT_GENERIC_TOKENS = new Set([
+  "checking", "savings", "account", "accounts", "bonus", "bonuses",
+  "signup", "sign", "up", "promo", "promotion", "promotions",
+  "offer", "offers", "welcome", "special", "deal", "deals", "new",
+  "cash", "money", "rewards", "premier",
+])
+
+// Issuer-name tokens we filter OUT of product extraction so distinguishing
+// subtype tokens shine through. We deliberately don't reuse lead.bank to
+// strip with — discover-bonuses sometimes sets lead.bank to the FULL
+// product name ("Chase High School Checking"), which would zero out the
+// distinguishing tokens. A small fixed set of known issuer/bank words
+// is more reliable.
+const PRODUCT_BANK_TOKENS = new Set([
+  "chase", "citi", "citibank", "amex", "american", "express", "bofa",
+  "wells", "fargo", "barclays", "discover", "synchrony", "fnbo",
+  "truist", "regions", "penfed", "sofi", "ally", "capital", "one",
+  "usaa", "navy", "federal", "us", "u.s.", "huntington", "kbc",
+  "keybank", "pnc", "td", "tdbank", "schwab", "fidelity", "vanguard",
+  "etrade", "tastytrade", "tradestation", "robinhood", "webull",
+  "moomoo", "public", "tastyworks", "merrill", "wealthfront",
+  "betterment", "marcus", "goldman", "sachs", "santander", "hsbc",
+  "first", "horizon", "ent", "secu", "becu", "alliant", "consumers",
+  "psecu", "navy", "bcu", "andigo", "associated", "axos", "varo",
+  "chime", "current", "greenfi", "n26", "monzo", "revolut", "yotta",
+  "centier", "flagstar", "citadel", "fulton", "boha", "patelco",
+  "boa", "boofa", "uba", "yes", "asbury", "evansville",
+])
+
+/** Strip bank/issuer tokens + dollar amounts + years out of a product
+ *  string. Keep what describes the product itself (Total, Sapphire,
+ *  Secure, High School, Private Client, etc.). */
+function productTokens(productText: string): Set<string> {
+  const tokens = productText
+    .toLowerCase()
+    .replace(/[®™©℠]/g, "")
+    // dollar amounts: $250, $1,500
+    .replace(/\$\s*\d[\d,]*/g, " ")
+    // bare years
+    .replace(/\b20\d{2}\b/g, " ")
+    // 3+ digit numbers (likely $ amounts or codes)
+    .replace(/\b\d{3,}\b/g, " ")
+    .replace(/[^a-z0-9 &]/g, " ")
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2)
+    .filter((t) => !BANK_NOISE_TOKENS.has(t))
+    .filter((t) => !PRODUCT_GENERIC_TOKENS.has(t))
+    .filter((t) => !PRODUCT_BANK_TOKENS.has(t))
+  return new Set(tokens)
+}
+
+/** Same as productTokens, but pulls product hints from a catalog id
+ *  (kebab-case). e.g. "chase-total-checking-400-2026" → {total}.
+ *  "psecu-300-checking-2026" → {} (generic). */
+function productTokensFromCatalogId(catalogId: string): Set<string> {
+  return productTokens(catalogId.replace(/-/g, " "))
+}
+
+/** Are these two product descriptions clearly distinct?
+ *  Returns true ONLY when both sides have at least one distinguishing
+ *  token AND those token sets don't overlap. Ambiguous cases (one side
+ *  empty) return false so the bank-name logic still decides. */
+function productsAreDistinct(aTokens: Set<string>, bTokens: Set<string>): boolean {
+  if (aTokens.size === 0 || bTokens.size === 0) return false
+  for (const t of aTokens) if (bTokens.has(t)) return false
+  return true
+}
+
 // ─── Card-name fuzzy match ──────────────────────────────────────────
 
 const CARD_NOISE_TOKENS = new Set([
@@ -224,26 +305,31 @@ export function dedupCheck(lead: Lead): DedupVerdict {
 
   if (lead.classification === "bank_account_bonus") {
     const candidateNames = bankCandidatesFromLead(lead)
+    const leadProductTokens = productTokens(lead.product)
     for (const b of idx.bonus) {
-      if (candidateNames.some((name) => banksMatch(name, b.bank_name))) {
-        return {
-          isDuplicate: true,
-          matchedId: b.id,
-          matchedFile: "bonuses.ts",
-          matchType: "bank_kind",
-          reason: `Same-bank match against ${b.id}. Bonus-amount drift handled by the verifier loop; same-bank distinct products are rare enough to warrant human triage.`,
-        }
+      if (!candidateNames.some((name) => banksMatch(name, b.bank_name))) continue
+      // Bank matches — but is the PRODUCT clearly different? (e.g.,
+      // Chase High School Checking vs Chase Total Checking)
+      const catalogProductTokens = productTokensFromCatalogId(b.id)
+      if (productsAreDistinct(leadProductTokens, catalogProductTokens)) continue
+      return {
+        isDuplicate: true,
+        matchedId: b.id,
+        matchedFile: "bonuses.ts",
+        matchType: "bank_kind",
+        reason: `Same-bank match against ${b.id}. Bonus-amount drift handled by the verifier loop; product subtype is compatible.`,
       }
     }
     for (const s of idx.savings) {
-      if (candidateNames.some((name) => banksMatch(name, s.bank_name))) {
-        return {
-          isDuplicate: true,
-          matchedId: s.id,
-          matchedFile: "savingsBonuses.ts",
-          matchType: "bank_kind",
-          reason: `Same-bank match against ${s.id}. Bonus-amount drift handled by the verifier loop.`,
-        }
+      if (!candidateNames.some((name) => banksMatch(name, s.bank_name))) continue
+      const catalogProductTokens = productTokensFromCatalogId(s.id)
+      if (productsAreDistinct(leadProductTokens, catalogProductTokens)) continue
+      return {
+        isDuplicate: true,
+        matchedId: s.id,
+        matchedFile: "savingsBonuses.ts",
+        matchType: "bank_kind",
+        reason: `Same-bank match against ${s.id}. Bonus-amount drift handled by the verifier loop.`,
       }
     }
     // Cross-classification: maybe discover mis-classified a card as a bank
