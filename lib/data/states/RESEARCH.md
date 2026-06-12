@@ -213,4 +213,31 @@ state-anchored core (disclosed in eligibility_notes).
 - **Excluded:** Keesler + Hope (MS owns), Barksdale (FFA $8 backdoor), OnPath/fmr Louisiana FCU (foundation $5 backdoor), Jefferson Financial (merged into Keesler). Unresolved: Neighbors FCU, La Capitol FCU, b1BANK (all 403).
 - **Sources:** pelicancu.com, campusfederal.org, efcufinancial.org, aneca.org, epicfcu.com, home24bank.com.
 
+## Batch 6 — South/Gulf wave B (AR, GA, FL, NC, SC) · verified 2026-06-11
+
+### Arkansas (AR) — 9 cards, 3 institutions
+- **Added:** Arkansas Federal CU (Cash Back World MC 2%, Low-Rate Classic), Telcoe FCU (Mastercard Prime, Secured), First Arkansas Bank & Trust (Platinum Payback 1%, Platinum Preferred, World, World Elite, World Elite Plus Business).
+- **Excluded:** Red River CU (ACC backdoor), Simmons Bank (nationwide), Riverdale (AL). Unresolved: Arkansas Superior, Diamond Lakes, UARK (Elan, no fetchable terms).
+- **Sources:** afcu.org, telcoe.com, fabandt.bank.
+
+### Georgia (GA) — 22 cards, 9 institutions
+- **Added:** Delta Community (Platinum Rewards 10k, Signature 15k, Business Platinum), Georgia's Own (Signature 1.25pt, Platinum, Classic), Robins Financial (Platinum Rewards, Signature, Business), Associated CU (PRO$PER Signature, Platinum Preferred), Peach State [GA/SC] (Platinum A+, Student), Georgia United (Cash Back Signature 1.5%, Platinum), Marshland (Visa), MembersFirst (Platinum, Secured), CORE [GA/SC] (Platinum, Gold, Classic).
+- **Excluded:** VyStar (inline), Hope (MS), Synovus (nationwide-issued). Unresolved: LGE, Center Parc, Family First, Health Center (no fetchable card page).
+- **Sources:** deltacommunitycu.com, georgiasown.org, robinsfcu.org, acuonline.org, peachstatefcu.org, gucu.org, marshlandcu.com, membersfirstga.com, corecu.org.
+
+### Florida (FL) — 31 cards, 9 institutions
+- **Added:** Space Coast CU (Signature 25k/3x, Platinum, Low Rate, Secured), MIDFLORIDA (Cash Back Signature 1.5%, Platinum, First Time, Business), Grow Financial [FL/SC] (Rewards, Cash Rewards, Preferred, Preferred Secured, Business Rewards), Addition Financial [FL/GA] (Premier Rewards 10k, Premier Cash $100, Platinum), Florida CU (Select Signature 15k, Platinum Wave, Platinum Rate), Campus USA (Platinum Rewards 10k, Platinum, CMN), Community First/FL (Signature $150, Platinum Rewards 10k, Platinum, Secured), First Florida (Diamond Rewards 7.5k), Community CU/FL (Platinum Rewards, Low-Rate, Secured).
+- **Excluded:** VyStar/Republic Bank/BankPlus (already cataloged); GTE (CUSavers $10), Achieva + Fairwinds (foundation backdoors). Unresolved: Suncoast (403), Tropical Financial (no fetchable card page).
+- **Sources:** sccu.com, midflorida.com, growfinancial.org, additionfi.com, flcu.org, campuscu.com, communityfirstfl.org, firstflorida.org, ccuflorida.org.
+
+### North Carolina (NC) — 20 cards, 7 institutions
+- **Added:** SECU (Classic, Cash Rewards 1.5%/2%, Points Rewards 3x gas), Truliant [NC/SC/VA] (MaxBack 5/3/1% + $200, Radiant, Soar Secured), Allegacy (Signature Rewards 1.5pt + 10k), Skyla/fmr Charlotte Metro (Signature 2x + 25k, Platinum Rewards 10k, Platinum, Secured), Champion (Platinum, Platinum Rewards), Marine FCU [NC/VA] (Signature 4x gas + 15k, Platinum Rewards, Value, Credit Builder), Latino Community CU (Visa, Secured).
+- **Excluded:** Sharonview (ACC + Elan, nationwide), AllSouth (Elan). Unresolved: Coastal (403), Self-Help (403), LGFCU/Civic (403).
+- **Sources:** ncsecu.org, truliantfcu.org, allegacy.org, skylacu.com, championcu.com, marinefederalhb.org, latinoccu.org.
+
+### South Carolina (SC) — 24 cards, 8 institutions
+- **Added:** CPM FCU (MyRewards 2x, Platinum, Gold, Classic, Secured), Carolina Foothills (Visa, Secured), Family Trust [SC/NC] (Platinum Rewards, Traditional), Greenville FCU (Signature 2x + 15k, Platinum 5k), Palmetto Citizens [SC/NC/GA/TN/VA via CCC] (Platinum, Share Secured), SAFE FCU (Rewards, Low-Rate), SRP FCU [SC/GA] (Signature 1.5pt + 10k, Rewards, Traditional, Traditional Secured, Augusta GreenJackets, Business), Mid Carolina (Platinum Rewards, Classic).
+- **Excluded:** BECU (inline), Truliant + Sharonview (NC owns), Heritage Trust/REV (ACC backdoor), AllSouth (Elan). Unresolved: Founders + SC Federal (403).
+- **Sources:** cpmfed.com, carolinafoothillsfcu.coop, familytrust.org, greenvillefcu.com, palmettocitizens.org, safefed.org, srpfcu.org, midcarolinacu.com.
+
 <!-- Batches appended below as they are completed. -->

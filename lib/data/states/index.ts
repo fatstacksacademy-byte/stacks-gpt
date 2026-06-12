@@ -55,6 +55,11 @@ import { tennesseeCards } from "./tennessee"
 import { alabamaCards } from "./alabama"
 import { mississippiCards } from "./mississippi"
 import { louisianaCards } from "./louisiana"
+import { arkansasCards } from "./arkansas"
+import { georgiaCards } from "./georgia"
+import { floridaCards } from "./florida"
+import { northCarolinaCards } from "./north-carolina"
+import { southCarolinaCards } from "./south-carolina"
 
 // ── Mid-Atlantic ──────────────────────────────────────────────────────
 
@@ -97,4 +102,9 @@ export const regionalStateCards: CreditCardBonus[] = [
   ...alabamaCards,
   ...mississippiCards,
   ...louisianaCards,
+  ...arkansasCards,
+  ...georgiaCards,
+  ...floridaCards,
+  ...northCarolinaCards,
+  ...southCarolinaCards,
 ]
