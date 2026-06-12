@@ -1,4 +1,6 @@
 import Link from "next/link"
+import SearchBox from "./SearchBox"
+import { searchableEntries } from "../../lib/searchIndex"
 
 /**
  * The single source of truth for the site's primary navigation.
@@ -37,7 +39,8 @@ export default function SiteHeader() {
         >
           Fat Stacks Academy
         </Link>
-        <div className="site-nav-links" style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <div className="site-nav-links" style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <SearchBox entries={searchableEntries} />
           <Link href="/bank-bonuses-by-state" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>
             Bank Bonuses
           </Link>
@@ -65,10 +68,14 @@ export default function SiteHeader() {
         </div>
       </nav>
       <style>{`
+        @media (max-width: 900px) {
+          .site-search { flex: 0 1 200px !important; min-width: 140px !important; }
+        }
         @media (max-width: 700px) {
           .site-nav { padding: 14px 20px !important; }
-          .site-nav-links { gap: 14px !important; }
+          .site-nav-links { gap: 10px !important; flex-wrap: wrap; }
           .site-nav-links a { font-size: 13px !important; }
+          .site-search { flex: 1 1 100% !important; order: 99; }
         }
       `}</style>
     </header>
