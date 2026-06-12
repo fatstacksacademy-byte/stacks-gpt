@@ -4,10 +4,10 @@ import NewsletterCTA from "../blog/components/NewsletterCTA"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { creditCardBonuses } from "../../lib/data/creditCardBonuses"
 import { getCategorizedBonuses } from "../../lib/data/bonusCategories"
+import CardFinder from "../components/CardFinder"
 import {
   BrowseHeader,
   BrowseFooter,
-  CategoryCrossNav,
   Section,
   TopPicksGrid,
   BonusTable,
@@ -81,7 +81,8 @@ export default function SpendingBrowsePage() {
           </p>
         </div>
 
-        <CategoryCrossNav current="spending" />
+        {/* ── Choose-your-own-adventure finder ── */}
+        <CardFinder cards={live} />
 
         <div style={{ marginBottom: 56 }}>
           <NewsletterCTA />
