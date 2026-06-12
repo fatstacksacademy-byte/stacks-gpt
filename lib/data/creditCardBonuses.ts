@@ -1,3 +1,5 @@
+import { hawaiiCreditCardBonuses } from "./hawaiiCreditCardBonuses"
+
 /**
  * Credit card sign-up bonus data.
  * Sequenced by return-on-spend: (bonus_value - annual_fee) / months_to_complete.
@@ -8924,4 +8926,5 @@ export const creditCardBonuses: CreditCardBonus[] = [
     intro_apr: { purchase_apr_months: 18, bt_apr_months: 18, bt_fee_pct: 3 },
     travel: { no_foreign_tx_fee: true },
   },
+  ...hawaiiCreditCardBonuses,
 ]

@@ -69,4 +69,17 @@ describe("stateSpecificCards", () => {
     expect(stateSpecificCards(creditCardBonuses, "CO").some(c => c.issuer === "ent")).toBe(true)
     expect(stateSpecificCards(creditCardBonuses, "FL").some(c => c.issuer === "vystar")).toBe(true)
   })
+
+  it("includes a broad verified Hawaii local-card catalog", () => {
+    const hawaiiCards = stateSpecificCards(creditCardBonuses, "HI")
+    const hawaiiIssuers = new Set(hawaiiCards.map(c => c.issuer))
+
+    expect(hawaiiCards.length).toBeGreaterThanOrEqual(50)
+    expect(hawaiiIssuers.size).toBeGreaterThanOrEqual(20)
+    expect(hawaiiCards.some(c => c.id === "fhb-priority-destinations-50k")).toBe(true)
+    expect(hawaiiCards.some(c => c.id === "hfs-visa-signature-30k")).toBe(true)
+    expect(hawaiiCards.some(c => c.id === "hsfcu-platinum-rewards-5k")).toBe(true)
+    expect(hawaiiCards.every(c => c.offer_link.startsWith("https://"))).toBe(true)
+    expect(hawaiiCards.every(c => c.offer_verified_at === "2026-06-12")).toBe(true)
+  })
 })

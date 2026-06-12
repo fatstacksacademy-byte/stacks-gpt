@@ -43,12 +43,14 @@ const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, onl
 // A representative starting profile so the calculator shows something useful
 // before the user touches anything.
 const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online: 150, other: 800 }
+const STATE_PAGE_SIZE = 10
 
 export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [path, setPath] = useState<Path | null>(null)
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
   const [mode, setMode] = useState<RankMode>("ongoing")
   const [stateSlug, setStateSlug] = useState<string>("")
+  const [statePage, setStatePage] = useState(0)
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
   const [balance, setBalance] = useState<number>(5000)
   const [travelMode, setTravelMode] = useState<TravelMode>("perks")
@@ -68,6 +70,26 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     () => (stateCode ? stateSpecificCards(cards, stateCode).length : 0),
     [cards, stateCode],
   )
+  const selectedState = stateSlug ? US_STATES.find(s => s.slug === stateSlug) : null
+  const stateCards = useMemo(
+    () =>
+      stateCode
+        ? stateSpecificCards(cards, stateCode)
+            .map(card => ({ card, value: signupYearOneValue(card) }))
+            .sort((a, b) => b.value - a.value || a.card.card_name.localeCompare(b.card.card_name))
+        : [],
+    [cards, stateCode],
+  )
+  const statePageCount = Math.max(1, Math.ceil(stateCards.length / STATE_PAGE_SIZE))
+  const visibleStateCards = stateCards.slice(
+    statePage * STATE_PAGE_SIZE,
+    (statePage + 1) * STATE_PAGE_SIZE,
+  )
+
+  function changeState(slug: string) {
+    setStateSlug(slug)
+    setStatePage(0)
+  }
 
   const signupRanked = useMemo(
     () =>
@@ -381,7 +403,51 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {path && <BuildPlanCta path={path} />}
 
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
-      <StateCardFilter stateSlug={stateSlug} onChange={setStateSlug} addedCount={stateAddedCount} />
+      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} />
+
+      {selectedState && visibleStateCards.length > 0 && (
+        <ResultBlock
+          heading={`${selectedState.name} regional cards`}
+          note={`Verified local bank and credit-union cards, shown ${STATE_PAGE_SIZE} at a time. Membership requirements still apply.`}
+        >
+          {visibleStateCards.map(({ card }, index) => {
+            const hasSignupBonus = card.bonus_amount > 0
+            return (
+              <CardRow
+                key={card.id}
+                rank={statePage * STATE_PAGE_SIZE + index + 1}
+                card={card}
+                primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
+                primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
+                secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
+              />
+            )
+          })}
+          {statePageCount > 1 && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 4 }}>
+              <button
+                type="button"
+                disabled={statePage === 0}
+                onClick={() => setStatePage(page => Math.max(0, page - 1))}
+                style={{ ...pagerButton, opacity: statePage === 0 ? 0.45 : 1 }}
+              >
+                ← Previous 10
+              </button>
+              <span style={{ fontSize: 12, color: "#777" }}>
+                Page {statePage + 1} of {statePageCount}
+              </span>
+              <button
+                type="button"
+                disabled={statePage >= statePageCount - 1}
+                onClick={() => setStatePage(page => Math.min(statePageCount - 1, page + 1))}
+                style={{ ...pagerButton, opacity: statePage >= statePageCount - 1 ? 0.45 : 1 }}
+              >
+                Next 10 →
+              </button>
+            </div>
+          )}
+        </ResultBlock>
+      )}
 
       <style>{`
         @media (max-width: 1000px) {
@@ -483,6 +549,17 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       )}
     </div>
   )
+}
+
+const pagerButton: React.CSSProperties = {
+  border: "1px solid #d8d8d8",
+  borderRadius: 8,
+  background: "#fff",
+  color: "#0d7c5f",
+  cursor: "pointer",
+  fontSize: 12,
+  fontWeight: 700,
+  padding: "9px 12px",
 }
 
 // ── Path chooser card ────────────────────────────────────────────────

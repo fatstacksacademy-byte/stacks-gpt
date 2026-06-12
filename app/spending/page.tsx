@@ -49,11 +49,13 @@ function bonusLabel(c: typeof creditCardBonuses[number]): string {
 
 export default function SpendingBrowsePage() {
   const live = creditCardBonuses.filter(c => !c.expired)
-  const personal = live
+  const nationwide = live.filter(c => !c.state_restricted?.length)
+  const regionalCount = live.length - nationwide.length
+  const personal = nationwide
     .filter(c => c.card_type === "personal")
     .map(c => ({ card: c, value: yearOneValue(c) }))
     .sort((a, b) => b.value - a.value)
-  const business = live
+  const business = nationwide
     .filter(c => c.card_type === "business")
     .map(c => ({ card: c, value: yearOneValue(c) }))
     .sort((a, b) => b.value - a.value)
@@ -75,7 +77,7 @@ export default function SpendingBrowsePage() {
             Best credit card<br/>sign-up bonuses in 2026
           </h1>
           <p style={{ fontSize: 17, color: "#666", lineHeight: 1.6, margin: "0 auto 24px", maxWidth: 640 }}>
-            {live.length} live cards — {personal.length} personal, {business.length} business — ranked by
+            {nationwide.length} nationwide cards plus {regionalCount} verified regional cards — ranked by
             <strong> year-one value</strong> (signup points × cpp + statement credits − annual fee). The
             real ranking, not the marketing headline. Last refreshed {updated}.
           </p>
