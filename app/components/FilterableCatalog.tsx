@@ -9,6 +9,8 @@ import type {
   CatalogCategory,
 } from "../../lib/data/catalogTaxonomy"
 import { US_STATES, isEligibleInState } from "../../lib/data/catalogTaxonomy"
+import { useCatalogUnlock } from "./useCatalogUnlock"
+import CatalogUnlockGate from "./CatalogUnlockGate"
 
 /**
  * Client-side catalog browsing experience.
@@ -43,6 +45,7 @@ type Props = {
 }
 
 export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) {
+  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [search, setSearch] = useState("")
   const [stateCode, setStateCode] = useState<string>("")
   const [category, setCategory] = useState<CatalogCategory | "">("")
@@ -170,6 +173,12 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
     return list
   }, [filtered, sort])
 
+  // Gate the state-specific view behind one email — that's the high-intent
+  // "what can I get in my state" moment. The default "Any state" browse (great
+  // for SEO) and signed-in users with a saved state (profileState) bypass it.
+  const stateName = stateCode ? US_STATES.find(s => s.code === stateCode)?.name ?? stateCode : ""
+  const stateGated = !!stateCode && !unlocked && !profileState && sorted.length > 0
+
   // ── Active filter chips ─────────────────────────────────────────
   const activeChips: { key: string; label: string; clear: () => void }[] = []
   if (search.trim()) activeChips.push({ key: "q", label: `Search: "${search.trim()}"`, clear: () => setSearch("") })
@@ -290,6 +299,30 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
         <div style={{ background: "#fff", border: "1px dashed #e8e8e8", borderRadius: 12, padding: 32, textAlign: "center" }}>
           <div style={{ fontSize: 15, color: "#111", fontWeight: 700, marginBottom: 4 }}>No offers match these filters</div>
           <div style={{ fontSize: 13, color: "#666" }}>Try clearing a filter, or <button onClick={resetAll} style={{ background: "none", border: "none", color: "#0d7c5f", fontWeight: 700, cursor: "pointer" }}>reset all</button>.</div>
+        </div>
+      ) : stateGated ? (
+        /* Picking a specific state is the high-intent moment — gate it behind
+           one email. The default "Any state" browse and signed-in users with a
+           saved state stay open (and SEO-crawlable). */
+        <div>
+          <div
+            aria-hidden
+            style={{ display: "grid", gap: 10, filter: "blur(5px)", pointerEvents: "none", userSelect: "none", maxHeight: 220, overflow: "hidden", opacity: 0.75, marginBottom: 12, position: "relative" }}
+          >
+            {sorted.slice(0, 3).map(item => (
+              <ResultCard key={item.id} item={item} reviewHref={reviewHrefs?.[item.id] ?? null} sourcePage="/bonuses" />
+            ))}
+          </div>
+          <CatalogUnlockGate
+            count={sorted.length}
+            stateName={stateName}
+            stateCode={stateCode}
+            source="bonuses_state"
+            unlock={unlock}
+            unlocking={unlocking}
+            error={unlockError}
+            noun="bonuses available"
+          />
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
