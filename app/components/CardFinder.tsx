@@ -23,6 +23,7 @@ import {
   travelSummary,
   type TravelMode,
 } from "../../lib/data/travelValue"
+import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -55,29 +56,41 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
 
   const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
 
+  // Cards a resident of the chosen state can actually get: every nationwide
+  // card, plus any regional/credit-union cards specific to that state. With no
+  // state chosen, only nationwide cards (state-restricted ones stay hidden).
+  const stateCode = useMemo(
+    () => (stateSlug ? US_STATES.find(s => s.slug === stateSlug)?.code ?? null : null),
+    [stateSlug],
+  )
+  const eligibleCards = useMemo(() => cardsForState(cards, stateCode), [cards, stateCode])
+  const stateAddedCount = useMemo(
+    () => (stateCode ? stateSpecificCards(cards, stateCode).length : 0),
+    [cards, stateCode],
+  )
+
   const signupRanked = useMemo(
     () =>
-      cards
-        .filter(c => !c.expired)
+      eligibleCards
         .map(c => ({ card: c, value: signupYearOneValue(c) }))
         .sort((a, b) => b.value - a.value)
         .slice(0, 12),
-    [cards],
+    [eligibleCards],
   )
 
   const spendRanked = useMemo(
-    () => rankCardsForSpend(cards, spend, mode).slice(0, 12),
-    [cards, spend, mode],
+    () => rankCardsForSpend(eligibleCards, spend, mode).slice(0, 12),
+    [eligibleCards, spend, mode],
   )
 
   const aprRanked = useMemo(
-    () => rankByIntroApr(cards, aprMode).slice(0, 12),
-    [cards, aprMode],
+    () => rankByIntroApr(eligibleCards, aprMode).slice(0, 12),
+    [eligibleCards, aprMode],
   )
 
   const travelRanked = useMemo(
-    () => rankByTravelValue(cards, travelMode, travelProgram || undefined).slice(0, 12),
-    [cards, travelMode, travelProgram],
+    () => rankByTravelValue(eligibleCards, travelMode, travelProgram || undefined).slice(0, 12),
+    [eligibleCards, travelMode, travelProgram],
   )
   const selectedProgram = travelProgram ? findTransferProgram(travelProgram) : null
 
@@ -367,8 +380,8 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {/* ── Build-my-plan handoff (shows once a path is chosen) ── */}
       {path && <BuildPlanCta path={path} />}
 
-      {/* ── State cross-sell (cards are nationwide; bank bonuses aren't) ── */}
-      <StateCrossSell stateSlug={stateSlug} onChange={setStateSlug} />
+      {/* ── State filter: add regional/credit-union cards for the user's state ── */}
+      <StateCardFilter stateSlug={stateSlug} onChange={setStateSlug} addedCount={stateAddedCount} />
 
       <style>{`
         @media (max-width: 1000px) {
@@ -426,17 +439,17 @@ function BuildPlanCta({ path }: { path: Path }) {
   )
 }
 
-// ── State cross-sell ─────────────────────────────────────────────────
-function StateCrossSell({ stateSlug, onChange }: { stateSlug: string; onChange: (slug: string) => void }) {
+// ── State card filter: pull in regional/credit-union cards for a state ──
+function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number }) {
   const selected = US_STATES.find(s => s.slug === stateSlug)
   return (
     <div style={{ marginTop: 28, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
       <div style={{ fontSize: 16, fontWeight: 800, color: "#111", marginBottom: 4 }}>
-        Looking for offers in your state?
+        Live in a specific state?
       </div>
       <div style={{ fontSize: 13, color: "#666", lineHeight: 1.55, marginBottom: 14 }}>
-        The credit cards above are available nationwide. <strong>Bank account bonuses</strong> are
-        where state matters — pick yours to see checking, savings &amp; brokerage offers you&apos;re eligible for.
+        Most cards above are nationwide. Pick your state to add regional bank and credit-union
+        cards that only accept residents where you live — they&apos;ll fold into the rankings above.
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
         <select
@@ -444,28 +457,29 @@ function StateCrossSell({ stateSlug, onChange }: { stateSlug: string; onChange: 
           onChange={e => onChange(e.target.value)}
           style={{ padding: "10px 12px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fafafa", color: "#111", minWidth: 200 }}
         >
-          <option value="">Choose your state…</option>
+          <option value="">All states (nationwide cards)</option>
           {US_STATES.map(s => (
             <option key={s.code} value={s.slug}>{s.name}</option>
           ))}
         </select>
-        <Link
-          href={selected ? `/bank-bonuses-by-state/${selected.slug}` : "/bank-bonuses-by-state"}
-          style={{
-            display: "inline-block",
-            padding: "10px 20px",
-            fontSize: 14,
-            fontWeight: 700,
-            background: selected ? "#0d7c5f" : "#f3f4f6",
-            color: selected ? "#fff" : "#888",
-            borderRadius: 8,
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {selected ? `See ${selected.name} bonuses →` : "Browse all states →"}
-        </Link>
+        {selected && (
+          <button
+            onClick={() => onChange("")}
+            style={{ ...linkBtn, fontSize: 13 }}
+          >
+            clear
+          </button>
+        )}
       </div>
+      {selected && (
+        <div style={{ fontSize: 13, color: addedCount > 0 ? "#0d7c5f" : "#888", marginTop: 12, lineHeight: 1.5 }}>
+          {addedCount > 0 ? (
+            <>Added <strong>{addedCount}</strong> {selected.name}-only card{addedCount === 1 ? "" : "s"} to your results above.</>
+          ) : (
+            <>No {selected.name}-only cards in the catalog yet — we add regional &amp; credit-union cards as we verify them. Nationwide cards above still apply.</>
+          )}
+        </div>
+      )}
     </div>
   )
 }
