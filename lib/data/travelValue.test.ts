@@ -3,6 +3,7 @@ import {
   hasTravelValue,
   travelPerkValue,
   rankByTravelValue,
+  cardTransfersTo,
   travelSummary,
   LOUNGE_VALUE,
   GLOBAL_ENTRY_ANNUAL,
@@ -76,6 +77,37 @@ describe("rankByTravelValue", () => {
   it("excludes expired cards", () => {
     const dead = card({ id: "dead", expired: true, travel: { travel_credit: 999 } })
     expect(rankByTravelValue([dead, reserve], "perks").map(c => c.id)).toEqual(["reserve"])
+  })
+})
+
+describe("cardTransfersTo", () => {
+  it("matches a partner by brand name, full program name, or slug", () => {
+    const c = card({ travel: { transfer_partners: ["Hyatt", "United MileagePlus", "british-airways"] } })
+    expect(cardTransfersTo(c, "hyatt")).toBe(true)
+    expect(cardTransfersTo(c, "united")).toBe(true)
+    expect(cardTransfersTo(c, "british-airways")).toBe(true)
+    expect(cardTransfersTo(c, "delta")).toBe(false)
+  })
+  it("is false when the card has no travel block", () => {
+    expect(cardTransfersTo(card({}), "hyatt")).toBe(false)
+  })
+})
+
+describe("rankByTravelValue with a program filter", () => {
+  const hyattCard = card({ id: "hyatt", travel: { transfer_partners: ["World of Hyatt", "United"], max_transfer_cpp: 0.02 } })
+  const deltaCard = card({ id: "delta", travel: { transfer_partners: ["Delta SkyMiles"], max_transfer_cpp: 0.012 } })
+
+  it("keeps only cards that feed the chosen currency (transfer mode)", () => {
+    const r = rankByTravelValue([hyattCard, deltaCard], "transfer", "hyatt")
+    expect(r.map(c => c.id)).toEqual(["hyatt"])
+  })
+  it("ignores the program filter in perks mode", () => {
+    const a = card({ id: "a", travel: { travel_credit: 100 } })
+    const b = card({ id: "b", travel: { travel_credit: 50 } })
+    expect(rankByTravelValue([a, b], "perks", "hyatt").map(c => c.id)).toEqual(["a", "b"])
+  })
+  it("returns empty when no card feeds the chosen currency", () => {
+    expect(rankByTravelValue([deltaCard], "transfer", "hyatt")).toEqual([])
   })
 })
 

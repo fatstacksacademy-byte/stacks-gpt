@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
-import { US_STATES } from "../../lib/data/catalogTaxonomy"
+import { US_STATES, TRANSFER_PROGRAMS, findTransferProgram } from "../../lib/data/catalogTaxonomy"
 import type { CreditCardBonus } from "../../lib/data/creditCardBonuses"
 import {
   rankByIntroApr,
@@ -51,6 +51,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
   const [balance, setBalance] = useState<number>(5000)
   const [travelMode, setTravelMode] = useState<TravelMode>("perks")
+  const [travelProgram, setTravelProgram] = useState<string>("")
 
   const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
 
@@ -75,9 +76,10 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   )
 
   const travelRanked = useMemo(
-    () => rankByTravelValue(cards, travelMode).slice(0, 12),
-    [cards, travelMode],
+    () => rankByTravelValue(cards, travelMode, travelProgram || undefined).slice(0, 12),
+    [cards, travelMode, travelProgram],
   )
+  const selectedProgram = travelProgram ? findTransferProgram(travelProgram) : null
 
   return (
     <div style={{ marginBottom: 48 }}>
@@ -286,21 +288,61 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               <ModeTab active={travelMode === "perks"} onClick={() => setTravelMode("perks")}>Most travel perks</ModeTab>
               <ModeTab active={travelMode === "transfer"} onClick={() => setTravelMode("transfer")}>Best transfer value</ModeTab>
             </div>
+            {travelMode === "transfer" && (
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "#444" }}>
+                Collecting a program?
+                <select
+                  value={travelProgram}
+                  onChange={e => setTravelProgram(e.target.value)}
+                  style={{ padding: "9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fafafa", color: "#111", minWidth: 190 }}
+                >
+                  <option value="">Any transfer partner</option>
+                  <optgroup label="Airlines">
+                    {TRANSFER_PROGRAMS.filter(p => p.kind === "airline").map(p => (
+                      <option key={p.slug} value={p.slug}>{p.name}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Hotels">
+                    {TRANSFER_PROGRAMS.filter(p => p.kind === "hotel").map(p => (
+                      <option key={p.slug} value={p.slug}>{p.name}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </label>
+            )}
           </div>
 
           <ResultBlock
-            heading={travelMode === "perks" ? "Most annual travel value" : "Best transfer-partner value"}
+            heading={
+              travelMode === "perks"
+                ? "Most annual travel value"
+                : selectedProgram
+                  ? `Best cards for ${selectedProgram.name}`
+                  : "Best transfer-partner value"
+            }
             note={
               travelMode === "perks"
                 ? "Ranked by hard-dollar travel credits, free-night certs, lounge access & Global Entry — the value you get whether or not you chase award redemptions."
-                : "Ranked by best realistic redemption (cents per point) through airline & hotel transfer partners. Where points cards pull ahead of cashback."
+                : selectedProgram
+                  ? `Cards whose points transfer into ${selectedProgram.name}, ranked by redemption value. The fastest way to bank the currency you're collecting.`
+                  : "Ranked by best realistic redemption (cents per point) through airline & hotel transfer partners. Where points cards pull ahead of cashback."
             }
           >
             {travelRanked.length === 0 ? (
               <div style={{ background: "#fff", border: "1px dashed #e8e8e8", borderRadius: 12, padding: 24, fontSize: 14, color: "#666", lineHeight: 1.6 }}>
-                <strong style={{ color: "#111" }}>No award-travel data captured yet.</strong> We&apos;re
-                researching transfer partners, travel credits &amp; perks card by card — this list lights
-                up as the data lands.
+                {selectedProgram ? (
+                  <>
+                    <strong style={{ color: "#111" }}>No cards mapped to {selectedProgram.name} yet.</strong>{" "}
+                    We&apos;re filling in transfer partners card by card — this lights up as the data lands.
+                    Try &ldquo;Any transfer partner&rdquo; in the meantime.
+                  </>
+                ) : (
+                  <>
+                    <strong style={{ color: "#111" }}>No award-travel data captured yet.</strong> We&apos;re
+                    researching transfer partners, travel credits &amp; perks card by card — this list lights
+                    up as the data lands.
+                  </>
+                )}
               </div>
             ) : (
               travelRanked.map((c, i) => {

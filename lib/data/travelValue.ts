@@ -13,6 +13,7 @@
  * as the data is filled in.
  */
 import type { CreditCardBonus, TravelValue } from "./creditCardBonuses"
+import { resolveProgramSlug } from "./catalogTaxonomy"
 
 export type TravelMode = "perks" | "transfer"
 
@@ -48,14 +49,29 @@ export function travelPerkValue(t: TravelValue): number {
   return v
 }
 
+/** Does this card transfer points into the given program (canonical slug)? */
+export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boolean {
+  const partners = card.travel?.transfer_partners ?? []
+  return partners.some(p => resolveProgramSlug(p) === programSlug)
+}
+
 /**
  * Rank cards for an award-travel use case.
  *  - perks:    highest annual hard-dollar travel value first; ties by transfer cpp.
  *  - transfer: best transfer-partner redemption (cpp) first; ties by perk value.
+ *
+ * `program` (transfer mode only): when set to a canonical program slug, keep
+ * only cards that transfer into that currency — for users collecting a specific
+ * loyalty program rather than browsing all transferable cards.
  */
-export function rankByTravelValue(cards: CreditCardBonus[], mode: TravelMode): CreditCardBonus[] {
+export function rankByTravelValue(
+  cards: CreditCardBonus[],
+  mode: TravelMode,
+  program?: string,
+): CreditCardBonus[] {
   return cards
     .filter(c => !c.expired && hasTravelValue(c, mode))
+    .filter(c => !(mode === "transfer" && program) || cardTransfersTo(c, program!))
     .sort((a, b) => {
       const at = a.travel!
       const bt = b.travel!

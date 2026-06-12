@@ -184,6 +184,77 @@ export function findStateBySlug(slug: string): { code: string; name: string; slu
   return STATE_BY_SLUG.get(slug.toLowerCase()) ?? null
 }
 
+// ── Award-travel transfer programs ────────────────────────────────────
+// Canonical list of loyalty programs that bank points transfer into. Used by
+// the award-travel finder so a user can pick the currency they're collecting
+// (e.g. "I want Hyatt points") and filter to cards that feed it. Stored on a
+// card as `travel.transfer_partners` (free-form names tolerated; resolved back
+// to these slugs via resolveProgramSlug).
+export type TransferProgram = { slug: string; name: string; kind: "airline" | "hotel" }
+
+export const TRANSFER_PROGRAMS: ReadonlyArray<TransferProgram> = [
+  // Airlines
+  { slug: "united", name: "United MileagePlus", kind: "airline" },
+  { slug: "aeroplan", name: "Air Canada Aeroplan", kind: "airline" },
+  { slug: "british-airways", name: "British Airways Avios", kind: "airline" },
+  { slug: "flying-blue", name: "Air France-KLM Flying Blue", kind: "airline" },
+  { slug: "virgin-atlantic", name: "Virgin Atlantic Flying Club", kind: "airline" },
+  { slug: "avianca", name: "Avianca LifeMiles", kind: "airline" },
+  { slug: "singapore", name: "Singapore KrisFlyer", kind: "airline" },
+  { slug: "cathay", name: "Cathay Asia Miles", kind: "airline" },
+  { slug: "emirates", name: "Emirates Skywards", kind: "airline" },
+  { slug: "jetblue", name: "JetBlue TrueBlue", kind: "airline" },
+  { slug: "southwest", name: "Southwest Rapid Rewards", kind: "airline" },
+  { slug: "delta", name: "Delta SkyMiles", kind: "airline" },
+  { slug: "alaska", name: "Alaska Mileage Plan", kind: "airline" },
+  // Hotels
+  { slug: "hyatt", name: "World of Hyatt", kind: "hotel" },
+  { slug: "marriott", name: "Marriott Bonvoy", kind: "hotel" },
+  { slug: "hilton", name: "Hilton Honors", kind: "hotel" },
+  { slug: "ihg", name: "IHG One Rewards", kind: "hotel" },
+  { slug: "wyndham", name: "Wyndham Rewards", kind: "hotel" },
+  { slug: "choice", name: "Choice Privileges", kind: "hotel" },
+]
+
+/** Normalize any program string to a comparable key: lowercase, alnum-joined. */
+function normalizeProgramKey(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+}
+
+// Common short forms / brand-only names that should resolve to a slug.
+const PROGRAM_ALIASES: Record<string, string> = {
+  ba: "british-airways",
+  avios: "british-airways",
+  krisflyer: "singapore",
+  lifemiles: "avianca",
+  "asia-miles": "cathay",
+  bonvoy: "marriott",
+  honors: "hilton",
+  "world-of-hyatt": "hyatt",
+}
+
+const PROGRAM_INDEX: Map<string, string> = (() => {
+  const m = new Map<string, string>()
+  for (const p of TRANSFER_PROGRAMS) {
+    m.set(normalizeProgramKey(p.slug), p.slug)
+    m.set(normalizeProgramKey(p.name), p.slug)
+    // first word of the name, e.g. "United", "Hilton", "Emirates"
+    m.set(normalizeProgramKey(p.name.split(/\s+/)[0]), p.slug)
+  }
+  for (const [alias, slug] of Object.entries(PROGRAM_ALIASES)) m.set(alias, slug)
+  return m
+})()
+
+/** Resolve a free-form partner name (or slug) to a canonical program slug, or null. */
+export function resolveProgramSlug(partner: string): string | null {
+  if (!partner) return null
+  return PROGRAM_INDEX.get(normalizeProgramKey(partner)) ?? null
+}
+
+export function findTransferProgram(slug: string): TransferProgram | null {
+  return TRANSFER_PROGRAMS.find(p => p.slug === slug) ?? null
+}
+
 // ── Lightweight raw-record shapes ─────────────────────────────────────
 // We don't strongly type the entire catalog; we just describe the
 // fields we touch. Anything else is forwarded via `raw`.
