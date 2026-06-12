@@ -42,6 +42,12 @@ import { indianaCards } from "./indiana"
 import { illinoisCards } from "./illinois"
 import { wisconsinCards } from "./wisconsin"
 import { minnesotaCards } from "./minnesota"
+import { iowaCards } from "./iowa"
+import { missouriCards } from "./missouri"
+import { northDakotaCards } from "./north-dakota"
+import { southDakotaCards } from "./south-dakota"
+import { nebraskaCards } from "./nebraska"
+import { kansasCards } from "./kansas"
 
 // ── South / Gulf ──────────────────────────────────────────────────────
 
@@ -74,4 +80,10 @@ export const regionalStateCards: CreditCardBonus[] = [
   ...illinoisCards,
   ...wisconsinCards,
   ...minnesotaCards,
+  ...iowaCards,
+  ...missouriCards,
+  ...northDakotaCards,
+  ...southDakotaCards,
+  ...nebraskaCards,
+  ...kansasCards,
 ]

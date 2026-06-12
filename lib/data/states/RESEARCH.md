@@ -154,4 +154,36 @@ state-anchored core (disclosed in eligibility_notes).
 - **Excluded:** First Community CU (already inline); Wings, US Federal, Ideal, Minnco (foundation/ACC nationwide backdoors or 403); Bremer (merged into Old National 2025); Deere/Empeople (employer-nationwide); TruStone + Royal (WI module owns).
 - **Sources:** toplinecu.com, mmfcu.org, mymagnifi.org, affinityplus.org, blazecu.com.
 
+## Batch 4 — Midwest wave B (IA, MO, ND, SD, NE, KS) · verified 2026-06-11
+
+### Iowa (IA) — 17 cards, 8 institutions
+- **Added:** Dupaco [IA/IL/WI] (Rewards, Platinum), Collins [IA/IL/WI] (Platinum Rewards, Platinum, Business Choice Rewards), Ascentra [IA/IL] (Visa), Community 1st [IA/MO] (C1 Signature Rewards 1.5%, C1 Flex 3/2/1, C1 Smart Rate), Members1st (Visa 1%), Corda/fmr Linn Area (Platinum Rewards, Platinum Plus, Platinum), Hills Bank (Platinum Rewards, Platinum), DuTrac [IA/IL/WI] (Platinum Rewards MC, CHOICE MC).
+- **Excluded as effectively-nationwide:** Veridian (Habitat-donation backdoor), GreenState (ACC backdoor; advertises 15k/25k bonuses but nationwide).
+- **Sources:** dupaco.com, collinscu.org, ascentra.org, c1stcreditunion.com, members1st.com, cordacu.org, hillsbank.com, dutrac.org.
+
+### Missouri (MO) — 14 cards, 8 institutions
+- **Added:** Together CU [MO/IL/VA/TX] (Visa Signature $200, Platinum Points 10k, CITY SC 10k), First Community CU/MO [MO/IL] (Platinum Preferred, Platinum — issuer "first-community-cu-mo", distinct from inline ND/MN First Community), Neighbors [MO/IL] (Platinum Rewards, Platinum), Arsenal [MO/IL] (Platinum), West Community [MO/IL] (Platinum MC w/Rewards, Platinum MC), Alltru (Signature Rewards 15k), Multipli/fmr Missouri CU (MemberRewards 1.5%, Platinum), First Missouri (Platinum 1%).
+- **Excluded:** Scott CU (IL owns), CommunityAmerica + Electro Savings/merged-into-CommunityAmerica (inline). Unresolved: Vantage CU (no fetchable FOM page), St. Louis Community CU (off-site card terms), Central Bank (no state restriction).
+- **Sources:** togethercu.org, firstcommunity.com, neighborscu.org, arsenalcu.com, westcommunitycu.org, alltrucu.org, multiplicu.com, 1stmocu.org.
+
+### North Dakota (ND) — 10 cards, 4 institutions
+- **Added:** First International Bank & Trust [ND/MN/SD/AZ] (X Card 3x dining + 30k, GO Card 15k, AMP Card), Western Cooperative CU (Emerald Cash Back 1.5%, Ruby Rewards, Platinum), Town & Country [ND/MN] (Visa Signature 1.5%, Classic, Classic Student), Railway CU (Visa).
+- **Excluded:** First Community CU + Magnifi (already cataloged); Gate City (FNBO white-label), Bell Bank + Cornerstone (Elan white-label). Unresolved: Capital CU/ND (403), Citizens Community (resolves to Iowa entity), Dakota West (cards "coming July 2026").
+- **Sources:** fibt.com, wccu.coop/wccu.org, townandcountry.org, railwaycu.com.
+
+### South Dakota (SD) — 6 cards, 4 institutions
+- **Added:** Dakotaland FCU (Cash Back 1%), Highmark FCU [SD/WY] (Ruby tiered cash back, Platinum points), Voyage FCU [SD/NE/IA/MN] (Passport Card), Levo/fmr Sioux Falls FCU [SD/IA/MN/ND] (Better Rewards 2% gas/grocery/wholesale).
+- **Excluded:** First PREMIER Bank / Premier Bankcard (nationwide subprime issuer). Unresolved: Black Hills FCU (403 + charitable-fund backdoor), Service First FCU (no card terms page).
+- **Sources:** dakotalandfcu.com, highmarkfcu.com, voyagefcu.org, levo.org.
+
+### Nebraska (NE) — 12 cards, 6 institutions
+- **Added:** Cobalt [NE/IA] (Visa Classic, Signature, Business), Centris [NE/IA] (Visa, Rewards Visa), Metro [NE/IA] (Preferred 1.5%, Platinum, Classic), LincOne (Visa), Liberty First (Mastercard w/Rewards), Union Bank & Trust [NE/KS] (Rewards Visa, Signature Rewards Visa).
+- **Excluded:** First Nebraska CU (Financial Fitness Assn nationwide backdoor), Pinnacle Bank (Elan white-label).
+- **Sources:** cobaltcu.com, centrisfcu.org, metrofcu.org, linconefcu.org, libertyfirstcu.com, ubt.com.
+
+### Kansas (KS) — 10 cards, 6 institutions
+- **Added:** Mainstreet [KS/MO] (Select Rewards MC, Platinum MC), Azura (Rewards Visa $200, Visa), Envista [KS/MO] (ENVISTABLACK 2x), Golden Plains (Visa Golden Rewards, Visa Classic Plus), Quantum/fmr TECU (Visa Rewards), Meritrust/KS franchise (Rewards, Member Select — issuer "meritrust-cu", IDs "meritrust-ks-*", distinct from CO division).
+- **Excluded:** Truity + Communication FCU + CommunityAmerica (already cover KS / inline); Credit Union of America (ACC backdoor), INTRUST (Elan white-label). Unresolved: Quest CU (site timed out).
+- **Sources:** mainstreetcu.org, azuracu.com, envistacu.com, gpcu.org, theq.org, meritrust.org.
+
 <!-- Batches appended below as they are completed. -->

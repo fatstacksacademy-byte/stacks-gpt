@@ -1,0 +1,192 @@
+import { buildStateCards } from "./_builder"
+
+const VERIFIED_AT = "2026-06-11"
+
+export const northDakotaCards = buildStateCards({
+  state: "ND",
+  verifiedAt: VERIFIED_AT,
+  eligibility: {
+    fibt: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "First International Bank & Trust is a family-owned community bank that issues its own Visa cards. Branches are in North Dakota (19), Minnesota (4, central MN), South Dakota (1), and the Phoenix, Arizona metro (4); applicants generally need to be within its community footprint. state_restricted reflects the four states it serves.",
+      eligibility_source: "https://www.fibt.com/locations-hours/",
+    },
+    wccu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Western Cooperative Credit Union (Williston, ND) is a community-chartered credit union. Membership is open to people or businesses within a 75-mile radius of Williston, Beach, or Ray, or a 50-mile radius of Dickinson, Hebron, or Glen Ullin (all North Dakota), plus family members of current members. A share deposit opens membership.",
+      eligibility_source: "https://www.wccu.org/About-Us/Membership-Requirements",
+    },
+    townCountry: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Town & Country Credit Union (Minot, ND) membership is open to people who live within a 75-mile radius of Minot or a 50-mile radius of Kenmare or Fargo, ND / Moorhead, MN, plus relatives of current members. A $5 share deposit opens membership. The Fargo-Moorhead radius crosses into Minnesota, so state_restricted is ND and MN.",
+      eligibility_source: "https://www.townandcountry.org/about/membership/",
+    },
+    railway: {
+      eligibility_scope: "association",
+      eligibility_notes:
+        "Railway Credit Union (Mandan/Bismarck, ND) has an employer/association field of membership: employees and retirees of MDU Resources, BNSF, CP Rail, CenturyLink/AT&T and affiliated telecom employees, Teamsters 123 and AFL-CIO members, plus U.S. military, veterans and their families. It is not open to the general public by geography.",
+      eligibility_source: "https://www.railwaycu.com/",
+    },
+  },
+  seeds: [
+    {
+      id: "fibt-x-visa-signature",
+      card_name: "FIBT X Card (Visa)",
+      issuer: "first-international-bank-trust",
+      state_restricted: ["ND", "MN", "SD", "AZ"],
+      offer_link: "https://www.fibt.com/banking/credit-cards/x/",
+      key_benefits: [
+        "3x LiveFirst points on dining, 2x on gas and groceries, 1.5x on everything else",
+        "30,000 bonus points when you spend $4,000 in the first 90 days",
+        "Visa Concierge access",
+      ],
+      eligibility: "fibt",
+      annual_fee: 95,
+      bonus_amount: 30000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 4000,
+      spend_months: 3,
+      rewards: [
+        { categories: ["dining"], multiplier: 3, unit: "points" },
+        { categories: ["gas_stations", "groceries"], multiplier: 2, unit: "points" },
+        { categories: ["everything_else"], multiplier: 1.5, unit: "points" },
+      ],
+      intro_apr: { bt_apr_months: 6, bt_fee_pct: 3, go_to_apr_low: 16.99, go_to_apr_high: 27.99 },
+    },
+    {
+      id: "fibt-go-visa",
+      card_name: "FIBT GO Card (Visa)",
+      issuer: "first-international-bank-trust",
+      state_restricted: ["ND", "MN", "SD", "AZ"],
+      offer_link: "https://www.fibt.com/banking/credit-cards/go/",
+      key_benefits: [
+        "1 LiveFirst point per $1 on every purchase",
+        "15,000 bonus points when you spend $1,500 in the first 90 days",
+        "No annual fee",
+      ],
+      eligibility: "fibt",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "points" }],
+      intro_apr: { bt_apr_months: 6, bt_fee_pct: 3, go_to_apr_low: 12.49, go_to_apr_high: 24.49 },
+    },
+    {
+      id: "fibt-amp-visa",
+      card_name: "FIBT AMP Card (Visa)",
+      issuer: "first-international-bank-trust",
+      state_restricted: ["ND", "MN", "SD", "AZ"],
+      offer_link: "https://www.fibt.com/banking/credit-cards/amp/",
+      key_benefits: [
+        "Low-rate card built for balance transfers and financing large purchases",
+        "Intro APR on balance transfers for the first 12 months",
+        "No annual fee",
+      ],
+      eligibility: "fibt",
+      intro_apr: { bt_apr_months: 12, bt_fee_pct: 3, go_to_apr_low: 11.49, go_to_apr_high: 23.49 },
+    },
+    {
+      id: "wccu-emerald-cash-back-visa-signature",
+      card_name: "WCCU Emerald Cash Back Visa Signature",
+      issuer: "western-cooperative-credit-union",
+      offer_link: "https://wccu.coop/credit-cards/",
+      key_benefits: [
+        "1.5% cash back on purchases, redeemable to deposit account, statement credit, travel, or gift cards",
+        "No annual fee",
+        "Travel accident and baggage delay insurance",
+      ],
+      eligibility: "wccu",
+      cpp_value: 1,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+      travel_insurance: { baggage_delay: true },
+    },
+    {
+      id: "wccu-ruby-rewards-visa",
+      card_name: "WCCU Ruby Rewards Visa",
+      issuer: "western-cooperative-credit-union",
+      offer_link: "https://wccu.coop/credit-cards/",
+      key_benefits: [
+        "1 point per $1 on purchases, redeemable for travel, merchandise, gift cards, or statement credit",
+        "No annual fee",
+        "Travel accident and baggage delay insurance",
+      ],
+      eligibility: "wccu",
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "points" }],
+      travel_insurance: { baggage_delay: true },
+    },
+    {
+      id: "wccu-platinum-visa",
+      card_name: "WCCU Platinum Visa",
+      issuer: "western-cooperative-credit-union",
+      offer_link: "https://wccu.coop/credit-cards/",
+      key_benefits: [
+        "Low-rate, no-rewards Visa for carrying a balance",
+        "No annual fee",
+        "Secured version available for building credit",
+      ],
+      eligibility: "wccu",
+    },
+    {
+      id: "town-country-cu-visa-signature-cash-back",
+      card_name: "Town & Country Credit Union Visa Signature",
+      issuer: "town-country-credit-union-nd",
+      state_restricted: ["ND", "MN"],
+      offer_link: "https://www.townandcountry.org/personal/credit-cards/credit-cards",
+      key_benefits: [
+        "Unlimited 1.5% cash back on net purchases, paid on demand",
+        "9.9% fixed APR; no annual fee",
+        "Credit limits up to $75,000 with qualifying checking and direct deposit",
+      ],
+      eligibility: "townCountry",
+      cpp_value: 1,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+    },
+    {
+      id: "town-country-cu-visa-classic",
+      card_name: "Town & Country Credit Union Visa Classic",
+      issuer: "town-country-credit-union-nd",
+      state_restricted: ["ND", "MN"],
+      offer_link: "https://www.townandcountry.org/personal/credit-cards/credit-cards",
+      key_benefits: [
+        "10.9% fixed APR; no annual fee",
+        "Credit limits up to $5,000",
+        "1% foreign transaction fee",
+      ],
+      eligibility: "townCountry",
+      foreign_tx_fee_pct: 1,
+    },
+    {
+      id: "town-country-cu-visa-classic-student",
+      card_name: "Town & Country Credit Union Visa Classic Student",
+      issuer: "town-country-credit-union-nd",
+      state_restricted: ["ND", "MN"],
+      offer_link: "https://www.townandcountry.org/personal/credit-cards/credit-cards",
+      key_benefits: [
+        "Builds credit early for members ages 13-23; converts to Visa Classic at 24",
+        "4.9% fixed APR; no annual fee",
+        "Credit limits up to $5,000",
+      ],
+      eligibility: "townCountry",
+      credit_score_required: "fair",
+    },
+    {
+      id: "railway-cu-visa",
+      card_name: "Railway Credit Union Visa Credit Card",
+      issuer: "railway-credit-union-nd",
+      offer_link: "https://www.railwaycu.com/Services/Card-Services",
+      key_benefits: [
+        "9.95% APR with no annual fee",
+        "Points redeemable for merchandise or travel",
+        "In-house payment processing and balance transfers",
+      ],
+      eligibility: "railway",
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "points" }],
+    },
+  ],
+})
