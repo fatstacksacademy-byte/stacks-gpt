@@ -72,6 +72,12 @@ import { pennsylvaniaCards } from "./pennsylvania"
 import { newYorkCards } from "./new-york"
 
 // ── New England ───────────────────────────────────────────────────────
+import { maineCards } from "./maine"
+import { newHampshireCards } from "./new-hampshire"
+import { vermontCards } from "./vermont"
+import { massachusettsCards } from "./massachusetts"
+import { rhodeIslandCards } from "./rhode-island"
+import { connecticutCards } from "./connecticut"
 
 /** All verified state-restricted regional cards, aggregated across modules. */
 export const regionalStateCards: CreditCardBonus[] = [
@@ -124,4 +130,11 @@ export const regionalStateCards: CreditCardBonus[] = [
   ...newJerseyCards,
   ...pennsylvaniaCards,
   ...newYorkCards,
+  // New England
+  ...maineCards,
+  ...newHampshireCards,
+  ...vermontCards,
+  ...massachusettsCards,
+  ...rhodeIslandCards,
+  ...connecticutCards,
 ]

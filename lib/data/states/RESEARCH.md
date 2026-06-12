@@ -282,4 +282,57 @@ state-anchored core (disclosed in eligibility_notes).
 - **Excluded:** Hudson Valley CU (ACC), Bethpage/FourLeaf (now nationwide), Jovia (CrossState foundation), Kinecta (CA owns). Unresolved: Empower, CFCU Ithaca.
 - **Sources:** esl.org, broadviewfcu.com, americu.org, visionsfcu.org.
 
+## Batch 8 — New England (ME, NH, VT, MA, RI, CT) — verified 2026-06-11
+
+Final research batch. 71 cards across 18 distinct institutions; completes 51/51 state coverage.
+
+### Maine (ME) — 16 cards
+- **Reviewed:** cPort CU, Maine Savings FCU, Town & Country FCU, Evergreen CU, Bangor Savings Bank, University CU (ME), Maine State CU, Atlantic FCU, Camden National Bank.
+- **Added:** Maine Savings FCU (Visa, Business Beyond Visa); Town & Country FCU (Visa Signature, Classic, Classic Student); Evergreen CU (SunSelect, SunSelect Secured); Bangor Savings Bank [ME/NH] (everblue Cash Back Plus, everblue Business Rewards Plus); University CU (UMaine Alumni Platinum Rewards, USM Platinum Rewards); Maine State CU (Visa Rewards, Smart Rate Visa); Atlantic FCU (Visa Signature, Visa Platinum — IDs suffixed `-me` to avoid collision with NJ Atlantic FCU).
+- **Eligibility:** Maine Savings statewide via ACC-Maine; Bangor everblue state_restricted ["ME","NH"]; University CU's Maine Consumer Council is a ME ACC chapter (not nationwide); Town & Country / Evergreen / Maine State / Atlantic county-limited.
+- **Unresolved:** cPort CU (Fiserv myaccountaccess portal, no official disclosure); Camden National (no verifiable consumer card terms); Infinity FCU / Five County CU / Katahdin Trust / Acadia FCU (not reached).
+- **Sources:** mainesavings.com, townandcountry.org/tcfcu.com, egcu.org, bangor.com, ucumaine.com, mainestatecu.org, atlanticfcu.com.
+
+### New Hampshire (NH) — 11 cards
+- **Reviewed:** Bellwether CCU, St. Mary's Bank, Members First CU of NH, Triangle CU, Holy Rosary CU, Northeast/Lighthouse CU, Granite State CU, NHFCU, Service CU, Sugar River Bank.
+- **Added:** Bellwether CCU [NH/MA] (Smart Rewards, Smart Cash, Smart Rate); Members First CU of NH (Platinum, Rewards, Share Secured, Business); Triangle CU [NH/MA] (Membership Rewards, Premier Advantage); HRCU [NH/ME] (Visa Platinum, Visa Platinum Rewards).
+- **Excluded (effectively nationwide):** St. Mary's Bank (anyone, $5); Service CU (ACC backdoor + national military); Northeast/Lighthouse CU (free Lighthouse Foundation lifetime membership backdoor); NHFCU (free New England Consumer Council backdoor).
+- **Unresolved:** Granite State CU (gscu.org HTTP 403 — terms unverifiable); Sugar River Bank (no self-issued consumer credit card).
+- **Sources:** bccu.org, mfcu.net/membersfirstnh.org, trianglecu.org, hrcu.org.
+
+### Vermont (VT) — 5 cards
+- **Reviewed:** Vermont Federal CU, EastRise CU (ex-NEFCU/VSECU), Heritage Family CU, NorthCountry FCU; discovery scan of Members Advantage, Green Mountain, Opportunities, Community National, Union Bank, Northfield Savings.
+- **Added:** Vermont Federal CU (Visa Signature Rewards, Visa Platinum, Share Secured Visa); Heritage Family CU [VT/NH/NY/MA] (Emerald Visa); NorthCountry FCU [VT/NH/NY] (Visa Credit Card).
+- **Excluded:** EastRise CU — effectively nationwide via ACC primary join path (CU covers first-year fee).
+- **Sources:** vermontfederal.org, hfcuvt.com, northcountry.org.
+
+### Massachusetts (MA) — 23 cards
+- **Reviewed:** Metro CU, Workers CU, Greylock FCU, Hanscom FCU, Jeanne D'Arc CU, St. Anne's CU, Rockland FCU, BrightBridge CU (ex-RTN/Merrimack Valley/Bridgewater), Freedom CU (Springfield MA), Align CU, Webster First FCU, BankFive, Cape Cod 5 / Cooperative Bank of Cape Cod, Leader Bank, Eastern Bank, DCU.
+- **Added:** Metro CU [MA/NH] (Rewards, Saver, Builder); Greylock FCU (Low Rate, Rewards, Signature Rewards, Secured); Jeanne D'Arc CU [MA/NH] (Visa Signature, Visa Rewards, Visa Rate, MoneyStrong Build, MoneyStrong Rebuild); St. Anne's CU [MA/RI] (Platinum Low Rate, Titanium, Credit Builder); BrightBridge CU [MA/CT/NH/RI] (Visa Cash Back, Visa Rewards, Visa Classic, Visa Secured); Freedom CU MA [MA/CT] (VISA Rewards, VISA Platinum); Align CU [MA/NH] (Align VISA).
+- **Excluded (effectively nationwide / white-label):** DCU (Reach Out for Schools backdoor); Workers CU (FFA backdoor + Elan); Hanscom FCU (AFA backdoor); Rockland FCU (ACC backdoor); Eastern Bank, BankFive (Elan).
+- **Unresolved:** Cooperative Bank of Cape Cod (TCM-issued, no disclosure PDF); Webster First FCU (debit only); Leader Bank, Cape Cod 5 (no own-brand consumer credit card).
+- **Sources:** metrocu.org, greylock.org, jdcu.org, stannes.com, brightbridge.com, freedom.coop, aligncu.com.
+
+### Rhode Island (RI) — 8 cards
+- **Reviewed:** Citizens Bank (excluded — nationwide), Navigant CU, Coastal1 CU, Greenwood CU, People's CU, Westerly Community CU, RI CU, Centreville Bank, Washington Trust, BankRI.
+- **Added:** Navigant CU [RI/CT/MA] (Cash Back World, Cash Back Elite World, Platinum, Platinum Secured, Bryant University Cash Back World — confirmed in-house issuer via cardmember agreement); People's CU (Rewards, Low-Rate, Savings Secured — in-house UChoose Rewards).
+- **Excluded:** Citizens Bank (nationwide); Coastal1, Centreville (Elan); Greenwood CU (open-to-everyone nationwide FOM).
+- **Unresolved:** RI CU (50-mile MA/CT FOM + 403/404 on official pages); Westerly Community CU (terms on third-party cardmanager.net); Washington Trust, BankRI (no in-house consumer credit card).
+- **Sources:** navigantcu.org, peoplescu.com.
+
+### Connecticut (CT) — 8 cards
+- **Reviewed:** American Eagle Financial CU, Sikorsky CU, Dutch Point CU, Charter Oak FCU, Nutmeg State Financial CU, Connex CU, Liberty Bank, 360 FCU.
+- **Added:** American Eagle FCU [CT/MA] (Signature Visa, Platinum Rewards Visa, Secured Visa); Sikorsky CU (Visa Advantage, Visa Platinum); Dutch Point CU (Signature, Platinum, Essential).
+- **Excluded:** Charter Oak, Nutmeg State, Connex, Liberty Bank (generic Elan nationwide lineup — issuer is Elan, not the local institution).
+- **Unresolved:** 360 FCU (only a business Visa). Sites Cloudflare-protected; personal/disclosure pages verified via Wayback 200-status snapshots of official URLs.
+- **Sources:** americaneagle.org, sikorskycu.org, dutchpoint.org.
+
+---
+
+## Coverage summary
+
+**51 / 51 states + DC covered. 690 total verified regional cards** spread into the catalog via `regionalStateCards` (plus pre-existing inline Hawaii / BECU / Ent / VyStar / First Community / CommunityAmerica catalogs).
+
+All cards carry a globally-unique ID, official `offer_link` (https), `eligibility_notes`, `eligibility_source` (https), and `offer_verified_at`. Effectively-nationwide CUs (cheap ACC/AFA/FFA/foundation backdoors) and Elan/Fiserv/TCM white-label nationwide cards were excluded throughout rather than mislabeled as state-restricted. No speculative entries — every product was confirmed on an official issuer page/disclosure; institutions without a verifiable official card page were logged as unresolved, not fabricated.
+
 <!-- Batches appended below as they are completed. -->

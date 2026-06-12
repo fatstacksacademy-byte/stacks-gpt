@@ -83,3 +83,77 @@ describe("stateSpecificCards", () => {
     expect(hawaiiCards.every(c => c.offer_verified_at === "2026-06-12")).toBe(true)
   })
 })
+
+describe("nationwide regional catalog", () => {
+  const ALL_STATES = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI",
+    "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
+    "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH",
+    "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA",
+    "WV", "WI", "WY",
+  ]
+
+  const regional = creditCardBonuses.filter(c => !c.expired && c.state_restricted?.length)
+
+  it("has globally unique ids across the entire live catalog", () => {
+    const live = creditCardBonuses.filter(c => !c.expired)
+    const ids = live.map(c => c.id)
+    const dupes = ids.filter((id, i) => ids.indexOf(id) !== i)
+    expect(dupes).toEqual([])
+  })
+
+  it("gives every state + DC at least one verified regional card", () => {
+    for (const st of ALL_STATES) {
+      const local = stateSpecificCards(creditCardBonuses, st)
+      expect(local.length, `no regional cards for ${st}`).toBeGreaterThan(0)
+    }
+  })
+
+  it("requires full eligibility provenance on every regional card", () => {
+    for (const c of regional) {
+      expect(c.eligibility_notes, `${c.id} missing eligibility_notes`).toBeTruthy()
+      expect(c.eligibility_source?.startsWith("https://"), `${c.id} bad eligibility_source`).toBe(true)
+      expect(c.offer_link.startsWith("https://"), `${c.id} bad offer_link`).toBe(true)
+      expect(c.offer_verified_at, `${c.id} missing offer_verified_at`).toBeTruthy()
+    }
+  })
+
+  it("hides all regional cards when no state is chosen", () => {
+    const noState = cardsForState(creditCardBonuses, null)
+    expect(noState.some(c => c.state_restricted?.length)).toBe(false)
+  })
+
+  it("excludes expired cards from state results", () => {
+    for (const st of ["CA", "TX", "NY", "MA"]) {
+      expect(stateSpecificCards(creditCardBonuses, st).every(c => !c.expired)).toBe(true)
+    }
+  })
+
+  it("surfaces representative regional issuers across regions", () => {
+    const has = (st: string, issuer: string) =>
+      stateSpecificCards(creditCardBonuses, st).some(c => c.issuer === issuer)
+    // West / Mountain / Midwest / South / Mid-Atlantic / New England
+    expect(has("CO", "ent")).toBe(true)
+    expect(has("FL", "vystar")).toBe(true)
+    expect(has("MA", "metro-cu-ma")).toBe(true)
+    expect(has("CT", "american-eagle-fcu")).toBe(true)
+    expect(has("ME", "bangor-savings-bank")).toBe(true)
+    expect(has("VT", "vermont-federal-cu")).toBe(true)
+  })
+
+  it("shows nationwide plus regional cards when a state is selected", () => {
+    const maCards = cardsForState(creditCardBonuses, "MA")
+    expect(maCards.some(c => !c.state_restricted?.length)).toBe(true) // nationwide present
+    expect(maCards.some(c => c.state_restricted?.includes("MA"))).toBe(true) // regional present
+  })
+
+  it("respects multi-state field-of-membership on shared cards", () => {
+    // BrightBridge serves MA/CT/NH/RI; Bangor everblue serves ME/NH.
+    const bb = creditCardBonuses.find(c => c.id === "brightbridge-visa-cash-back")
+    expect(bb?.state_restricted).toEqual(["MA", "CT", "NH", "RI"])
+    for (const st of ["MA", "CT", "NH", "RI"]) {
+      expect(availableInState(bb!, st)).toBe(true)
+    }
+    expect(availableInState(bb!, "CA")).toBe(false)
+  })
+})
