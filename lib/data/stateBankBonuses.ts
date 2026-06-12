@@ -50,6 +50,8 @@ type Seed = {
   states: string[]
   /** required total direct deposit in dollars (omit = no dollar threshold). */
   dd?: number
+  /** Minimum number of qualifying direct deposits. */
+  ddCount?: number
   /** DD required but the official page states no dollar minimum. */
   ddNoMin?: boolean
   ddWindow?: number
@@ -87,7 +89,7 @@ function build(s: Seed): StateCheckingRow {
       direct_deposit_required: s.dd != null || s.ddNoMin === true,
       min_direct_deposit_total: s.dd ?? null,
       min_direct_deposit_per_deposit: null,
-      dd_count_required: null,
+      dd_count_required: s.ddCount ?? null,
       deposit_window_days: s.ddWindow ?? null,
       holding_period_days: s.holdDays ?? null,
       min_opening_deposit: s.open ?? null,
@@ -215,12 +217,12 @@ const SEEDS: Seed[] = [
   // ── COLORADO ────────────────────────────────────────────────────────
   {
     id: "bellco-cu-300-checking-2026", bank: "Bellco Credit Union", amount: 300, states: ["CO"],
-    dd: 500, payout: 90, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-08-31", lifetime: true,
-    reqText: "Open a Bellco checking account during the offer period and receive at least one qualifying direct deposit of $500+ (recurring payroll, pension, Social Security, or government benefits).",
+    dd: 500, ddCount: 1, ddWindow: 60, payout: 90, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-08-31", lifetime: true,
+    reqText: "Open a Bellco checking account during the offer period and receive at least one single qualifying direct deposit of $500+ within 60 days (recurring payroll, pension, Social Security, or government benefits; deposits cannot be combined).",
     feeWaiver: "Free Checking has no monthly fee.",
     notes: "Membership: Colorado field of membership. New checking customers only ('you don't have an active checking account with Bellco'); one bonus per household. Must keep the account open and in good standing 1 year — Bellco may reclaim the bonus if closed sooner. Bonus within 90 days of the qualifying deposit.",
     excerpt: "$300 bonus ... offer period (June 1, 2026, through August 31, 2026) ... at least one qualifying direct deposit of $500 or more.",
-    src: ["https://www.bellco.org/checkingoffer.aspx"],
+    src: ["https://bellco.org/switch"],
   },
   {
     id: "ent-cu-200-checking-2026", bank: "Ent Credit Union", amount: 200, states: ["CO"],
@@ -668,12 +670,12 @@ const SEEDS: Seed[] = [
     src: ["https://www.visionsfcu.org/500"],
   },
   {
-    id: "mt-bank-250-checking-2026", bank: "M&T Bank", amount: 250, states: ["NY", "NJ", "PA", "CT", "MD", "DE", "VA", "WV", "DC"],
-    dd: 500, ddWindow: 90, payout: 90, scope: "regional", membership: false, online: true, recheck: 30, type: "bank",
-    reqText: "Open an eligible personal checking account (e.g. EZChoice) and receive at least $500 in qualifying direct deposits within 90 days. Qualifying DD = recurring payroll, pension, or Social Security (P2P and bank transfers excluded).",
-    notes: "M&T is a multi-state regional (NY, NJ, PA, CT, MD, DE, VA, WV, DC). Core terms verified on mtb.com; the live coupon landing pages were bot-blocked, so the exact deadline and prior-customer limits could not be pinned — confirm before relying. Paid within 90 days after the qualifying deposit.",
+    id: "mt-bank-250-checking-2026", bank: "M&T Bank", amount: 400, states: ["NY", "NJ", "PA", "CT", "MD", "DE", "VA", "WV", "DC"],
+    dd: 500, ddWindow: 90, payout: 90, scope: "regional", membership: false, online: true, recheck: 30, type: "bank", exp: "2026-07-31",
+    reqText: "Open an eligible personal checking account (EZChoice, MyChoice Plus, or MyChoice Premium — MyWay Banking is NOT eligible) with promo code TG and receive at least $500 in qualifying direct deposits within 90 days. Qualifying DD = recurring payroll, pension, or Social Security (P2P and bank transfers excluded).",
+    notes: "M&T is a multi-state regional (NY, NJ, PA, CT, MD, DE, VA, WV, DC). Bonus is ZIP/geo-targeted ($100–$400 depending on location; $400 is the headline tier). Promo code TG required at opening; apply window 6/1/2026–7/31/2026. Paid within 90 days after the qualifying deposit.",
     excerpt: "a total of at least $500 in qualifying direct deposits within 90 days of account opening.",
-    src: ["https://checking.mtb.com/"],
+    src: ["https://campaigns.mtb.com/personal/banking/cash-bonus-offer"],
   },
   {
     id: "provident-bank-nj-300-checking-2026", bank: "Provident Bank (NJ)", amount: 300, states: ["NJ", "NY", "PA"],
@@ -776,7 +778,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "st-marys-bank-300-checking-2026", bank: "St. Mary's Bank", amount: 300, states: ["NH"],
-    dd: 1000, ddWindow: 90, open: 10, payout: 30, mustOpen: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddCount: 2, ddWindow: 90, open: 10, payout: 30, mustOpen: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
     reqText: "Open a new checking account (offer code GET500, $10) and a savings account at the same time, then set up a recurring direct deposit within 90 days (at least 2 deposits totaling $1,000 minimum; Zelle/PayPal/Venmo excluded).",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: St. Mary's Bank ($5 share; New Hampshire-based, no geographic restriction stated). Ineligible if a primary/joint holder of a St. Mary's checking in the last 90 days. Paid up to 30 days after qualifying. (A separate $200 savings offer stacks to $500.) No fixed deadline stated.",
@@ -805,6 +807,7 @@ const SEEDS: Seed[] = [
  * Provident Credit Union (CA) is a different institution from Provident Bank (NJ).
  */
 const SUPERSEDED_BY_BASE_CATALOG = new Set<string>([
+  "banner-bank-500-checking-2026",
   "visions-fcu-500-checking-2026",
   "berkshire-bank-300-checking-2026",
   "becu-150-new-member-2026",

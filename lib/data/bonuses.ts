@@ -360,6 +360,8 @@ export const bonuses: any[] = [
     "bank_name": "Chase",
     "product_type": "checking",
     "bonus_amount": 400,
+    "expiration_date": "2026-07-15",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": 24,
     "requirements": {
       "direct_deposit_required": true,
@@ -372,7 +374,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open a new Chase Total Checking account and make direct deposits totaling $1,000+ within 90 days of coupon enrollment. Offer expires 04/15/2026."
+      "other_requirements_text": "Open a new Chase Total Checking account and make direct deposits totaling $1,000+ within 90 days of coupon enrollment. Offer expires 07/15/2026."
     },
     "fees": {
       "monthly_fee": 15,
@@ -401,7 +403,7 @@ export const bonuses: any[] = [
     ,
       "https://www.doctorofcredit.com/chase-400-checking-bonus/"
     ],
-    "raw_excerpt": "Open Chase Total Checking, make $1,000+ direct deposits within 90 days, bonus posts within 15 days. Offer expires 04/15/2026.",
+    "raw_excerpt": "Open Chase Total Checking, make $1,000+ direct deposits within 90 days, bonus posts within 15 days. Offer expires 07/15/2026.",
     "missing_fields": []
   },
   {
@@ -482,7 +484,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered bonus: $200 for $2,000+ DD, $400 for $4,000+ DD, $600 for $8,000+ DD within 90 days of account opening. Open by 2026-05-04, keep account in good standing with balance > 0 when paid."
+      "other_requirements_text": "Tiered bonus: $200 for $2,000+ DD, $400 for $4,000+ DD, $600 for $8,000+ DD within 90 days of account opening. Offer refreshed: open by 2026-09-08 (promo code required), keep account in good standing with balance > 0 when paid."
     },
     "fees": {
       "monthly_fee": 0,
@@ -997,6 +999,8 @@ export const bonuses: any[] = [
     "bank_name": "U.S. Bank",
     "product_type": "checking",
     "bonus_amount": 450,
+    "expiration_date": "2026-06-18",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": 12,
     "tiers": [
       { "bonus": 250, "min_dd_total": 2000 },
@@ -1014,7 +1018,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered bonus: $250 for $2,000-$4,999 DD, $350 for $5,000-$7,999 DD, $450 for $8,000+ DD. Must complete 2+ direct deposits within 90 days, enroll in mobile/online banking within 90 days, and fund account with $25 within 30 days. Apply by 04/06/2026."
+      "other_requirements_text": "Tiered bonus: $250 for $2,000-$4,999 DD, $350 for $5,000-$7,999 DD, $450 for $8,000+ DD. Must complete 2+ direct deposits within 90 days, enroll in mobile/online banking within 90 days, and fund account with $25 within 60 days. Apply by 06/18/2026."
     },
     "fees": {
       "monthly_fee": 12,
@@ -1043,7 +1047,7 @@ export const bonuses: any[] = [
 ,
   "https://www.doctorofcredit.com/u-s-bank-450-100-checking-bonus/"
 ],
-    "raw_excerpt": "Open by 04/06/2026, fund with $25 within 30 days, complete 2+ direct deposits totaling $8,000+ within 90 days for $450 bonus. Posts within 30 days of completing requirements.",
+    "raw_excerpt": "Open by 06/18/2026, fund with $25 within 60 days, complete 2+ direct deposits totaling $8,000+ within 90 days for $450 bonus. Posts within 30 days of completing requirements.",
     "missing_fields": [
       "requirements.min_direct_deposit_per_deposit",
       "requirements.holding_period_days",
@@ -1169,7 +1173,7 @@ export const bonuses: any[] = [
     "bonus_amount": 600,
     "expiration_date": "2026-06-15",
     "offer_verified_at": "2026-06-12",
-    "cooldown_months": 24,
+    "cooldown_months": 12,
     "tiers": [
       { "bonus": 400, "min_dd_total": 500 },
       { "bonus": 600, "min_dd_total": 25000 }
@@ -1185,11 +1189,11 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "$400 for Perks Checking with $500+ DD in 90 days. $600 for Platinum Perks with $25,000 total deposits in 60 days. Keep open 90 days."
+      "other_requirements_text": "$400 for Perks Checking with $500+ qualifying direct deposits in 90 days. $600 for Platinum Perks with $25,000 in new-money deposits in 90 days. Keep the account open 90 days."
     },
     "fees": {
-      "monthly_fee": 0,
-      "monthly_fee_waiver_text": "Waivable with $1,000 minimum balance or $2,500 combined balance.",
+      "monthly_fee": 25,
+      "monthly_fee_waiver_text": "Perks Checking: $10 waived with $1,000+ monthly deposits or $5,000+ total relationship balance. Platinum Perks: $25 waived with $25,000+ total relationship balance.",
       "early_closure_fee": 0
     },
     "screening": {
@@ -1200,10 +1204,10 @@ export const bonuses: any[] = [
     },
     "eligibility": {
       "state_restricted": true,
-      "states_allowed": ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
+      "states_allowed": ["AL", "AR", "CO", "FL", "GA", "IL", "IN", "KY", "LA", "MI", "MN", "MS", "MO", "NC", "OH", "OK", "PA", "SC", "TN", "TX", "WV", "WI"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "24-month rolling limit on bonuses. Must not have had Huntington checking bonus in past 24 months."
+      "eligibility_notes": "New consumer checking customers only. Ineligible with an existing Huntington consumer checking account, one closed in the last 12 months, or a consumer checking incentive received in the last 12 months."
     },
     "timeline": {
       "bonus_posting_days_est": 14,
@@ -1213,7 +1217,7 @@ export const bonuses: any[] = [
       "https://www.huntington.com/checking-account-promotions-bonuses-offers",
       "https://www.doctorofcredit.com/oh-mi-pa-ky-wv-huntington-bank-200-checking-promotion-no-direct-deposit-requirement/"
     ],
-    "raw_excerpt": "Perks Checking $400 with $500 DD in 90 days. Platinum Perks $600 with $25k deposits in 60 days. Bonus posts within 14 days."
+    "raw_excerpt": "Perks Checking $400 with $500 DD in 90 days. Platinum Perks $600 with $25k in new money in 90 days. Bonus posts within 14 days."
   },
   {
     "id": "fifth-third-400-checking-2026",
@@ -1261,58 +1265,6 @@ export const bonuses: any[] = [
       "https://www.doctorofcredit.com/fifth-third-200-checking-bonus-fl-ga-il-ky-mi-nc-oh-tn-wv/"
     ],
     "raw_excerpt": "Open Essential Checking with $500+ DD in 90 days for $400 bonus. Posts within 10 business days. Expires June 30, 2026."
-  },
-  {
-    "id": "associated-bank-600-checking-2026",
-    "bank_name": "Associated Bank",
-    "product_type": "checking",
-    "bonus_amount": 600,
-    "cooldown_months": 24,
-    "tiers": [
-      { "bonus": 300, "min_dd_total": 500 },
-      { "bonus": 400, "min_dd_total": 500 },
-      { "bonus": 600, "min_dd_total": 500 }
-    ],
-    "requirements": {
-      "direct_deposit_required": true,
-      "min_direct_deposit_total": 500,
-      "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
-      "deposit_window_days": 90,
-      "holding_period_days": null,
-      "min_opening_deposit": 25,
-      "min_balance": 10000,
-      "debit_transactions_required": null,
-      "billpay_required": null,
-      "other_requirements_text": "Open by May 31, 2026. $500+ DD in 90 days required. Bonus tier based on average daily balance days 31-90: $1k-$5k=$300, $5k-$10k=$400, $10k+=$600. Account must stay open 12 months or bonus clawback."
-    },
-    "fees": {
-      "monthly_fee": 0,
-      "monthly_fee_waiver_text": "No monthly fee on Access Checking ($25 min opening deposit).",
-      "early_closure_fee": 0
-    },
-    "screening": {
-      "chex_sensitive": "low",
-      "hard_pull": false,
-      "soft_pull": true,
-      "screening_notes": "Low ChexSystems sensitivity reported."
-    },
-    "eligibility": {
-      "state_restricted": true,
-      "states_allowed": ["IA", "IL", "IN", "KS", "MI", "MN", "MO", "OH", "WI"],
-      "states_excluded": [],
-      "lifetime_language": false,
-      "eligibility_notes": "Not available to those who received Associated Bank checking bonus in past 24 months or had checking account in past 12 months. Must remain open 12 months."
-    },
-    "timeline": {
-      "bonus_posting_days_est": 120,
-      "must_remain_open_days": 365
-    },
-    "source_links": [
-      "https://www.associatedbank.com/checking-account-bonus-offer-promotion",
-      "https://www.doctorofcredit.com/il-in-mn-wi-only-associated-bank-500-checking-bonus/"
-    ],
-    "raw_excerpt": "Open checking by 5/31/2026 with $500+ DD in 90 days. Bonus based on avg daily balance: $300/$400/$600. Must keep open 12 months."
   },
   {
     "id": "regions-400-checking-2026",
@@ -1585,19 +1537,20 @@ export const bonuses: any[] = [
     "bank_name": "CIBC US",
     "product_type": "checking",
     "bonus_amount": 200,
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": 500,
+      "min_direct_deposit_total": 1500,
       "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
-      "deposit_window_days": 90,
+      "dd_count_required": 3,
+      "deposit_window_days": 120,
       "holding_period_days": null,
-      "min_opening_deposit": 500,
+      "min_opening_deposit": 50,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open with $500 deposit, set up DD/ACH, enroll in eStatements within 90 days. IN-BRANCH ONLY — there is no online application path. Visit your nearest CIBC US branch, ask about the Smart Account checking promotion, and reference the bonus when you apply."
+      "other_requirements_text": "Open with at least $50 and enroll in eStatements. During the 120-day qualification period, receive qualifying direct deposits totaling $500+ in each of 3 consecutive calendar months after the opening month."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee with eStatements.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -1606,15 +1559,14 @@ export const bonuses: any[] = [
       "states_allowed": ["IL", "MI", "MO", "FL", "CA", "WI"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New checking customers only. Bonus is only obtainable by opening in-branch — the online product page does not advertise a promo code."
+      "eligibility_notes": "New CIBC US personal checking customers only; see the official offer terms for account-opening availability."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://us.cibc.com/en/personal-banking/checking/smart-account.html",
+      "https://us.cibc.com/en/personal/checking.html",
       "https://www.doctorofcredit.com/cibc-bank-usa-200-checking-bonus/"
     ],
-    "raw_excerpt": "$200 checking bonus with $500 opening deposit + DD/ACH in 90 days. Account must be opened in-branch (no online application).",
-    "notes": "User feedback (April 2026): the Open Account link goes to the generic product page, not a promotion landing. The $200 bonus is real but you have to walk into a branch and reference it when applying."
+    "raw_excerpt": "$200 bonus: open with $50, enroll in eStatements, and receive $500+ in qualifying direct deposits in each of 3 consecutive calendar months during the 120-day qualification period."
   },
   {
     "id": "dupaco-cu-300-checking-2026",
@@ -1692,21 +1644,23 @@ export const bonuses: any[] = [
     "bank_name": "TD Bank",
     "product_type": "checking",
     "bonus_amount": 300,
+    "expiration_date": "2026-07-30",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": 12,
     "tiers": [
       { "bonus": 200, "min_dd_total": 500 },
       { "bonus": 300, "min_dd_total": 2500 }
     ],
-    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 5000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Complete Checking $200 for $500 DD. Beyond Checking $300 for $2,500 DD. 60-day window. Expires April 30, 2026." },
-    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "No monthly fee with $100 min balance.", "early_closure_fee": 0 },
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 2500, "min_direct_deposit_per_deposit": 250, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Complete Checking earns $200 for $500 in qualifying direct deposits; Beyond Checking earns $300 for $2,500. Each qualifying direct deposit must be at least $250 and post within 60 days. Offer ends July 30, 2026." },
+    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Beyond Checking: waive $25 with $5,000+ monthly direct deposits, a $2,500 minimum daily balance, or $25,000+ in eligible combined balances.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": { "state_restricted": true, "states_allowed": ["CT","DC","DE","FL","MA","MD","ME","NC","NH","NJ","NY","PA","RI","SC","VT","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New TD checking customers only." },
-    "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 180, "must_remain_open_days": null },
     "source_links": [
-      "https://www.td.com/us/en/personal-banking/checking-bonus/pso",
+      "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
       "https://www.doctorofcredit.com/td-bank-300-checking-bonus/"
     ],
-    "raw_excerpt": "Complete Checking $200 for $500 DD or Beyond Checking $300 for $2.5k DD in 60 days. 16 states."
+    "raw_excerpt": "Complete Checking $200 for $500 DD or Beyond Checking $300 for $2.5k DD in 60 days; each DD must be at least $250. Offer ends July 30, 2026; payout can take up to 180 days."
   },
   {
     "id": "flagstar-500-checking-2026",
@@ -1988,10 +1942,12 @@ export const bonuses: any[] = [
   {
     "id": "banner-bank-500-checking-2026",
     "bank_name": "Banner Bank",
-    "expired": true,
+    "expired": false,
     "product_type": "checking",
     "bonus_amount": 500,
-    "cooldown_months": null,
+    "expiration_date": "2026-06-30",
+    "offer_verified_at": "2026-06-12",
+    "cooldown_months": 24,
     "tiers": [
       { "bonus": 250, "min_dd_total": 2500 },
       { "bonus": 500, "min_dd_total": 5000 }
@@ -2001,13 +1957,13 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": 5000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 30,
+      "deposit_window_days": 60,
       "holding_period_days": 90,
-      "min_opening_deposit": null,
+      "min_opening_deposit": 25,
       "min_balance": 5000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open Banner Bank checking with promo code 2026DP. Tiered: $250 bonus with $2,500 deposits + $2,500 min daily balance for 90 days. $500 bonus with $5,000 deposits + $5,000 min daily balance for 90 days. Deposits must be made within 30 days."
+      "other_requirements_text": "Open eligible Banner Bank checking with promo code 2026DP. Earn $250 with $2,500 in qualifying direct deposits within 60 days and maintain $2,500 for 90 days, or $500 with $5,000 in qualifying direct deposits within 60 days and maintain $5,000 for 90 days. Minimum opening deposit is $25 for Digital Account or $50 for other eligible accounts."
     },
     "fees": {
       "monthly_fee": null,
@@ -2025,17 +1981,16 @@ export const bonuses: any[] = [
       "states_allowed": ["CA", "ID", "OR", "WA"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "Available in 4 Western states. Use promo code 2026DP."
+      "eligibility_notes": "Available to residents of California, Idaho, Oregon, and Washington. Use promo code 2026DP. One personal-checking opening bonus per 2 years; customers who closed a Banner account in the last 2 years are ineligible."
     },
     "timeline": {
-      "bonus_posting_days_est": 90,
+      "bonus_posting_days_est": 30,
       "must_remain_open_days": 90
     },
     "source_links": [
-      "https://www.bannerbank.com/",
-      "https://bankbonus.com/promotions-by-state/washington/"
+      "https://www.bannerbank.com/new-account-offers/personal-account-offers/personal-checking-account-bonus"
     ],
-    "raw_excerpt": "Banner Bank up to $500 checking bonus. $2,500 deposits + $2,500 balance = $250. $5,000 deposits + $5,000 balance = $500. Promo code 2026DP. Expires June 30, 2026."
+    "raw_excerpt": "Banner Bank up to $500 checking bonus. $2,500 or $5,000 in direct deposits within 60 days, then maintain the matching balance for 90 days. Promo code 2026DP. Expires June 30, 2026."
   },
   {
     "id": "becu-500-checking-2026",
@@ -2301,21 +2256,20 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 10,
       "billpay_required": null,
-      "other_requirements_text": "Open checking with promo code CheckingPromo2026. Make 2x $250 DD + 10 debit purchases of $10+ within 90 days. Available nationwide."
+      "other_requirements_text": "Open checking with promo code CheckingPromo2026. Make 2x $250 DD + 10 debit purchases of $10+ within 90 days. Geo-limited to San Antonio TX, Houston TX, New Orleans LA and surrounding areas. Valid through 12/31/2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": {
-      "state_restricted": false,
-      "states_allowed": ["Nationwide (U.S.)"],
+      "state_restricted": true,
+      "states_allowed": ["TX", "LA"],
       "states_excluded": [],
       "lifetime_language": true,
       "eligibility_notes": "Available nationwide. Use promo code CheckingPromo2026. New members only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
     "source_links": [
-      "https://www.credithuman.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/tx-la-credit-human-300-checking-bonus/"
     ],
     "raw_excerpt": "$300 checking bonus with 2x $250 DD + 10 debit purchases of $10+ in 90 days. Promo code CheckingPromo2026. Nationwide."
   },
@@ -3387,7 +3341,10 @@ export const bonuses: any[] = [
       "eligibility_notes": "Available in MI and OH. New members only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
-    "source_links": ["https://www.ccfinancial.com/", "https://www.doctorofcredit.com/best-bank-account-bonuses/"],
+    "source_links": [
+      "https://www.ccfinancial.com/move",
+      "https://www.doctorofcredit.com/mi-oh-cornerstone-community-financial-credit-union-300-checking-bonus/"
+    ],
     "raw_excerpt": "$300 checking bonus. $500 monthly DD + 18 debit + eStatements for 3 months. MI and OH."
   },
   {
@@ -3686,7 +3643,9 @@ export const bonuses: any[] = [
       "eligibility_notes": "Texas residents only. Promo code NEIGHBOR. New members only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
-    "source_links": ["https://www.myncu.com/", "https://www.doctorofcredit.com/best-bank-account-bonuses/"],
+    "source_links": [
+      "https://www.doctorofcredit.com/tx-only-neighborhood-credit-union-100-checking-bonus/"
+    ],
     "raw_excerpt": "$300 checking bonus. $500+ DD totaling $3000 + 30 debit in 90 days. Promo NEIGHBOR. Texas only."
   },
   {
@@ -4018,7 +3977,10 @@ export const bonuses: any[] = [
       "eligibility_notes": "California residents only. New members only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": null },
-    "source_links": ["https://www.ccu.com/", "https://www.doctorofcredit.com/best-bank-account-bonuses/"],
+    "source_links": [
+      "https://www.ccu.com/echecking-offer/",
+      "https://www.doctorofcredit.com/ca-only-california-credit-union-100-checking-bonus/"
+    ],
     "raw_excerpt": "$250 checking bonus. eChecking. $400 DD in 120 days + 3 months recurring DD. California only."
   },
   {
@@ -4083,7 +4045,10 @@ export const bonuses: any[] = [
       "eligibility_notes": "Michigan residents only. New members only. Hard pull required."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
-    "source_links": ["https://www.honorcu.com/", "https://www.doctorofcredit.com/best-bank-account-bonuses/"],
+    "source_links": [
+      "https://www.honorcu.com/bonus/",
+      "https://www.doctorofcredit.com/mi-only-honor-credit-union-250-checking-bonus/"
+    ],
     "raw_excerpt": "$250 checking bonus. $500 DD + 8 debit in 60 days. Hard pull required. Michigan only."
   },
   {
@@ -4412,7 +4377,10 @@ export const bonuses: any[] = [
       "eligibility_notes": "Kern, Kings, Tulare, Fresno counties in California only. New members only."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
-    "source_links": ["https://www.safe1.org/", "https://www.doctorofcredit.com/best-bank-account-bonuses/"],
+    "source_links": [
+      "https://www.safe1.org/checking-account-promotion/",
+      "https://www.doctorofcredit.com/ca-safe-1-credit-union-200-checking-bonus-no-direct-deposit-required/"
+    ],
     "raw_excerpt": "$200 checking bonus. $500 DD or 10 debit in 60 days. Select CA counties only."
   },
   {
@@ -5671,6 +5639,8 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "business": true,
     "bonus_amount": 500,
+    "expiration_date": "2026-09-30",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": false,
@@ -5678,12 +5648,12 @@ export const bonuses: any[] = [
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": 30,
-      "holding_period_days": null,
+      "holding_period_days": 90,
       "min_opening_deposit": null,
       "min_balance": 5000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Business checking bonus. $5,000 deposit required."
+      "other_requirements_text": "Apply with promo code NW500 and deposit $5,000 within 30 days. After day 30, maintain a $5,000 minimum daily balance while also meeting at least one activity path in each 30-day period for the following 90 days: receive $5,000+ in eligible merchant-services deposits, make $5,000+ in outbound payroll payments through eligible providers, or spend $2,000+ with an eligible Bluevine business card."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5694,14 +5664,12 @@ export const bonuses: any[] = [
       "lifetime_language": true,
       "eligibility_notes": "Business checking. New BlueVine business checking customers only."
     },
-    "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": 150 },
     "source_links": [
-      "https://www.bluevine.com/partner/nw300-checking",
-      "https://www.bluevine.com/"
-    ,
+      "https://www.bluevine.com/partner/nw500-checking",
       "https://www.doctorofcredit.com/bluevine-business-checking-300-bonus/"
     ],
-    "raw_excerpt": "BlueVine $500 business checking bonus. $5,000 deposit required."
+    "raw_excerpt": "Bluevine $500 business checking bonus with code NW500. Deposit $5,000 within 30 days, then maintain a $5,000 minimum daily balance and meet one qualifying merchant-deposit, payroll-payment, or card-spend path every 30 days for 90 days. Expires September 30, 2026."
   },
   {
     "id": "stanford-fcu-620-checking-2026",
@@ -5849,36 +5817,37 @@ export const bonuses: any[] = [
     "id": "metro-cu-500-checking-2026",
     "bank_name": "Metro Credit Union",
     "product_type": "checking",
-    "bonus_amount": 500,
+    "bonus_amount": 400,
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
-      "deposit_window_days": null,
+      "dd_count_required": 1,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "Open an eligible checking account, enroll in eStatements, and establish one monthly recurring qualifying direct deposit within 60 days. The public offer does not state a minimum direct-deposit amount."
     },
-    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly maintenance fee on the eligible account.", "early_closure_fee": 15 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
     "eligibility": {
       "state_restricted": true,
       "states_allowed": ["MA", "NH"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "State restricted: MA, NH. New Metro CU checking customers only."
+      "eligibility_notes": "New Metro Credit Union checking customers who live, work, or have a business in Barnstable, Bristol, Essex, Franklin, Hampden, Hampshire, Middlesex, Norfolk, Plymouth, Suffolk, or Worcester County in Massachusetts, or Hillsborough, Cheshire, Merrimack, or Strafford County in New Hampshire."
     },
-    "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 42, "must_remain_open_days": null },
     "source_links": [
-      "https://www.metrocu.org/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ma-only-metro-credit-union-300-checking-bonus/",
+      "https://www.metrocu.org/"
     ],
-    "raw_excerpt": "Metro Credit Union $500 checking bonus. MA, NH only. Direct deposit required."
+    "raw_excerpt": "Metro Credit Union $400 checking bonus: establish one monthly recurring direct deposit and enroll in eStatements within 60 days. No minimum direct-deposit amount is stated."
   },
   {
     "id": "fidelity-bank-pa-500-checking-2026",
@@ -5919,6 +5888,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "travis-cu-475-checking-2026",
+    "expired": true,
     "bank_name": "Travis Credit Union",
     "product_type": "checking",
     "bonus_amount": 475,
@@ -5947,8 +5917,7 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.traviscu.org/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ca-travis-credit-union-250-checking-bonus/"
     ],
     "raw_excerpt": "Travis Credit Union $475 checking bonus. CA only. Direct deposit required."
   },
@@ -5993,7 +5962,7 @@ export const bonuses: any[] = [
     "id": "wecu-400-checking-2026",
     "bank_name": "WECU",
     "product_type": "checking",
-    "bonus_amount": 250,
+    "bonus_amount": 400,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -6006,7 +5975,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "Spend Plus Checking: $400 for $1,000+ direct deposit within first 60 days (paid day 65). WA only; no membership in prior 12 months. Expires 6/30/2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6019,8 +5988,8 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.wecu.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.wecu.com/offer/",
+      "https://www.doctorofcredit.com/wa-only-wecu-250-checking-bonus/"
     ],
     "raw_excerpt": "WECU $250 checking bonus. WA only. Direct deposit required."
   },
@@ -6054,8 +6023,7 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.countrybank.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ma-nh-me-ri-ct-vt-country-bank-200-checking-bonus/"
     ],
     "raw_excerpt": "Country Bank $400 checking bonus. MA, NH, ME, RI, CT, VT. No direct deposit required."
   },
@@ -6089,13 +6057,14 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.purduefed.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.purduefed.com/Crown-Point-Welcome/Checking-Bonus-Promo",
+      "https://www.doctorofcredit.com/in-lake-porter-county-purdue-federal-credit-union-150-checking-bonus/"
     ],
     "raw_excerpt": "Purdue Federal Credit Union $400 checking bonus. IN only (Lake & Porter County)."
   },
   {
     "id": "flushing-bank-350-checking-2026",
+    "expired": true,
     "bank_name": "Flushing Bank",
     "product_type": "checking",
     "bonus_amount": 350,
@@ -6124,8 +6093,7 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.flushingbank.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ny-nj-only-flushing-bank-350-checking-bonus/"
     ],
     "raw_excerpt": "Flushing Bank $350 checking bonus. NY, NJ only. Direct deposit required."
   },
@@ -6159,8 +6127,8 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.frontwavecu.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.frontwavecu.com/new-member",
+      "https://www.doctorofcredit.com/ca-frontwave-credit-union-200-checking-bonus/"
     ],
     "raw_excerpt": "Frontwave Credit Union $350 checking bonus. CA only. Direct deposit required."
   },
@@ -6181,7 +6149,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "No direct deposit required."
+      "other_requirements_text": "Requires $1,500+ in direct deposits within 60 days and promo code Spring26350; apply by 6/30/2026. Hampden/Hampshire/Franklin MA and Hartford/Tolland/Litchfield/Middlesex CT."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6194,8 +6162,8 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.bankatpeoples.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.bankatpeoples.com/home/standalone/checking350",
+      "https://www.doctorofcredit.com/ma-ct-only-peoplesbank-bankatpeoples-250-checking-bonus-direct-deposit-not-required/"
     ],
     "raw_excerpt": "PeoplesBank $350 checking bonus. MA, CT only. No direct deposit required."
   },
@@ -6229,29 +6197,31 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.growfinancial.org/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.growfinancial.org/checking300/",
+      "https://www.doctorofcredit.com/fl-sc-grow-financial-federal-credit-union-300-checking-bonus/"
     ],
     "raw_excerpt": "Grow Financial FCU $300 checking bonus. FL, SC. Military also eligible."
   },
   {
     "id": "berkshire-bank-300-checking-2026",
-    "bank_name": "Berkshire Bank",
+    "bank_name": "Beacon Bank (formerly Berkshire Bank)",
     "product_type": "checking",
     "bonus_amount": 300,
+    "expiration_date": "2026-06-30",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": {
-      "direct_deposit_required": false,
-      "min_direct_deposit_total": null,
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
-      "deposit_window_days": null,
+      "dd_count_required": 3,
+      "deposit_window_days": 45,
       "holding_period_days": null,
-      "min_opening_deposit": null,
+      "min_opening_deposit": 10,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "$300 checking bonus plus $360 streaming credit."
+      "other_requirements_text": "Open Beacon One Checking and complete the in-app/online Pinwheel direct-deposit switch by June 30, 2026. Receive recurring direct deposits totaling $1,000+ per month for 3 consecutive months, with the first deposit within 45 days of submitting the switch. A separate streaming reimbursement of up to $360 requires $2,000+ in monthly direct deposits plus an eligible subscription."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6260,14 +6230,13 @@ export const bonuses: any[] = [
       "states_allowed": ["MA", "NY", "CT", "RI", "VT"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "State restricted: MA, NY, CT, RI, VT. New Berkshire Bank checking customers only."
+      "eligibility_notes": "Available in Beacon Bank's former Berkshire Bank footprint in MA, NY, CT, RI, and VT. One $300 bonus per client; the Pinwheel direct-deposit switch is required."
     },
-    "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
-      "https://www.berkshirebank.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.berkshirebank.com/personal/checking-savings/berkshire-one-checking"
     ],
-    "raw_excerpt": "Berkshire Bank $300 checking bonus plus $360 streaming credit. MA, NY, CT, RI, VT."
+    "raw_excerpt": "Beacon One Checking pays $300 after the Pinwheel direct-deposit switch and $1,000+ in recurring direct deposits per month for 3 consecutive months; the first deposit must arrive within 45 days."
   },
   {
     "id": "camden-national-300-checking-2026",
@@ -6299,8 +6268,7 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.camdennational.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/me-nh-camden-national-bank-300-checking-bonus-2/"
     ],
     "raw_excerpt": "Camden National Bank $300 checking bonus. ME, NH only. Direct deposit required."
   },
@@ -6334,13 +6302,14 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.gecu.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.gecu.com/checking-and-savings/checking-accounts/checking-offer",
+      "https://www.doctorofcredit.com/nm-tx-gecu-federal-credit-union-300-checking-bonus/"
     ],
     "raw_excerpt": "GECU Federal Credit Union $300 checking bonus. NM, TX only. Direct deposit required."
   },
   {
     "id": "safe-cu-300-checking-2026",
+    "expired": true,
     "bank_name": "SAFE Credit Union",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -6356,7 +6325,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "No direct deposit required."
+      "other_requirements_text": "Direct deposit IS required ($1,000+ in first 60 days, then $1,000+/month for two more months) plus eStatements and promo code SAFE300. Apply-by 5/31/2026 has passed."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6369,13 +6338,14 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.safecu.org/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.safecu.org/personal/manage-your-money/checking-promo-get-300",
+      "https://www.doctorofcredit.com/ca-only-safe-credit-union-600-checking-bonus/"
     ],
     "raw_excerpt": "SAFE Credit Union $300 checking bonus. CA only. No direct deposit required."
   },
   {
     "id": "sacramento-cu-300-checking-2026",
+    "expired": true,
     "bank_name": "Sacramento Credit Union",
     "product_type": "checking",
     "bonus_amount": 200,
@@ -6404,13 +6374,13 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.sactocu.org/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.doctorofcredit.com/ca-only-sacramento-credit-union-150-checking-bonus/"
     ],
     "raw_excerpt": "Sacramento Credit Union $200 checking bonus. CA only. Direct deposit required."
   },
   {
     "id": "unitus-cu-300-checking-2026",
+    "expired": true,
     "bank_name": "Unitus Community Credit Union",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -6439,8 +6409,8 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.unitusccu.com/",
-      "https://www.doctorofcredit.com/best-bank-account-bonuses/"
+      "https://www.unitusccu.com/get-300/",
+      "https://www.doctorofcredit.com/unitus-community-credit-union-200/"
     ],
     "raw_excerpt": "Unitus Community Credit Union $300 checking bonus. OR only. Direct deposit required."
   },
