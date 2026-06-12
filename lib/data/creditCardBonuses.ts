@@ -55,6 +55,37 @@ export type IntroApr = {
   go_to_apr_high?: number
 }
 
+/**
+ * Award-travel value: the stuff that makes a points card worth more than its
+ * earn rate. A different lens from signup/spend — this ranks cards by the value
+ * you get *redeeming* (transfer partners, hard-dollar travel credits, perks),
+ * not by what they pay per dollar.
+ *
+ * Every field is optional so existing catalog entries compile unchanged — a
+ * card with no `travel` block is "not yet researched" and ranks dark.
+ *
+ * Example — Chase Sapphire Reserve (partial):
+ *   { transfer_partners: ["United", "Hyatt", "Southwest"], max_transfer_cpp: 0.02,
+ *     travel_credit: 300, lounge_access: true, global_entry_credit: true,
+ *     no_foreign_tx_fee: true }
+ */
+export type TravelValue = {
+  /** Loyalty programs this card's points transfer to, e.g. ["United", "Hyatt"]. */
+  transfer_partners?: string[]
+  /** Best realistic redemption value via transfer partners (cents-per-point, 0.02 = 2¢). */
+  max_transfer_cpp?: number
+  /** Annual travel statement credit, in $. */
+  travel_credit?: number
+  /** Annual free-night certificate value, in $ (hotel cards). */
+  free_night_value?: number
+  /** Airport lounge access (Priority Pass, Centurion, etc.). */
+  lounge_access?: boolean
+  /** Reimburses the Global Entry / TSA PreCheck application fee. */
+  global_entry_credit?: boolean
+  /** No foreign-transaction fees. */
+  no_foreign_tx_fee?: boolean
+}
+
 export type CreditCardBonus = {
   id: string
   card_name: string
@@ -81,6 +112,8 @@ export type CreditCardBonus = {
   rewards?: RewardsTier[]
   /** Introductory 0% APR terms. Optional — absent until researched per card. */
   intro_apr?: IntroApr
+  /** Award-travel value (transfer partners, credits, perks). Optional — absent until researched. */
+  travel?: TravelValue
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [

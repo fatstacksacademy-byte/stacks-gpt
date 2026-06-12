@@ -17,6 +17,12 @@ import {
   type SpendInput,
   type RankMode,
 } from "../../lib/data/cardSpendValue"
+import {
+  rankByTravelValue,
+  travelPerkValue,
+  travelSummary,
+  type TravelMode,
+} from "../../lib/data/travelValue"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -29,7 +35,7 @@ import {
  * sell (bank bonuses by state) lives below in the page, where it's honest.
  */
 
-type Path = "signup" | "spend" | "apr"
+type Path = "signup" | "spend" | "apr" | "travel"
 
 const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online: 0, other: 0 }
 
@@ -44,6 +50,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [stateSlug, setStateSlug] = useState<string>("")
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
   const [balance, setBalance] = useState<number>(5000)
+  const [travelMode, setTravelMode] = useState<TravelMode>("perks")
 
   const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
 
@@ -67,10 +74,15 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     [cards, aprMode],
   )
 
+  const travelRanked = useMemo(
+    () => rankByTravelValue(cards, travelMode).slice(0, 12),
+    [cards, travelMode],
+  )
+
   return (
     <div style={{ marginBottom: 48 }}>
-      {/* ── Three-path chooser ───────────────────────────────────────── */}
-      <div className="cf-paths" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      {/* ── Four-path chooser ────────────────────────────────────────── */}
+      <div className="cf-paths" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
         <PathCard
           active={path === "signup"}
           emoji="🎯"
@@ -84,6 +96,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
           title="Best card for my daily spend"
           sub="Tell us what you spend, we rank cards by what they'd earn you."
           onClick={() => setPath("spend")}
+        />
+        <PathCard
+          active={path === "travel"}
+          emoji="✈️"
+          title="Best card for award travel"
+          sub="Ranked by transfer partners, travel credits & perks — not earn rate."
+          onClick={() => setPath("travel")}
         />
         <PathCard
           active={path === "apr"}
@@ -260,6 +279,49 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
         </div>
       )}
 
+      {path === "travel" && (
+        <div style={{ marginTop: 24 }}>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: 20, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "inline-flex", border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden" }}>
+              <ModeTab active={travelMode === "perks"} onClick={() => setTravelMode("perks")}>Most travel perks</ModeTab>
+              <ModeTab active={travelMode === "transfer"} onClick={() => setTravelMode("transfer")}>Best transfer value</ModeTab>
+            </div>
+          </div>
+
+          <ResultBlock
+            heading={travelMode === "perks" ? "Most annual travel value" : "Best transfer-partner value"}
+            note={
+              travelMode === "perks"
+                ? "Ranked by hard-dollar travel credits, free-night certs, lounge access & Global Entry — the value you get whether or not you chase award redemptions."
+                : "Ranked by best realistic redemption (cents per point) through airline & hotel transfer partners. Where points cards pull ahead of cashback."
+            }
+          >
+            {travelRanked.length === 0 ? (
+              <div style={{ background: "#fff", border: "1px dashed #e8e8e8", borderRadius: 12, padding: 24, fontSize: 14, color: "#666", lineHeight: 1.6 }}>
+                <strong style={{ color: "#111" }}>No award-travel data captured yet.</strong> We&apos;re
+                researching transfer partners, travel credits &amp; perks card by card — this list lights
+                up as the data lands.
+              </div>
+            ) : (
+              travelRanked.map((c, i) => {
+                const perk = travelPerkValue(c.travel!)
+                const cpp = c.travel?.max_transfer_cpp ?? 0
+                return (
+                  <CardRow
+                    key={c.id}
+                    rank={i + 1}
+                    card={c}
+                    primary={travelMode === "transfer" ? `${(cpp * 100).toFixed(1)}¢` : `$${perk.toLocaleString()}`}
+                    primaryLabel={travelMode === "transfer" ? "per point" : "travel value/yr"}
+                    secondary={travelSummary(c, travelMode)}
+                  />
+                )
+              })
+            )}
+          </ResultBlock>
+        </div>
+      )}
+
       {/* ── Build-my-plan handoff (shows once a path is chosen) ── */}
       {path && <BuildPlanCta path={path} />}
 
@@ -267,7 +329,10 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       <StateCrossSell stateSlug={stateSlug} onChange={setStateSlug} />
 
       <style>{`
-        @media (max-width: 700px) {
+        @media (max-width: 1000px) {
+          .cf-paths { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 560px) {
           .cf-paths { grid-template-columns: 1fr !important; }
           .cf-spend-grid { grid-template-columns: 1fr 1fr !important; }
         }
@@ -288,6 +353,11 @@ function BuildPlanCta({ path }: { path: Path }) {
       body: "Stacks OS orders these bonuses by your 5/24 status and paycheck, so you hit every min-spend without overlapping.",
       href: "/stacksos/spending",
       cta: "Build my plan with Stacks OS →",
+    },
+    travel: {
+      body: "Stacks OS pairs the right travel card with your real spend and goal trip, then sequences it so the points land before you need to redeem.",
+      href: "/stacksos/spending",
+      cta: "Build my travel plan with Stacks OS →",
     },
     apr: {
       body: "Stacks OS models a 0% balance transfer against your payoff timeline — see whether the transfer fee beats the interest you'd otherwise pay.",
