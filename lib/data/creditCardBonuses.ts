@@ -144,6 +144,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Priority Pass lounge access",
       "Global Entry/TSA PreCheck credit",
     ],
+    travel: {
+      transfer_partners: ["united", "southwest", "jetblue", "aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "emirates", "singapore", "hyatt", "marriott", "ihg"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 300,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "chase-ink-business-preferred-100k",
@@ -167,6 +175,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Primary rental car insurance",
       "No foreign transaction fees",
     ],
+    travel: {
+      transfer_partners: ["united", "southwest", "jetblue", "aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "emirates", "singapore", "hyatt", "marriott", "ihg"],
+      max_transfer_cpp: 0.02,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "chase-marriott-boundless-5nights",
@@ -290,6 +303,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "$200 airline incidental credit",
       "Centurion Lounge + Priority Pass access",
     ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "avianca", "singapore", "cathay", "emirates", "delta", "jetblue", "hilton", "marriott", "choice"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 200,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "amex-business-platinum-200k",
@@ -314,6 +335,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Dell credits",
       "Centurion Lounge access",
     ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "avianca", "singapore", "cathay", "emirates", "delta", "jetblue", "hilton", "marriott", "choice"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 200,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "amex-hilton-honors-70k",
@@ -518,6 +547,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Priority Pass Select",
       "4 AA Admirals Club passes",
     ],
+    travel: {
+      transfer_partners: ["avianca", "cathay", "emirates", "flying-blue", "jetblue", "singapore", "virgin-atlantic", "wyndham", "choice"],
+      max_transfer_cpp: 0.018,
+      travel_credit: 300,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "citi-double-cash-200",
@@ -610,6 +647,12 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "Transfer to airline/hotel partners",
       "No foreign transaction fees",
     ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "avianca", "singapore", "cathay", "emirates", "wyndham", "choice"],
+      max_transfer_cpp: 0.0185,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "capital-one-spark-cash-select-750",
@@ -1574,6 +1617,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
       { categories: ["tours_&_attractions_(portal)"], multiplier: 0, unit: "points" },
     ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "avianca", "singapore", "cathay", "emirates", "delta", "jetblue", "hilton", "marriott", "choice"],
+      max_transfer_cpp: 0.02,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "amex-american-express-green-rwp",
@@ -2701,6 +2749,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
       { categories: ["vacation_rentals_(portal)"], multiplier: 0, unit: "points" },
     ],
+    travel: {
+      transfer_partners: ["avianca", "cathay", "emirates", "flying-blue", "jetblue", "singapore", "virgin-atlantic", "wyndham", "choice"],
+      max_transfer_cpp: 0.018,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "citi-citi-thankyou-rwp",
@@ -6586,12 +6639,15 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Chase Ink Business Cash",
     issuer: "chase",
     card_type: "business",
-    bonus_amount: 750,
-    bonus_currency: "cash",
+    // Elevated 100k offer — highest ever for the no-fee Ink cards — live ~June 14-15, 2026
+    // (per DoC). Modeled as Ultimate Rewards points; pool with a premium UR card to transfer.
+    // Note: Chase Ink cards now carry a lifetime signup-bonus limit, enforced at application.
+    bonus_amount: 100000,
+    bonus_currency: "Ultimate Rewards",
     is_hotel_card: false,
-    cpp_value: 1,
-    min_spend: 6000,
-    spend_months: 3,
+    cpp_value: 0.01,
+    min_spend: 8000,
+    spend_months: 4,
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
@@ -6610,12 +6666,15 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Chase Ink Business Unlimited",
     issuer: "chase",
     card_type: "business",
-    bonus_amount: 750,
-    bonus_currency: "cash",
+    // Elevated 100k offer — highest ever for the no-fee Ink cards — live ~June 14-15, 2026
+    // (per DoC). Modeled as Ultimate Rewards points; pool with a premium UR card to transfer.
+    // Note: Chase Ink cards now carry a lifetime signup-bonus limit, enforced at application.
+    bonus_amount: 100000,
+    bonus_currency: "Ultimate Rewards",
     is_hotel_card: false,
-    cpp_value: 1,
-    min_spend: 6000,
-    spend_months: 3,
+    cpp_value: 0.01,
+    min_spend: 8000,
+    spend_months: 4,
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
@@ -6651,6 +6710,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["marketing_/_advertising"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    travel: {
+      transfer_partners: ["united", "southwest", "jetblue", "aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "emirates", "singapore", "hyatt", "marriott", "ihg"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 300,
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
   },
   {
     id: "citi-costco-anywhere-business-rwp",
