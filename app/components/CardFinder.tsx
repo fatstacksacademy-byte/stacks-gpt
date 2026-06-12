@@ -449,7 +449,8 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       </div>
       <div style={{ fontSize: 13, color: "#666", lineHeight: 1.55, marginBottom: 14 }}>
         Most cards above are nationwide. Pick your state to add regional bank and credit-union
-        cards that only accept residents where you live — they&apos;ll fold into the rankings above.
+        cards available in your area — they&apos;ll fold into the rankings above. Some require a
+        qualifying county, employer, family, military, or association membership.
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
         <select
@@ -474,9 +475,9 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       {selected && (
         <div style={{ fontSize: 13, color: addedCount > 0 ? "#0d7c5f" : "#888", marginTop: 12, lineHeight: 1.5 }}>
           {addedCount > 0 ? (
-            <>Added <strong>{addedCount}</strong> {selected.name}-only card{addedCount === 1 ? "" : "s"} to your results above.</>
+            <>Added <strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Check each eligibility note before applying.</>
           ) : (
-            <>No {selected.name}-only cards in the catalog yet — we add regional &amp; credit-union cards as we verify them. Nationwide cards above still apply.</>
+            <>No regional cards verified for {selected.name} yet — we add them as issuer and membership terms are confirmed. Nationwide cards above still apply.</>
           )}
         </div>
       )}
@@ -620,6 +621,15 @@ type DetailChip = { label: string; title: string; bg: string; fg: string; border
 
 function detailChips(card: CreditCardBonus): DetailChip[] {
   const out: DetailChip[] = []
+  if (card.state_restricted && card.state_restricted.length > 0) {
+    out.push({
+      label: `Regional · ${card.state_restricted.join("/")}`,
+      title: card.eligibility_notes || `Regional availability in ${card.state_restricted.join(", ")}`,
+      bg: "#fff8e8",
+      fg: "#8a5a00",
+      border: "#efdca8",
+    })
+  }
   if (card.lounge_network) {
     const map: Record<NonNullable<CreditCardBonus["lounge_network"]>, string> = {
       "priority pass": "Priority Pass",

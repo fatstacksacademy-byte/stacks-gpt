@@ -1,13 +1,11 @@
 /**
  * State availability for credit cards.
  *
- * Most cards are nationwide (no `state_restricted`). A few regional bank and
- * credit-union cards only accept residents of certain states. With no state
- * selected we can't know a user's eligibility, so state-restricted cards stay
- * hidden; picking a state adds the cards specific to it into the results.
- *
- * Ships dark today — zero cards carry `state_restricted` until regional cards
- * are populated, so default behavior (all nationwide cards) is unchanged.
+ * Most cards are nationwide (no `state_restricted`). Regional bank and
+ * credit-union cards can have statewide, county-level, employer, family, or
+ * association membership paths. `state_restricted` means the card may be
+ * available in that state; the card's eligibility note carries the finer rule.
+ * With no state selected, regional cards stay hidden.
  */
 import type { CreditCardBonus } from "./creditCardBonuses"
 

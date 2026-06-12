@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { availableInState, cardsForState, stateSpecificCards } from "./cardAvailability"
-import type { CreditCardBonus } from "./creditCardBonuses"
+import { creditCardBonuses, type CreditCardBonus } from "./creditCardBonuses"
 
 function card(partial: Partial<CreditCardBonus>): CreditCardBonus {
   return {
@@ -60,5 +60,13 @@ describe("stateSpecificCards", () => {
     const caOnly = card({ id: "ca", state_restricted: ["CA"] })
     expect(stateSpecificCards([nationwide, caOnly], "CA").map(c => c.id)).toEqual(["ca"])
     expect(stateSpecificCards([nationwide, caOnly], "TX")).toEqual([])
+  })
+
+  it("includes verified regional cards with eligibility provenance", () => {
+    const regional = creditCardBonuses.filter(c => !c.expired && c.state_restricted?.length)
+    expect(regional.length).toBeGreaterThanOrEqual(10)
+    expect(regional.every(c => c.eligibility_notes && c.eligibility_source && c.offer_verified_at)).toBe(true)
+    expect(stateSpecificCards(creditCardBonuses, "CO").some(c => c.issuer === "ent")).toBe(true)
+    expect(stateSpecificCards(creditCardBonuses, "FL").some(c => c.issuer === "vystar")).toBe(true)
   })
 })
