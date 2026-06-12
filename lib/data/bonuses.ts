@@ -1,4 +1,5 @@
 import { hawaiiCheckingBonuses } from "./hawaiiBankBonuses"
+import { stateBankBonuses } from "./stateBankBonuses"
 
 // Loose-typed by design: the raw bonus catalog is JSON-shaped with inconsistent
 // fields; catalogTaxonomy.ts is the single place that normalizes it.
@@ -1166,6 +1167,8 @@ export const bonuses: any[] = [
     "bank_name": "Huntington Bank",
     "product_type": "checking",
     "bonus_amount": 600,
+    "expiration_date": "2026-06-15",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": 24,
     "tiers": [
       { "bonus": 400, "min_dd_total": 500 },
@@ -1821,6 +1824,8 @@ export const bonuses: any[] = [
     "bank_name": "SouthState Bank",
     "product_type": "checking",
     "bonus_amount": 300,
+    "expiration_date": "2026-06-30",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 250, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": 15, "billpay_required": null, "other_requirements_text": "$250 DD or 1 auto draft of $25+ within 60 days. 15 debit purchases in 60 days. Promo code 300BONUS. Expires June 30, 2026." },
     "fees": { "monthly_fee": 8, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
@@ -2036,7 +2041,9 @@ export const bonuses: any[] = [
     "id": "becu-500-checking-2026",
     "bank_name": "BECU (Boeing Employees Credit Union)",
     "product_type": "checking",
-    "bonus_amount": 500,
+    "bonus_amount": 150,
+    "expiration_date": "2026-12-31",
+    "offer_verified_at": "2026-06-12",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": false,
@@ -6734,4 +6741,9 @@ export const bonuses: any[] = [
   // unions), verified on each institution's official page. See
   // ./hawaiiBankBonuses.ts and ./hawaiiBankBonuses.RESEARCH.md.
   ...hawaiiCheckingBonuses,
+
+  // State-local checking & new-member bonuses for all other states (regional
+  // banks + state credit unions), verified officially. See ./stateBankBonuses.ts
+  // and ./stateBankBonuses.RESEARCH.md.
+  ...stateBankBonuses,
 ]
