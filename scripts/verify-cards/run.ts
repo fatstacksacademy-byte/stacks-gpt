@@ -16,6 +16,11 @@
  * Cache in `.cache/verify-cards/` for fast re-runs.
  */
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from "node:fs"
+// Auto-load .env.local so ANTHROPIC_API_KEY / Supabase keys are visible
+// without needing `set -a; source .env.local` first. Node ≥21.7 ships
+// process.loadEnvFile natively — no dotenv dep needed.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local")
+
 import { join } from "node:path"
 import { randomUUID } from "node:crypto"
 import pLimit from "p-limit"
