@@ -243,9 +243,476 @@ export type CreditCardBonus = {
     /** Statement credit awarded annually (e.g. CSR's $300 travel reset). Cleaner than burying in annual_credits_detail when it's a single one-line item. */
     annual_credit?: number
   }
+  /**
+   * Purchase / shopping protections. TPG and NerdWallet break these
+   * out separately because they're surprisingly differentiating —
+   * extended warranty alone can be worth $200+/yr for someone who
+   * buys consumer electronics. Each is a boolean; absent = "not yet
+   * researched" not false.
+   */
+  protections?: {
+    /** Replacement / damage coverage when phone bill is paid with the card. */
+    cell_phone_protection?: boolean
+    /** Refund coverage for items damaged or stolen within X days of purchase. */
+    purchase_protection?: boolean
+    /** Doubles or extends the manufacturer's warranty on eligible purchases. */
+    extended_warranty?: boolean
+    /** Refund when a merchant refuses to take an item back within X days. */
+    return_protection?: boolean
+    /** Refund the difference when an item's price drops within X days. */
+    price_protection?: boolean
+  }
+  /**
+   * Authorized-user fee for additional cardholders. Premium cards
+   * often charge $0 for first N then a per-AU annual fee. Set to 0
+   * for "free" cards. Absent = not yet researched.
+   */
+  authorized_user_fee?: number
+  /**
+   * Penalty APR — the rate the issuer jumps you to after a missed
+   * payment. Distinct from go-to APR; usually 29.99%+. Set to 0 for
+   * issuers that explicitly advertise "no penalty APR" (Chase,
+   * Discover) so the catalog can surface that as a chip.
+   */
+  penalty_apr_pct?: number
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [
+  // ─── TPG-DIFF FILL (12 cards present in TPG's catalog but missing in ours) ───
+  // Added 2026-06-12 after diffing thepointsguy.com/sitemap_cards.xml against
+  // our catalog. These are well-known cards a comparison resource has to
+  // cover; the omissions were leftover gaps from the SEED_CARDS days.
+
+  {
+    id: "capital-one-savor-90k",
+    card_name: "Capital One Savor",
+    issuer: "capital one",
+    card_type: "personal",
+    bonus_amount: 30000,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 3000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.capitalone.com/credit-cards/savor/",
+    expired: false,
+    key_benefits: [
+      "3% cash back on dining, entertainment, streaming, groceries",
+      "5% on hotels & rental cars via Capital One Travel",
+      "8% on Capital One Entertainment purchases",
+      "No annual fee",
+    ],
+    rewards: [
+      { categories: ["capital_one_entertainment"], multiplier: 8 },
+      { categories: ["capital_one_travel_hotels", "capital_one_travel_rental_cars"], multiplier: 5 },
+      { categories: ["dining", "entertainment", "streaming", "groceries"], multiplier: 3 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: { no_foreign_tx_fee: true },
+    credit_score_required: "good",
+    protections: { extended_warranty: true },
+  },
+  {
+    id: "capital-one-spark-miles-50k",
+    card_name: "Capital One Spark Miles for Business",
+    issuer: "capital one",
+    card_type: "business",
+    bonus_amount: 50000,
+    bonus_currency: "Capital One miles",
+    is_hotel_card: false,
+    cpp_value: 0.014,
+    min_spend: 4500,
+    spend_months: 3,
+    annual_fee: 95,
+    annual_fee_waived_first_year: true,
+    statement_credits_year1: 120,
+    offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-miles/",
+    expired: false,
+    key_benefits: [
+      "2x miles on every purchase",
+      "5x on hotels & rental cars via Capital One Travel",
+      "$120 Global Entry/TSA PreCheck credit (every 4 years)",
+      "Annual fee waived first year",
+    ],
+    rewards: [
+      { categories: ["capital_one_travel_hotels", "capital_one_travel_rental_cars"], multiplier: 5 },
+      { categories: ["everything_else"], multiplier: 2 },
+    ],
+    travel: {
+      transfer_partners: ["aeroplan", "british-airways", "etihad", "flying-blue", "singapore", "turkish", "wyndham", "choice"],
+      max_transfer_cpp: 0.018,
+      no_foreign_tx_fee: true,
+      global_entry_credit: true,
+    },
+    credit_score_required: "good",
+    annual_credits_detail: [
+      { label: "Global Entry / TSA PreCheck", amount: 100, cadence: "biennial" },
+    ],
+  },
+  {
+    id: "chase-amazon-prime-visa",
+    card_name: "Chase Amazon Prime Visa",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 200,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 0,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/rewards-credit-cards/amazon/visa",
+    expired: false,
+    key_benefits: [
+      "5% back at Amazon & Whole Foods (requires Prime membership)",
+      "2% at restaurants, gas, drugstores",
+      "1% on everything else",
+      "$200 Amazon gift card upon approval",
+      "No foreign transaction fees",
+    ],
+    rewards: [
+      { categories: ["amazon", "whole_foods"], multiplier: 5 },
+      { categories: ["dining", "gas", "drugstores"], multiplier: 2 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: { no_foreign_tx_fee: true },
+    credit_score_required: "good",
+    protections: {
+      purchase_protection: true,
+      extended_warranty: true,
+    },
+  },
+  {
+    id: "citi-strata-premier-75k",
+    card_name: "Citi Strata Premier",
+    issuer: "citi",
+    card_type: "personal",
+    bonus_amount: 75000,
+    bonus_currency: "ThankYou Points",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 4000,
+    spend_months: 3,
+    annual_fee: 95,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 100,
+    offer_link: "https://www.citi.com/credit-cards/citi-strata-premier-credit-card",
+    expired: false,
+    key_benefits: [
+      "$100 annual hotel credit (one $500+ hotel booking via Citi Travel)",
+      "3x on air travel, hotels, restaurants, supermarkets, gas",
+      "10x on hotels, car rentals, attractions via Citi Travel",
+      "Transfer to 18+ airline/hotel partners",
+    ],
+    rewards: [
+      { categories: ["citi_travel"], multiplier: 10 },
+      { categories: ["air_travel", "hotels", "dining", "supermarkets", "gas"], multiplier: 3 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: {
+      transfer_partners: ["air-france-klm", "avianca", "cathay-pacific", "emirates", "etihad", "eva", "jetblue", "qatar", "singapore", "turkish", "virgin-atlantic", "wyndham", "choice", "leaders-club"],
+      max_transfer_cpp: 0.02,
+      travel_credit: 100,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+    travel_insurance: {
+      trip_delay: true,
+      trip_cancellation: true,
+      baggage_delay: true,
+      rental_cdw_secondary: true,
+    },
+    annual_credits_detail: [
+      { label: "Hotel credit (via Citi Travel)", amount: 100, cadence: "annual" },
+    ],
+  },
+  {
+    id: "citi-aadvantage-platinum-select-80k",
+    card_name: "Citi AAdvantage Platinum Select",
+    issuer: "citi",
+    card_type: "personal",
+    bonus_amount: 80000,
+    bonus_currency: "AAdvantage miles",
+    is_hotel_card: false,
+    cpp_value: 0.014,
+    min_spend: 3500,
+    spend_months: 4,
+    annual_fee: 99,
+    annual_fee_waived_first_year: true,
+    statement_credits_year1: 50,
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-credit-card",
+    expired: false,
+    key_benefits: [
+      "Free first checked bag on American Airlines",
+      "Preferred boarding (Group 5)",
+      "2x miles on American Airlines, dining, gas",
+      "$125 American Airlines flight discount after $20K spend in a year",
+      "$50 annual American Airlines hotel credit (Cars/Hotels portal)",
+    ],
+    rewards: [
+      { categories: ["american_airlines", "dining", "gas"], multiplier: 2 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: {
+      lounge_access: false,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+    companion_benefit: {
+      kind: "fare",
+      estimated_value: 125,
+      cadence: "earn",
+      label: "$125 AA flight discount (after $20K spend/yr)",
+    },
+  },
+  {
+    id: "citi-aadvantage-executive-70k",
+    card_name: "Citi AAdvantage Executive World Elite Mastercard",
+    issuer: "citi",
+    card_type: "personal",
+    bonus_amount: 70000,
+    bonus_currency: "AAdvantage miles",
+    is_hotel_card: false,
+    cpp_value: 0.014,
+    min_spend: 7000,
+    spend_months: 3,
+    annual_fee: 595,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 100,
+    offer_link: "https://www.citi.com/credit-cards/citi-aadvantage-executive-world-elite-mastercard",
+    expired: false,
+    key_benefits: [
+      "Admirals Club membership (~$850 value)",
+      "Free first checked bag on AA",
+      "Priority check-in, security, boarding",
+      "$100 Global Entry/TSA PreCheck credit (every 4 years)",
+      "10x on hotels & car rentals via aa.com",
+      "4x on American Airlines purchases",
+    ],
+    rewards: [
+      { categories: ["aa_com_hotels", "aa_com_rental_cars"], multiplier: 10 },
+      { categories: ["american_airlines"], multiplier: 4 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: {
+      lounge_access: true,
+      global_entry_credit: true,
+      no_foreign_tx_fee: true,
+    },
+    lounge_network: "admirals club",
+    credit_score_required: "excellent",
+    annual_credits_detail: [
+      { label: "Admirals Club membership (~$850 retail)", amount: 850, cadence: "annual" },
+      { label: "Global Entry / TSA PreCheck", amount: 100, cadence: "biennial" },
+    ],
+  },
+  {
+    id: "citi-diamond-preferred-0apr",
+    card_name: "Citi Diamond Preferred",
+    issuer: "citi",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 0,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.citi.com/credit-cards/citi-diamond-preferred-credit-card",
+    expired: false,
+    key_benefits: [
+      "21 months 0% intro APR on balance transfers (one of the longest in market)",
+      "12 months 0% intro APR on purchases",
+      "5% balance transfer fee ($5 min)",
+      "No annual fee",
+      "No rewards earning",
+    ],
+    intro_apr: {
+      purchase_apr_months: 12,
+      bt_apr_months: 21,
+      bt_fee_pct: 5,
+      go_to_apr_low: 18.24,
+      go_to_apr_high: 28.99,
+    },
+    credit_score_required: "good",
+  },
+  {
+    id: "bilt-mastercard",
+    card_name: "Bilt Mastercard",
+    issuer: "bilt",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "Bilt Points",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 0,
+    spend_months: 0,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.biltrewards.com/card",
+    expired: false,
+    key_benefits: [
+      "1x on rent payments (no transaction fee) — uniquely transferable to airline/hotel partners",
+      "3x on dining, 2x on travel, 1x on other purchases",
+      "Transfer to Hyatt, American, United, Air France, Hilton, et al.",
+      "Bilt Rent Day (1st of month): doubled earn rates",
+      "No annual fee",
+    ],
+    rewards: [
+      { categories: ["dining"], multiplier: 3 },
+      { categories: ["travel"], multiplier: 2 },
+      { categories: ["rent"], multiplier: 1 },
+      { categories: ["everything_else"], multiplier: 1 },
+    ],
+    travel: {
+      transfer_partners: ["hyatt", "american-airlines", "united", "air-france-klm", "hilton", "marriott", "british-airways", "virgin-atlantic", "aeromexico", "iberia", "turkish", "ihg"],
+      max_transfer_cpp: 0.02,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+    travel_insurance: {
+      trip_delay: true,
+      trip_cancellation: true,
+      rental_cdw_primary: true,
+    },
+    protections: {
+      cell_phone_protection: true,
+      purchase_protection: true,
+    },
+  },
+  {
+    id: "capital-one-quicksilverone-cash-rewards",
+    card_name: "Capital One QuicksilverOne",
+    issuer: "capital one",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 0,
+    annual_fee: 39,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.capitalone.com/credit-cards/quicksilver-one/",
+    expired: false,
+    key_benefits: [
+      "Unlimited 1.5% cash back on every purchase",
+      "5% on hotels & rental cars via Capital One Travel",
+      "Designed for credit-builders (fair-credit eligibility)",
+      "Auto credit-line review at 6 months",
+    ],
+    rewards: [
+      { categories: ["capital_one_travel_hotels", "capital_one_travel_rental_cars"], multiplier: 5 },
+      { categories: ["everything_else"], multiplier: 1.5 },
+    ],
+    credit_score_required: "fair",
+  },
+  {
+    id: "capital-one-platinum-mastercard",
+    card_name: "Capital One Platinum",
+    issuer: "capital one",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 0,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.capitalone.com/credit-cards/platinum/",
+    expired: false,
+    key_benefits: [
+      "No annual fee credit-builder card",
+      "Auto credit-line review at 6 months",
+      "Eligible for fair credit applicants",
+      "No rewards — designed for credit growth, not earning",
+    ],
+    credit_score_required: "fair",
+  },
+  {
+    id: "amex-business-green-15k",
+    card_name: "American Express Business Green Rewards",
+    issuer: "amex",
+    card_type: "business",
+    bonus_amount: 15000,
+    bonus_currency: "Membership Rewards",
+    is_hotel_card: false,
+    cpp_value: 0.018,
+    min_spend: 3000,
+    spend_months: 3,
+    annual_fee: 95,
+    annual_fee_waived_first_year: true,
+    statement_credits_year1: 0,
+    offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/business-green-rewards-card/",
+    expired: false,
+    key_benefits: [
+      "2x on every U.S. purchase (no category caps)",
+      "Charge card — no preset spending limit (pay in full each month)",
+      "Annual fee waived first year",
+      "Transfer to 18+ travel partners",
+    ],
+    rewards: [
+      { categories: ["everything_else"], multiplier: 2 },
+    ],
+    travel: {
+      transfer_partners: ["delta", "ana", "british-airways", "aeromexico", "flying-blue", "virgin-atlantic", "iberia", "qantas", "singapore", "hilton", "marriott"],
+      max_transfer_cpp: 0.02,
+      no_foreign_tx_fee: true,
+    },
+    credit_score_required: "good",
+  },
+  {
+    id: "chase-ihg-premier-business-140k",
+    card_name: "Chase IHG One Rewards Premier Business",
+    issuer: "chase",
+    card_type: "business",
+    bonus_amount: 140000,
+    bonus_currency: "IHG One Rewards points",
+    is_hotel_card: true,
+    cpp_value: 0.005,
+    min_spend: 4000,
+    spend_months: 3,
+    annual_fee: 99,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ihg/premier-business",
+    expired: false,
+    key_benefits: [
+      "Anniversary free-night certificate (up to 40K points)",
+      "Platinum Elite status while account is open",
+      "10x at IHG hotels (plus base earn)",
+      "5x on travel, gas, restaurants",
+      "Trip cancellation insurance",
+    ],
+    rewards: [
+      { categories: ["ihg_hotels"], multiplier: 10 },
+      { categories: ["travel", "gas", "dining"], multiplier: 5 },
+      { categories: ["everything_else"], multiplier: 3 },
+    ],
+    travel: { lounge_access: false, no_foreign_tx_fee: true },
+    credit_score_required: "good",
+    anniversary_bonus: {
+      free_night_cert_cap_points: 40000,
+      program: "IHG One Rewards",
+    },
+    travel_insurance: {
+      trip_cancellation: true,
+      baggage_delay: true,
+      rental_cdw_primary: true,
+    },
+  },
+
   // ─── PREMIUM CORE (top 4 most-compared cards) ───────────────────
   // These were missing from the catalog and are the cards most users
   // arrive looking for. Added with full new-field annotations.
