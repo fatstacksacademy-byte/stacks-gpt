@@ -25,6 +25,8 @@ import {
   type TravelMode,
 } from "../../lib/data/travelValue"
 import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
+import { useCatalogUnlock } from "./useCatalogUnlock"
+import CatalogUnlockGate from "./CatalogUnlockGate"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -49,6 +51,7 @@ const STATE_PAGE_SIZE = 10
 const DEFAULT_VISIBLE = 12
 
 export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
+  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [path, setPath] = useState<Path | null>(null)
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
   const [mode, setMode] = useState<RankMode>("ongoing")
@@ -80,7 +83,10 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     () => (stateSlug ? US_STATES.find(s => s.slug === stateSlug)?.code ?? null : null),
     [stateSlug],
   )
-  const eligibleCards = useMemo(() => cardsForState(cards, stateCode), [cards, stateCode])
+  // Regional cards only fold into the ranked lists once the email gate is
+  // unlocked; until then the rankings stay nationwide-only (same as no state).
+  const effectiveStateCode = unlocked ? stateCode : null
+  const eligibleCards = useMemo(() => cardsForState(cards, effectiveStateCode), [cards, effectiveStateCode])
   const stateAddedCount = useMemo(
     () => (stateCode ? stateSpecificCards(cards, stateCode).length : 0),
     [cards, stateCode],
@@ -445,7 +451,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
       <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} />
 
-      {selectedState && visibleStateCards.length > 0 && (
+      {selectedState && stateCards.length > 0 && unlocked && (
         <ResultBlock
           heading={`${selectedState.name} regional cards`}
           note={`Verified local bank and credit-union cards, shown ${STATE_PAGE_SIZE} at a time. Membership requirements still apply.`}
@@ -487,6 +493,49 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
             </div>
           )}
         </ResultBlock>
+      )}
+
+      {/* ── Email gate: regional cards stay locked until the visitor unlocks ── */}
+      {selectedState && stateCards.length > 0 && !unlocked && (
+        <div style={{ marginTop: 28 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#111", marginBottom: 2 }}>
+            {selectedState.name} regional cards
+          </div>
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>
+            {stateCards.length} verified local bank and credit-union cards available in {selectedState.name}. Membership requirements still apply.
+          </div>
+          <div style={{ position: "relative", marginBottom: 12 }}>
+            <div
+              aria-hidden
+              style={{ display: "grid", gap: 10, filter: "blur(5px)", pointerEvents: "none", userSelect: "none", maxHeight: 190, overflow: "hidden", opacity: 0.75 }}
+            >
+              {stateCards.slice(0, 3).map(({ card }, index) => {
+                const hasSignupBonus = card.bonus_amount > 0
+                return (
+                  <CardRow
+                    key={card.id}
+                    rank={index + 1}
+                    card={card}
+                    primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
+                    primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
+                    secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
+                  />
+                )
+              })}
+            </div>
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 72%)", pointerEvents: "none" }} />
+          </div>
+          <CatalogUnlockGate
+            count={stateCards.length}
+            stateName={selectedState.name}
+            stateCode={stateCode ?? ""}
+            source="spending_state"
+            unlock={unlock}
+            unlocking={unlocking}
+            error={unlockError}
+            noun="local cards"
+          />
+        </div>
       )}
 
       <style>{`
