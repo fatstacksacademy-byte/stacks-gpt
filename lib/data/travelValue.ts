@@ -13,7 +13,8 @@
  * as the data is filled in.
  */
 import type { CreditCardBonus, TravelValue } from "./creditCardBonuses"
-import { resolveProgramSlug } from "./catalogTaxonomy"
+import { resolveProgramSlug, findTransferProgram } from "./catalogTaxonomy"
+import { resolveTransfers, bestTransferCpp, currencyKey } from "./transferPartners"
 
 export type TravelMode = "perks" | "transfer"
 
@@ -30,9 +31,7 @@ export const GLOBAL_ENTRY_ANNUAL = 24
 export function hasTravelValue(card: CreditCardBonus, mode: TravelMode): boolean {
   const t = card.travel
   if (!t) return false
-  return mode === "transfer"
-    ? (t.transfer_partners?.length ?? 0) > 0 && (t.max_transfer_cpp ?? 0) > 0
-    : travelPerkValue(t) > 0
+  return mode === "transfer" ? bestTransferCpp(card) > 0 : travelPerkValue(t) > 0
 }
 
 /**
@@ -51,8 +50,44 @@ export function travelPerkValue(t: TravelValue): number {
 
 /** Does this card transfer points into the given program (canonical slug)? */
 export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boolean {
-  const partners = card.travel?.transfer_partners ?? []
-  return partners.some(p => resolveProgramSlug(p) === programSlug)
+  return resolveTransfers(card).some(t => t.program === programSlug)
+}
+
+/**
+ * Dollar value of one of this card's points when transferred — into a specific
+ * `program` if given, otherwise the card's best partner. Replaces reading the
+ * single card-level `max_transfer_cpp` so a per-program view shows that
+ * program's real worth (Hyatt ≠ Hilton) instead of one uniform number.
+ */
+export function travelTransferCpp(card: CreditCardBonus, program?: string): number {
+  const resolved = resolveTransfers(card)
+  if (program) return resolved.find(t => t.program === program)?.cpp ?? 0
+  return resolved.reduce((max, t) => (t.cpp > max ? t.cpp : max), 0)
+}
+
+/**
+ * Display labels for a card's transfer partners. Known currencies use canonical
+ * program names ordered by value (or the selected program first); unknown
+ * currencies fall back to the card's raw inline partner names in original order.
+ */
+function transferLabels(card: CreditCardBonus, program?: string): string[] {
+  if (!currencyKey(card.bonus_currency)) {
+    const seen = new Set<string>()
+    const out: string[] = []
+    for (const name of card.travel?.transfer_partners ?? []) {
+      const slug = resolveProgramSlug(name)
+      if (slug && seen.has(slug)) continue
+      if (slug) seen.add(slug)
+      out.push(name)
+    }
+    return out
+  }
+  const resolved = [...resolveTransfers(card)].sort((a, b) => b.cpp - a.cpp)
+  if (program) {
+    const i = resolved.findIndex(t => t.program === program)
+    if (i > 0) resolved.unshift(resolved.splice(i, 1)[0])
+  }
+  return resolved.map(t => findTransferProgram(t.program)?.name ?? t.program)
 }
 
 /**
@@ -73,33 +108,35 @@ export function rankByTravelValue(
     .filter(c => !c.expired && hasTravelValue(c, mode))
     .filter(c => !(mode === "transfer" && program) || cardTransfersTo(c, program!))
     .sort((a, b) => {
-      const at = a.travel!
-      const bt = b.travel!
       if (mode === "transfer") {
-        const ac = at.max_transfer_cpp ?? 0
-        const bc = bt.max_transfer_cpp ?? 0
+        // Rank by value into the chosen program (or best partner if browsing all).
+        const ac = travelTransferCpp(a, program)
+        const bc = travelTransferCpp(b, program)
         if (ac !== bc) return bc - ac
-        return travelPerkValue(bt) - travelPerkValue(at)
+        return travelPerkValue(b.travel!) - travelPerkValue(a.travel!)
       }
-      const ap = travelPerkValue(at)
-      const bp = travelPerkValue(bt)
+      const ap = travelPerkValue(a.travel!)
+      const bp = travelPerkValue(b.travel!)
       if (ap !== bp) return bp - ap
-      return (bt.max_transfer_cpp ?? 0) - (at.max_transfer_cpp ?? 0)
+      return bestTransferCpp(b) - bestTransferCpp(a)
     })
 }
 
 /** Human-readable summary of a card's travel value for the chosen lens. */
-export function travelSummary(card: CreditCardBonus, mode: TravelMode): string {
+export function travelSummary(card: CreditCardBonus, mode: TravelMode, program?: string): string {
   const t = card.travel
   if (!t) return "No travel data"
 
   if (mode === "transfer") {
-    const partners = t.transfer_partners ?? []
-    if (!partners.length || !(t.max_transfer_cpp ?? 0)) return "No transfer partners"
-    const cpp = `${((t.max_transfer_cpp ?? 0) * 100).toFixed(1)}¢/pt`
-    const head = partners.slice(0, 3).join(", ")
-    const more = partners.length > 3 ? ` +${partners.length - 3} more` : ""
-    return `up to ${cpp} · transfers to ${head}${more}`
+    const cpp = travelTransferCpp(card, program)
+    const labels = transferLabels(card, program)
+    if (!labels.length || !cpp) return "No transfer partners"
+    const cppStr = `${(cpp * 100).toFixed(1)}¢/pt`
+    const head = labels.slice(0, 3).join(", ")
+    const more = labels.length > 3 ? ` +${labels.length - 3} more` : ""
+    return program
+      ? `${cppStr} to ${head}${more}`
+      : `up to ${cppStr} · transfers to ${head}${more}`
   }
 
   const bits: string[] = []

@@ -73,9 +73,16 @@ export type IntroApr = {
  *     no_foreign_tx_fee: true }
  */
 export type TravelValue = {
-  /** Loyalty programs this card's points transfer to, e.g. ["United", "Hyatt"]. */
+  /**
+   * Loyalty programs this card's points transfer to. For cards on a known bank
+   * currency (Membership Rewards / Ultimate Rewards / ThankYou / Capital One /
+   * Bilt) this now serves only as the OPT-IN SIGNAL that the card is
+   * transfer-capable — the authoritative, current partner set + per-program
+   * value comes from lib/data/transferPartners.ts. The inline list/cpp below
+   * are only consulted as a fallback for cards on an unrecognized currency.
+   */
   transfer_partners?: string[]
-  /** Best realistic redemption value via transfer partners (cents-per-point, 0.02 = 2¢). */
+  /** Fallback redemption value when currency is unknown (cents-per-point, 0.02 = 2¢). */
   max_transfer_cpp?: number
   /** Annual travel statement credit, in $. */
   travel_credit?: number

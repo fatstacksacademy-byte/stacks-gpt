@@ -20,6 +20,7 @@ import {
 import {
   rankByTravelValue,
   travelPerkValue,
+  travelTransferCpp,
   travelSummary,
   type TravelMode,
 } from "../../lib/data/travelValue"
@@ -44,6 +45,8 @@ const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, onl
 // before the user touches anything.
 const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online: 150, other: 800 }
 const STATE_PAGE_SIZE = 10
+// How many ranked rows each path shows before the "Show all" expander.
+const DEFAULT_VISIBLE = 12
 
 export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [path, setPath] = useState<Path | null>(null)
@@ -55,6 +58,18 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [balance, setBalance] = useState<number>(5000)
   const [travelMode, setTravelMode] = useState<TravelMode>("perks")
   const [travelProgram, setTravelProgram] = useState<string>("")
+  // Each ranked list defaults to the top DEFAULT_VISIBLE rows for a fast,
+  // skimmable page; "Show all" expands to the full eligible set so the finder
+  // never silently hides cards a user qualifies for.
+  const [showAll, setShowAll] = useState<Record<Path, boolean>>({
+    signup: false,
+    spend: false,
+    apr: false,
+    travel: false,
+  })
+  function visible<T>(list: T[], p: Path): T[] {
+    return showAll[p] ? list : list.slice(0, DEFAULT_VISIBLE)
+  }
 
   const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
 
@@ -95,23 +110,22 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     () =>
       eligibleCards
         .map(c => ({ card: c, value: signupYearOneValue(c) }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 12),
+        .sort((a, b) => b.value - a.value),
     [eligibleCards],
   )
 
   const spendRanked = useMemo(
-    () => rankCardsForSpend(eligibleCards, spend, mode).slice(0, 12),
+    () => rankCardsForSpend(eligibleCards, spend, mode),
     [eligibleCards, spend, mode],
   )
 
   const aprRanked = useMemo(
-    () => rankByIntroApr(eligibleCards, aprMode).slice(0, 12),
+    () => rankByIntroApr(eligibleCards, aprMode),
     [eligibleCards, aprMode],
   )
 
   const travelRanked = useMemo(
-    () => rankByTravelValue(eligibleCards, travelMode, travelProgram || undefined).slice(0, 12),
+    () => rankByTravelValue(eligibleCards, travelMode, travelProgram || undefined),
     [eligibleCards, travelMode, travelProgram],
   )
   const selectedProgram = travelProgram ? findTransferProgram(travelProgram) : null
@@ -155,7 +169,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
           heading="Top sign-up offers, ranked by year-one value"
           note="Year-one value = signup points × point value + first-year statement credits − annual fee."
         >
-          {signupRanked.map(({ card, value }, i) => (
+          {visible(signupRanked, "signup").map(({ card, value }, i) => (
             <CardRow
               key={card.id}
               rank={i + 1}
@@ -165,6 +179,11 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               secondary={`${bonusLabel(card)} after $${card.min_spend.toLocaleString()} in ${card.spend_months}mo`}
             />
           ))}
+          <MoreToggle
+            total={signupRanked.length}
+            expanded={showAll.signup}
+            onToggle={() => setShowAll(s => ({ ...s, signup: !s.signup }))}
+          />
         </ResultBlock>
       )}
 
@@ -226,7 +245,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 Enter some spend above to see your ranking.
               </div>
             ) : (
-              spendRanked.map((e, i) => {
+              visible(spendRanked, "spend").map((e, i) => {
                 const topBuckets = SPEND_BUCKETS
                   .map(b => ({ label: b.label, val: e.breakdown[b.key] }))
                   .filter(x => x.val > 0)
@@ -250,6 +269,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                   />
                 )
               })
+            )}
+            {totalMonthly > 0 && (
+              <MoreToggle
+                total={spendRanked.length}
+                expanded={showAll.spend}
+                onToggle={() => setShowAll(s => ({ ...s, spend: !s.spend }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -294,7 +320,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 researching intro-APR terms card by card — this list lights up as the data lands.
               </div>
             ) : (
-              aprRanked.map((c, i) => {
+              visible(aprRanked, "apr").map((c, i) => {
                 const cost = balanceTransferCost(c, balance)
                 return (
                   <CardRow
@@ -311,6 +337,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                   />
                 )
               })
+            )}
+            {aprRanked.length > 0 && (
+              <MoreToggle
+                total={aprRanked.length}
+                expanded={showAll.apr}
+                onToggle={() => setShowAll(s => ({ ...s, apr: !s.apr }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -380,20 +413,27 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 )}
               </div>
             ) : (
-              travelRanked.map((c, i) => {
+              visible(travelRanked, "travel").map((c, i) => {
                 const perk = travelPerkValue(c.travel!)
-                const cpp = c.travel?.max_transfer_cpp ?? 0
+                const cpp = travelTransferCpp(c, travelProgram || undefined)
                 return (
                   <CardRow
                     key={c.id}
                     rank={i + 1}
                     card={c}
                     primary={travelMode === "transfer" ? `${(cpp * 100).toFixed(1)}¢` : `$${perk.toLocaleString()}`}
-                    primaryLabel={travelMode === "transfer" ? "per point" : "travel value/yr"}
-                    secondary={travelSummary(c, travelMode)}
+                    primaryLabel={travelMode === "transfer" ? (travelProgram ? "per point" : "best partner") : "travel value/yr"}
+                    secondary={travelSummary(c, travelMode, travelProgram || undefined)}
                   />
                 )
               })
+            )}
+            {travelRanked.length > 0 && (
+              <MoreToggle
+                total={travelRanked.length}
+                expanded={showAll.travel}
+                onToggle={() => setShowAll(s => ({ ...s, travel: !s.travel }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -595,6 +635,34 @@ function ResultBlock({ heading, note, children }: { heading: string; note: strin
       <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>{note}</div>
       <div style={{ display: "grid", gap: 10 }}>{children}</div>
     </div>
+  )
+}
+
+// ── "Show all" expander ──────────────────────────────────────────────
+// Renders nothing until a list exceeds DEFAULT_VISIBLE, so short result
+// sets stay clean. Lets the finder show every eligible card instead of
+// silently capping the ranking.
+function MoreToggle({ total, expanded, onToggle }: { total: number; expanded: boolean; onToggle: () => void }) {
+  if (total <= DEFAULT_VISIBLE) return null
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      style={{
+        marginTop: 2,
+        justifySelf: "center",
+        border: "1px solid #d8d8d8",
+        borderRadius: 8,
+        background: "#fff",
+        color: "#0d7c5f",
+        cursor: "pointer",
+        fontSize: 13,
+        fontWeight: 700,
+        padding: "10px 18px",
+      }}
+    >
+      {expanded ? "Show fewer" : `Show all ${total} cards`}
+    </button>
   )
 }
 

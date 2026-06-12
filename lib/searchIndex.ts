@@ -1,6 +1,8 @@
 import { bonuses } from "./data/bonuses"
 import { savingsBonuses } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
+import { resolveTransfers } from "./data/transferPartners"
+import { findTransferProgram } from "./data/catalogTaxonomy"
 
 /**
  * Lightweight search index over the three public catalogs.
@@ -127,8 +129,12 @@ const cardEntries: SearchEntry[] = creditCardBonuses
       featureTags.push("credits")
       for (const cr of c.annual_credits_detail) featureTags.push(cr.label)
     }
-    if (c.travel?.transfer_partners) {
-      featureTags.push(...c.travel.transfer_partners)
+    // Transfer-partner tags come from the authoritative currency model
+    // (lib/data/transferPartners.ts), not the card's inline list, so search
+    // reflects current partners (e.g. Alaska via Bilt, no Emirates via Chase).
+    for (const t of resolveTransfers(c)) {
+      const program = findTransferProgram(t.program)
+      if (program) featureTags.push(program.name)
     }
     if (c.travel_insurance?.rental_cdw_primary) featureTags.push("primary cdw rental")
     if (c.travel?.no_foreign_tx_fee) featureTags.push("no foreign transaction fee")
