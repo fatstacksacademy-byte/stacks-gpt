@@ -19,6 +19,8 @@ export type CardExtracted = {
   spendMonths: number | null
   /** Annual fee in dollars. 0 if "no annual fee" is stated. */
   annualFee: number | null
+  /** Intro 0% APR terms — populated when the page advertises one. */
+  introApr: ExtractedIntroApr | null
   /** Whether the card name appears on the page at all. False = suspicious. */
   cardNameOnPage: boolean
   /** Raw snippets for each match so callers can display context. */
@@ -26,9 +28,18 @@ export type CardExtracted = {
     bonusAmount: string | null
     minSpend: string | null
     annualFee: string | null
+    introApr: string | null
   }
   /** Flags discovered during extraction. */
   flags: string[]
+}
+
+export type ExtractedIntroApr = {
+  purchaseAprMonths: number | null
+  btAprMonths: number | null
+  btFeePct: number | null
+  goToAprLow: number | null
+  goToAprHigh: number | null
 }
 
 function snippet(text: string, idx: number, radius = 100): string {
@@ -328,10 +339,150 @@ export function extractRewardsTiers(text: string): ExtractedRewardsTier[] {
   return results
 }
 
+// ────────── 0% Intro APR ──────────
+
+/**
+ * Pull intro 0% APR terms from an issuer offer page.
+ *
+ * Patterns we match (case-insensitive, all whitespace-tolerant):
+ *   - "0% intro APR for 15 months on purchases"
+ *   - "0% intro APR for the first 21 months from account opening on
+ *      balance transfers"
+ *   - "0% intro APR on purchases and balance transfers for 15 months"
+ *   - "Intro APR: 0% for 18 months"
+ *
+ * Plus the post-intro variable APR (range or single rate):
+ *   - "then a variable APR of 18.24% to 28.24%"
+ *   - "after that, your APR will be 19.99% variable"
+ *
+ * And the balance-transfer fee:
+ *   - "intro balance transfer fee of 3% of the amount transferred"
+ *   - "5% balance transfer fee"
+ *
+ * Returns `null` when no recognizable intro term appears — the catalog
+ * already treats `intro_apr` as absent in that case.
+ */
+export function extractIntroApr(text: string): {
+  intro: ExtractedIntroApr | null
+  snippet: string | null
+} {
+  const lower = text.toLowerCase()
+  // Cheap reject: every meaningful pattern includes "0%".
+  if (!/\b0%\s*(?:intro\s*)?apr/i.test(text)) {
+    return { intro: null, snippet: null }
+  }
+
+  let purchaseAprMonths: number | null = null
+  let btAprMonths: number | null = null
+  let foundIdx = -1
+
+  // Combined "purchases and balance transfers for X months" — fills both.
+  const combinedRe =
+    /0%\s*(?:intro\s+)?apr[^.]{0,80}?on\s+purchases\s+and\s+balance\s+transfers[^.]{0,40}?for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?/i
+  const combined = combinedRe.exec(text)
+  if (combined) {
+    purchaseAprMonths = btAprMonths = Number(combined[1])
+    foundIdx = combined.index
+  }
+
+  // Purchases-only ("for X months on purchases" OR "on purchases for X months").
+  if (purchaseAprMonths === null) {
+    const re =
+      /0%\s*(?:intro\s+)?apr[^.]{0,80}?(?:(?:for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?[^.]{0,40}?on\s+purchases)|(?:on\s+purchases[^.]{0,40}?for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?))/i
+    const m = re.exec(text)
+    if (m) {
+      purchaseAprMonths = Number(m[1] ?? m[2])
+      foundIdx = foundIdx < 0 ? m.index : foundIdx
+    }
+  }
+
+  // BT-only ("for X months on balance transfers" OR "on balance transfers for X months").
+  if (btAprMonths === null) {
+    const re =
+      /0%\s*(?:intro\s+)?apr[^.]{0,80}?(?:(?:for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?[^.]{0,40}?on\s+balance\s+transfers)|(?:on\s+balance\s+transfers[^.]{0,40}?for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?))/i
+    const m = re.exec(text)
+    if (m) {
+      btAprMonths = Number(m[1] ?? m[2])
+      foundIdx = foundIdx < 0 ? m.index : foundIdx
+    }
+  }
+
+  // Generic "0% APR for X months" with no purchases/BT qualifier — assume purchases.
+  if (purchaseAprMonths === null && btAprMonths === null) {
+    const re = /0%\s*(?:intro\s+)?apr[^.]{0,40}?for\s+(?:the\s+first\s+)?(\d{1,2})\s+months?/i
+    const m = re.exec(text)
+    if (m) {
+      purchaseAprMonths = Number(m[1])
+      foundIdx = m.index
+    }
+  }
+
+  if (purchaseAprMonths === null && btAprMonths === null) {
+    return { intro: null, snippet: null }
+  }
+
+  // Post-intro "go-to" APR: range or single.
+  let goToAprLow: number | null = null
+  let goToAprHigh: number | null = null
+  const rangeRe =
+    /(?:then|after\s+that(?:,)?\s+your\s+apr\s+will\s+be|standard\s+(?:variable\s+)?apr\s+of|variable\s+apr\s+of)\s+(\d{1,2}\.\d{1,2})%\s+(?:to|-|–|—)\s+(\d{1,2}\.\d{1,2})%/i
+  const range = rangeRe.exec(text)
+  if (range) {
+    goToAprLow = Number(range[1])
+    goToAprHigh = Number(range[2])
+  } else {
+    const singleRe =
+      /(?:then|after\s+that(?:,)?\s+your\s+apr\s+will\s+be)\s+(?:a\s+)?(?:variable\s+)?(\d{1,2}\.\d{1,2})%/i
+    const single = singleRe.exec(text)
+    if (single) {
+      goToAprLow = goToAprHigh = Number(single[1])
+    }
+  }
+
+  // Balance-transfer fee — only meaningful when BT intro exists, but we
+  // capture it whenever it appears (the field is shared on the type).
+  let btFeePct: number | null = null
+  const btFeeRe =
+    /(?:intro\s+)?balance\s+transfer\s+fee\s+of\s+(\d{1,2}(?:\.\d{1,2})?)%/i
+  const btFee = btFeeRe.exec(text)
+  if (btFee) {
+    btFeePct = Number(btFee[1])
+  } else {
+    // Lighter pattern: "$5 or 3% of the amount" — capture the percent.
+    const alt = /(\d{1,2}(?:\.\d{1,2})?)%\s+balance\s+transfer\s+fee/i.exec(text)
+    if (alt) btFeePct = Number(alt[1])
+  }
+
+  // Sanity bounds.
+  if (purchaseAprMonths !== null && (purchaseAprMonths < 3 || purchaseAprMonths > 24)) {
+    purchaseAprMonths = null
+  }
+  if (btAprMonths !== null && (btAprMonths < 3 || btAprMonths > 24)) {
+    btAprMonths = null
+  }
+
+  if (purchaseAprMonths === null && btAprMonths === null) {
+    return { intro: null, snippet: null }
+  }
+
+  const snippetIdx = foundIdx >= 0 ? foundIdx : lower.indexOf("0%")
+  return {
+    intro: {
+      purchaseAprMonths,
+      btAprMonths,
+      btFeePct,
+      goToAprLow,
+      goToAprHigh,
+    },
+    snippet: snippet(text, snippetIdx, 200),
+  }
+}
+
 export function extractAll(text: string, cardName: string): CardExtracted {
   const bonus = extractBonusAmount(text)
   const spend = extractMinSpend(text)
   const fee = extractAnnualFee(text)
+  const intro = extractIntroApr(text)
   const cardNameOnPage = checkCardNameOnPage(text, cardName)
 
   const flags: string[] = []
@@ -346,11 +497,13 @@ export function extractAll(text: string, cardName: string): CardExtracted {
     minSpend: spend.minSpend,
     spendMonths: spend.spendMonths,
     annualFee: fee.annualFee,
+    introApr: intro.intro,
     cardNameOnPage,
     snippets: {
       bonusAmount: bonus.snippet,
       minSpend: spend.snippet,
       annualFee: fee.snippet,
+      introApr: intro.snippet,
     },
     flags,
   }

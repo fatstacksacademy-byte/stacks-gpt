@@ -119,6 +119,13 @@ type Proposal = {
   min_spend: number | null
   spend_months: number | null
   annual_fee: number | null
+  intro_apr: {
+    purchase_apr_months: number | null
+    bt_apr_months: number | null
+    bt_fee_pct: number | null
+    go_to_apr_low: number | null
+    go_to_apr_high: number | null
+  } | null
   rewards: ExtractedRewardsTier[]
   source_lead_url: string
   flags: string[]
@@ -178,6 +185,7 @@ async function enrichLead(lead: Lead): Promise<Proposal | null> {
       min_spend: null,
       spend_months: null,
       annual_fee: null,
+      intro_apr: null,
       rewards: [],
       source_lead_url: lead.source_url,
       flags: ["no_issuer_link_found"],
@@ -196,6 +204,7 @@ async function enrichLead(lead: Lead): Promise<Proposal | null> {
       min_spend: null,
       spend_months: null,
       annual_fee: null,
+      intro_apr: null,
       rewards: [],
       source_lead_url: lead.source_url,
       flags: ["issuer_fetch_failed:" + (f.error || f.status)],
@@ -221,6 +230,15 @@ async function enrichLead(lead: Lead): Promise<Proposal | null> {
     min_spend: ex.minSpend,
     spend_months: ex.spendMonths,
     annual_fee: ex.annualFee,
+    intro_apr: ex.introApr
+      ? {
+          purchase_apr_months: ex.introApr.purchaseAprMonths,
+          bt_apr_months: ex.introApr.btAprMonths,
+          bt_fee_pct: ex.introApr.btFeePct,
+          go_to_apr_low: ex.introApr.goToAprLow,
+          go_to_apr_high: ex.introApr.goToAprHigh,
+        }
+      : null,
     rewards,
     source_lead_url: lead.source_url,
     flags: ex.flags,
@@ -229,6 +247,21 @@ async function enrichLead(lead: Lead): Promise<Proposal | null> {
 
 function titleCase(s: string): string {
   return s.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
+}
+
+/** Render the intro_apr field on a catalog entry. Omitted entirely when
+ *  the extractor found no intro offer — the schema treats missing as
+ *  "no offer / not yet researched" and we don't want to invent zeros. */
+function renderIntroAprBlock(intro: Proposal["intro_apr"]): string {
+  if (!intro) return ""
+  const parts: string[] = []
+  if (intro.purchase_apr_months !== null) parts.push(`purchase_apr_months: ${intro.purchase_apr_months}`)
+  if (intro.bt_apr_months !== null) parts.push(`bt_apr_months: ${intro.bt_apr_months}`)
+  if (intro.bt_fee_pct !== null) parts.push(`bt_fee_pct: ${intro.bt_fee_pct}`)
+  if (intro.go_to_apr_low !== null) parts.push(`go_to_apr_low: ${intro.go_to_apr_low}`)
+  if (intro.go_to_apr_high !== null) parts.push(`go_to_apr_high: ${intro.go_to_apr_high}`)
+  if (parts.length === 0) return ""
+  return `\n    intro_apr: { ${parts.join(", ")} },`
 }
 
 // ─────────────────────────── auto-apply to catalog ───────────────────────────
@@ -271,7 +304,7 @@ function renderCatalogEntry(p: Proposal): string {
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: ${JSON.stringify(p.offer_link)},
-    expired: false,
+    expired: false,${renderIntroAprBlock(p.intro_apr)}
     key_benefits: [${p.rewards.map((r) => JSON.stringify(`${r.multiplier}${r.unit === "%" ? "%" : "x"} ${r.categories.join("/")}`)).join(", ")}],${rewards}
     // Auto-imported from ${p.source_lead_url} — verify before relying on: ${p.flags.join(", ") || "clean"}
   },`
@@ -378,11 +411,31 @@ async function main() {
     return
   }
 
-  // Only append proposals with no extraction flags — anything with a flag
-  // (e.g. no_bonus_amount_found, card_name_not_on_page) needs manual review.
-  const worthApplying = proposals.filter(
-    (p) => p.offer_link && p.bonus_amount !== null && p.min_spend !== null && p.flags.length === 0,
-  )
+  // Two acceptance shapes:
+  //   1. Classic SUB card — bonus + min_spend extracted cleanly, no flags.
+  //   2. 0% APR card — intro_apr block extracted. These often have no
+  //      welcome bonus, so the SUB-extraction flags are expected and not
+  //      disqualifying. The audience for these is debt carriers / large-
+  //      purchase planners, not points chasers.
+  // In both cases we require an offer_link and that the page actually
+  // mentioned the card (no card_name_not_on_page flag).
+  const worthApplying = proposals.filter((p) => {
+    if (!p.offer_link) return false
+    if (p.flags.includes("card_name_not_on_page")) return false
+    if (p.flags.includes("issuer_fetch_failed")) return false
+    const isCleanSub =
+      p.bonus_amount !== null &&
+      p.min_spend !== null &&
+      // Only "no_X_found" flags are present (no harder signals like
+      // card_name_not_on_page).
+      p.flags.every((f) => f.startsWith("no_"))
+    const isClean0Apr =
+      p.intro_apr !== null &&
+      (p.intro_apr.purchase_apr_months !== null ||
+        p.intro_apr.bt_apr_months !== null) &&
+      p.flags.every((f) => f.startsWith("no_"))
+    return isCleanSub || isClean0Apr
+  })
   const entries = worthApplying.map(renderCatalogEntry)
   appendCatalog(entries)
 

@@ -7281,4 +7281,244 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
   },
+
+
+  // ─── AUTO-IMPORTED FROM RICHWITHPOINTS ──────────────────────────
+  // These entries came from the discover-cards scraper. Fields are conservative
+  // (null/defaults where the regex couldn't extract a value). Review and
+  // calibrate before treating as trusted data.
+
+  {
+    id: "chase-chase-unitedsm-explorer-auto",
+    card_name: "Chase UnitedSM Explorer",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 60000,
+    bonus_currency: "Miles",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 3000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/united-explorer?iCELL=61FY",
+    expired: false,
+    key_benefits: ["2x dining"],
+    rewards: [
+      { categories: ["dining"], multiplier: 2, unit: "miles" }
+    ],
+    // Auto-imported from https://creditcards.chase.com/personal-credit-cards — verify before relying on: clean
+  },
+
+  {
+    id: "chase-chase-united-clubsm-auto",
+    card_name: "Chase United ClubSM",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 90000,
+    bonus_currency: "Miles",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 5000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/united/club-infinite?iCELL=61FY",
+    expired: false,
+    key_benefits: ["5x everything_else", "2x travel", "2x dining"],
+    rewards: [
+      { categories: ["everything_else"], multiplier: 5, unit: "miles" },
+      { categories: ["travel"], multiplier: 2, unit: "miles" },
+      { categories: ["dining"], multiplier: 2, unit: "miles" }
+    ],
+    // Auto-imported from https://creditcards.chase.com/personal-credit-cards — verify before relying on: clean
+  },
+
+  {
+    id: "chase-chase-aer-lingus-visa-signature-auto",
+    card_name: "Chase Aer Lingus Visa Signature",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 75000,
+    bonus_currency: "points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 5000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/avios/aer-lingus?iCELL=61FY",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://creditcards.chase.com/personal-credit-cards — verify before relying on: clean
+  },
+
+  {
+    id: "chase-chase-iberia-visa-signature-auto",
+    card_name: "Chase Iberia Visa Signature",
+    issuer: "chase",
+    card_type: "personal",
+    bonus_amount: 75000,
+    bonus_currency: "points",
+    is_hotel_card: false,
+    cpp_value: 0.01,
+    min_spend: 5000,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.chase.com/travel-credit-cards/avios/iberia?iCELL=61FY",
+    expired: false,
+    key_benefits: [],
+    // Auto-imported from https://creditcards.chase.com/personal-credit-cards — verify before relying on: clean
+  },
+
+
+  // ─── AUTO-IMPORTED FROM RICHWITHPOINTS ──────────────────────────
+  // These entries came from the discover-cards scraper. Fields are conservative
+  // (null/defaults where the regex couldn't extract a value). Review and
+  // calibrate before treating as trusted data.
+
+  {
+    id: "discover-discover-it-auto",
+    card_name: "Discover it",
+    issuer: "discover",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.discover.com/credit-cards/cash-back/it-card/?ICMPGN=SUBNAV_CCP_IT",
+    expired: false,
+    intro_apr: { purchase_apr_months: 15, go_to_apr_low: 17.49, go_to_apr_high: 26.49 },
+    key_benefits: [],
+    // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+  {
+    id: "discover-discover-it-student-auto",
+    card_name: "Discover it Student",
+    issuer: "discover",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.discover.com/credit-cards/student-credit-card/it-card/?ICMPGN=SUBNAV_CCP_STUDENT_IT",
+    expired: false,
+    intro_apr: { purchase_apr_months: 6, go_to_apr_low: 16.49, go_to_apr_high: 25.49 },
+    key_benefits: ["1% everything_else"],
+    rewards: [
+      { categories: ["everything_else"], multiplier: 1, unit: "%" }
+    ],
+    // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+  {
+    id: "discover-discover-chrome-student-auto",
+    card_name: "Discover Chrome Student",
+    issuer: "discover",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.discover.com/credit-cards/student-credit-card/chrome-card/?ICMPGN=SUBNAV_CCP_STUDENT_CHROME",
+    expired: false,
+    intro_apr: { purchase_apr_months: 6, go_to_apr_low: 16.49, go_to_apr_high: 25.49 },
+    key_benefits: ["2% gas", "1% everything_else"],
+    rewards: [
+      { categories: ["gas"], multiplier: 2, unit: "%" },
+      { categories: ["everything_else"], multiplier: 1, unit: "%" }
+    ],
+    // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+  {
+    id: "discover-discover-chrome-auto",
+    card_name: "Discover Chrome",
+    issuer: "discover",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.discover.com/credit-cards/cash-back/chrome/?ICMPGN=SUBNAV_CCP_IT_CHROME",
+    expired: false,
+    intro_apr: { purchase_apr_months: 15, go_to_apr_low: 17.49, go_to_apr_high: 26.49 },
+    key_benefits: ["2% gas", "1% everything_else"],
+    rewards: [
+      { categories: ["gas"], multiplier: 2, unit: "%" },
+      { categories: ["everything_else"], multiplier: 1, unit: "%" }
+    ],
+    // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+  {
+    id: "discover-discover-nhl-auto",
+    card_name: "Discover Nhl",
+    issuer: "discover",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.discover.com/credit-cards/cash-back/nhl-card/?ICMPGN=SUBNAV_CCP_NHL",
+    expired: false,
+    intro_apr: { purchase_apr_months: 15, go_to_apr_low: 17.49, go_to_apr_high: 26.49 },
+    key_benefits: ["1% everything_else"],
+    rewards: [
+      { categories: ["everything_else"], multiplier: 1, unit: "%" }
+    ],
+    // Auto-imported from https://www.discover.com/credit-cards/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
+
+  {
+    id: "wells-fargo-wells-fargo-reflect-visa-auto",
+    card_name: "Wells Fargo Reflect Visa",
+    issuer: "wells fargo",
+    card_type: "personal",
+    bonus_amount: 0,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 0,
+    spend_months: 3,
+    annual_fee: 0,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://creditcards.wellsfargo.com/reflect-visa-credit-card/?FPID=013000IGF80000&product_code=CC&subproduct_code=VV&cx_nm=CXNAME_CSMPD_MC_carousel&sub_channel=WEB&vendor_code=WF",
+    expired: false,
+    intro_apr: { purchase_apr_months: 21 },
+    key_benefits: [],
+    // Auto-imported from https://creditcards.wellsfargo.com/ — verify before relying on: no_bonus_amount_found, no_spend_requirement_found
+  },
 ]

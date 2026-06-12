@@ -78,18 +78,51 @@ const savingsEntries: SearchEntry[] = savingsBonuses
 
 const cardEntries: SearchEntry[] = creditCardBonuses
   .filter((c) => !c.expired)
-  .map((c) => ({
-    id: c.id,
-    kind: "card" as const,
-    label: c.card_name,
-    subtitle: `Credit Card · ${c.bonus_amount.toLocaleString()} ${
-      c.bonus_currency ?? "pts"
-    }`,
-    searchText:
-      `${c.card_name} ${c.issuer} ${c.bonus_amount} ${c.id}`.toLowerCase(),
-    href: "/spending",
-    applyHref: `/go/${c.id}`,
-  }))
+  .map((c) => {
+    // Surface 0% APR cards under generic queries like "0% APR",
+    // "intro APR", "balance transfer". When the card has those terms
+    // the dropdown will surface it; cards without intro_apr stay
+    // invisible to that query.
+    const introAprTags: string[] = []
+    if (c.intro_apr?.purchase_apr_months) {
+      introAprTags.push(
+        `0% apr intro apr purchases ${c.intro_apr.purchase_apr_months} months`,
+      )
+    }
+    if (c.intro_apr?.bt_apr_months) {
+      introAprTags.push(
+        `0% apr balance transfer ${c.intro_apr.bt_apr_months} months`,
+      )
+    }
+    const introSubtitleBits: string[] = []
+    if (c.intro_apr?.purchase_apr_months) {
+      introSubtitleBits.push(
+        `0% APR ${c.intro_apr.purchase_apr_months}mo`,
+      )
+    } else if (c.intro_apr?.bt_apr_months) {
+      introSubtitleBits.push(
+        `0% APR ${c.intro_apr.bt_apr_months}mo BT`,
+      )
+    }
+    const subtitle =
+      introSubtitleBits.length > 0
+        ? `Credit Card · ${c.bonus_amount.toLocaleString()} ${
+            c.bonus_currency ?? "pts"
+          } · ${introSubtitleBits.join(" / ")}`
+        : `Credit Card · ${c.bonus_amount.toLocaleString()} ${
+            c.bonus_currency ?? "pts"
+          }`
+    return {
+      id: c.id,
+      kind: "card" as const,
+      label: c.card_name,
+      subtitle,
+      searchText:
+        `${c.card_name} ${c.issuer} ${c.bonus_amount} ${c.id} ${introAprTags.join(" ")}`.toLowerCase(),
+      href: "/spending",
+      applyHref: `/go/${c.id}`,
+    }
+  })
 
 export const searchableEntries: SearchEntry[] = [
   ...bankEntries,
