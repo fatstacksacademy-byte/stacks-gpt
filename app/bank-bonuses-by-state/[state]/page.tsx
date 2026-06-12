@@ -2,11 +2,14 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import TrackBonusButton from "../../components/TrackBonusButton"
+import StateBonusFinder from "../../components/StateBonusFinder"
+import StateOfferBrowser from "../../components/StateOfferBrowser"
 import {
   US_STATES,
   findStateBySlug,
-  getStrictlyLiveCatalog,
+  getLiveCatalog,
   bucketByState,
+  toClientItem,
   type CatalogItem,
 } from "../../../lib/data/catalogTaxonomy"
 import { blogPosts } from "../../../lib/data/blogPosts"
@@ -43,7 +46,6 @@ function refreshLabel(): string {
   if (Number.isNaN(d.getTime())) return CATALOG_REFRESH
   return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 }
-
 export async function generateStaticParams() {
   return US_STATES.map(s => ({ state: s.slug }))
 }
@@ -55,7 +57,7 @@ export async function generateMetadata(
   const state = findStateBySlug(slug)
   if (!state) return { title: "State not found" }
 
-  const all = getStrictlyLiveCatalog()
+  const all = getLiveCatalog()
   const { nationwide, local } = bucketByState(all, state.code)
   const total = nationwide.length + local.length
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
@@ -91,8 +93,15 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
   const state = findStateBySlug(slug)
   if (!state) notFound()
 
-  const all = getStrictlyLiveCatalog()
+  const all = getLiveCatalog()
   const { nationwide, local, unverified } = bucketByState(all, state.code)
+  const eligible = [...local, ...nationwide]
+  const reviewHrefs = Object.fromEntries(
+    eligible.flatMap(item => {
+      const href = reviewHref(item.id)
+      return href ? [[item.id, href]] : []
+    }),
+  )
 
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
   const verified = refreshLabel()
@@ -130,13 +139,17 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
           </h1>
           <p style={{ fontSize: 16, color: "#666", lineHeight: 1.6, margin: "0 0 8px", maxWidth: 720 }}>
             {total > 0
-              ? `${total} eligible offers — ${nationwide.length} nationwide and ${local.length} ${state.name}-specific. Track in one click; eligibility is verified against the published terms.`
-              : `Nationwide bonuses available below. Local-bank coverage for ${state.name} is still being expanded.`}
+              ? `${total} currently listed offers — ${nationwide.length} nationwide and ${local.length} ${state.name}-specific. Known expired offers are removed; always confirm terms before applying.`
+              : `No currently listed offers matched ${state.name}. Local-bank coverage is still being expanded.`}
           </p>
           <p style={{ fontSize: 12, color: "#999", margin: 0 }}>
             Catalog verified {verified}. Always confirm current terms with the bank before opening an account.
           </p>
         </header>
+
+        <div style={{ marginBottom: 24 }}>
+          <StateBonusFinder states={US_STATES} currentSlug={state.slug} compact />
+        </div>
 
         {/* Stat row */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28 }} className="state-stats">
@@ -152,23 +165,14 @@ export default async function StateBonusPage({ params }: { params: Promise<{ sta
           </div>
         )}
 
-        {/* Local section first — most relevant to a state-page visitor */}
-        {local.length > 0 && (
-          <section style={{ marginBottom: 36 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-              Local & regional offers in {state.name}
-            </h2>
-            <BonusList items={local} sourcePage={`/bank-bonuses-by-state/${state.slug}#local`} />
-          </section>
-        )}
-
-        {/* Nationwide section */}
-        <section style={{ marginBottom: 36 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-            Nationwide offers available in {state.name}
-          </h2>
-          <BonusList items={nationwide} sourcePage={`/bank-bonuses-by-state/${state.slug}#nationwide`} />
-        </section>
+        <div style={{ marginBottom: 36 }}>
+          <StateOfferBrowser
+            items={eligible.map(toClientItem)}
+            stateCode={state.code}
+            stateName={state.name}
+            reviewHrefs={reviewHrefs}
+          />
+        </div>
 
         {/* Unverified — visible but boxed off so readers know they're not confirmed */}
         {unverified.length > 0 && (

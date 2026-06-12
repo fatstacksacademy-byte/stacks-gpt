@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { getStrictlyLiveCatalog, isEligibleInState, US_STATES } from "../../lib/data/catalogTaxonomy"
+import StateBonusFinder from "../components/StateBonusFinder"
+import { getLiveCatalog, isEligibleInState, US_STATES } from "../../lib/data/catalogTaxonomy"
 
 /**
  * Directory of state pages.
@@ -29,14 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary", title: "Bank Bonuses by State" },
 }
-
 export default function StateDirectory() {
-  // Strict variant: only offers with a confirmed live expirationDate
-  // count toward per-state numbers. The main /bonuses page can show
-  // unverified-expiration offers; state pages cannot, because we'd
-  // claim "X is available in Hawaii" without knowing if X is still
-  // running at all.
-  const items = getStrictlyLiveCatalog()
+  const items = getLiveCatalog()
   const monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" })
 
   // Per-state count of items eligible AT ALL (nationwide + local). We use
@@ -72,9 +67,7 @@ export default function StateDirectory() {
             Bank bonuses by state
           </h1>
           <p style={{ fontSize: 16, color: "#666", lineHeight: 1.6, margin: "0 0 8px", maxWidth: 720 }}>
-            Pick your state to see every bank bonus you&apos;re eligible for —
-            nationwide offers plus credit unions and regional banks that ship
-            in your area.
+            Choose your state, then browse bank and brokerage bonuses ten at a time. State-specific offers appear before nationwide ones.
           </p>
           <p style={{ fontSize: 13, color: "#999", lineHeight: 1.5, margin: 0, maxWidth: 720 }}>
             Eligibility data is updated continuously but should always be
@@ -82,47 +75,29 @@ export default function StateDirectory() {
           </p>
         </header>
 
-        <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 12, padding: "14px 18px", marginBottom: 28 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 4 }}>How counts work</div>
-          <div style={{ fontSize: 12, color: "#92400e", lineHeight: 1.6 }}>
-            <strong>Total</strong> = nationwide offers + offers explicitly available in that state. Offers with
-            unverified state eligibility are excluded from per-state counts to keep the numbers honest. Use the
-            <Link href="/bonuses" style={{ color: "#0d7c5f", textDecoration: "underline", margin: "0 4px" }}>main catalog</Link>
-            to view those alongside everything else.
-          </div>
+        <div style={{ marginBottom: 28 }}>
+          <StateBonusFinder states={US_STATES} />
         </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 10,
-        }}>
-          {counts.map(s => (
-            <Link
-              key={s.code}
-              href={`/bank-bonuses-by-state/${s.slug}`}
-              style={{
-                display: "block",
-                background: "#fff",
-                border: "1px solid #e8e8e8",
-                borderRadius: 12,
-                padding: "14px 16px",
-                textDecoration: "none",
-                color: "#111",
-                transition: "border-color 0.15s, box-shadow 0.15s",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 700 }}>{s.name}</span>
-                <span style={{ fontSize: 10, color: "#999", fontWeight: 700, letterSpacing: "0.05em" }}>{s.code}</span>
-              </div>
-              <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-                {s.total} eligible {s.total === 1 ? "offer" : "offers"}
-                {s.local > 0 && <span style={{ color: "#0d7c5f", fontWeight: 600 }}> · {s.local} local</span>}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <details style={{ borderTop: "1px solid #eee", paddingTop: 18 }}>
+          <summary style={{ cursor: "pointer", color: "#666", fontSize: 13, fontWeight: 700 }}>
+            Browse all states and current catalog counts
+          </summary>
+          <p style={{ fontSize: 12, color: "#888", lineHeight: 1.5 }}>
+            Counts include nationwide and explicitly state-eligible offers. Known expired offers are removed; offers without a structured expiration are labeled for verification on the results page.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 8 }}>
+            {counts.map(s => (
+              <Link key={s.code} href={`/bank-bonuses-by-state/${s.slug}`} style={{ display: "block", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "11px 13px", textDecoration: "none", color: "#111" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700 }}>{s.name}</span>
+                  <span style={{ fontSize: 10, color: "#999", fontWeight: 700 }}>{s.code}</span>
+                </div>
+                <div style={{ fontSize: 11, color: "#777", marginTop: 3 }}>{s.total} currently listed{s.local > 0 ? ` · ${s.local} local` : ""}</div>
+              </Link>
+            ))}
+          </div>
+        </details>
       </main>
       <Footer />
     </>

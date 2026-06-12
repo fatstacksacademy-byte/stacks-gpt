@@ -270,6 +270,19 @@ function parseExpiration(value: unknown): string | null {
   return parsed.toISOString().slice(0, 10)
 }
 
+function parseExpirationFromText(...values: Array<string | null | undefined>): string | null {
+  const dates: string[] = []
+  const pattern = /(?:expires?|expiration(?: date)?|offer ends?|enrollment closes?|open by|apply by|register by)\s*(?:on\s*)?[:\-]?\s*(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{2,4}|[A-Z][a-z]+\s+\d{1,2},\s+\d{4})/gi
+  for (const value of values) {
+    if (!value) continue
+    for (const match of value.matchAll(pattern)) {
+      const parsed = parseExpiration(match[1])
+      if (parsed) dates.push(parsed)
+    }
+  }
+  return dates.sort()[0] ?? null
+}
+
 /**
  * Classify an offer's expiration status. Used both at normalization
  * time (sets CatalogItem.expirationStatus) and at filter time.
@@ -428,6 +441,11 @@ function normalizeChecking(row: RawCheckingRow): CatalogItem {
   const expirationDate = parseExpiration(row.expiration_date)
     ?? parseExpiration(row.offer_expiration)
     ?? parseExpiration(row.requirements?.expiration_date)
+    ?? parseExpirationFromText(
+      row.requirements?.other_requirements_text,
+      row.eligibility?.eligibility_notes,
+      row.raw_excerpt,
+    )
 
   const expired = row.expired === true
   return {
@@ -477,6 +495,7 @@ function normalizeSavings(row: RawSavingsRow): CatalogItem {
   const tierBonus = row.tiers?.[0]?.bonus_amount ?? row.bonus_amount ?? 0
 
   const expirationDate = parseExpiration(row.expiration_date)
+    ?? parseExpirationFromText(row.eligibility?.eligibility_notes, row.raw_excerpt)
   const expired = row.expired === true
   return {
     id: row.id,
