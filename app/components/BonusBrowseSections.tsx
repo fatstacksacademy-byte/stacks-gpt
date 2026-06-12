@@ -159,33 +159,10 @@ export function BonusTable({ rows, headers, sourcePage }: {
   )
 }
 
-export function BrowseHeader() {
-  const YT = "https://www.youtube.com/@nathanielbooth"
-  return (
-    <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0", position: "sticky", top: 0, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", zIndex: 10 }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
-        <nav className="bbs-nav" style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/checking" style={navLink}>Checking</Link>
-          <Link href="/savings" style={navLink}>Savings</Link>
-          <Link href="/spending" style={navLink}>Spending</Link>
-          <Link href="/brokerage" style={navLink}>Brokerage</Link>
-          <Link href="/bonuses" style={navLink}>All bonuses</Link>
-          <Link href="/blog" style={navLink}>Reviews</Link>
-          <Link href="/stacksos" style={{ ...navLink, color: "#0d7c5f", fontWeight: 700 }}>Stacks OS</Link>
-          <a href={YT} target="_blank" rel="noopener noreferrer" style={{ ...navLink, color: "#ff0000", fontWeight: 600 }}>YouTube</a>
-        </nav>
-      </div>
-      <style>{`
-        @media (max-width: 700px) {
-          .bbs-nav { gap: 12px !important; }
-        }
-      `}</style>
-    </header>
-  )
-}
-
-const navLink: React.CSSProperties = { fontSize: 13, color: "#999", textDecoration: "none" }
+// BrowseHeader now delegates to the shared SiteHeader so the nav stays identical
+// across the home page and every browse page. Kept as a re-export for the many
+// pages that already import { BrowseHeader } from this module.
+export { default as BrowseHeader } from "./SiteHeader"
 
 export function BrowseFooter() {
   const YT = "https://www.youtube.com/@nathanielbooth"
@@ -223,15 +200,16 @@ export function StacksOsCta({ totalBonuses }: { totalBonuses: number }) {
   )
 }
 
-export function CategoryCrossNav({ current }: { current: "checking" | "savings" | "spending" | "brokerage" }) {
+// Bank-bonus sub-switcher. Credit cards are their own top-level pillar now, so
+// "Spending" is intentionally absent — these three are the bank categories.
+export function CategoryCrossNav({ current }: { current: "checking" | "savings" | "brokerage" }) {
   const links = [
     { id: "checking", label: "Checking", emoji: "🏦", desc: "Direct-deposit bonuses" },
     { id: "savings", label: "Savings", emoji: "💰", desc: "Park-cash bonuses + HYSA" },
-    { id: "spending", label: "Spending", emoji: "💳", desc: "Credit card sign-up bonuses" },
     { id: "brokerage", label: "Brokerage", emoji: "📈", desc: "Robinhood, Webull, Public, etc." },
   ] as const
   return (
-    <div className="bbs-cross" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 48 }}>
+    <div className="bbs-cross" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 48 }}>
       {links.map(l => {
         const active = l.id === current
         return (
@@ -256,7 +234,7 @@ export function CategoryCrossNav({ current }: { current: "checking" | "savings" 
       })}
       <style>{`
         @media (max-width: 700px) {
-          .bbs-cross { grid-template-columns: 1fr 1fr !important; }
+          .bbs-cross { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

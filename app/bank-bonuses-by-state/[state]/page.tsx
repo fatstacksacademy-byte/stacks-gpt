@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import TrackBonusButton from "../../components/TrackBonusButton"
 import StateBonusFinder from "../../components/StateBonusFinder"
 import StateOfferBrowser from "../../components/StateOfferBrowser"
+import SiteHeader from "../../components/SiteHeader"
 import {
   US_STATES,
   findStateBySlug,
@@ -308,19 +309,7 @@ function eligibilityHint(it: CatalogItem): string {
 }
 
 function Header() {
-  return (
-    <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0", position: "sticky", top: 0, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", zIndex: 10 }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
-        <nav style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/bonuses" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>All bonuses</Link>
-          <Link href="/bank-bonuses-by-state" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>By state</Link>
-          <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Reviews</Link>
-          <Link href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Stacks OS</Link>
-        </nav>
-      </div>
-    </header>
-  )
+  return <SiteHeader />
 }
 
 function Footer() {

@@ -4,6 +4,7 @@ import NewsletterCTA from "../blog/components/NewsletterCTA"
 import TrackBonusButton from "../components/TrackBonusButton"
 import PortalStacksToggle from "../components/PortalStacksToggle"
 import FilterableCatalog from "../components/FilterableCatalog"
+import SiteHeader from "../components/SiteHeader"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
@@ -74,22 +75,7 @@ export default function MasterBonusList() {
         }
       `}</style>
 
-      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0", position: "sticky", top: 0, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)", zIndex: 10 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
-          <nav className="bbs-nav" style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-            <Link href="/checking" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Checking</Link>
-            <Link href="/savings" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Savings</Link>
-            <Link href="/spending" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Spending</Link>
-            <Link href="/brokerage" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Brokerage</Link>
-            <Link href="/bonuses" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>All bonuses</Link>
-            <Link href="/bank-bonuses-by-state" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>By state</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Reviews</Link>
-            <Link href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Stacks OS</Link>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 60px" }}>
 

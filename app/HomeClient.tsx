@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import SiteHeader from "./components/SiteHeader"
 
 const YT = "https://www.youtube.com/@nathanielbooth"
 const NOTION_VIDEOS = "https://nathanielbooth.notion.site/Latest-Videos-1d2e0e2e0e2080b5b0b5e77bc8ffc5bb"
@@ -28,16 +29,8 @@ export default function HomeClient() {
         }
       `}</style>
 
-      {/* ── Nav ── */}
-      <nav className="hp-nav" style={{ padding: "20px 40px", maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", textDecoration: "none" }}>Fat Stacks Academy</Link>
-        <div className="hp-nav-links" style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <Link href="/bank-bonuses-by-state" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Bank Bonuses</Link>
-          <Link href="/spending" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Credit Cards</Link>
-          <Link href="/blog" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Blog</Link>
-          <Link href="/stacksos" style={{ fontSize: 14, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "8px 16px", borderRadius: 8, textDecoration: "none", whiteSpace: "nowrap" }}>Stacks OS</Link>
-        </div>
-      </nav>
+      {/* ── Nav (shared SiteHeader so it never drifts from browse pages) ── */}
+      <SiteHeader />
 
       {/* ── Hero ── */}
       <section className="hp-section hp-hero" style={{ paddingTop: 100, paddingBottom: 60 }}>
