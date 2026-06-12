@@ -1,3 +1,8 @@
+import { hawaiiCheckingBonuses } from "./hawaiiBankBonuses"
+
+// Loose-typed by design: the raw bonus catalog is JSON-shaped with inconsistent
+// fields; catalogTaxonomy.ts is the single place that normalizes it.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const bonuses: any[] = [
   {
     "id": "psecu-300-checking-2026",
@@ -384,7 +389,7 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "Payroll, pension, or government benefits via ACH, RTP, FedNow, or Visa/Mastercard debit network qualify. Zelle, cash, checks, wire transfers, and interest do not. Micro-deposits do not qualify."
+      "eligibility_notes": "Available to Hawaii residents (Chase personal checking/savings bonuses are obtainable in HI). Payroll, pension, or government benefits via ACH, RTP, FedNow, or Visa/Mastercard debit network qualify. Zelle, cash, checks, wire transfers, and interest do not. Micro-deposits do not qualify."
     },
     "timeline": {
       "bonus_posting_days_est": 15,
@@ -1026,7 +1031,7 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "Must not have existing US Bank consumer checking, had one in the last 12 months, or received a US Bank checking bonus in the past 12 months. Not available with Trust Accounts or Alliance partnerships."
+      "eligibility_notes": "U.S. Bank accounts are obtainable by Hawaii residents (online/existing-relationship), per direct HI experience. Must not have existing US Bank consumer checking, had one in the last 12 months, or received a US Bank checking bonus in the past 12 months. Not available with Trust Accounts or Alliance partnerships."
     },
     "timeline": {
       "bonus_posting_days_est": 120,
@@ -2329,23 +2334,26 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered bonus: $2000 DD = $100, $2500 DD = $200, $3500 DD = $400 within 60 days. $500 opening deposit required."
+      "other_requirements_text": "Open a new Bankohana Level II or III checking account with a $500 initial deposit; tiered Qualifying Direct Deposits within 60 days: $2,000 = $100, $2,500 = $200, $3,500 = $400. Apply online."
     },
-    "fees": { "monthly_fee": 5, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
-    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
+    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Bankohana Level II: $25/month waived with a $20,000 combined balance. Level III: $30/month waived with a $50,000 combined balance.", "early_closure_fee": 70 },
+    "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Bank of Hawaii is low ChexSystems sensitivity." },
     "eligibility": {
       "state_restricted": true,
       "states_allowed": ["HI"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Hawaii residents only. New checking customers only."
+      "eligibility_notes": "Hawaii residents (offer also extends to Guam/Saipan/Palau). New checking customers only; limit one checking bonus per customer. Qualifying Direct Deposits = recurring electronic payroll/government/pension ACH. Accounts closed within 180 days incur a $70 early-closing fee.",
+      "offer_verified_at": "2026-06-11"
     },
-    "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "expiration_date": "2026-06-30",
     "source_links": [
-      "https://www.doctorofcredit.com/hi-bank-of-hawaii-100-400-checking-bonus/",
-      "https://www.boh.com/personal/bank/checking"
+      "https://www.boh.com/personal/bank-accounts/pr/checking-offer",
+      "https://www.boh.com/personal/bank/checking",
+      "https://www.doctorofcredit.com/hi-bank-of-hawaii-100-400-checking-bonus/"
     ],
-    "raw_excerpt": "Tiered $100-$400 checking bonus with DD in 60 days. $500 opening deposit. Hawaii only."
+    "raw_excerpt": "Bankohana Level II/III tiered $100-$400 checking bonus with Qualifying Direct Deposits within 60 days ($2,000/$2,500/$3,500). $500 opening deposit. Bonus applied within 120 days of open. Offer available until June 30, 2026, HST. Hawaii (+ Guam/Saipan/Palau)."
   },
   {
     "id": "seacoast-400-checking-2026",
@@ -4937,9 +4945,9 @@ export const bonuses: any[] = [
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
-      "states_excluded": [],
+      "states_excluded": ["HI"],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Expires May 14, 2026. New business checking customers only."
+      "eligibility_notes": "Business checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches; confirmed by HI residents). Note: Chase business CREDIT CARDS are obtainable in HI. Expires May 14, 2026. New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
@@ -6720,5 +6728,10 @@ export const bonuses: any[] = [
     ],
     "raw_excerpt": "GreenFi $75 Checking. Nationwide. $200 DD within 45 days. Fee-free. Bonus posts within 5 days of qualifying.",
     "missing_fields": []
-  }
+  },
+
+  // Hawaii-local checking & new-member bonuses (banks HQ'd in HI + HI credit
+  // unions), verified on each institution's official page. See
+  // ./hawaiiBankBonuses.ts and ./hawaiiBankBonuses.RESEARCH.md.
+  ...hawaiiCheckingBonuses,
 ]

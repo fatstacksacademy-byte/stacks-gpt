@@ -108,5 +108,41 @@
     "enabled": true,
     "authority": "official",
     "throttle_seconds": 3
+  },
+  {
+    "name": "bank-of-hawaii",
+    "sitemap_url": "https://www.boh.com/sitemap.xml",
+    "enabled": false,
+    "authority": "official",
+    "throttle_seconds": 10,
+    "include_path": "pr/|offer|promo|checking|savings",
+    "note": "Hawaii-local official source. Registered for monitoring; enable once a stable sitemap is confirmed. Key page: /personal/bank-accounts/pr/checking-offer (verified 2026-06-11). See lib/data/hawaiiBankBonuses.RESEARCH.md."
+  },
+  {
+    "name": "first-hawaiian-bank",
+    "sitemap_url": "https://www.fhb.com/sitemap.xml",
+    "enabled": false,
+    "authority": "official",
+    "throttle_seconds": 10,
+    "include_path": "checking|savings|offer|promo|lp/",
+    "note": "Hawaii-local official source. Registered for monitoring; enable once a stable sitemap is confirmed. Key page: /en/personal/checking (Priority Banking $350 / Pure $50, verified 2026-06-11)."
+  },
+  {
+    "name": "central-pacific-bank",
+    "sitemap_url": "https://www.cpb.bank/sitemap.xml",
+    "enabled": false,
+    "authority": "official",
+    "throttle_seconds": 10,
+    "include_path": "promo|offer|checking|savings",
+    "note": "Hawaii-local official source. Registered for monitoring; enable once a stable sitemap is confirmed. Watch /personal-banking/checking-accounts/promo/ for a publicly-available (non-targeted) renewal."
+  },
+  {
+    "name": "american-savings-bank",
+    "sitemap_url": "https://www.asbhawaii.com/sitemap.xml",
+    "enabled": false,
+    "authority": "official",
+    "throttle_seconds": 10,
+    "include_path": "promo|offer|checking|savings|business-banking",
+    "note": "Hawaii-local official source. Registered for monitoring; enable once a stable sitemap is confirmed. Watch /business-banking-promo for the unverified $100 Analyzed Checking offer."
   }
 ]

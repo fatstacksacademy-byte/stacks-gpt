@@ -20,6 +20,9 @@ export type SavingsBonus = {
   eligibility: {
     state_restricted: boolean
     states_allowed: string[]
+    /** 2-letter codes to carve out of an otherwise-nationwide offer (read by
+     *  catalogTaxonomy → excludedStates), e.g. Chase's coupon excludes HI. */
+    states_excluded?: string[]
     lifetime_language: boolean
     eligibility_notes: string
   }
@@ -169,7 +172,7 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "New Chase savings customers only. Not available if you closed a Chase savings account in the last 90 days or with a negative balance in the last 3 years. One savings bonus every 2 years. Combo bonus ($400) requires also completing checking direct deposit requirement."
+      eligibility_notes: "Available to Hawaii residents (Chase personal checking/savings bonuses are obtainable in HI). New Chase savings customers only. Not available if you closed a Chase savings account in the last 90 days or with a negative balance in the last 3 years. One savings bonus every 2 years. Combo bonus ($400) requires also completing checking direct deposit requirement."
     },
     source_links: [
       "https://account.chase.com/consumer/banking/checkingandsavingsoffer"
@@ -674,7 +677,7 @@ export const savingsBonuses: SavingsBonus[] = [
     tiers: [{ min_deposit: 2000, bonus_amount: 300 }, { min_deposit: 10000, bonus_amount: 500 }, { min_deposit: 20000, bonus_amount: 750 }],
     cooldown_months: 24,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
-    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Complete Checking. Deposit + 5 transactions in 90 days." },
+    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], states_excluded: ["HI"], lifetime_language: false, eligibility_notes: "Business Complete Checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches). Deposit + 5 transactions in 90 days." },
     source_links: ["https://www.chase.com/business/checking",
       "https://www.doctorofcredit.com/chase-business-total-checking-750-bonus-no-direct-deposit-required/"
     ],
@@ -839,7 +842,7 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "New Chase Total Checking account via coupon EK42726. Not eligible if existing Chase checking customer, closed a Chase checking account within 90 days, or closed with negative balance within 3 years. One opening-related bonus per 24 months. Plus one qualifying direct deposit required within 90 days (payroll/pension/government benefits via ACH, RTP, FedNow, or debit network — Zelle/checks/wires/P2P do not count). Monthly fee waivable with $500+ DD, $1,500+ daily balance, or $5,000+ avg daily balance.",
+      eligibility_notes: "Available to Hawaii residents (Chase personal checking/savings bonuses are obtainable in HI). New Chase Total Checking account via coupon EK42726. Not eligible if existing Chase checking customer, closed a Chase checking account within 90 days, or closed with negative balance within 3 years. One opening-related bonus per 24 months. Plus one qualifying direct deposit required within 90 days (payroll/pension/government benefits via ACH, RTP, FedNow, or debit network — Zelle/checks/wires/P2P do not count). Monthly fee waivable with $500+ DD, $1,500+ daily balance, or $5,000+ avg daily balance.",
     },
     source_links: [
       "https://account.chase.com/consumer/banking/EK42726?jp_cmp=rb/xlob/int/dmlp900tiered/na",
