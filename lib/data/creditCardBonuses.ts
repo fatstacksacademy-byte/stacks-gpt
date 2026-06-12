@@ -29,6 +29,32 @@ export type RewardsTier = {
   note?: string
 }
 
+/**
+ * Introductory 0% APR terms.
+ *
+ * Captured separately from the signup bonus because it serves a different
+ * audience: debt-carriers and large-purchase planners, not points chasers.
+ * Every field is optional so existing catalog entries compile unchanged — a
+ * card with no `intro_apr` is treated as "no intro offer / not yet researched".
+ *
+ * Example — a typical balance-transfer card:
+ *   { purchase_apr_months: 15, bt_apr_months: 21, bt_fee_pct: 3,
+ *     go_to_apr_low: 18.24, go_to_apr_high: 28.24 }
+ */
+export type IntroApr = {
+  /** Months of 0% intro APR on new purchases (0/undefined = none). */
+  purchase_apr_months?: number
+  /** Months of 0% intro APR on balance transfers. */
+  bt_apr_months?: number
+  /** Balance-transfer fee, percent of the amount moved (3 = 3%). */
+  bt_fee_pct?: number
+  /** Window (days) to transfer a balance and still get the intro fee/rate. */
+  bt_window_days?: number
+  /** Go-to (post-intro) variable APR range, for display. */
+  go_to_apr_low?: number
+  go_to_apr_high?: number
+}
+
 export type CreditCardBonus = {
   id: string
   card_name: string
@@ -53,6 +79,8 @@ export type CreditCardBonus = {
   military_only?: boolean
   /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
   rewards?: RewardsTier[]
+  /** Introductory 0% APR terms. Optional — absent until researched per card. */
+  intro_apr?: IntroApr
 }
 
 export const creditCardBonuses: CreditCardBonus[] = [

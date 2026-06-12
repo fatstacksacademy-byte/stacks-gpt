@@ -5,6 +5,12 @@ import Link from "next/link"
 import { US_STATES } from "../../lib/data/catalogTaxonomy"
 import type { CreditCardBonus } from "../../lib/data/creditCardBonuses"
 import {
+  rankByIntroApr,
+  balanceTransferCost,
+  introAprSummary,
+  type IntroAprMode,
+} from "../../lib/data/introApr"
+import {
   SPEND_BUCKETS,
   rankCardsForSpend,
   signupYearOneValue,
@@ -23,7 +29,7 @@ import {
  * sell (bank bonuses by state) lives below in the page, where it's honest.
  */
 
-type Path = "signup" | "spend"
+type Path = "signup" | "spend" | "apr"
 
 const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online: 0, other: 0 }
 
@@ -36,6 +42,8 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
   const [mode, setMode] = useState<RankMode>("ongoing")
   const [stateSlug, setStateSlug] = useState<string>("")
+  const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
+  const [balance, setBalance] = useState<number>(5000)
 
   const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
 
@@ -54,10 +62,15 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     [cards, spend, mode],
   )
 
+  const aprRanked = useMemo(
+    () => rankByIntroApr(cards, aprMode).slice(0, 12),
+    [cards, aprMode],
+  )
+
   return (
     <div style={{ marginBottom: 48 }}>
-      {/* ── Two-path chooser ─────────────────────────────────────────── */}
-      <div className="cf-paths" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      {/* ── Three-path chooser ───────────────────────────────────────── */}
+      <div className="cf-paths" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
         <PathCard
           active={path === "signup"}
           emoji="🎯"
@@ -71,6 +84,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
           title="Best card for my daily spend"
           sub="Tell us what you spend, we rank cards by what they'd earn you."
           onClick={() => setPath("spend")}
+        />
+        <PathCard
+          active={path === "apr"}
+          emoji="🧯"
+          title="Best 0% APR / balance transfer"
+          sub="Most interest-free runway for a balance or a big purchase."
+          onClick={() => setPath("apr")}
         />
       </div>
 
@@ -179,6 +199,67 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
         </div>
       )}
 
+      {path === "apr" && (
+        <div style={{ marginTop: 24 }}>
+          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: 20, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "inline-flex", border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden" }}>
+              <ModeTab active={aprMode === "balance_transfer"} onClick={() => setAprMode("balance_transfer")}>Balance transfer</ModeTab>
+              <ModeTab active={aprMode === "purchases"} onClick={() => setAprMode("purchases")}>New purchase</ModeTab>
+            </div>
+            {aprMode === "balance_transfer" && (
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: "#444" }}>
+                Balance to move
+                <span style={{ display: "inline-flex", alignItems: "center", border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 10px", background: "#fafafa" }}>
+                  <span style={{ fontSize: 13, color: "#999" }}>$</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={balance || ""}
+                    onChange={e => setBalance(e.target.value ? Number(e.target.value) : 0)}
+                    placeholder="5000"
+                    style={{ border: "none", outline: "none", background: "transparent", padding: "9px 6px", fontSize: 14, color: "#111", width: 90 }}
+                  />
+                </span>
+              </label>
+            )}
+          </div>
+
+          <ResultBlock
+            heading={aprMode === "balance_transfer" ? "Longest 0% balance-transfer windows" : "Longest 0% purchase windows"}
+            note={
+              aprMode === "balance_transfer"
+                ? "Ranked by months of 0% APR on transfers, then lowest transfer fee. The runway to pay down a balance interest-free."
+                : "Ranked by months of 0% APR on new purchases. Spread a big purchase out without interest."
+            }
+          >
+            {aprRanked.length === 0 ? (
+              <div style={{ background: "#fff", border: "1px dashed #e8e8e8", borderRadius: 12, padding: 24, fontSize: 14, color: "#666", lineHeight: 1.6 }}>
+                <strong style={{ color: "#111" }}>No 0% APR offers captured yet.</strong> We&apos;re
+                researching intro-APR terms card by card — this list lights up as the data lands.
+              </div>
+            ) : (
+              aprRanked.map((c, i) => {
+                const cost = balanceTransferCost(c, balance)
+                return (
+                  <CardRow
+                    key={c.id}
+                    rank={i + 1}
+                    card={c}
+                    primary={`${(aprMode === "balance_transfer" ? c.intro_apr?.bt_apr_months : c.intro_apr?.purchase_apr_months) ?? 0}mo`}
+                    primaryLabel="0% APR"
+                    secondary={
+                      aprMode === "balance_transfer" && cost != null
+                        ? `${introAprSummary(c, aprMode)} · ~$${cost.toLocaleString()} to move $${balance.toLocaleString()}`
+                        : introAprSummary(c, aprMode)
+                    }
+                  />
+                )
+              })
+            )}
+          </ResultBlock>
+        </div>
+      )}
+
       {/* ── Build-my-plan handoff (shows once a path is chosen) ── */}
       {path && <BuildPlanCta path={path} />}
 
@@ -197,23 +278,37 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
 
 // ── Build-my-plan handoff into Stacks OS ─────────────────────────────
 function BuildPlanCta({ path }: { path: Path }) {
+  const copy: Record<Path, { body: string; href: string; cta: string }> = {
+    spend: {
+      body: "Stacks OS sequences these cards around your real paycheck and spend, tracks each min-spend, and tells you exactly what to open next.",
+      href: "/stacksos/spending",
+      cta: "Build my plan with Stacks OS →",
+    },
+    signup: {
+      body: "Stacks OS orders these bonuses by your 5/24 status and paycheck, so you hit every min-spend without overlapping.",
+      href: "/stacksos/spending",
+      cta: "Build my plan with Stacks OS →",
+    },
+    apr: {
+      body: "Stacks OS models a 0% balance transfer against your payoff timeline — see whether the transfer fee beats the interest you'd otherwise pay.",
+      href: "/stacksos/debt",
+      cta: "Plan my payoff with Stacks OS →",
+    },
+  }
+  const c = copy[path]
   return (
     <div style={{ marginTop: 28, background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "1px solid #a7f3d0", borderRadius: 14, padding: "22px 24px", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
       <div style={{ minWidth: 220, flex: 1 }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#111", marginBottom: 4 }}>
-          Turn this into a step-by-step plan
+          {path === "apr" ? "Turn this into a payoff plan" : "Turn this into a step-by-step plan"}
         </div>
-        <div style={{ fontSize: 13, color: "#555", lineHeight: 1.55 }}>
-          {path === "spend"
-            ? "Stacks OS sequences these cards around your real paycheck and spend, tracks each min-spend, and tells you exactly what to open next."
-            : "Stacks OS orders these bonuses by your 5/24 status and paycheck, so you hit every min-spend without overlapping."}
-        </div>
+        <div style={{ fontSize: 13, color: "#555", lineHeight: 1.55 }}>{c.body}</div>
       </div>
       <Link
-        href="/stacksos/spending"
+        href={c.href}
         style={{ display: "inline-block", padding: "13px 26px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", borderRadius: 10, textDecoration: "none", whiteSpace: "nowrap" }}
       >
-        Build my plan with Stacks OS →
+        {c.cta}
       </Link>
     </div>
   )
