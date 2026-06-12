@@ -62,6 +62,14 @@ import { northCarolinaCards } from "./north-carolina"
 import { southCarolinaCards } from "./south-carolina"
 
 // ── Mid-Atlantic ──────────────────────────────────────────────────────
+import { virginiaCards } from "./virginia"
+import { marylandCards } from "./maryland"
+import { districtOfColumbiaCards } from "./district-of-columbia"
+import { delawareCards } from "./delaware"
+import { westVirginiaCards } from "./west-virginia"
+import { newJerseyCards } from "./new-jersey"
+import { pennsylvaniaCards } from "./pennsylvania"
+import { newYorkCards } from "./new-york"
 
 // ── New England ───────────────────────────────────────────────────────
 
@@ -107,4 +115,13 @@ export const regionalStateCards: CreditCardBonus[] = [
   ...floridaCards,
   ...northCarolinaCards,
   ...southCarolinaCards,
+  // Mid-Atlantic
+  ...virginiaCards,
+  ...marylandCards,
+  ...districtOfColumbiaCards,
+  ...delawareCards,
+  ...westVirginiaCards,
+  ...newJerseyCards,
+  ...pennsylvaniaCards,
+  ...newYorkCards,
 ]

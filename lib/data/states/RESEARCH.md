@@ -240,4 +240,46 @@ state-anchored core (disclosed in eligibility_notes).
 - **Excluded:** BECU (inline), Truliant + Sharonview (NC owns), Heritage Trust/REV (ACC backdoor), AllSouth (Elan). Unresolved: Founders + SC Federal (403).
 - **Sources:** cpmfed.com, carolinafoothillsfcu.coop, familytrust.org, greenvillefcu.com, palmettocitizens.org, safefed.org, srpfcu.org, midcarolinacu.com.
 
+## Batch 7 — Mid-Atlantic (VA, MD, DC, DE, WV, NJ, PA, NY) · verified 2026-06-11
+
+### Virginia (VA) — 10 cards, 3 institutions
+- **Added:** DuPont Community CU (Mastercard World 30k, Platinum Rewards, Platinum Cash Back, Share Secure), 1st Advantage FCU [VA/NC] (World MC $150, Rewards MC $100, Standard MC), UVA Community CU (Member Rewards 3x, Platinum, Platinum Propel).
+- **Excluded as effectively-nationwide:** VACU + Member One (ACC), Apple/NextMark (NVADACA), ABNB/BayPort (ACC/FFA), Langley (open to all), Chartway (foundation), Atlantic Union (Elan). Truliant/Marine/Palmetto owned elsewhere.
+- **Sources:** mydccu.com, 1stadvantage.org, uvacreditunion.org.
+
+### Maryland (MD) — 25 cards, 8 institutions
+- **Added:** SECU/Maryland (Signature 25k/3x, UMD Terps Affinity 25k, Cash Back 2%, Rewards, FirstRate, Secured), MECU/Baltimore [MD/DE/PA/VA/DC] (Signature Cash Rewards, Platinum Rewards, Platinum, Secured), Tower FCU [MD/DC/DE/PA/VA/WV] (World 1.5%+$100, Gold, Empower), APGFCU (Platinum Preferred Rewards 3x + $100/30k, Cash Back 1.5%, Platinum Preferred), Nymeo [MD/WV/PA] (Premier Rewards 10k, Platinum, Secured), Freedom/MD (Signature 4/3/2/1.5x+10k, Platinum Rewards, Platinum), First Financial/MD (Signature Rewards 2%, Traditional Rewards), Point Breeze (Visa).
+- **Excluded:** Educational Systems FCU (nationwide foundation), Andrews/NIH/Lafayette (deferred). SECU/MD issuer slug distinct from NC SECU.
+- **Sources:** secumd.org, mecu.com, towerfcu.org, apgfcu.com, nymeo.org, freedomfcu.org, firstfinancial.org, pbcu.com.
+
+### District of Columbia (DC) — 6 cards, 5 institutions
+- **Added:** Lafayette FCU [DC/MD/VA] (Platinum MC Rewards 50k), Signal Financial [DC/MD/VA/WV/DE/PA/NJ] (Signature 3x+$100, Platinum 3x+10k), IDB Global FCU (Platinum Rewards 1.5x + 30k), DC Credit Union [DC/MD] (Platinum), AgFed (Platinum with Rebates).
+- **Excluded:** Department of Commerce FCU (nationwide), Bank-Fund Staff (403).
+- **Sources:** lfcu.org, signalfinancialfcu.org, idbglobalfcu.org, dccreditunion.coop, agfed.org.
+
+### Delaware (DE) — 6 cards, 3 institutions
+- **Added:** Del-One FCU [DE/MD/PA] (Rewards, Student Rewards, Shared Secured), DEXSTA [DE/MD] (Platinum Rewards, Platinum), Community Powered [DE/MD] (Visa).
+- **Excluded:** Dover FCU (Friends of Bombay Hook nationwide), WSFS (Fund Society multi-state nationwide), Artisans' (Elan). Barclays/Chase/Discover (DE-domiciled but nationwide) excluded.
+- **Sources:** del-one.org, dexsta.com, cpwrfcu.org.
+
+### West Virginia (WV) — 6 cards, 4 institutions
+- **Added:** Pioneer Appalachia FCU [WV/VA/MD/KY/OH/PA] (Perks Rewards 2pt), Members Choice WV (Visa), Element FCU (Cash Back MC, Traditional MC), United Bank [WV/VA/MD/PA/OH/NC/SC/GA] (Visa Platinum, Visa Classic).
+- **Excluded:** Bayer Heritage (ACC); City National/WesBanco/WV Central/Fairmont (Elan white-label).
+- **Sources:** pioneerafcu.org, memberschoicewv.com, elementfcu.org, unitedbank.com.
+
+### New Jersey (NJ) — 6 cards, 4 institutions
+- **Added:** Garden Savings [NJ/NY/PA] (CashBack Plus MC, Premier Rate MC), Members 1st of NJ (Visa Platinum), Jersey Shore FCU (Platinum MC), The Atlantic FCU (Visa Signature 2%, Low-Rate).
+- **Excluded as nationwide:** Credit Union of NJ (foundation), Aspire (ACC), Affinity (quasi-national), Provident/Columbia/Lakeland (Elan). First Jersey (liquidated).
+- **Sources:** gardensavingsfcu.org, membersonenj.org, jerseyshorefcu.org, theatlanticfcu.com.
+
+### Pennsylvania (PA) — 16 cards, 9 institutions
+- **Added:** PSECU (Founder's Rewards 1.5%/2%, Classic), Citadel [PA/DE/NJ/NY/OH/MD/WV] (Cash Rewards 1.5%, Choice, World 2x), Trumark (Everyday Elite 4/3/2 + $150, Everyday Rewards + $150), Members 1st/PA (Signature Rewards 1.5%, Platinum Rewards 2x gas/grocery), PFFCU [PA/NJ/DE] (Rewards), Diamond (Signature Cashback 1.5% + 15k, Platinum Rewards), Freedom/PA (Visa Cash Back), Erie FCU (Platinum MC), Service 1st (Visa Platinum).
+- **Excluded:** American Heritage (Kids-N-Hope foundation nationwide), First Keystone (Elan).
+- **Sources:** psecu.com, citadelbanking.com, trumark.com, members1st.org, pffcu.org, diamondcu.org, freedomcu.org, eriefcu.org, service1.org.
+
+### New York (NY) — 13 cards, 4 institutions
+- **Added:** ESL FCU (Rewards Signature 3x dining + 20k, Visa, Secured), Broadview/fmr SEFCU+CAP COM (Lightning 3x grocery, World, Credit, Classic Secured), AmeriCU (AmeriCONNECT Signature Rewards 1.5x + 20k, Rewards + 10k, Visa, Secured), Visions [NY/NJ/PA] (Elite Signature 2%, Platinum).
+- **Excluded:** Hudson Valley CU (ACC), Bethpage/FourLeaf (now nationwide), Jovia (CrossState foundation), Kinecta (CA owns). Unresolved: Empower, CFCU Ithaca.
+- **Sources:** esl.org, broadviewfcu.com, americu.org, visionsfcu.org.
+
 <!-- Batches appended below as they are completed. -->
