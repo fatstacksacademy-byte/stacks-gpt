@@ -176,6 +176,9 @@ export default function AdminPage() {
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 32px" }}>
 
+        {/* ── Quick actions ── */}
+        <QuickActions />
+
         {/* ── Users Tab ── */}
         {tab === "users" && !selectedUser && (
           <>
@@ -571,6 +574,74 @@ function IssueRow({
         >
           Mark reviewed
         </button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Quick-action panel — gathers every admin tool into one row so the
+ * sidebar-less admin layout still surfaces what's available. Tools
+ * landed in different routes over time; this is the central index.
+ *
+ * Each card is a Link out to its dedicated page. Where a queue exists
+ * we show a hint (counts come from each page on click — the index
+ * itself doesn't fetch them so this stays snappy).
+ */
+function QuickActions() {
+  const links: { href: string; emoji: string; title: string; sub: string; bg: string; fg: string; border: string }[] = [
+    { href: "/admin/cards-triage-fast", emoji: "⚡", title: "Cards triage (fast)", sub: "Keyboard-driven, card-grouped, bulk-by-pattern dismissal", bg: "#eafaf3", fg: "#0d6e51", border: "#cae8db" },
+    { href: "/admin/card-triage", emoji: "🃏", title: "Cards triage (detailed)", sub: "Per-edit URL override, modify form, snippet evidence", bg: "#eef5fb", fg: "#1d5fa6", border: "#d4e4f3" },
+    { href: "/admin/triage", emoji: "🏦", title: "Bonus triage", sub: "Bank + savings bonus drift from verify:bonuses", bg: "#fdf6e0", fg: "#8a6d00", border: "#f0e2a8" },
+    { href: "/admin/discover-review", emoji: "🔎", title: "Discover review", sub: "Approve / reject new leads from discover:bonuses", bg: "#f3f0fa", fg: "#534493", border: "#dcd2ee" },
+    { href: "/admin/broadcasts", emoji: "📣", title: "Broadcasts", sub: "Compose + send Beehiiv newsletter pushes", bg: "#fff1ea", fg: "#a14620", border: "#f3d4be" },
+  ]
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+        Quick actions
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 10 }}>
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            style={{
+              display: "block",
+              padding: "12px 14px",
+              background: l.bg,
+              border: `1px solid ${l.border}`,
+              borderRadius: 10,
+              textDecoration: "none",
+              color: l.fg,
+              transition: "transform 100ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)" }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 18 }}>{l.emoji}</span>
+              <span style={{ fontSize: 14, fontWeight: 700 }}>{l.title}</span>
+            </div>
+            <div style={{ fontSize: 12, marginTop: 4, color: l.fg, opacity: 0.85, lineHeight: 1.4 }}>{l.sub}</div>
+          </a>
+        ))}
+      </div>
+      <div style={{ marginTop: 12, padding: "10px 14px", background: "#f8f8f8", border: "1px solid #eee", borderRadius: 8, fontSize: 11, color: "#666", lineHeight: 1.6 }}>
+        <strong style={{ color: "#444" }}>CLI workflows that don&apos;t (yet) have a button</strong>
+        <div style={{ marginTop: 4, fontFamily: "ui-monospace, monospace", fontSize: 11 }}>
+          npm run discover:bonuses<br />
+          npm run discover:cards<br />
+          npm run verify:bonuses -- --persist<br />
+          npm run verify:cards -- --persist<br />
+          npm run backfill:intro-apr<br />
+          npm run backfill:credit-score<br />
+          npm run annotate:premium -- --apply<br />
+          npm run generate:bonus-blog<br />
+          npm run generate:card-blog<br />
+          npm run catalog:promote-leads<br />
+          npm run canary:scan
+        </div>
       </div>
     </div>
   )
