@@ -1,0 +1,47 @@
+import type { CreditCardBonus } from "../creditCardBonuses"
+
+/**
+ * Aggregation layer for state-specific regional card modules.
+ *
+ * Every per-state module (built with ./_builder.ts) is imported here and
+ * concatenated into `regionalStateCards`, which ../creditCardBonuses.ts spreads
+ * into the main catalog. Adding a state = one import + one spread below.
+ *
+ * Hawaii lives in its own module (../hawaiiCreditCardBonuses.ts) and is spread
+ * separately in creditCardBonuses.ts, so it is intentionally NOT re-exported
+ * here — its data and behavior are preserved untouched.
+ *
+ * A handful of regional issuers (BECU, Ent, VyStar, First Community CU,
+ * CommunityAmerica) predate this layer and live inline in creditCardBonuses.ts;
+ * state modules here deliberately cover *other* institutions to avoid duplicate
+ * IDs. The uniqueness invariant is enforced by cardAvailability.test.ts.
+ */
+
+// ── West ──────────────────────────────────────────────────────────────
+import { californiaCards } from "./california"
+import { oregonCards } from "./oregon"
+import { washingtonCards } from "./washington"
+import { alaskaCards } from "./alaska"
+import { nevadaCards } from "./nevada"
+import { arizonaCards } from "./arizona"
+
+// ── Mountain / Southwest ──────────────────────────────────────────────
+
+// ── Midwest ───────────────────────────────────────────────────────────
+
+// ── South / Gulf ──────────────────────────────────────────────────────
+
+// ── Mid-Atlantic ──────────────────────────────────────────────────────
+
+// ── New England ───────────────────────────────────────────────────────
+
+/** All verified state-restricted regional cards, aggregated across modules. */
+export const regionalStateCards: CreditCardBonus[] = [
+  // West
+  ...californiaCards,
+  ...oregonCards,
+  ...washingtonCards,
+  ...alaskaCards,
+  ...nevadaCards,
+  ...arizonaCards,
+]
