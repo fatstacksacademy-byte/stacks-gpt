@@ -36,6 +36,12 @@ const ONLY = args.find(a => a.startsWith("--only="))?.split("=")[1]
 const LIMIT = Number(args.find(a => a.startsWith("--limit="))?.split("=")[1] ?? 0) || 0
 const USE_CACHE = !args.includes("--no-cache")
 const DRY_RUN = args.includes("--dry-run")
+// Skip the live-page verification step. Generates content purely from
+// catalog data — useful for cards with redirect chains, dead links, or
+// pages that render dynamic content where extractAll can't see the card
+// name. The article still has the offer card + rewards + key benefits
+// + templated editorial, just without the verifiedAt/verifiedUrl stamp.
+const NO_VERIFY = args.includes("--no-verify")
 
 const ROOT = process.cwd()
 const OUT_PATH = join(ROOT, "lib", "data", "cardBlogContent.ts")
@@ -228,6 +234,18 @@ function buildEntry(c: CreditCardBonus, verifiedUrl: string, verifiedAt: string)
 
 async function processCard(c: CreditCardBonus): Promise<GenResult> {
   const url = c.offer_link
+
+  // Unverified path: generate purely from catalog data, no fetch.
+  // We still tag the entry with the catalog's offer_link as
+  // verifiedUrl so the template references the right page.
+  if (NO_VERIFY) {
+    return {
+      kind: "generated",
+      id: c.id,
+      entry: buildEntry(c, url || "", new Date().toISOString()),
+    }
+  }
+
   if (!url) return { kind: "skipped", id: c.id, reason: "no offer_link" }
 
   let textContent = ""

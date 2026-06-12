@@ -1,4 +1,5 @@
 import { hawaiiCreditCardBonuses } from "./hawaiiCreditCardBonuses"
+import { regionalStateCards } from "./states"
 
 /**
  * Credit card sign-up bonus data.
@@ -286,15 +287,15 @@ export const creditCardBonuses: CreditCardBonus[] = [
   // cover; the omissions were leftover gaps from the SEED_CARDS days.
 
   {
-    id: "capital-one-savor-90k",
+    id: "capital-one-savor-250",
     card_name: "Capital One Savor",
     issuer: "capital one",
     card_type: "personal",
-    bonus_amount: 30000,
+    bonus_amount: 250,
     bonus_currency: "cash",
     is_hotel_card: false,
     cpp_value: 1,
-    min_spend: 3000,
+    min_spend: 500,
     spend_months: 3,
     annual_fee: 0,
     annual_fee_waived_first_year: false,
@@ -318,18 +319,18 @@ export const creditCardBonuses: CreditCardBonus[] = [
     protections: { extended_warranty: true },
   },
   {
-    id: "capital-one-spark-miles-50k",
+    id: "capital-one-spark-miles-150k",
     card_name: "Capital One Spark Miles for Business",
     issuer: "capital one",
     card_type: "business",
-    bonus_amount: 50000,
+    bonus_amount: 150000,
     bonus_currency: "Capital One miles",
     is_hotel_card: false,
     cpp_value: 0.014,
-    min_spend: 4500,
+    min_spend: 30000,
     spend_months: 3,
-    annual_fee: 95,
-    annual_fee_waived_first_year: true,
+    annual_fee: 395,
+    annual_fee_waived_first_year: false,
     statement_credits_year1: 120,
     offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-miles/",
     expired: false,
@@ -368,7 +369,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/rewards-credit-cards/amazon/visa",
+    offer_link: "https://www.chase.com/personal/credit-cards/amazon",
     expired: false,
     key_benefits: [
       "5% back at Amazon & Whole Foods (requires Prime membership)",
@@ -390,11 +391,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
     },
   },
   {
-    id: "citi-strata-premier-75k",
+    id: "citi-strata-premier-60k",
     card_name: "Citi Strata Premier",
     issuer: "citi",
     card_type: "personal",
-    bonus_amount: 75000,
+    bonus_amount: 60000,
     bonus_currency: "ThankYou Points",
     is_hotel_card: false,
     cpp_value: 0.018,
@@ -559,7 +560,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.biltrewards.com/card",
+    offer_link: "https://www.bilt.com/card",
     expired: false,
     key_benefits: [
       "1x on rent payments (no transaction fee) — uniquely transferable to airline/hotel partners",
@@ -604,7 +605,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 39,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.capitalone.com/credit-cards/quicksilver-one/",
+    offer_link: "https://www.capitalone.com/credit-cards/quicksilverone/",
     expired: false,
     key_benefits: [
       "Unlimited 1.5% cash back on every purchase",
@@ -657,7 +658,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: true,
     statement_credits_year1: 0,
     offer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/business-green-rewards-card/",
-    expired: false,
+    // Amex closed Business Green to new applicants. Live offer page
+    // redirects to a 500 error.
+    expired: true,
     key_benefits: [
       "2x on every U.S. purchase (no category caps)",
       "Charge card — no preset spending limit (pay in full each month)",
@@ -688,7 +691,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 99,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/business-credit-cards/ihg/premier-business",
+    offer_link: "https://creditcards.chase.com/business-credit-cards/ihg/business-premier",
     expired: false,
     key_benefits: [
       "Anniversary free-night certificate (up to 40K points)",
@@ -836,7 +839,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 299,
     offer_link: "https://www.americanexpress.com/us/credit-cards/card/green-card/",
-    expired: false,
+    // Amex closed Green to new applicants in 2025. Existing cardholders keep
+    // it; live offer page 404s.
+    expired: true,
     key_benefits: [
       "$199 CLEAR Plus credit",
       "$100 LoungeBuddy credit",
@@ -869,11 +874,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
     ],
   },
   {
-    id: "capital-one-venture-x-100k",
+    id: "capital-one-venture-x-75k",
     card_name: "Capital One Venture X",
     issuer: "capital one",
     card_type: "personal",
-    bonus_amount: 100000,
+    bonus_amount: 75000,
     bonus_currency: "Capital One miles",
     is_hotel_card: false,
     cpp_value: 0.018,
@@ -1469,13 +1474,14 @@ export const creditCardBonuses: CreditCardBonus[] = [
     spend_months: 3,
     annual_fee: 95,
     annual_fee_waived_first_year: false,
-    statement_credits_year1: 250, // $250 travel credit
+    statement_credits_year1: 0, // No standing annual travel credit on the Venture (removed by Capital One)
     offer_link: "https://www.capitalone.com/credit-cards/venture/",
     expired: false,
     key_benefits: [
-      "$250 Capital One Travel credit (year 1)",
       "2x miles on every purchase",
-      "Transfer to airline/hotel partners",
+      "5x on hotels & rental cars via Capital One Travel",
+      "Transfer to 15+ airline/hotel partners",
+      "$100 Global Entry/TSA PreCheck credit (every 4 years)",
       "No foreign transaction fees",
     ],
     travel: {
@@ -8927,4 +8933,5 @@ export const creditCardBonuses: CreditCardBonus[] = [
     travel: { no_foreign_tx_fee: true },
   },
   ...hawaiiCreditCardBonuses,
+  ...regionalStateCards,
 ]

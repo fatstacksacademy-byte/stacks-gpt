@@ -565,7 +565,13 @@ async function main() {
 
   let targets: CreditCardBonus[] = creditCardBonuses as CreditCardBonus[]
   if (!INCLUDE_EXPIRED) targets = targets.filter((c) => !c.expired)
-  if (ONLY) targets = targets.filter((c) => c.id === ONLY)
+  if (ONLY) {
+    // Accepts a single id ("--only=foo") or a comma-separated list
+    // ("--only=foo,bar,baz") so we can spot-check a small set without
+    // a full 311-card pass.
+    const onlyIds = new Set(ONLY.split(",").map((s) => s.trim()).filter(Boolean))
+    targets = targets.filter((c) => onlyIds.has(c.id))
+  }
   if (LIMIT > 0) targets = targets.slice(0, LIMIT)
 
   console.log(
