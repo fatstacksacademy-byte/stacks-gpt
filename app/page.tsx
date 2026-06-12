@@ -41,15 +41,15 @@ export const metadata: Metadata = {
  * its Site URL (https://fatstacksacademy.com) instead of honoring our
  * configured redirectTo, the recovery code lands HERE — on the
  * homepage — and would otherwise auto-exchange as a normal sign-in
- * with no password form ever appearing. Detecting `?code=` + a
- * recovery hint and forwarding to /auth/callback keeps the flow
- * working regardless of how Supabase resolves the redirect.
+ * with no password form ever appearing.
  *
- * We forward on:
- *   - `?code=…` + `?type=recovery`      (our login redirectTo if Supabase honored it)
- *   - `?code=…` + standalone `?token_hash=…` recovery params
- *   - hash fragments aren't readable server-side; the client-side
- *     /reset-password page handles those.
+ * Strategy: ANY ?code= on the homepage is forwarded to /auth/callback.
+ * In this codebase every legitimate auth flow (sign-in, sign-up,
+ * recovery, OAuth) uses /auth/callback as its redirect target — a
+ * `code` on `/` only happens when Supabase fell back to Site URL,
+ * which is overwhelmingly the recovery flow. We default `type=recovery`
+ * so the callback routes to /reset-password; the callback's own logic
+ * decides what to do beyond that.
  */
 export default async function HomePage({
   searchParams,
@@ -58,10 +58,9 @@ export default async function HomePage({
 }) {
   const params = await searchParams
   const code = typeof params.code === "string" ? params.code : null
-  const type = typeof params.type === "string" ? params.type : null
   const token_hash = typeof params.token_hash === "string" ? params.token_hash : null
 
-  if (code && (type === "recovery" || token_hash)) {
+  if (code || token_hash) {
     // Forward to the existing callback handler, preserving every param
     // Supabase appended (state, etc.). The callback exchanges the code
     // server-side and routes recovery sessions to /reset-password.

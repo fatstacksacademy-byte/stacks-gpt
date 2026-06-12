@@ -4,10 +4,10 @@ const BASE = "https://fatstacksacademy.com"
 
 export const metadata: Metadata = {
   title: {
-    default: "Fat Stacks Academy - Bank Bonus Reviews & Credit Card Offers",
+    default: "Fat Stacks Academy Blog - Bank Bonus Strategy & Guides",
     template: "%s | Fat Stacks Academy",
   },
-  description: "Expert reviews of the best bank account bonuses, credit card sign-up offers, and high-yield savings promotions. Requirements, eligibility, and strategy — updated daily.",
+  description: "Original guides on bank bonuses, direct deposit, eligibility, taxes, and building a sustainable churning strategy.",
   metadataBase: new URL(BASE),
   alternates: { canonical: `${BASE}/blog` },
   openGraph: {
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     siteName: "Fat Stacks Academy",
     locale: "en_US",
     url: `${BASE}/blog`,
-    title: "Fat Stacks Academy - Bank Bonus Reviews & Credit Card Offers",
-    description: "Expert reviews of the best bank account bonuses, credit card sign-up offers, and high-yield savings promotions. Updated daily.",
+    title: "Fat Stacks Academy Blog - Bank Bonus Strategy & Guides",
+    description: "Original guides on bank bonuses, direct deposit, eligibility, taxes, and sustainable churning strategy.",
     images: [
       {
-        url: `${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Reviews & Credit Card Strategy")}&kind=guide`,
+        url: `${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Strategy & Guides")}&kind=guide`,
         width: 1200,
         height: 630,
         alt: "Fat Stacks Academy",
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fat Stacks Academy - Bank Bonus Reviews",
-    description: "Expert reviews of the best bank account bonuses and savings promotions.",
-    images: [`${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Reviews & Credit Card Strategy")}&kind=guide`],
+    title: "Fat Stacks Academy Blog - Bank Bonus Strategy & Guides",
+    description: "Original guides for finding, completing, and tracking bank bonuses.",
+    images: [`${BASE}/api/og?title=${encodeURIComponent("Bank Bonus Strategy & Guides")}&kind=guide`],
   },
   keywords: [
     "bank bonus", "bank account bonus", "checking bonus", "savings bonus",

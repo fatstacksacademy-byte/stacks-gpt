@@ -1,179 +1,191 @@
 import Link from "next/link"
-import { blogPosts } from "../../lib/data/blogPosts"
 import NewsletterCTA from "./components/NewsletterCTA"
 
 const YT = "https://www.youtube.com/@nathanielbooth"
 
-export default function BlogIndex() {
-  const checking = blogPosts.filter(p => p.bonusType === "checking")
-  const savings = blogPosts.filter(p => p.bonusType === "savings")
+type Article = {
+  href: string
+  title: string
+  description: string
+  category: string
+  date: string
+  featured?: boolean
+}
 
+const articles: Article[] = [
+  {
+    href: "/blog/best-bank-bonuses-june-2026",
+    title: "The Best Bank Bonuses for June 2026",
+    description: "My four favorite offers this month, ranked by value, difficulty, and how likely they are to stay available.",
+    category: "Monthly Picks",
+    date: "June 9, 2026",
+    featured: true,
+  },
+  {
+    href: "/blog/what-is-early-direct-deposit",
+    title: "What Is Early Direct Deposit?",
+    description: "How banks release paychecks early, which accounts support it, and how it fits into a bonus strategy.",
+    category: "Paycheck Strategy",
+    date: "May 11, 2026",
+  },
+  {
+    href: "/blog/bank-account-churning-waiting-periods",
+    title: "Bank Bonus Cooldown Periods",
+    description: "A practical guide to when you can reopen accounts and qualify for the same bonus again.",
+    category: "Churning Strategy",
+    date: "May 11, 2026",
+  },
+  {
+    href: "/blog/bank-bonuses-without-direct-deposit",
+    title: "Bank Bonuses Without Direct Deposit",
+    description: "The best paths for self-employed, retired, or between-job bonus seekers who cannot route payroll.",
+    category: "Bonus Strategy",
+    date: "May 11, 2026",
+  },
+  {
+    href: "/blog/what-counts-as-direct-deposit",
+    title: "What Counts as Direct Deposit?",
+    description: "Employer payroll, ACH pushes, government benefits, and the methods banks actually recognize.",
+    category: "Direct Deposit",
+    date: "April 16, 2026",
+  },
+  {
+    href: "/blog/chexsystems-guide-bank-bonuses",
+    title: "ChexSystems Explained",
+    description: "What banks see when you apply, which institutions are sensitive, and what to do after a denial.",
+    category: "Eligibility",
+    date: "April 16, 2026",
+  },
+  {
+    href: "/blog/bank-bonus-tax-guide-2026",
+    title: "The 2026 Bank Bonus Tax Guide",
+    description: "How bank bonuses are reported, what 1099 forms mean, and how to prepare before tax season.",
+    category: "Taxes",
+    date: "April 16, 2026",
+  },
+]
+
+const featured = articles.find(article => article.featured)!
+const guides = articles.filter(article => !article.featured)
+
+export default function BlogIndex() {
   return (
     <>
       <style>{`
-        .blog-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .blog-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        @media (max-width: 900px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
+        .blog-card { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+        .blog-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.07); border-color: #cce8df !important; }
+        .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .blog-feature { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 32px; }
+        .blog-find-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 850px) {
+          .blog-grid { grid-template-columns: repeat(2, 1fr); }
+          .blog-feature { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 620px) {
+          .blog-grid, .blog-find-grid { grid-template-columns: 1fr; }
+          .blog-nav-secondary { display: none; }
+          .blog-hero-title { font-size: 38px !important; }
+        }
       `}</style>
 
-      {/* Header */}
       <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none", letterSpacing: "-0.02em" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
+          <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none", letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
             Fat Stacks Academy
           </Link>
-          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
-            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>All Reviews</Link>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
+          <nav style={{ display: "flex", gap: 22, alignItems: "center" }}>
+            <Link href="/bank-bonuses-by-state" className="blog-nav-secondary" style={{ fontSize: 13, color: "#777", textDecoration: "none" }}>Find Bonuses</Link>
+            <Link href="/bonuses" className="blog-nav-secondary" style={{ fontSize: 13, color: "#777", textDecoration: "none" }}>All Offers</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 700 }}>Blog</Link>
+            <Link href="/stacksos" style={{ fontSize: 13, color: "#fff", background: "#0d7c5f", padding: "8px 12px", borderRadius: 7, textDecoration: "none", fontWeight: 700 }}>Stacks OS</Link>
           </nav>
         </div>
       </header>
 
-      {/* Hero */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 24px 20px" }}>
-        <h1 style={{ fontSize: 42, fontWeight: 800, color: "#111", letterSpacing: "-0.03em", margin: "0 0 12px", lineHeight: 1.1 }}>
-          Bank Bonus Reviews
-        </h1>
-        <p style={{ fontSize: 16, color: "#888", margin: "0 0 8px", maxWidth: 600, lineHeight: 1.6 }}>
-          Expert reviews of the best bank account bonuses available right now. Requirements, eligibility, strategy, and effective returns — all in one place.
-        </p>
-        <p style={{ fontSize: 14, color: "#666", margin: 0 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 2026
-        </p>
-      </section>
+      <main>
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "76px 24px 42px" }}>
+          <div style={{ maxWidth: 760 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 16 }}>Fat Stacks Academy Blog</div>
+            <h1 className="blog-hero-title" style={{ fontSize: 50, fontWeight: 850, color: "#111", letterSpacing: "-0.04em", margin: "0 0 18px", lineHeight: 1.06 }}>
+              Practical strategy for earning more from the money you already move.
+            </h1>
+            <p style={{ fontSize: 17, color: "#666", margin: 0, maxWidth: 680, lineHeight: 1.7 }}>
+              Original guides on bank bonuses, direct deposit, eligibility, taxes, and building a sustainable churning system—without spending hours researching it yourself.
+            </p>
+          </div>
+        </section>
 
-      {/* Hub pages */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 24px 40px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <Link href="/blog/best-checking-bonuses-2026" style={{ textDecoration: "none" }}>
-            <div className="blog-card" style={{
-              background: "linear-gradient(135deg, #fff 0%, #f0faf5 100%)", border: "1px solid #e8e8e8", borderRadius: 12, padding: "28px",
-            }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                Guide
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 58px" }}>
+          <Link href={featured.href} style={{ textDecoration: "none" }}>
+            <article className="blog-card blog-feature" style={{ background: "linear-gradient(135deg, #eaf8f3 0%, #fff 70%)", border: "1px solid #cce8df", borderRadius: 18, padding: "38px", alignItems: "end" }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>Featured · {featured.category}</div>
+                <h2 style={{ fontSize: 34, fontWeight: 850, color: "#111", letterSpacing: "-0.03em", lineHeight: 1.12, margin: "0 0 14px" }}>{featured.title}</h2>
+                <p style={{ fontSize: 15, color: "#666", lineHeight: 1.7, margin: 0, maxWidth: 650 }}>{featured.description}</p>
               </div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 8 }}>
-                Best Checking Bonuses of 2026
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
+                <span style={{ fontSize: 12, color: "#888" }}>{featured.date}</span>
+                <span style={{ fontSize: 14, color: "#fff", background: "#0d7c5f", borderRadius: 8, padding: "11px 17px", fontWeight: 750 }}>Read the latest picks →</span>
               </div>
-              <div style={{ fontSize: 13, color: "#999" }}>
-                {checking.length} bonuses ranked by value. Start with Chase $400.
-              </div>
-            </div>
+            </article>
           </Link>
-          <Link href="/blog/best-savings-bonuses-2026" style={{ textDecoration: "none" }}>
-            <div className="blog-card" style={{
-              background: "linear-gradient(135deg, #fff 0%, #f5faf0 100%)", border: "1px solid #e8e8e8", borderRadius: 12, padding: "28px",
-            }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                Guide
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 8 }}>
-                Best Savings Bonuses of 2026
-              </div>
-              <div style={{ fontSize: 13, color: "#999" }}>
-                {savings.length} bonuses ranked by effective APY. Chase $600 at 16.2%.
-              </div>
+        </section>
+
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 64px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 16, marginBottom: 24 }}>
+            <h2 style={{ fontSize: 25, fontWeight: 800, color: "#111", margin: 0, letterSpacing: "-0.02em" }}>Latest guides</h2>
+            <span style={{ fontSize: 13, color: "#999" }}>Written by Nathaniel Booth</span>
+          </div>
+          <div className="blog-grid">
+            {guides.map(article => (
+              <Link key={article.href} href={article.href} style={{ textDecoration: "none" }}>
+                <article className="blog-card" style={{ height: "100%", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "24px", display: "flex", flexDirection: "column" }}>
+                  <div style={{ fontSize: 11, fontWeight: 750, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 12 }}>{article.category}</div>
+                  <h3 style={{ fontSize: 20, fontWeight: 800, color: "#111", lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 10px" }}>{article.title}</h3>
+                  <p style={{ fontSize: 13, color: "#777", lineHeight: 1.65, margin: "0 0 22px", flex: 1 }}>{article.description}</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+                    <span style={{ fontSize: 11, color: "#aaa" }}>{article.date}</span>
+                    <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 700 }}>Read guide →</span>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ background: "#f7f8f7", borderTop: "1px solid #edf0ee", borderBottom: "1px solid #edf0ee" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "54px 24px" }}>
+            <div style={{ maxWidth: 620, marginBottom: 24 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Looking for an offer?</h2>
+              <p style={{ fontSize: 14, color: "#777", lineHeight: 1.65, margin: 0 }}>The blog explains the strategy. The bonus finder helps you choose what to do next.</p>
             </div>
-          </Link>
-        </div>
-      </section>
+            <div className="blog-find-grid">
+              <Link href="/bank-bonuses-by-state" className="blog-card" style={{ background: "#fff", border: "1px solid #e4e7e5", borderRadius: 14, padding: "24px", textDecoration: "none" }}>
+                <div style={{ fontSize: 18, color: "#111", fontWeight: 800, marginBottom: 7 }}>Find bonuses in your state</div>
+                <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6 }}>See ten relevant bank and brokerage offers at a time, including regional opportunities. <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Start here →</span></div>
+              </Link>
+              <Link href="/bonuses" className="blog-card" style={{ background: "#fff", border: "1px solid #e4e7e5", borderRadius: 14, padding: "24px", textDecoration: "none" }}>
+                <div style={{ fontSize: 18, color: "#111", fontWeight: 800, marginBottom: 7 }}>Search the full bonus catalog</div>
+                <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6 }}>Filter every tracked checking, savings, brokerage, business, and credit card offer. <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Browse offers →</span></div>
+              </Link>
+            </div>
+          </div>
+        </section>
 
-      {/* Newsletter */}
-      <section style={{ maxWidth: 600, margin: "0 auto", padding: "0 24px 40px" }}>
-        <NewsletterCTA />
-      </section>
+        <section style={{ maxWidth: 620, margin: "0 auto", padding: "56px 24px" }}>
+          <NewsletterCTA />
+        </section>
+      </main>
 
-      {/* Checking Bonuses */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 48px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: 0 }}>Checking Bonuses</h2>
-          <span style={{ fontSize: 12, color: "#0d7c5f", background: "#e6f5f0", padding: "4px 10px", borderRadius: 99, fontWeight: 600 }}>
-            {checking.length} offers
-          </span>
-        </div>
-        <div className="blog-grid">
-          {checking.map(post => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-              <article className="blog-card" style={{
-                background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px",
-                cursor: "pointer", height: "100%", display: "flex", flexDirection: "column",
-              }}>
-                <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    Bank Bonus
-                  </span>
-                  <span style={{ fontSize: 11, color: "#bbb" }}>&middot;</span>
-                  <span style={{ fontSize: 11, color: "#bbb" }}>{post.date}</span>
-                </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: "#111", margin: "0 0 8px", lineHeight: 1.3 }}>
-                  {post.title}
-                </h3>
-                <p style={{ fontSize: 13, color: "#999", lineHeight: 1.5, margin: 0, flex: 1 }}>
-                  {post.excerpt.length > 140 ? post.excerpt.slice(0, 140) + "..." : post.excerpt}
-                </p>
-                <div style={{ marginTop: 16, fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>
-                  Read review &rarr;
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Savings Bonuses */}
-      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 60px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: 0 }}>Savings Bonuses</h2>
-          <span style={{ fontSize: 12, color: "#0d7c5f", background: "#e6f5f0", padding: "4px 10px", borderRadius: 99, fontWeight: 600 }}>
-            {savings.length} offers
-          </span>
-        </div>
-        <div className="blog-grid">
-          {savings.map(post => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-              <article className="blog-card" style={{
-                background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px",
-                cursor: "pointer", height: "100%", display: "flex", flexDirection: "column",
-              }}>
-                <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    Savings Bonus
-                  </span>
-                  <span style={{ fontSize: 11, color: "#bbb" }}>&middot;</span>
-                  <span style={{ fontSize: 11, color: "#bbb" }}>{post.date}</span>
-                </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: "#111", margin: "0 0 8px", lineHeight: 1.3 }}>
-                  {post.title}
-                </h3>
-                <p style={{ fontSize: 13, color: "#999", lineHeight: 1.5, margin: 0, flex: 1 }}>
-                  {post.excerpt.length > 140 ? post.excerpt.slice(0, 140) + "..." : post.excerpt}
-                </p>
-                <div style={{ marginTop: 16, fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>
-                  Read review &rarr;
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
       <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
           <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Fat Stacks Academy</span>
           <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Home</Link>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>YouTube</a>
             <Link href="/stacksos" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Stacks OS</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Blog</Link>
           </div>
         </div>
-        <p style={{ fontSize: 11, color: "#ccc", marginTop: 16, lineHeight: 1.6 }}>
-          Bonus offers, requirements, and fees are determined by each financial institution and may change at any time. Always verify the current terms directly with the bank before applying.
-        </p>
       </footer>
     </>
   )

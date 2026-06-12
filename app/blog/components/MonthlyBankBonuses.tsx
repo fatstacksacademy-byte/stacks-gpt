@@ -174,14 +174,14 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
           }}
         >
           <Link
-            href="/blog"
+            href="/"
             style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}
           >
             Fat Stacks Academy
           </Link>
           <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link
-              href="/blog/best-bank-account-bonuses-2026"
+              href="/bonuses"
               style={{ fontSize: 13, color: "#999", textDecoration: "none" }}
             >
               All Bonuses

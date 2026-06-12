@@ -7,6 +7,7 @@ import { applyUrl } from "../../../lib/affiliateLinks"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
 import AffiliateDisclosure from "../components/AffiliateDisclosure"
+import TrackBonusButton from "../../components/TrackBonusButton"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -674,6 +675,12 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
   const card = post.bonusType === "card" ? getCardById(post.bonusId) : null
   const content = post.bonusType !== "card" ? blogContent[post.bonusId] : undefined
   const cardContent = post.bonusType === "card" ? cardBlogContent[post.bonusId] : undefined
+  const trackingKind = post.bonusType === "checking"
+    ? "personal-checking"
+    : post.bonusType === "savings"
+      ? "personal-savings"
+      : "credit-card"
+  const trackingName = checkingBonus?.bank_name ?? savingsBonus?.bank_name ?? card?.card_name ?? post.title
 
   if (!checkingBonus && !savingsBonus && !card) notFound()
 
@@ -686,13 +693,13 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
       {/* Header */}
       <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/blog" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none", letterSpacing: "-0.02em" }}>
+          <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none", letterSpacing: "-0.02em" }}>
             Fat Stacks Academy
           </Link>
           <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
             <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>All Reviews</Link>
+            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Blog</Link>
             <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
           </nav>
         </div>
@@ -741,15 +748,17 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
         <div style={{ marginTop: 48, padding: "28px", background: "linear-gradient(135deg, #f0faf5 0%, #fff 100%)", border: "1px solid #a7f3d0", borderRadius: 12, textAlign: "center" }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: "#111", marginBottom: 8 }}>Track This Bonus in Stacks OS</div>
           <p style={{ fontSize: 14, color: "#777", lineHeight: 1.6, margin: "0 0 16px", maxWidth: 450, marginLeft: "auto", marginRight: "auto" }}>
-            Get a personalized bonus sequence, requirement tracking, and deadline reminders — all in one place.
+            Add this offer directly to your dashboard so you can track its requirements, deadline, and payout.
           </p>
-          <Link href="/stacksos" style={{
-            display: "inline-block", padding: "12px 28px", fontSize: 14, fontWeight: 700,
-            background: "#0d7c5f", color: "#fff", borderRadius: 8, textDecoration: "none",
-          }}>
-            Try Stacks OS &rarr;
-          </Link>
-          <div style={{ fontSize: 11, color: "#999", marginTop: 10 }}>$5/month. Most first bonuses are $300-$400.</div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <TrackBonusButton
+              bonusId={post.bonusId}
+              bonusType={trackingKind}
+              bankName={trackingName}
+              sourcePage={`blog_article:${post.slug}`}
+            />
+          </div>
+          <div style={{ fontSize: 11, color: "#777", marginTop: 10 }}>Bonus tracking is included in the free plan.</div>
         </div>
 
         {/* Newsletter */}
