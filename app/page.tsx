@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import HomeClient from "./HomeClient"
 
 const BASE = "https://fatstacksacademy.com"
@@ -35,6 +36,42 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HomePage() {
+/**
+ * Belt-and-suspenders for password recovery: if Supabase falls back to
+ * its Site URL (https://fatstacksacademy.com) instead of honoring our
+ * configured redirectTo, the recovery code lands HERE — on the
+ * homepage — and would otherwise auto-exchange as a normal sign-in
+ * with no password form ever appearing. Detecting `?code=` + a
+ * recovery hint and forwarding to /auth/callback keeps the flow
+ * working regardless of how Supabase resolves the redirect.
+ *
+ * We forward on:
+ *   - `?code=…` + `?type=recovery`      (our login redirectTo if Supabase honored it)
+ *   - `?code=…` + standalone `?token_hash=…` recovery params
+ *   - hash fragments aren't readable server-side; the client-side
+ *     /reset-password page handles those.
+ */
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const params = await searchParams
+  const code = typeof params.code === "string" ? params.code : null
+  const type = typeof params.type === "string" ? params.type : null
+  const token_hash = typeof params.token_hash === "string" ? params.token_hash : null
+
+  if (code && (type === "recovery" || token_hash)) {
+    // Forward to the existing callback handler, preserving every param
+    // Supabase appended (state, etc.). The callback exchanges the code
+    // server-side and routes recovery sessions to /reset-password.
+    const forward = new URLSearchParams()
+    for (const [k, v] of Object.entries(params)) {
+      if (typeof v === "string") forward.set(k, v)
+    }
+    if (!forward.get("type")) forward.set("type", "recovery")
+    redirect(`/auth/callback?${forward.toString()}`)
+  }
+
   return <HomeClient />
 }
