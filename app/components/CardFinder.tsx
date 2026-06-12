@@ -533,7 +533,11 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       <div style={{ textAlign: "right", flexShrink: 0 }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#0d7c5f" }}>{primary}</div>
         <div style={{ fontSize: 10, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.04em" }}>{primaryLabel}</div>
-        <a href={card.offer_link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>View offer →</a>
+        {hasOfferLink(card) ? (
+          <a href={card.offer_link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>View offer →</a>
+        ) : (
+          <span style={{ fontSize: 11, color: "#bbb", fontWeight: 600 }}>Link coming soon</span>
+        )}
       </div>
     </div>
   )
@@ -590,6 +594,12 @@ function CardArt({ card }: { card: CreditCardBonus }) {
 }
 
 // ── small utils ──────────────────────────────────────────────────────
+// Many catalog entries ship without an offer URL yet. An empty href reloads
+// the current page, so only render the link when it's a real http(s) URL.
+function hasOfferLink(c: CreditCardBonus): boolean {
+  return /^https?:\/\//i.test(c.offer_link?.trim() ?? "")
+}
+
 function bonusLabel(c: CreditCardBonus): string {
   if (c.bonus_currency === "cash") return `$${c.bonus_amount.toLocaleString()}`
   return `${c.bonus_amount.toLocaleString()} ${c.bonus_currency}`
