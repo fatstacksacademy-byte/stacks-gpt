@@ -70,4 +70,48 @@ Format per state: **Institutions reviewed** · **Active card issuers found** ·
 - **Unresolved:** Pinnacle Bank AZ (earn rate undisclosed), American Southwest CU + Tucson Old Pueblo CU (no verifiable terms), Republic Bank of AZ (no card product page).
 - **Sources:** desertfinancial.com, oneazcu.com, arizonafinancial.org, hughesfcu.org, truwest.org, vantagewest.org, pimafederal.org, mysunwest.com, cuwest.org, foothillsbank.com.
 
+## Batch 2 — Mountain / Southwest (CO, UT, ID, MT, WY, NM, TX, OK) · verified 2026-06-11
+
+### Colorado (CO) — 15 cards, 7 institutions
+- **Added:** Bellco (Blue Diamond Signature $200, Colorado Rewards 15k, Platinum), Credit Union of Colorado (Signature 2%, Rewards), Blue FCU [CO/WY] (Everyday Rewards 15k, Cash Back $200, Business Rewards 20k), Westerra (Signature Rewards 1.25pt), Air Academy (Signature Rewards 4x, Platinum), Alpine Bank (Platinum Rewards 5k, Platinum), Meritrust/CO (Platinum Rewards, Platinum Prime).
+- **Excluded/unresolved:** Ent + Security Service (owned elsewhere); Canvas (JS-only pages), Elevations (403), Aventa (conn refused), FirstBank (discontinued, migrated to PNC).
+- **Sources:** bellco.org, cuofco.org, bluefcu.com, westerracu.com, aacu.com, alpinebank.com, colorado.meritrust.org.
+
+### Utah (UT) — 21 cards, 9 institutions
+- **Added:** America First [UT/ID/NV/AZ/NM/OR] (Signature, Platinum), Mountain America [UT/ID/AZ/MT/NV] (Cash Back, Rewards, Low Rate), Goldenwest [UT/ID] (Signature 1.5%, Rewards), Cyprus (Rewards 10k, Cash Back, Low-Rate), Utah First (Orange Platinum), Deseret First (Signature 5/3/2/1%, Platinum Rewards), UCCU (4-3-2-1 Everyday, 4-3-2-1 Travel, Low Rate), Granite (Signature Cashback, Rewards $50), Canyon View (Crimson Rewards).
+- **Ownership:** UT module owns America First + Mountain America. Excluded Security Service (TX owns).
+- **Unresolved:** Zions Bank, Chartway (no verifiable own-brand consumer card).
+- **Sources:** americafirst.com, macu.com, gwcu.org, cypruscu.com, utahfirst.com, dfcu.com, uccu.com, granite.org, canyonviewcu.com.
+
+### Idaho (ID) — 12 ID-HQ cards, 9 institutions (29 total w/ multi-state spillover)
+- **Added:** ICCU (Premier Rewards $300, Rewards $200, Gonzaga Premier $300 — all ID/WA/OR), Pioneer (Platinum 10k), P1FCU (Premier Rewards 1.5%, ID/WA/OR), CapEd (Credit Rewards), Westmark (Cobalt Rewards), D.L. Evans Bank (Visa Rewards, Signature Rewards — ID/UT), Frontier (Signature 2pt), Connections (Visa), Beehive (Platinum).
+- **Excluded:** PNW + America First/Mountain America/Security Service (already cover ID via multi-state). Idaho First Bank/First Federal (Elan white-label), Icon (merged), Lewis Clark (low-rate only).
+- **Sources:** iccu.com, pioneerfcu.org, p1fcu.org, capedcu.com, westmark.org, dlevans.com, frontiercreditunion.com, connectidaho.org, beehive.org.
+
+### Montana (MT) — 17 cards, 7 institutions
+- **Added:** Montana CU (Pathway, Basecamp secured, Peak Rewards 1.5%), Rocky Mountain CU (Platinum Rewards, Classic), Valley CU [MT/WY] (Platinum REWARDS, Platinum, Share Secured), Park Side (Premium Rewards, Plus), Vocal (Visa), Altana FCU [MT/WY] (Visa), Stockman Bank (Treasure, World Rewards, + 2 business).
+- **Excluded:** First Interstate (Elan), Glacier Bank (FNBO), Opportunity Bank (TCM/ICBA) — nationwide white-label. Whitefish CU (Cloudflare challenge), Helena Community (no distinct page).
+- **Sources:** montanacu.com, rmcu.net, valleyfcu.com, parksidefcu.com, vocal.coop, altanafcu.org, stockmanbank.com.
+
+### Wyoming (WY) — 8 cards, 4 institutions
+- **Added:** Meridian Trust [WY/NE/CO] (Cash Back), WyHy (Platinum Cash+, Platinum, Secured), Western Vista (Rewards, Platinum), Jonah Bank (Platinum Rewards, Platinum).
+- **Excluded:** Bank of Jackson Hole + Trona Valley (Elan); UniWyo (403), Reliant (conn refused); Blue FCU + Security Service (owned elsewhere).
+- **Sources:** mymeridiantrust.com, wyhy.org, wvista.com, jonah.bank.
+
+### New Mexico (NM) — 22 cards, 9 institutions
+- **Added:** Nusenda (Platinum Rewards 10k, Platinum Cash Rewards 5%, Platinum, Business Rewards), Sandia Area (Ascend 10k, Cash Back 1.5%, Access, Business Cash Back), U.S. Eagle (METAL 2%, Platinum), Del Norte (Elevate 1.5%, Evolve), Rio Grande (Rewards, Everyday), Kirtland (Cash Rebate 5%/1.5%, Rewards 3x, Low Rate), State ECU NM (Platinum), Sunward (Signature $100, Platinum Rebate $100, Platinum Value), First Financial NM (Platinum Rewards).
+- **Excluded:** America First/Mountain America/Security Service (owned elsewhere); Everest FCU (NY-based, not NM).
+- **Sources:** nusenda.org, sandia.org, useagle.org, dncu.com, riograndecu.org, kirtlandcu.org, secunm.org, gosunward.org, ffnm.org.
+
+### Texas (TX) — 22 cards, 13 institutions
+- **Added:** RBFCU (World Cash Back 2%, Business Select 2%), UFCU (Cash Back 1.5%, Travel & Rewards 2pt), Amplify (Everyday Rewards+ 15k [Elan]), A+FCU (Everyday Rewards+ 15k, Max Cash Preferred $150 [Elan]), Velocity (Platinum Rewards, Business Rewards), Credit Human (Rewards Preferred 2%), TDECU (Onyx 2%, Visa Platinum 0.5%), Neighborhood (Signature Cash Rewards 1.5%), Texas Bay (Platinum Rewards), InTouch [TX/NV/MI] (connect!), Security Service [TX/CO/UT] (Power Cash Back $100, Power Travel Rewards 20k, Power Rewards), Texans (Premier Rewards 40k, Cash Rewards 20k), Frost (Business Rewards).
+- **Ownership:** TX owns Security Service. Excluded TruWest (AZ owns).
+- **Unresolved:** GECU (JS-only), Texas Tech CU/Texas Trust (403), FirstLight (404 card pages) — terms not fetchable.
+- **Sources:** rbfcu.org, ufcu.org, goamplify.com, aplusfcu.org, velocitycu.com, credithuman.com, tdecu.org, myncu.com, texasbaycu.org, itcu.org, ssfcu.org, texanscu.org, frostbank.com.
+
+### Oklahoma (OK) — 16 cards, 8 institutions
+- **Added:** Tinker (Signature $100, Platinum 2x, Classic, Business), Truity [OK/KS/TX] (Signature Rewards 10k, Platinum Rate), WEOKIE (Everyday Rewards+ 15k, Max Cash Preferred $150 [Elan]), OKCU (Rewards), TTCU (CashBack 1%, Platinum), Allegiance (Everyday Rewards+ 15k, Max Cash Preferred $150 [Elan]), True Sky (Platinum, Gold), Communication FCU [OK/KS] (Platinum Rewards).
+- **Unresolved:** Arvest (PerimeterX bot wall), BancFirst + Oklahoma Central (Elan white-label).
+- **Sources:** tinkerfcu.org, truitycu.org, weokie.org, okcu.org, ttcu.com, allegiancecu.org, trueskycu.org, comfedcu.org.
+
 <!-- Batches appended below as they are completed. -->

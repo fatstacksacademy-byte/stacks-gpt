@@ -26,6 +26,14 @@ import { nevadaCards } from "./nevada"
 import { arizonaCards } from "./arizona"
 
 // ── Mountain / Southwest ──────────────────────────────────────────────
+import { coloradoCards } from "./colorado"
+import { utahCards } from "./utah"
+import { idahoCards } from "./idaho"
+import { montanaCards } from "./montana"
+import { wyomingCards } from "./wyoming"
+import { newMexicoCards } from "./new-mexico"
+import { texasCards } from "./texas"
+import { oklahomaCards } from "./oklahoma"
 
 // ── Midwest ───────────────────────────────────────────────────────────
 
@@ -44,4 +52,13 @@ export const regionalStateCards: CreditCardBonus[] = [
   ...alaskaCards,
   ...nevadaCards,
   ...arizonaCards,
+  // Mountain / Southwest
+  ...coloradoCards,
+  ...utahCards,
+  ...idahoCards,
+  ...montanaCards,
+  ...wyomingCards,
+  ...newMexicoCards,
+  ...texasCards,
+  ...oklahomaCards,
 ]
