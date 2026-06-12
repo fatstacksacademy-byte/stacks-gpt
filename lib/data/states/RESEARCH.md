@@ -114,4 +114,44 @@ Format per state: **Institutions reviewed** · **Active card issuers found** ·
 - **Unresolved:** Arvest (PerimeterX bot wall), BancFirst + Oklahoma Central (Elan white-label).
 - **Sources:** tinkerfcu.org, truitycu.org, weokie.org, okcu.org, ttcu.com, allegiancecu.org, trueskycu.org, comfedcu.org.
 
+## Batch 3 — Midwest wave A (OH, MI, IN, IL, WI, MN) · verified 2026-06-11
+
+Key methodology note for the Midwest: many large CUs (Alliant, Connexus, Verve,
+Wings, MSUFCU, Genisys, Consumers/IL, Elements, Notre Dame, LMCU) have a cheap
+nationwide association/foundation "backdoor" that makes membership effectively
+open to anyone in any state. Per the rule "don't mark a card state-restricted if
+it's actually nationwide," those were EXCLUDED as effectively-nationwide, not
+listed as regional. Included CUs either have no backdoor or a genuinely
+state-anchored core (disclosed in eligibility_notes).
+
+### Ohio (OH) — 13 cards, 8 institutions
+- **Added:** Wright-Patt (Platinum Rewards 1.5%, Platinum Low Rate), KEMBA Financial (Visa Signature $300, Platinum Rewards $300), Superior (Visa Rewards 1.5%), Directions [OH/MI] (Cash Back $50, Rewards 5k, Business Rewards), VacationLand (Visa), Credit Union of Ohio (Rewards 1%, Platinum), CME FCU (Business Platinum Rewards), Education First (Rewards First).
+- **Excluded:** GECU (403), Seven Seventeen (ACC nationwide backdoor), Telhio + BMI (Elan/no verifiable terms).
+- **Sources:** wpcu.coop, kemba.org, superiorcu.com, directionscu.org, vlfcu.org, cuofohio.org, cmefcu.org, educu.org.
+
+### Michigan (MI) — 6 cards, 4 institutions
+- **Added:** DFCU Financial [MI/FL] (Platinum MC), Lake Trust (Platinum Elite Rewards, Platinum Elite), Frankenmuth (Diamond MC 2%), Dort Financial (Visa Signature 2%, Platinum Visa).
+- **Excluded as effectively-nationwide (donation backdoors):** LMCU, MSUFCU, Genisys, Consumers/Kalamazoo, Honor, Community Choice, ELGA, 4Front(Elan). Unresolved (403/no FOM page): UMCU, Michigan First, Adventure.
+- **Sources:** dfcufinancial.com, laketrust.org, frankenmuthcu.org, dortonline.org.
+
+### Indiana (IN) — 10 cards, 8 institutions
+- **Added:** IMCU (Visa Signature 1.5pt, Platinum Rewards, Business Rewards), Everwise [IN/MI] (Signature Rewards 1.5pt), Centra [IN/KY] (The You Signature), FORUM (Mastercard 1%), Purdue Federal (Signature up to 2%), Interra (Mastercard Elite 1.5pt + 10k bonus), ProFed (Visa Rewards 1%), Beacon (2% Cash Back).
+- **Excluded as effectively-nationwide:** Elements Financial, Notre Dame FCU, Liberty/Evansville Teachers FCU (all open via cheap association donations). Unresolved: Financial Center First (site refused), Hoosier Hills (low-rate only).
+- **Sources:** imcu.com, everwisecu.com, centra.org, forumcu.com, purduefed.com, interracu.com, profedcu.org, beaconcu.org.
+
+### Illinois (IL) — 14 cards, 6 institutions
+- **Added:** Scott CU [IL/MO] (eXtreme Visa, St. Louis Blues Visa), SIU CU (Visa Rewards Credit, Visa Credit), First Northern (Platinum Premier, Platinum), Land of Lincoln (Platinum Points, Platinum Rate), U of I Community CU (Visa Rewards 50k + 10x campus, Signature Cashback 5/2/1.5%), CEFCU [IL/CA] (Cash Back $150, World, Rewards, Credit MC $50).
+- **Excluded:** Credit Union 1/IL (CU1EDA backdoor + Elan), Great Lakes/NuMark (Elan), Consumers/IL + Alliant + BCU (nationwide). Marine, Heartland/IL (FNBO white-label).
+- **Sources:** scu.org, siucu.org, fncu.org, llcu.org, uoficreditunion.org, cefcu.com.
+
+### Wisconsin (WI) — 16 cards, 8 institutions
+- **Added:** UW Credit Union (Signature Rewards 1.5%+0.5% + 10k, Rewards 0.75%+0.5% + 10k), Royal CU [WI/MN] (Platinum Rewards), WESTconsin [WI/MN] (Platinum), Educators [WI/IL] (Signature Cash Back 1.5%, Platinum), CoVantage [WI/MI/IL] (Cash Back 2% gas/grocery, Great Rate), Community First/WI (Cash Back Signature 1.5% + $200, Great Rewards Platinum, Great Rate Platinum), Simplicity (Rewards Plus 3/2/1, Rewards), TruStone [WI/MN] (Signature 1.5% + 10k, Platinum Rewards, Platinum).
+- **Excluded:** Connexus + Verve (ACC nationwide), Capital CU (Elan), Marine (no own-brand). Unresolved (403): Summit, Fox Communities, Landmark, Prospera.
+- **Sources:** uwcu.org, rcu.org, westconsincu.org, ecu.com, covantagecu.org, communityfirstcu.org, simplicity.coop, trustonefinancial.org.
+
+### Minnesota (MN) — 17 cards, 5 institutions
+- **Added:** TopLine (Rewards Signature 1.5pt, Platinum Rewards, Platinum, Business Rewards), Mid-Minnesota FCU (Premier Rewards 10k + 3x gas, Platinum Rewards, Classic), Magnifi [MN/ND/WI] (Visa Signature 1%, Cash Rewards, Platinum, Business cashRewards), Affinity Plus (Premier Select Rewards 35k, Premier Classic, Business Rewards 40k), Blaze/SPIRE+Hiway [MN/WI] (Signature $225, MN Wild Signature, UMN Alumni Signature).
+- **Excluded:** First Community CU (already inline); Wings, US Federal, Ideal, Minnco (foundation/ACC nationwide backdoors or 403); Bremer (merged into Old National 2025); Deere/Empeople (employer-nationwide); TruStone + Royal (WI module owns).
+- **Sources:** toplinecu.com, mmfcu.org, mymagnifi.org, affinityplus.org, blazecu.com.
+
 <!-- Batches appended below as they are completed. -->
