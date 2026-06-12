@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import HomeClient from "./HomeClient"
+import RecoveryGate from "./RecoveryGate"
 
 const BASE = "https://fatstacksacademy.com"
 const OG_TITLE = "Bank bonuses, credit card rewards, and the strategy behind it all."
@@ -72,5 +73,14 @@ export default async function HomePage({
     redirect(`/auth/callback?${forward.toString()}`)
   }
 
-  return <HomeClient />
+  return (
+    <>
+      {/* Catches Supabase password-recovery hash fragments that landed
+          here because Supabase fell back to Site URL — hash fragments
+          aren't sent to the server, so this client gate is the only
+          way to deal with them. */}
+      <RecoveryGate />
+      <HomeClient />
+    </>
+  )
 }
