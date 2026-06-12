@@ -797,6 +797,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "No annual fee",
       "2% cash back on everything",
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
 
   // ─── BARCLAYS ───────────────────────────────────────────────────
@@ -916,6 +917,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "ALL cash back doubled in first year",
       "5% rotating categories (up to $1,500/quarter)",
     ],
+    intro_apr: { purchase_apr_months: 15, go_to_apr_low: 17.49, go_to_apr_high: 26.49 },
   },
   {
     id: "fidelity-visa-150",
@@ -980,6 +982,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       "4% gas, 3% dining, 2% groceries, 1% everything else",
       "Double cash back in first year",
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
 
   // ─── INGESTED FROM RICHWITHPOINTS ──────────────────────────────
@@ -1300,6 +1303,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "ally-ally-everyday-cash-back-rwp",
@@ -2308,6 +2312,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "capital-one-capital-one-quicksilverone-rewards-rwp",
@@ -2531,6 +2536,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining","drug_stores"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "chase-chase-freedom-unlimited-rwp",
@@ -2554,6 +2560,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining","drug_stores"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "chase-chase-rise-rwp",
@@ -3164,6 +3171,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["travel"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { bt_apr_months: 12 },
   },
   {
     id: "barclays-emirates-skywards-rewards-rwp",
@@ -3187,6 +3195,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["travel"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { bt_apr_months: 12 },
   },
   {
     id: "wells-fargo-expedia-group-one-key-rwp",
@@ -3563,6 +3572,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["auto_parts_&_service"], multiplier: 10, unit: "points" },
       { categories: ["all_other"], multiplier: 3, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 9, go_to_apr_low: 22.24, go_to_apr_high: 32.24 },
   },
   {
     id: "barclays-hawaiian-airlines-rwp",
@@ -4250,6 +4260,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["gas_stations","ridesharing","transit"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
   },
   {
     id: "citi-my-best-buy-rwp",
@@ -4593,6 +4604,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["groceries"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "pnc-pnc-bank-cash-unlimited-rwp",
@@ -4614,6 +4626,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 2, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "pnc-pnc-bank-points-rwp",
@@ -4635,6 +4648,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 4, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 18, bt_apr_months: 18 },
   },
   {
     id: "barclays-priceline-vip-rewards-rwp",
@@ -5351,6 +5365,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["groceries","utilities"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
   },
   {
     id: "truist-truist-enjoy-cash-option-2-rwp",
@@ -5372,6 +5387,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
   },
   {
     id: "ubs-ubs-visa-infinite-rwp",
@@ -5531,6 +5547,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["airfare_(portal)","gas_stations","ridesharing","toll_fees","transit"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "chase-united-quest-rwp",
@@ -5666,6 +5683,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["groceries"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { bt_apr_months: 15 },
   },
   {
     id: "us-bank-us-bank-shopper-cash-rewards-rwp",
@@ -5757,6 +5775,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["groceries","dining","home_improvement","gas","travel","transit","health_wellness","entertainment","streaming"], multiplier: 3, unit: "%" },
       { categories: ["all_other"], multiplier: 1, unit: "%" },
     ],
+    intro_apr: { purchase_apr_months: 15 },
   },
   {
     id: "usaa-bank-usaa-bank-preferred-cash-rewards-rwp",
@@ -5802,6 +5821,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining","gas_stations"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { bt_apr_months: 15 },
   },
   {
     id: "usaa-bank-usaa-bank-rewards-amex-rwp",
@@ -5939,6 +5959,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["all_other"], multiplier: 1, unit: "points" },
       { categories: ["parking","toll_fees"], multiplier: 0, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "wells-fargo-wells-fargo-autograph-rwp",
@@ -5961,6 +5982,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["cell_phone_carriers","dining","ev_charging","gas_stations","ridesharing","streaming_services","transit","travel"], multiplier: 3, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "chase-world-of-hyatt-rwp",
@@ -6581,6 +6603,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["dining","gas_stations"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "chase-chase-ink-business-unlimited-rwp",
@@ -6602,6 +6625,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     rewards: [
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 12 },
   },
   {
     id: "chase-chase-sapphire-reserve-business-rwp",
