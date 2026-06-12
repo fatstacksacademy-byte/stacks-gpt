@@ -402,7 +402,7 @@ export const bonuses: any[] = [
     "id": "wells-fargo-400-everyday-checking-2026",
     "bank_name": "Wells Fargo",
     "product_type": "checking",
-    "bonus_amount": 325,
+    "bonus_amount": 400,
     "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
@@ -6689,7 +6689,7 @@ export const bonuses: any[] = [
       { "bonus": 300, "min_dd_total": 100 }
     ],
     "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 100, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 30, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Qualifying direct deposit + active debit card use within 30 days. Spring personal checking offer. Expires June 28, 2026." },
-    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Access Checking $15/mo waived with qualifying DD + active debit use. Preferred and Prime tiers have $25/mo with balance-based waivers ($1,500 / $2,500).", "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "Access Checking $15/mo waived with qualifying DD + active debit use. Preferred and Prime tiers have $25/mo with balance-based waivers ($1,500 / $2,500).", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "unknown", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard verification reported." },
     "eligibility": { "state_restricted": true, "states_allowed": ["CT"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "Connecticut residents only. New Ascend Bank checking customers." },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
