@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/stackhouse/supabaseAdmin"
+import { subscribeToBeehiiv } from "@/lib/beehiiv"
 
 /**
  * Email-gate unlock for the regional card / state-bonus catalog.
@@ -28,6 +29,11 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient()
   const now = new Date().toISOString()
 
+  // Best-effort newsletter subscribe — never blocks the unlock. The result is
+  // recorded on the contact below so we can tell from Supabase whether the
+  // lead actually reached Beehiiv (subscribed → sub id; error/skipped → reason).
+  const beehiiv = await subscribeToBeehiiv(email, { utmSource: source })
+
   const { error: contactErr } = await admin.from("contacts").upsert(
     {
       email,
@@ -35,35 +41,16 @@ export async function POST(req: NextRequest) {
       newsletter_opted_in: true,
       newsletter_opt_in_at: now,
       updated_at: now,
+      beehiiv_status: beehiiv.status,
+      beehiiv_subscription_id: beehiiv.subscriptionId,
+      beehiiv_synced_at: now,
+      beehiiv_error: beehiiv.error,
     },
     { onConflict: "email", ignoreDuplicates: false },
   )
   if (contactErr) {
     console.error("[catalog-unlock] contacts upsert failed:", contactErr.message)
     return NextResponse.json({ error: "Could not save contact" }, { status: 500 })
-  }
-
-  // Best-effort newsletter subscribe — never block the unlock on Beehiiv.
-  const apiKey = process.env.BEEHIIV_API_KEY
-  const pubId = process.env.BEEHIIV_PUBLICATION_ID
-  if (apiKey && pubId) {
-    try {
-      const res = await fetch(`https://api.beehiiv.com/v2/publications/${pubId}/subscriptions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          email,
-          reactivate_existing: true,
-          send_welcome_email: true,
-          utm_source: source,
-        }),
-      })
-      if (!res.ok) {
-        console.error("[catalog-unlock] beehiiv subscribe non-ok:", res.status, await res.text())
-      }
-    } catch (e) {
-      console.error("[catalog-unlock] beehiiv subscribe threw:", (e as Error).message)
-    }
   }
 
   return NextResponse.json({ ok: true })
