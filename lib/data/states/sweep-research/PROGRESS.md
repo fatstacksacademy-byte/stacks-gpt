@@ -88,8 +88,56 @@ the rest. Deposit per-institution is thin EVERYWHERE (institutions.ts is non-exh
 - [x] Wisconsin — DONE (completed before limit hit). 35+ reviewed; +10 deposit (Associated $600 personal + $750 biz exp 6/30, Summit CU, PyraMax $300 exp 12/31 + $100 exp 8/31, Town Bank/Wintrust $300-500, Waukesha State $250 NO DD req exp 12/31, North Shore $400 ⚠️EXPIRED 6/13, North Shore student $50, BMO), +5 cards (UW CU, Landmark x3, Bank First). wisconsin.md.
       Elan white-label: Associated/PyraMax/North Shore/Waukesha cards = excluded. CoVantage = nationwide backdoor ($10 donation). Summit 403/UNRESOLVED card bonus. Landmark deposit $300 EXPIRED May 2024.
 
-## REDO (hit session limit ~23:35 HST, stubs only — no content):
-   CT, KY, NV, OR, UT — re-launch after 2am reset.
+## REDO — completed after 2am reset:
+- [x] Oregon — DONE 2026-06-13. 20+ reviewed; +6 deposit (Oregon State CU $300 + $300 student, Banner Bank $250/$500 ⚠️exp 6/30 + $250/$500 savings, Mid Oregon CU $50 exp 7/12), +4 cards (OnPoint x3 — $100/10k/5k pts; OCCU 10k pts). oregon.md.
+      Advantis → merged into Rivermark (no bonus). OCCU domain = myoccu.org (not oregoncommunitycu.org). Pacific Crest FCU = likely defunct. Clackamas FCU → Embold CU. Wauna/Point West cards still UNRESOLVED.
+- [x] Nevada — DONE 2026-06-13. 15+ reviewed; +1 deposit (Greater Nevada $250 — SEG-restricted, not broadly claimable), +2 cards (Nevada State Bank Reserve $500/50k + Elite $300/30k — Zions own-brand). nevada.md.
+      Clark County CU → rebranded to Create CU (createcu.org). Meadows Bank → Meadows Financial. GNCU cards = Elan, excluded. NSB $350 checking EXPIRED 4/7/26.
+- [x] Kentucky — DONE 2026-06-13. 20+ reviewed; +2 deposit (Stock Yards B&T $200 no deadline, Ashland CU $50 code FREE50), +2 cards (Commonwealth CU MY Card 25k pts/$250 via FFA $8 assoc, L&N FCU $50/$1k). kentucky.md.
+      Park Community CU card = "coming soon" (unresolved). Louisville Metro Police CU → merged into Commonwealth CU. Republic Bank $200 biz EXPIRED.
+- [x] Connecticut — DONE 2026-06-13. 20+ reviewed; +1 deposit (Berkshire Bank $300 ⚠️exp 6/30, CT/MA/NY/RI/VT eligible), +0 cards (all Elan white-label or no bonus). connecticut.md.
+      American Eagle FCU $200 = recurring seasonal (last Nov 2023 — watch). 360 FCU Visa 5k pts = summer promo, likely recurs. Savings Bank of Manchester domain expired (may have merged).
+- [x] Utah — DONE 2026-06-13. 20+ reviewed; +3 deposit (Cyprus CU $300 exp 7/31, America First $350, UFirst CU up to $500), +6 cards (Zions Reserve $500/50k, Premier $150/15k, Vivid 30k pts; Goldenwest $100 exp 9/30; Cyprus 10k pts; Jordan CU 10k pts). utah.md.
+      Chartway = nationwide backdoor ($10 donation), excluded. Domain fixes: gwcu.org, ufirstcu.com, dfcu.com, altabank.com.
+- [x] Montana — DONE 2026-06-13. DRY — 0 deposit bonuses, 0 card bonuses. First Interstate $600 EXPIRED 11/21/25. Rocky Mountain Bank absorbed by Glacier/Stockman mid-2024. Glacier/Opportunity Bank/Big Sky = FNBO/TCM white-label excluded. montana.md.
+- [x] Wyoming — DONE 2026-06-13. DRY — 0 deposit bonuses, 0 card bonuses. Meridian Trust $200 EXPIRED 12/31/25. First Interstate $600 EXPIRED. Hilltop Bank = Elan excluded. wyoming.md.
+- [x] New Mexico — DONE 2026-06-13. 15+ reviewed; +0 verified deposit (NM Bank & Trust $150/$400 = TLS error, UNRESOLVED), +3 cards (Sunward FCU $100/Visa Sig; Nusenda 10k pts/$500 [NM Wilderness Alliance open-membership]; Kirtland CU 5% cash back — military FOM only). new-mexico.md.
+      Sandia Lab FCU → rebranded to Sunward FCU (Nov 2024). Sunflower Bank $200 EXPIRED 12/31/25. White Sands FCU = Elan, excluded.
+- [x] Idaho — DONE 2026-06-13. 15+ reviewed; +2 deposit (Banner Bank $250/$500 exp 6/30; Tech CU $500 exp 6/30 — Boise/Nampa geo-restricted), +2 cards (ICCU Rewards $200/32k pts; ICCU Premier $300/48k pts — open to any ID resident). idaho.md.
+      Bank of Idaho acquired by Glacier (May 2025), branches split to Citizens Community/Mountain West/Wheatland. ICCU $150 checking EXPIRED 12/31/24.
+- [x] Nebraska — DONE 2026-06-13. 20+ reviewed; +2 deposit (Bankers Trust $400 ⚠️exp 6/30, Union B&T $50 UNL students only), +1 card (FNBO Evergreen $200/20k pts/$1k — national FNBO product). nebraska.md.
+      SAC FCU = Cobalt CU (rebranded 2018). NebraskaLand/Five Points Bank cards = Elan excluded.
+- [x] Iowa — DONE 2026-06-13. 20+ reviewed; +3 deposit (Dupaco CU $300 no deadline; QCBT $300 exp 8/31; Bankers Trust $400 ⚠️exp 6/30), +2 cards (GreenState World MC $250/25k pts, Platinum $150/15k pts). iowa.md.
+      UICCU = GreenState CU (rebranded 2019). Community State Bank $400 + MidWestOne $350 EXPIRED.
+- [x] Oklahoma — DONE 2026-06-13. 20+ reviewed; +7 deposit (WEOKIE $200 exp 7/31; CFCU $300 ⚠️exp 6/22 in-branch only; Tinker $25; Equity Bank BLOOM/MATCH/SURGE $400 each exp 6/30/7/31/9/30; Equity SHOCKERS $200 exp 6/28), +0 cards (Arvest = PerimeterX, 6 CU sites unreachable). oklahoma.md.
+      TIME-SENSITIVE: CFCU $300 expires 6/22 (9 days). Equity BLOOM $400 expires 6/30.
+- [x] Kansas — DONE 2026-06-13. 20+ reviewed; +6 deposit (Mainstreet CU $300 ⚠️exp 6/30; CommunityAmerica $150/$250/$400 exp 7/31; Equity Bank x4 same as OK), +1 card (Meritrust CU $200/20k pts/$1k no deadline). kansas.md.
+      TIME-SENSITIVE: Mainstreet $300 exp 6/30. Sunflower Bank $200 EXPIRED 12/25. Quest CU Topeka may be defunct.
+- [x] Delaware — DONE 2026-06-13. DRY — 0 bonuses. WSFS Bank cards → migrated to Elan 6/5/2026 (SEC 8-K). Del-One/DEXSTA = no bonus. delaware.md.
+- [x] Washington DC — DONE 2026-06-13. DRY — 0 public bonuses. NIHFCU = referral-only. John Marshall = APY special (not cash). SDFCU/DCU/Hanscom = excluded. district-of-columbia.md.
+- [x] Rhode Island — DONE 2026-06-13. 15+ reviewed; +2 deposit (Washington Trust $200 code Free200; Navigant CU $100 code JOURNEY100_2026 exp 12/31), +2 cards (Navigant Cash Back World $100/$1k; Elite $150/$2k; RICU 10k ScoreCard pts soft). rhode-island.md.
+      Pawtucket CU → merged into Coastal1. Washington Trust/BankNewport/Westerly/Coastal1 = Elan/TCM, excluded. Greenwood = nationwide backdoor.
+- [x] Vermont — DONE 2026-06-13. DRY — 0 deposit bonuses, 0 card bonuses. VT FCU + Credit Union of VT merged Jan 2026 ($100 dividend = internal, not public). NorthCountry BT promos EXPIRED 3/31+4/15/26. Merchants Bank VT = now Community Bank NA (2017). vermont.md.
+- [x] Mississippi — DONE 2026-06-13. 20+ reviewed; +1 deposit (Magnolia FCU $100 no deadline), +2 cards (Keesler FCU Visa Sig $100/$1.5k; Visa Plat 10k pts/$1k). mississippi.md.
+      Cadence Bank → now Huntington (2/1/2026). Simmons $450 EXPIRED 3/30/26. Renasant = Elan, excluded. cbms.com domain for sale.
+- [x] Arkansas — DONE 2026-06-13. 20+ reviewed; +1 deposit (Stone Bank $200 — veterans/military/first responders/healthcare/educators only), +3 cards (Arvest Cobalt Visa Sig $150/15k pts + Cash Back $150 both $500/3 billing cycles; Simmons Rewards Visa Sig 30k pts/$3k/93 days). arkansas.md.
+      Simmons $450 checking EXPIRED 3/30/26. Arvest PerimeterX-blocked — card terms confirmed via indexed docs. Generations Bank Raisin bonus EXPIRED.
+- [x] New Hampshire — DONE 2026-06-13. 15+ reviewed; +1 deposit (Bellwether CU $300 ⚠️exp 6/30), +3 cards (Bellwether Smart Rewards 5k pts/$1k; Smart Cash $50/$1k; Triangle CU 5k pts/$1k). new-hampshire.md.
+      Lighthouse CU (formerly Northeast CU) = nationwide backdoor (free Lighthouse Foundation membership). Northway Bank → absorbed by Camden National (ME) Jan 2025. GSCU still 403.
+- [x] Maine — DONE 2026-06-13. 20+ reviewed; +1 deposit (cPort CU $100 no deadline), +1 card (Bangor Savings everblue ~$100/10k pts/$500 — spot-check amount). maine.md.
+      Infinity FCU → now Empeople (merged with IL Deere Employees CU = nationwide). Five County CU → rebranded Ancorum CU. Camden National/cPort/Katahdin = Elan/Fiserv white-label. Maine State CU 5k pts EXPIRED 12/31/25.
+- [x] Alaska — DONE 2026-06-13. DRY deposits confirmed. Northrim Bank 25k pts card = spend/window not disclosed on own pages (UNRESOLVED — Card Assets white-label). alaska.md.
+      Alaska USA FCU → Global Credit Union. Mariners Cash Back fee-waiver EXPIRED 5/31/26. Denali FCU → Nuvision Federal (CA). ALPS FCU pending merger with Tongass FCU.
+- [x] North Dakota — DONE 2026-06-13. Near-dry; +1 deposit (Starion Bank $100 no DD req), +0 cards. north-dakota.md.
+      Gate City $100 EXPIRED 4/22-23/26 (two-day event). Dakota West CU cards still pre-launch. Capital CU = Elan, excluded.
+- [x] South Dakota — DONE 2026-06-13. Near-dry; +1 deposit (First National Bank Sioux Falls $350 exp 9/30), +0 cards. south-dakota.md.
+      American Bank & Trust $500/$350 EXPIRED ~4/30/26. Black Hills FCU = 403 (unresolved card + FOM). Sioux Falls FCU → rebranded Levo CU.
+- [x] West Virginia — DONE 2026-06-13. 20+ reviewed; +3 deposit (City National WV $200 + $100 teen; First Community Bank $20 personal/$50 biz), +0 cards (WesBanco/CNB/Pendleton = Elan/TCM, all excluded). west-virginia.md.
+      WesBanco $400/$350 + MVB $150/$200 all EXPIRED. EPCU domain parked (defunct?). WV United FCU → rebranded Element FCU (elementfcu.org).
+
+## ===== SWEEP COMPLETE — ALL 51 STATES DONE (2026-06-13) =====
+States: NY NJ VA OH IL MD NC MA GA PA TX WA MI MO AZ CA FL TN IN SC CO MN WI AL LA OR KY CT NV UT NM ID MT WY OK KS NE IA MS AR NH ME RI VT DE DC WV ND SD AK
+(HI = reference implementation, not re-swept)
 
 ## QUEUED remaining (never launched):
    NM ID MT OK KS NE IA MS AR NH ME RI VT DE WV DC ND SD WY (19 states)
