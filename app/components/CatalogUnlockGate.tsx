@@ -17,6 +17,7 @@ export default function CatalogUnlockGate({
   unlocking,
   error,
   noun = "local cards",
+  buttonLabel,
 }: {
   count: number
   stateName: string
@@ -26,6 +27,7 @@ export default function CatalogUnlockGate({
   unlocking: boolean
   error: string | null
   noun?: string
+  buttonLabel?: string
 }) {
   const [email, setEmail] = useState("")
 
@@ -91,7 +93,7 @@ export default function CatalogUnlockGate({
             whiteSpace: "nowrap",
           }}
         >
-          {unlocking ? "Unlocking…" : `Unlock ${stateName} cards`}
+          {unlocking ? "Unlocking…" : buttonLabel ?? `Unlock ${stateName} offers`}
         </button>
       </form>
       {error && <div style={{ fontSize: 12, color: "#b91c1c", marginTop: 10 }}>{error}</div>}

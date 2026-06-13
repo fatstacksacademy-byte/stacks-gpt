@@ -112,19 +112,6 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     [cards, stateCode],
   )
   const selectedState = stateSlug ? US_STATES.find(s => s.slug === stateSlug) : null
-  // Regional cards no longer get their own list — once unlocked they fold into
-  // the merit-ranked paths above (tagged with a "Regional" chip). We still
-  // compute the state's cards here to drive the email gate's count + preview.
-  const stateCards = useMemo(
-    () =>
-      stateCode
-        ? stateSpecificCards(cards, stateCode)
-            .map(card => ({ card, value: signupYearOneValue(card) }))
-            .sort((a, b) => b.value - a.value || a.card.card_name.localeCompare(b.card.card_name))
-        : [],
-    [cards, stateCode],
-  )
-
   function changeState(slug: string) {
     setStateSlug(slug)
   }
@@ -482,40 +469,10 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {path && <BuildPlanCta path={path} />}
 
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
-      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked} />
-
-      {/* ── Email gate: regional cards stay locked until the visitor unlocks ── */}
-      {selectedState && stateCards.length > 0 && !unlocked && (
-        <div style={{ marginTop: 28 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#111", marginBottom: 2 }}>
-            {selectedState.name} regional cards
-          </div>
-          <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>
-            {stateCards.length} verified local bank and credit-union cards available in {selectedState.name}. Membership requirements still apply.
-          </div>
-          <div style={{ position: "relative", marginBottom: 12 }}>
-            <div
-              aria-hidden
-              style={{ display: "grid", gap: 10, filter: "blur(5px)", pointerEvents: "none", userSelect: "none", maxHeight: 190, overflow: "hidden", opacity: 0.75 }}
-            >
-              {stateCards.slice(0, 3).map(({ card }, index) => {
-                const hasSignupBonus = card.bonus_amount > 0
-                return (
-                  <CardRow
-                    key={card.id}
-                    rank={index + 1}
-                    card={card}
-                    primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
-                    primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
-                    secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
-                  />
-                )
-              })}
-            </div>
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 72%)", pointerEvents: "none" }} />
-          </div>
+      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked}>
+        {selectedState && stateAddedCount > 0 && !unlocked && (
           <CatalogUnlockGate
-            count={stateCards.length}
+            count={stateAddedCount}
             stateName={selectedState.name}
             stateCode={stateCode ?? ""}
             source="spending_state"
@@ -523,9 +480,10 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
             unlocking={unlocking}
             error={unlockError}
             noun="local cards"
+            buttonLabel={`Unlock ${selectedState.name} cards`}
           />
-        </div>
-      )}
+        )}
+      </StateCardFilter>
 
       <style>{`
         @media (max-width: 1000px) {
@@ -584,7 +542,7 @@ function BuildPlanCta({ path }: { path: Path }) {
 }
 
 // ── State card filter: pull in regional/credit-union cards for a state ──
-function StateCardFilter({ stateSlug, onChange, addedCount, unlocked }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number; unlocked: boolean }) {
+function StateCardFilter({ stateSlug, onChange, addedCount, unlocked, children }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number; unlocked: boolean; children?: React.ReactNode }) {
   const selected = US_STATES.find(s => s.slug === stateSlug)
   return (
     <div style={{ marginTop: 28, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
@@ -630,6 +588,7 @@ function StateCardFilter({ stateSlug, onChange, addedCount, unlocked }: { stateS
           )}
         </div>
       )}
+      {children && <div style={{ marginTop: 16 }}>{children}</div>}
     </div>
   )
 }

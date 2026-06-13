@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import TrackBonusButton from "./TrackBonusButton"
+import CatalogUnlockGate from "./CatalogUnlockGate"
+import { useCatalogUnlock } from "./useCatalogUnlock"
 import type { ClientCatalogItem } from "../../lib/data/catalogTaxonomy"
 
 const PAGE_SIZE = 10
@@ -50,14 +52,21 @@ export default function StateOfferBrowser({
   stateName: string
   reviewHrefs: Record<string, string>
 }) {
+  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [view, setView] = useState<View>("bank")
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all")
   const [reqFilter, setReqFilter] = useState<ReqFilter>("all")
   const [scopeFilter, setScopeFilter] = useState<ScopeFilter>("all")
   const [page, setPage] = useState(1)
 
+  const localCount = items.filter(it => isLocal(it, stateCode) && (view === "brokerage" ? it.category === "brokerage" : it.category !== "brokerage")).length
+  const availableItems = useMemo(
+    () => unlocked ? items : items.filter(item => !isLocal(item, stateCode)),
+    [items, stateCode, unlocked],
+  )
+
   const visible = useMemo(() => {
-    const filtered = items.filter(item => {
+    const filtered = availableItems.filter(item => {
       if (view === "brokerage" ? item.category !== "brokerage" : item.category === "brokerage") return false
       if (!matchesType(item, typeFilter)) return false
       if (reqFilter === "dd" && !requiresDirectDeposit(item)) return false
@@ -71,7 +80,7 @@ export default function StateOfferBrowser({
       if (leftLocal !== rightLocal) return leftLocal ? -1 : 1
       return right.bonusAmount - left.bonusAmount
     })
-  }, [items, stateCode, view, typeFilter, reqFilter, scopeFilter])
+  }, [availableItems, stateCode, view, typeFilter, reqFilter, scopeFilter])
 
   const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
@@ -87,8 +96,6 @@ export default function StateOfferBrowser({
   function setReq(next: ReqFilter) { setReqFilter(next); setPage(1) }
   function setScope(next: ScopeFilter) { setScopeFilter(next); setPage(1) }
 
-  const localCount = items.filter(it => isLocal(it, stateCode) && (view === "brokerage" ? it.category === "brokerage" : it.category !== "brokerage")).length
-
   return (
     <section>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
@@ -96,13 +103,31 @@ export default function StateOfferBrowser({
           <h2 style={{ fontSize: 24, fontWeight: 800, color: "#111", margin: "0 0 3px", letterSpacing: "-0.02em" }}>
             Bonuses available in {stateName}
           </h2>
-          <div style={{ fontSize: 13, color: "#777" }}>State-specific offers appear first. Browse ten at a time.</div>
+          <div style={{ fontSize: 13, color: "#777" }}>
+            {unlocked ? "State-specific offers appear first. Browse ten at a time." : "Nationwide offers stay open; state-specific offers unlock by email."}
+          </div>
         </div>
         <div style={{ display: "inline-flex", padding: 3, background: "#f2f4f3", borderRadius: 10 }}>
           <ViewButton active={view === "bank"} onClick={() => selectView("bank")}>Bank bonuses</ViewButton>
           <ViewButton active={view === "brokerage"} onClick={() => selectView("brokerage")}>Brokerage</ViewButton>
         </div>
       </div>
+
+      {!unlocked && localCount > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <CatalogUnlockGate
+            count={localCount}
+            stateName={stateName}
+            stateCode={stateCode}
+            source="bank_bonuses_by_state"
+            unlock={unlock}
+            unlocking={unlocking}
+            error={unlockError}
+            noun="local bonuses"
+            buttonLabel={`Unlock ${stateName} bonuses`}
+          />
+        </div>
+      )}
 
       {view === "bank" && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
@@ -117,7 +142,7 @@ export default function StateOfferBrowser({
             <Chip active={reqFilter === "dd"} onClick={() => setReq("dd")}>Direct deposit</Chip>
             <Chip active={reqFilter === "no_dd"} onClick={() => setReq("no_dd")}>No direct deposit</Chip>
           </FilterGroup>
-          {localCount > 0 && (
+          {unlocked && localCount > 0 && (
             <FilterGroup label="Scope">
               <Chip active={scopeFilter === "all"} onClick={() => setScope("all")}>All</Chip>
               <Chip active={scopeFilter === "local"} onClick={() => setScope("local")}>{stateName} only ({localCount})</Chip>
@@ -293,4 +318,3 @@ function pagerButton(disabled: boolean): React.CSSProperties {
     cursor: disabled ? "not-allowed" : "pointer",
   }
 }
-
