@@ -24,7 +24,7 @@ import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRan
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import { signupBonusValue, signupYearOneValue } from "../../../lib/data/cardSpendValue"
-import { TRANSFER_PROGRAMS, findTransferProgram } from "../../../lib/data/catalogTaxonomy"
+import { TRANSFER_PROGRAMS, US_STATES, findTransferProgram } from "../../../lib/data/catalogTaxonomy"
 import { transferKind } from "../../../lib/data/travelValue"
 import { DEFAULT_BENEFIT_PROFILE, type UserBenefitProfile } from "../../../lib/cardBenefits"
 import { computeWalletSlots } from "../../../lib/walletSlots"
@@ -110,10 +110,15 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   // Paycheck, Savings, and the dashboard. Updating them here immediately
   // updates every sequencer instead of maintaining a second local copy.
   const userState = userProfile.state ?? null
+  const selectedState = userState ? US_STATES.find(state => state.code === userState) ?? null : null
   const militaryAffiliated = userProfile.military_affiliated === true
   const regionalCardCount = userState
     ? creditCardBonuses.filter(c => !c.expired && c.state_restricted?.includes(userState)).length
     : 0
+
+  function updateUserState(stateCode: string) {
+    setUserProfile({ state: stateCode || null })
+  }
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -337,14 +342,11 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
-          <select value={userState ?? ""} onChange={e => {
-            const nextState = e.target.value || null
-            setUserProfile({ state: nextState })
-          }}
+          <select aria-label="Home state" value={userState ?? ""} onChange={e => updateUserState(e.target.value)}
             style={{ fontSize: 12, color: userState ? "#0d7c5f" : "#999", fontWeight: userState ? 700 : 400, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
-            <option value="">State</option>
-            {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
-              <option key={s} value={s}>{s}</option>
+            <option value="">Select state</option>
+            {US_STATES.map(state => (
+              <option key={state.code} value={state.code}>{state.name} ({state.code})</option>
             ))}
           </select>
           <button onClick={() => setShowProfile(s => !s)} style={topBtn}>{showProfile ? "Close" : "Spending Profile"}</button>
@@ -385,6 +387,20 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
             <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Spending Profile</div>
 
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div style={{ minWidth: 220 }}>
+                <div style={label}>Home state</div>
+                <select aria-label="Home state in spending profile" value={userState ?? ""} onChange={e => updateUserState(e.target.value)} style={{ ...selectStyle, width: "100%" }}>
+                  <option value="">— select state —</option>
+                  {US_STATES.map(state => (
+                    <option key={state.code} value={state.code}>{state.name} ({state.code})</option>
+                  ))}
+                </select>
+                <div style={{ fontSize: 10, color: userState ? "#0d7c5f" : "#999", marginTop: 5 }}>
+                  {selectedState
+                    ? `${selectedState.name} selected · ${regionalCardCount} regional cards included`
+                    : "Shared with Paycheck and used for regional card eligibility"}
+                </div>
+              </div>
               <div>
                 <div style={label}>Available monthly spend</div>
                 <div style={{ position: "relative" }}>
