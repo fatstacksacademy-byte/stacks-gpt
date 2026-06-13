@@ -6,6 +6,7 @@ import {
   cardTransfersTo,
   travelSummary,
   transferKind,
+  directLoyaltyProgram,
   travelTransferCpp,
   LOUNGE_VALUE,
   GLOBAL_ENTRY_ANNUAL,
@@ -149,6 +150,29 @@ describe("indirect transfer earners (pooling)", () => {
     const twin = card({ id: "csp2", card_name: "Chase Sapphire Preferred", bonus_currency: "Ultimate Rewards" })
     const r = rankByTravelValue([twin, direct], "transfer", "hyatt")
     expect(r.map(c => c.id)).toEqual(["csp1"])
+  })
+})
+
+describe("direct loyalty cards", () => {
+  const united = card({ card_name: "United Quest", bonus_currency: "United MileagePlus" })
+  const delta = card({ card_name: "Delta SkyMiles Gold", bonus_currency: "miles" })
+  const hilton = card({ card_name: "Amex Hilton Aspire", bonus_currency: "Hilton Honors", is_hotel_card: true })
+
+  it("recognizes co-branded airline and hotel currencies", () => {
+    expect(directLoyaltyProgram(united)).toBe("united")
+    expect(directLoyaltyProgram(delta)).toBe("delta")
+    expect(directLoyaltyProgram(hilton)).toBe("hilton")
+  })
+
+  it("treats co-brands as direct matches for a selected program", () => {
+    expect(transferKind(united, "united")).toBe("direct")
+    expect(transferKind(delta, "delta")).toBe("direct")
+    expect(transferKind(hilton, "hilton")).toBe("direct")
+    expect(travelTransferCpp(united, "united")).toBeCloseTo(0.0135, 6)
+  })
+
+  it("does not mistake similarly named regional institutions for airline cards", () => {
+    expect(directLoyaltyProgram(card({ card_name: "Georgia United Cash Back Visa", bonus_currency: "cash" }))).toBeNull()
   })
 })
 

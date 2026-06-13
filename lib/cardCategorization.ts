@@ -84,3 +84,12 @@ export function cardRedemptionModes(
   // mark travel-only so cash users don't see speculative entries.
   return ["travel"]
 }
+
+/** Search is a catalog lookup, so it deliberately crosses the active mode. */
+export function cardVisibleInRewardsMode(
+  card: { card_name: string; bonus_currency: string; is_hotel_card: boolean },
+  mode: RedemptionMode,
+  searchActive = false,
+): boolean {
+  return searchActive || cardRedemptionModes(card).includes(mode)
+}

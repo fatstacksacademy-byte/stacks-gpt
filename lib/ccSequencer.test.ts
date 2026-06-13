@@ -87,6 +87,15 @@ describe("sequenceCards — contract against real catalog", () => {
     expect(sequenced.every(s => transferKind(s.card, "hyatt") !== null)).toBe(true)
   })
 
+  it.each([
+    ["united", "United"],
+    ["delta", "Delta SkyMiles"],
+    ["hilton", "Hilton"],
+  ])("includes direct %s co-brand cards when that currency is targeted", (program, cardName) => {
+    const sequenced = sequenceCards(creditCardBonuses, 10000, null, 8, true, null, false, null, "max_bonus", program)
+    expect(sequenced.some(s => s.card.card_name.includes(cardName))).toBe(true)
+  })
+
   it("values legacy cash rows at face value", () => {
     const legacyCash = creditCardBonuses.find(c => c.offer_link && !c.expired)!
     const sequenced = sequenceCards([

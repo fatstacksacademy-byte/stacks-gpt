@@ -13,7 +13,7 @@ import { computeCategoryGaps, GAP_MIN_MONTHLY_SPEND } from "../../../lib/categor
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
 import { creditCardBonuses, type CreditCardBonus } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
-import { isAirlineOrHotelCard, cardRedemptionModes } from "../../../lib/cardCategorization"
+import { cardVisibleInRewardsMode } from "../../../lib/cardCategorization"
 import { matchOwnedCardCandidates } from "../../../lib/catalogMatching"
 import CatalogMatchPicker from "../../components/CatalogMatchPicker"
 import AlreadyHaveForm from "../../components/AlreadyHaveForm"
@@ -55,7 +55,6 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [addedModalCategories, setAddedModalCategories] = useState<SpendingCategory[]>([])
   const [showRecommendations, setShowRecommendations] = useState(true)
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
-  const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
   // Application pace cap. Defaults to 4 cards/yr (≈90-day spacing).
   // Persisted to localStorage so the chosen pace survives reloads and
   // stays in sync with the dashboard's spending projection.
@@ -244,12 +243,9 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
 
   // Sequencer: filter out cards user is already tracking + cash/travel mode.
   //
-  // Cash mode shows cards that can pay out as cash at >=1¢ — pure cash-back
-  // cards AND flexible-issuer-points cards (UR, MR, Capital One miles, Citi
-  // ThankYou, Wells Fargo Rewards, BofA points). Travel mode adds airline /
-  // hotel loyalty cards behind a toggle (default off). Loyalty-locked
-  // currencies never appear in cash mode. Logic lives in cardRedemptionModes
-  // so the cash/flex/loyalty taxonomy is single-source.
+  // Cash mode shows cards with a cash redemption path. Travel mode includes
+  // flexible currencies plus airline and hotel co-brands. A text search acts
+  // as a full-catalog lookup rather than silently staying inside the mode.
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
   const isTravel = rewardsMode === "travel"
@@ -269,13 +265,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     travelProgram || null,
   )
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
-    .filter(sc => {
-      const modes = cardRedemptionModes(sc.card)
-      if (isTravel) {
-        return modes.includes("travel") && (travelProgram !== "" || includeHotelAirline || !isAirlineOrHotelCard(sc.card))
-      }
-      return modes.includes("cash")
-    })
+    .filter(sc => cardVisibleInRewardsMode(sc.card, rewardsMode, recSearchQ.length > 0))
     .filter(sc => !recSearchQ || sc.card.card_name.toLowerCase().includes(recSearchQ) || sc.card.issuer.toLowerCase().includes(recSearchQ))
 
   // Wallet-slot view: compute the best card per spending category from the
@@ -612,7 +602,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Point currency target</div>
                     <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
-                      Filter to cards that can feed the airline or hotel program you want.
+                      Filter to cards that earn that currency directly or can transfer into it.
                     </div>
                   </div>
                   <select
@@ -623,7 +613,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                     }}
                     style={{ ...selectStyle, minWidth: 210 }}
                   >
-                    <option value="">Any transferable currency</option>
+                    <option value="">All travel currencies</option>
                     <optgroup label="Airlines">
                       {TRANSFER_PROGRAMS.filter(p => p.kind === "airline").map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
                     </optgroup>
@@ -778,19 +768,6 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   {selectedTravelProgram && <> Targeting <strong>{selectedTravelProgram.name}</strong>.</>}
                   {recSearchQ && <> · <strong>{ccSequence.length}</strong> match{ccSequence.length !== 1 ? "es" : ""} for &ldquo;{recSearch}&rdquo;</>}
                 </div>
-                {isTravel && !travelProgram && <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
-                  <div onClick={() => setIncludeHotelAirline(!includeHotelAirline)}
-                    style={{
-                      width: 36, height: 20, borderRadius: 10, position: "relative",
-                      background: includeHotelAirline ? "#0d7c5f" : "#ddd", transition: "background 0.2s", cursor: "pointer",
-                    }}>
-                    <div style={{
-                      width: 16, height: 16, borderRadius: 8, background: "#fff", position: "absolute", top: 2,
-                      left: includeHotelAirline ? 18 : 2, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                    }} />
-                  </div>
-                  <span style={{ fontSize: 12, color: "#555" }}>Include airline &amp; hotel cards</span>
-                </label>}
                 <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
                   <input
                     type="checkbox"

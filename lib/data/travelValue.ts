@@ -14,7 +14,7 @@
  */
 import type { CreditCardBonus, TravelValue } from "./creditCardBonuses"
 import { resolveProgramSlug, findTransferProgram } from "./catalogTaxonomy"
-import { resolveTransfers, bestTransferCpp, currencyKey, currencyTransferCpp, poolHint } from "./transferPartners"
+import { resolveTransfers, bestTransferCpp, currencyKey, currencyTransferCpp, poolHint, programValueDollars } from "./transferPartners"
 
 export type TravelMode = "perks" | "transfer"
 
@@ -54,6 +54,40 @@ export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boo
   return resolveTransfers(card).some(t => t.program === programSlug)
 }
 
+const DIRECT_LOYALTY_PATTERNS: Record<string, RegExp[]> = {
+  united: [/\bmileageplus\b/i, /\bunited(?:sm)?\s+(?:explorer|gateway|quest|club|business)\b/i],
+  delta: [/\bdelta skymiles\b/i],
+  alaska: [/\balaska airlines\b/i, /\balaska mileage plan\b/i],
+  southwest: [/\bsouthwest rapid rewards\b/i],
+  jetblue: [/\bjetblue\b/i, /\btrueblue\b/i],
+  aeroplan: [/\baeroplan\b/i],
+  "british-airways": [/\bbritish airways\b/i],
+  "flying-blue": [/\bflying blue\b/i],
+  "virgin-atlantic": [/\bvirgin atlantic\b/i],
+  avianca: [/\bavianca\b/i, /\blifemiles\b/i],
+  singapore: [/\bsingapore airlines\b/i, /\bkrisflyer\b/i],
+  cathay: [/\bcathay pacific\b/i, /\basia miles\b/i],
+  emirates: [/\bemirates\b/i, /\bskywards\b/i],
+  hyatt: [/\bworld of hyatt\b/i],
+  marriott: [/\bmarriott bonvoy\b/i],
+  hilton: [/\bhilton honors\b/i, /\bamex hilton\b/i, /\bhilton (?:surpass|aspire|business)\b/i],
+  ihg: [/\bihg(?: one rewards)?\b/i],
+  wyndham: [/\bwyndham rewards\b/i],
+  choice: [/\bchoice privileges\b/i],
+}
+
+/** Loyalty program a co-branded card earns directly, if any. */
+export function directLoyaltyProgram(card: CreditCardBonus): string | null {
+  const currencyProgram = resolveProgramSlug(card.bonus_currency)
+  if (currencyProgram) return currencyProgram
+
+  const text = `${card.card_name} ${card.bonus_currency}`
+  for (const [program, patterns] of Object.entries(DIRECT_LOYALTY_PATTERNS)) {
+    if (patterns.some(pattern => pattern.test(text))) return program
+  }
+  return null
+}
+
 /**
  * How a card reaches a transfer program:
  *  - "direct":   the card itself transfers there (premium/opt-in card).
@@ -64,6 +98,7 @@ export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boo
  *  - null:       the card can't reach the program at all.
  */
 export function transferKind(card: CreditCardBonus, programSlug: string): "direct" | "indirect" | null {
+  if (directLoyaltyProgram(card) === programSlug) return "direct"
   if (cardTransfersTo(card, programSlug)) return "direct"
   if (currencyTransferCpp(card.bonus_currency, programSlug) > 0) return "indirect"
   return null
@@ -78,6 +113,7 @@ export function transferKind(card: CreditCardBonus, programSlug: string): "direc
 export function travelTransferCpp(card: CreditCardBonus, program?: string): number {
   const resolved = resolveTransfers(card)
   if (program) {
+    if (directLoyaltyProgram(card) === program) return programValueDollars(program)
     // Direct transfer if the card opted in; otherwise fall back to the value
     // its currency fetches once pooled (indirect). Same per-point worth — the
     // only difference is you need a premium card on hand to move the points.
@@ -137,9 +173,9 @@ export function rankByTravelValue(
     // one twin carries transfer_partners and the other doesn't — suppress the
     // indirect twin so the same card isn't listed twice with conflicting advice.
     const directNames = new Set(
-      filtered.filter(c => cardTransfersTo(c, program)).map(c => c.card_name),
+      filtered.filter(c => transferKind(c, program) === "direct").map(c => c.card_name),
     )
-    filtered = filtered.filter(c => cardTransfersTo(c, program) || !directNames.has(c.card_name))
+    filtered = filtered.filter(c => transferKind(c, program) === "direct" || !directNames.has(c.card_name))
   } else {
     filtered = cards.filter(c => !c.expired && hasTravelValue(c, mode))
   }
@@ -148,8 +184,8 @@ export function rankByTravelValue(
     if (mode === "transfer") {
       if (program) {
         // Direct picks first, then by per-point value into the chosen program.
-        const ad = cardTransfersTo(a, program) ? 1 : 0
-        const bd = cardTransfersTo(b, program) ? 1 : 0
+        const ad = transferKind(a, program) === "direct" ? 1 : 0
+        const bd = transferKind(b, program) === "direct" ? 1 : 0
         if (ad !== bd) return bd - ad
       }
       const ac = travelTransferCpp(a, program)
@@ -166,6 +202,12 @@ export function rankByTravelValue(
 
 /** Human-readable summary of a card's travel value for the chosen lens. */
 export function travelSummary(card: CreditCardBonus, mode: TravelMode, program?: string): string {
+  if (mode === "transfer" && program && directLoyaltyProgram(card) === program) {
+    const cpp = programValueDollars(program)
+    const programName = findTransferProgram(program)?.name ?? program
+    return `${(cpp * 100).toFixed(1)}¢/pt earned directly in ${programName}`
+  }
+
   // Indirect transfer earner: no own transfer partners, but its currency reaches
   // the selected program once pooled into a premium card. Handle before the
   // no-travel-data guard, since these cards carry no `travel` block.
