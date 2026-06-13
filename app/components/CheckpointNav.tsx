@@ -6,11 +6,12 @@ import StacksAccountMenu from "./StacksAccountMenu"
 const tabs = [
   { label: "Dashboard", href: "/stacksos", exact: true },
   { label: "Paycheck", href: "/stacksos/paycheck" },
-  { label: "Spending", href: "/stacksos/spending", beta: true },
   { label: "Savings", href: "/stacksos/savings" },
-  { label: "Debt", href: "/stacksos/debt" },
-  { label: "Cards", href: "/stacksos/cards" },
-  { label: "Base", href: "/stacksos/base" },
+  { label: "Spending", href: "/stacksos/spending", beta: true },
+  { label: "Debt", href: "/stacksos/debt", beta: true },
+  // Cards and Base hidden for now — restore when ready:
+  // { label: "Cards", href: "/stacksos/cards" },
+  // { label: "Base", href: "/stacksos/base" },
 ] as const
 
 export default function CheckpointNav() {
