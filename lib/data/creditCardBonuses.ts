@@ -986,7 +986,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21e/I1HNZSS5VJ",
+    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
     expired: false,
     key_benefits: [
       "3x on travel, shipping, internet, phone, advertising",
@@ -7225,7 +7225,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 195,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/premier?iCELL=61FY",
+    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7250,7 +7250,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/cash?iCELL=61FY",
+    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -7277,7 +7277,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/business-credit-cards/ink/unlimited?iCELL=61FY",
+    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -7299,7 +7299,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 795,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve?iCELL=61FY",
+    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],
     rewards: [
