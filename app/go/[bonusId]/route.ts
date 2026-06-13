@@ -4,6 +4,14 @@ import { bonuses } from "../../../lib/data/bonuses"
 import { savingsBonuses } from "../../../lib/data/savingsBonuses"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 
+export const dynamic = "force-dynamic"
+
+const cardOfferUrls = new Map(
+  creditCardBonuses
+    .filter(card => card.offer_link)
+    .map(card => [card.id, card.offer_link] as const),
+)
+
 // Centralized affiliate redirect. Every "Apply" / "Open Account" CTA in the
 // app points to /go/<bonus_id>. This handler decides at click time whether
 // to redirect to an affiliate URL (from lib/affiliateLinks.ts) or the
@@ -17,8 +25,8 @@ function canonicalUrlForBonus(bonusId: string): string | null {
   const savings = savingsBonuses.find(b => b.id === bonusId)
   if (savings?.source_links?.[0]) return savings.source_links[0]
 
-  const card = creditCardBonuses.find(c => c.id === bonusId)
-  if (card?.offer_link) return card.offer_link
+  const cardUrl = cardOfferUrls.get(bonusId)
+  if (cardUrl) return cardUrl
 
   return null
 }
