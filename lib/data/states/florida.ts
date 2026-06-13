@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-12"
 
 export const floridaCards = buildStateCards({
   state: "FL",
@@ -59,6 +59,18 @@ export const floridaCards = buildStateCards({
       eligibility_notes:
         "Community Credit Union of Florida (CCU) membership is open to anyone who lives, works, worships, attends school, or conducts business in Brevard, Indian River, Orange, Osceola, Polk, or Volusia counties; Orange County educational-system employees; retirees of in-area businesses; members of ABATE of Florida, Inc.; and immediate family of members. Association path (ABATE) is Florida-specific - no open nationwide foundation backdoor.",
       eligibility_source: "https://www.ccuflorida.org/home/ourstory/membershipandbenefits/whocanjoin",
+    },
+    powerFi: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Power Financial Credit Union (PFCU) membership is open to anyone who lives or works in 13 Florida counties (Broward, Miami-Dade, Palm Beach, Lee, Collier, Charlotte, Martin, Monroe, St. Lucie, Hillsborough, Manatee, Pinellas, and Sarasota), employees of Select Employee Groups (incl. FPL/NextEra employees nationwide and Ryder employees nationwide — narrow employer paths, not a cheap open foundation backdoor), and immediate family of members. A $5 savings deposit establishes membership.",
+      eligibility_source: "https://www.powerfi.org/About/Membership/Join-Now",
+    },
+    penair: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "PenAir Credit Union membership is open to people who live or work in the Florida Panhandle counties of Escambia, Santa Rosa, Okaloosa, Walton, Holmes, and Washington (FL), or in Mobile County (AL); employees of partner organizations; military and civilian personnel at nearby bases; and immediate family of members. A $5 share savings establishes membership. No nationwide association backdoor.",
+      eligibility_source: "https://www.penair.org/about/become-a-member/",
     },
   },
   seeds: [
@@ -556,6 +568,43 @@ export const floridaCards = buildStateCards({
       ],
       eligibility: "ccuFlorida",
       credit_score_required: "poor",
+    },
+    {
+      id: "power-financial-cu-visa-signature-2026",
+      card_name: "Power Financial CU Visa Signature",
+      issuer: "power-financial-cu",
+      offer_link: "https://www.powerfi.org/Personal/Borrow/Personal-Credit-Cards/Visa-Signature-Credit-Card",
+      key_benefits: [
+        "Earn 10,000 bonus points after spending $3,000 in the first 90 days",
+        "Cash-back rewards card with no annual fee",
+        "0% intro APR on balance transfers through June 2027 (balance transfers processed by 6/30/2026, $0 BT fee)",
+      ],
+      eligibility: "powerFi",
+      bonus_amount: 10000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 3000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "penair-rewards-mastercard-2026",
+      card_name: "PenAir Rewards Mastercard",
+      issuer: "penair-cu",
+      offer_link: "https://www.penair.org/credit-cards/rewards/",
+      state_restricted: ["FL", "AL"],
+      key_benefits: [
+        "20,000 bonus PenAir Rewards points after $1,000 in purchases within 90 days of account opening",
+        "1 point per $1 on all purchases; redeem for cash back, gift cards, travel, or merchandise (points valid 3 years)",
+        "No annual fee, no balance transfer fee, no foreign transaction fee",
+      ],
+      eligibility: "penair",
+      bonus_amount: 20000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
     },
   ],
 })

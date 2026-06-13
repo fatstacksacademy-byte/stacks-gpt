@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-12"
 
 export const louisianaCards = buildStateCards({
   state: "LA",
@@ -41,6 +41,18 @@ export const louisianaCards = buildStateCards({
       eligibility_notes:
         "Home Bank, N.A. is a community bank headquartered in Lafayette, LA, with ~34 branches across 20 Louisiana cities/towns plus offices in Mississippi and Texas. Its consumer Visa cards are available to applicants in its South Louisiana / Mississippi / Texas footprint (no credit-union 'membership' required). Serves LA, MS, and TX.",
       eligibility_source: "https://www.home24bank.com/about-us/about-home-bank.html",
+    },
+    laCapitol: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "La Capitol Federal Credit Union membership is open to State of Louisiana employees and retirees; students, faculty, and staff at seven named universities (incl. LSU, Southern University, Tulane, Loyola, Xavier, Dillard, UNO); residents of select Louisiana parishes; members of partner associations; and immediate family of members. No nationwide open-association backdoor.",
+      eligibility_source: "https://www.lacapfcu.org/membership",
+    },
+    keesler: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Keesler Federal Credit Union serves members in select census tracts across nine Louisiana parishes (incl. Caddo, Bossier, East Baton Rouge, Orleans, Jefferson) plus a large Mississippi/Alabama footprint (Keesler AFB, Gulf Coast region). Membership via 300+ Select Employee Groups, geographic charter areas, and immediate family. No nationwide open-association backdoor. Serves LA, MS, and AL.",
+      eligibility_source: "https://www.kfcu.org/about/membership/",
     },
   },
   seeds: [
@@ -218,6 +230,61 @@ export const louisianaCards = buildStateCards({
         "Ask a banker for current rate information",
       ],
       eligibility: "homeBank",
+    },
+    {
+      id: "la-capitol-fcu-cash-back-visa-signature-2026",
+      card_name: "La Capitol FCU Cash Back Visa Signature",
+      issuer: "la-capitol-fcu",
+      offer_link: "https://www.lacapfcu.org/cash-back-visa-signature-credit-card",
+      key_benefits: [
+        "$150 cash back after $1,500 in purchases within the first 90 days (effective 1/1/2026)",
+        "Cash back rewards on all purchases; Visa Signature benefits",
+        "No annual fee",
+      ],
+      eligibility: "laCapitol",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
+    },
+    {
+      id: "keesler-fcu-visa-signature-2026",
+      card_name: "Keesler Federal Visa Signature",
+      issuer: "keesler-fcu",
+      offer_link: "https://www.kfcu.org/save-spend-borrow/credit-cards/",
+      state_restricted: ["LA", "MS", "AL"],
+      key_benefits: [
+        "$100 statement credit after $1,500 in purchases within the first 90 days",
+        "Visa Signature benefits including travel protections and concierge",
+        "No annual fee",
+      ],
+      eligibility: "keesler",
+      bonus_amount: 100,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1500,
+      spend_months: 3,
+    },
+    {
+      id: "keesler-fcu-visa-platinum-2026",
+      card_name: "Keesler Federal Visa Platinum",
+      issuer: "keesler-fcu",
+      offer_link: "https://www.kfcu.org/save-spend-borrow/credit-cards/",
+      state_restricted: ["LA", "MS", "AL"],
+      key_benefits: [
+        "10,000 bonus points after $1,000 in purchases within the first 90 days",
+        "Rewards points redeemable for cash back, gift cards, and travel",
+        "No annual fee",
+      ],
+      eligibility: "keesler",
+      bonus_amount: 10000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
     },
   ],
 })

@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const arizonaCards = buildStateCards({
   state: "AZ",
@@ -67,6 +67,12 @@ export const arizonaCards = buildStateCards({
       eligibility_notes:
         "Foothills Bank is an Arizona community bank (headquartered in Yuma) offering this business card to qualifying Arizona businesses, subject to credit approval.",
       eligibility_source: "https://www.foothillsbank.com/business/services/visa-business-cards",
+    },
+    nbaz: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "National Bank of Arizona (NBAZ) is a division of Zions Bancorporation serving Arizona consumers with own-brand Visa credit cards. Open to qualifying Arizona residents, subject to credit approval.",
+      eligibility_source: "https://www.nbarizona.com/personal/credit-cards/",
     },
   },
   seeds: [
@@ -261,12 +267,100 @@ export const arizonaCards = buildStateCards({
       issuer: "credit-union-west",
       offer_link: "https://www.cuwest.org/credit-cards/world-rewards-mastercard",
       key_benefits: [
+        "10,000 bonus points after $1,000 in net purchases within 90 days of account opening, plus 1,000 bonus points for registering your card online (11,000 total)",
         "1.5 points per $1 on eligible purchases",
         "Redeem for travel, gift cards, merchandise, and more",
         "No annual fee",
       ],
       eligibility: "creditUnionWest",
+      bonus_amount: 11000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
+    },
+    {
+      id: "nbaz-agility-cash-back-visa",
+      card_name: "National Bank of Arizona Agility Cash Back Visa",
+      issuer: "national-bank-of-arizona",
+      offer_link: "https://www.nbarizona.com/personal/credit-cards/agility-cash-back-credit-card/",
+      key_benefits: [
+        "Earn up to $200 bonus with double cash back for 12 months (1.5% base → effectively 3% for year 1)",
+        "1.5% cash back on all purchases after the intro period",
+        "0% intro APR for 6 months on purchases; no annual fee",
+      ],
+      eligibility: "nbaz",
+      bonus_amount: 200,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+      intro_apr: { purchase_apr_months: 6 },
+    },
+    {
+      id: "nbaz-premium-premier-visa",
+      card_name: "National Bank of Arizona Premium Premier Visa",
+      issuer: "national-bank-of-arizona",
+      offer_link: "https://www.nbarizona.com/personal/credit-cards/premium-credit-cards/premium-premier-credit-card/",
+      key_benefits: [
+        "$150 cash back or 15,000 bonus points after $4,000 in purchases within the first 90 days",
+        "2.5x points on travel; 1.5x on everything else",
+        "$0 annual fee first year, then $95/year",
+      ],
+      eligibility: "nbaz",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 4000,
+      spend_months: 3,
+      annual_fee: 95,
+      annual_fee_waived_first_year: true,
+      rewards: [
+        { categories: ["travel"], multiplier: 2.5 },
+        { categories: ["everything_else"], multiplier: 1.5 },
+      ],
+    },
+    {
+      id: "nbaz-premium-elite-visa",
+      card_name: "National Bank of Arizona Premium Elite Visa",
+      issuer: "national-bank-of-arizona",
+      offer_link: "https://www.nbarizona.com/personal/credit-cards/premium-credit-cards/premium-elite-credit-card/",
+      key_benefits: [
+        "$300 cash back or 30,000 bonus points after $5,000 in purchases within the first 90 days",
+        "Enhanced rewards on travel and everyday spending",
+        "Premium travel protections",
+      ],
+      eligibility: "nbaz",
+      bonus_amount: 300,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+    },
+    {
+      id: "nbaz-reserve-visa",
+      card_name: "National Bank of Arizona Reserve Visa",
+      issuer: "national-bank-of-arizona",
+      offer_link: "https://www.nbarizona.com/personal/credit-cards/reserve-credit-card/",
+      key_benefits: [
+        "$500 introductory bonus or 50,000 bonus points after $5,000 in purchases within the first 90 days",
+        "3x points on travel and dining, 2x on everything else",
+        "$250 annual travel credit; Priority Pass lounge access; no foreign transaction fee",
+        "$450 annual fee ($50 per authorized user)",
+      ],
+      eligibility: "nbaz",
+      bonus_amount: 500,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+      annual_fee: 450,
+      rewards: [
+        { categories: ["travel", "dining"], multiplier: 3 },
+        { categories: ["everything_else"], multiplier: 2 },
+      ],
+      travel: { no_foreign_tx_fee: true },
+      lounge_network: "priority pass",
     },
     {
       id: "sunwest-rewards-mastercard",

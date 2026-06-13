@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const utahCards = buildStateCards({
   state: "UT",
@@ -59,6 +59,18 @@ export const utahCards = buildStateCards({
       eligibility_notes:
         "Canyon View CU (formerly University Federal Credit Union / UFirst CU) membership is open to people who work, live, attend school, worship, or volunteer in Salt Lake, Davis, Summit, Tooele, Wasatch, or Utah counties, UT; immediate family of members; and a charitable-donation pathway. Salt Lake-area based.",
       eligibility_source: "https://www.canyonviewcu.com/membership/become-a-member",
+    },
+    jordanCu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Jordan Credit Union membership is open to people who live, work, or attend school in Salt Lake, Utah, or Davis counties in Utah, and to immediate family of members.",
+      eligibility_source: "https://jordan-cu.org/about/join/",
+    },
+    zionsBank: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Zions Bank is a Utah-headquartered bank offering own-brand Visa credit cards to qualifying Utah consumers. Not Elan/white-label — Zions issues its own Visa card program.",
+      eligibility_source: "https://www.zionsbank.com/personal/credit-cards/",
     },
   },
   seeds: [
@@ -162,15 +174,20 @@ export const utahCards = buildStateCards({
       id: "goldenwest-visa-rewards",
       card_name: "Goldenwest Visa Rewards",
       issuer: "goldenwest-cu",
-      offer_link: "https://www.gwcu.org/visa/rewardscreditcard",
+      offer_link: "https://www.gwcu.org/borrow/visa-cards/visa-promotions",
       key_benefits: [
+        "$100 deposited into your Gold Account after 5 purchases in the first 6 months (promotional offer valid Apr 1 – Sep 30, 2026)",
         "1 point for every $1 spent on qualifying purchases",
         "Redeem points for airline tickets, hotel stays, rental cars, and more",
-        "No annual fee",
-        "Visa Rewards Extra Awards program",
+        "No annual fee; Visa Rewards Extra Awards program",
       ],
       eligibility: "goldenwest",
       state_restricted: ["UT", "ID"],
+      bonus_amount: 100,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 0,
+      spend_months: 6,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
     },
     {
@@ -389,6 +406,87 @@ export const utahCards = buildStateCards({
         { categories: ["dining", "groceries"], multiplier: 2 },
         { categories: ["everything_else"], multiplier: 1 },
       ],
+    },
+    {
+      id: "jordan-cu-platinum-rewards-visa",
+      card_name: "Jordan Credit Union Platinum+ JCU Rewards Visa",
+      issuer: "jordan-cu",
+      offer_link: "https://jordan-cu.org/loans/visa-credit-card/",
+      key_benefits: [
+        "10,000 bonus points after your first purchase within 60 business days of account opening (redeemable for cash back)",
+        "Earn points on every purchase; no annual fee",
+        "Low variable APR",
+      ],
+      eligibility: "jordanCu",
+      bonus_amount: 10000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 0,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "zions-bank-reserve-visa",
+      card_name: "Zions Bank Reserve Visa",
+      issuer: "zions-bank",
+      offer_link: "https://www.zionsbank.com/personal/credit-cards/reserve-credit-card/",
+      key_benefits: [
+        "$500 cash back or 50,000 bonus points after $5,000 in purchases within the first 90 days",
+        "3x points on travel and dining; 2x on everyday purchases",
+        "$250 annual travel credit; no foreign transaction fee",
+      ],
+      eligibility: "zionsBank",
+      bonus_amount: 500,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+      rewards: [
+        { categories: ["travel", "dining"], multiplier: 3 },
+        { categories: ["everything_else"], multiplier: 2 },
+      ],
+      travel: { no_foreign_tx_fee: true },
+    },
+    {
+      id: "zions-bank-premier-visa-signature",
+      card_name: "Zions Bank Premier Visa Signature",
+      issuer: "zions-bank",
+      offer_link: "https://www.zionsbank.com/personal/credit-cards/premier-credit-card/",
+      key_benefits: [
+        "$150 cash back or 15,000 bonus points after $4,000 in purchases within the first 90 days",
+        "2.5x points on travel; 1.5x on everything else",
+        "$0 annual fee first year, then $95/year",
+      ],
+      eligibility: "zionsBank",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 4000,
+      spend_months: 3,
+      annual_fee: 95,
+      annual_fee_waived_first_year: true,
+      rewards: [
+        { categories: ["travel"], multiplier: 2.5 },
+        { categories: ["everything_else"], multiplier: 1.5 },
+      ],
+    },
+    {
+      id: "zions-bank-vivid-rewards-visa",
+      card_name: "Zions Bank Vivid Rewards Visa",
+      issuer: "zions-bank",
+      offer_link: "https://www.zionsbank.com/personal/credit-cards/vivid-rewards-credit-card/",
+      key_benefits: [
+        "Double points on all purchases for the first 12 months (up to 30,000 bonus points, ~$300 value)",
+        "No annual fee; 1 point per $1 on all purchases after intro period",
+        "Points never expire",
+      ],
+      eligibility: "zionsBank",
+      bonus_amount: 30000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 0,
+      spend_months: 12,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
     },
   ],
 })

@@ -1,11 +1,17 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const nevadaCards = buildStateCards({
   state: "NV",
   verifiedAt: VERIFIED_AT,
   eligibility: {
+    nevadaStateBank: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Nevada State Bank is a Nevada-chartered bank (subsidiary of Zions Bancorporation) with branches across Nevada. Its Reserve and Elite Visa credit cards are Zions own-brand in-house products — not Elan, FNBO, TCM, or any other white-label agent issuer. Accounts are opened through Nevada State Bank; no membership requirement beyond standard credit approval. Serves Nevada residents.",
+      eligibility_source: "https://www.nsbank.com/personal/credit-cards/",
+    },
     oneNevada: {
       eligibility_scope: "selected_areas",
       eligibility_notes:
@@ -34,6 +40,42 @@ export const nevadaCards = buildStateCards({
     },
   },
   seeds: [
+    {
+      id: "nevada-state-bank-reserve-visa-2026",
+      card_name: "Nevada State Bank Reserve Visa",
+      issuer: "nevada-state-bank",
+      offer_link: "https://www.nsbank.com/personal/credit-cards/reserve-credit-card/",
+      key_benefits: [
+        "$500 cash back or 50,000 bonus points after $5,000 in purchases in the first 90 days",
+        "Earn points or cash back on every purchase; premium Visa benefits",
+        "Zions Bancorporation own-brand card — not a white-label product",
+      ],
+      eligibility: "nevadaStateBank",
+      bonus_amount: 500,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "nevada-state-bank-elite-visa-2026",
+      card_name: "Nevada State Bank Elite Visa",
+      issuer: "nevada-state-bank",
+      offer_link: "https://www.nsbank.com/personal/credit-cards/elite-credit-card/",
+      key_benefits: [
+        "$300 cash back or 30,000 bonus points after $5,000 in purchases in the first 90 days",
+        "Earn points or cash back on every purchase",
+        "Zions Bancorporation own-brand card — not a white-label product",
+      ],
+      eligibility: "nevadaStateBank",
+      bonus_amount: 300,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
     {
       id: "one-nevada-visa-signature-rewards",
       card_name: "One Nevada Credit Union Visa Signature Rewards",

@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const coloradoCards = buildStateCards({
   state: "CO",
@@ -48,6 +48,30 @@ export const coloradoCards = buildStateCards({
       eligibility_notes:
         "Meritrust CU (the former Premier Members CU, rebranded after the Aug 2025 merger) qualifies people who live or work in 20 Colorado counties (Adams, Arapahoe, Boulder, Broomfield, Clear Creek, Delta, Denver, Douglas, Eagle, Elbert, El Paso, Garfield, Grand, Jefferson, Larimer, Mesa, Montrose, Pueblo, Summit, Weld); Boulder Valley / Westminster school-district affiliates; employees of partner companies (IBM, Ball, Boulder Community Health, Lexmark, Medtronic, 750+ others); family of members; or anyone via the Impact on Education charity.",
       eligibility_source: "https://colorado.meritrust.org/become-a-member/",
+    },
+    ent: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Ent Credit Union (Colorado Springs) membership is open to people who live, work, worship, or attend school in 18 Colorado counties (incl. El Paso, Pueblo, Teller, Fremont, Jefferson, Douglas, Arapahoe, Adams), to Colorado Springs area military affiliates, and to immediate family of members. A savings account establishes membership.",
+      eligibility_source: "https://www.ent.com/personal/membership/eligibility/",
+    },
+    elevations: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Elevations Credit Union membership is open to people who live, work, worship, or attend school in Boulder, Broomfield, Jefferson, Weld, Larimer, or Adams County in Colorado, to University of Colorado system employees/students/alumni, and to immediate family of members.",
+      eligibility_source: "https://www.elevationscu.com/about-us/membership",
+    },
+    climbCu: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Climb Credit Union (formerly Sooper Credit Union) membership is open to people who live or work in the Denver metro area and surrounding Colorado counties, to employees of partner Select Employer Groups, and to immediate family of members.",
+      eligibility_source: "https://www.climbcu.org/join",
+    },
+    vectraBank: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Vectra Bank Colorado is a subsidiary of Zions Bancorporation offering own-brand Visa credit cards to qualifying Colorado consumers, subject to credit approval.",
+      eligibility_source: "https://www.vectrabank.com/personal/credit-cards/",
     },
   },
   seeds: [
@@ -117,17 +141,20 @@ export const coloradoCards = buildStateCards({
       id: "cuofco-visa-signature",
       card_name: "Credit Union of Colorado Visa Signature",
       issuer: "credit-union-of-colorado",
-      offer_link: "https://www.cuofco.org/signature",
+      offer_link: "https://www.cuofco.org/credit-cards",
       key_benefits: [
+        "$200 cash back after $2,500 in purchases within the first 90 days",
         "2% cash back on every purchase via PeakPoints",
         "Cell phone protection (up to $50 deductible) when you pay your wireless bill with the card",
-        "Extended warranty protection and complimentary Visa Signature concierge",
-        "No annual fee",
+        "Extended warranty protection and complimentary Visa Signature concierge; no annual fee",
       ],
       eligibility: "cuofco",
-      rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
+      bonus_amount: 200,
       bonus_currency: "cash",
       cpp_value: 1,
+      min_spend: 2500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
       protections: { cell_phone_protection: true, extended_warranty: true },
     },
     {
@@ -328,6 +355,116 @@ export const coloradoCards = buildStateCards({
       ],
       eligibility: "meritrust",
       intro_apr: { purchase_apr_months: 6, go_to_apr_low: 12.65, go_to_apr_high: 12.65 },
+    },
+    {
+      id: "ent-cash-rewards-visa-signature",
+      card_name: "Ent Cash Rewards Visa Signature",
+      issuer: "ent-cu",
+      offer_link: "https://www.ent.com/personal/loans/credit-cards/ent-cash-rewards-visa-signature-credit-card/",
+      key_benefits: [
+        "$150 cash back after $1,000 in purchases within the first 90 days",
+        "Unlimited 1.5% cash back on all purchases",
+        "No annual fee",
+      ],
+      eligibility: "ent",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+    },
+    {
+      id: "ent-essential-visa-platinum",
+      card_name: "Ent Essential Visa Platinum",
+      issuer: "ent-cu",
+      offer_link: "https://www.ent.com/personal/loans/credit-cards/",
+      key_benefits: [
+        "$150 cash back after $1,000 in purchases within the first 90 days",
+        "Low-rate everyday card",
+        "No annual fee",
+      ],
+      eligibility: "ent",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1000,
+      spend_months: 3,
+    },
+    {
+      id: "ent-lifestyle-visa-signature",
+      card_name: "Ent Lifestyle Visa Signature",
+      issuer: "ent-cu",
+      offer_link: "https://www.ent.com/personal/loans/credit-cards/",
+      key_benefits: [
+        "15,000 bonus points after $1,000 in purchases within the first 90 days (5,000 after first transaction + 10,000 after $1,000 spend)",
+        "Enhanced rewards on lifestyle categories",
+        "No annual fee",
+      ],
+      eligibility: "ent",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
+    },
+    {
+      id: "elevations-cu-visa-signature-travel-rewards",
+      card_name: "Elevations CU Visa Signature Travel Rewards",
+      issuer: "elevations-cu",
+      offer_link: "https://www.elevationscu.com/personal/credit-cards/travel-rewards-credit-card",
+      key_benefits: [
+        "25,000 bonus DreamPoints after $1,000 in purchases within the first 90 days",
+        "Enhanced points on travel categories; no foreign transaction fee",
+        "No annual fee",
+      ],
+      eligibility: "elevations",
+      bonus_amount: 25000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
+      travel: { no_foreign_tx_fee: true },
+    },
+    {
+      id: "climb-cu-peak-rewards-visa",
+      card_name: "Climb CU Peak Rewards Visa",
+      issuer: "climb-cu",
+      offer_link: "https://www.climbcu.org/rewards",
+      key_benefits: [
+        "15,000 bonus points after $1,500 in purchases within the first 90 days",
+        "Earn points on every purchase redeemable for cash, travel, and gift cards",
+        "No annual fee",
+      ],
+      eligibility: "climbCu",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1500,
+      spend_months: 3,
+    },
+    {
+      id: "vectra-bank-premier-visa",
+      card_name: "Vectra Bank Premier Credit Card",
+      issuer: "vectra-bank",
+      offer_link: "https://www.vectrabank.com/personal/credit-cards/premier-credit-card/",
+      key_benefits: [
+        "$150 cash back or 15,000 bonus points after $4,000 in purchases within the first 90 days",
+        "2.5x points on travel; 1.5x on everything else",
+        "$0 annual fee first year, then $95/year",
+      ],
+      eligibility: "vectraBank",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 4000,
+      spend_months: 3,
+      annual_fee: 95,
+      annual_fee_waived_first_year: true,
+      rewards: [
+        { categories: ["travel"], multiplier: 2.5 },
+        { categories: ["everything_else"], multiplier: 1.5 },
+      ],
     },
   ],
 })

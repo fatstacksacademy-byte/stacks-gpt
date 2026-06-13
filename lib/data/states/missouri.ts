@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const missouriCards = buildStateCards({
   state: "MO",
@@ -53,6 +53,18 @@ export const missouriCards = buildStateCards({
       eligibility_notes:
         "First Missouri Credit Union (Mehlville/St. Louis) membership is open to those who live or work in St. Louis County, St. Louis City, Jefferson County, St. Charles County, or Franklin County (MO), and to their family members. A $5 deposit establishes membership; no nationwide backdoor.",
       eligibility_source: "https://1stmocu.org/aboutus.aspx",
+    },
+    communityAmerica: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "CommunityAmerica Credit Union (Lenexa, KS) serves the Kansas City and greater St. Louis metro areas in Missouri, Kansas, and Illinois. Note: membership is broadly available online; confirm local eligibility at communityamerica.com.",
+      eligibility_source: "https://www.communityamerica.com/join",
+    },
+    midwestBankCentre: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Midwest BankCentre is a St. Louis, MO community bank offering its own-brand Mastercard credit cards to qualifying Missouri consumers, subject to credit approval.",
+      eligibility_source: "https://www.midwestbankcentre.com/personal-banking/personal-credit-cards/",
     },
   },
   seeds: [
@@ -299,6 +311,66 @@ export const missouriCards = buildStateCards({
       cpp_value: 1,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       travel: { no_foreign_tx_fee: true },
+    },
+    {
+      id: "communityamerica-visa-signature-mo",
+      card_name: "CommunityAmerica Visa Signature",
+      issuer: "communityamerica-cu",
+      offer_link: "https://www.communityamerica.com/personal/borrow/loans-and-credit-cards/credit-cards/credit-card-overview",
+      state_restricted: ["MO", "KS", "IL"],
+      key_benefits: [
+        "15,000 bonus points ($150 cash back) after $2,000 in purchases within the first 90 days",
+        "Unlimited 1.5% cash back on every purchase",
+        "0% intro APR for 18 months on purchases and balance transfers; no annual fee",
+      ],
+      eligibility: "communityAmerica",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 2000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
+      intro_apr: { purchase_apr_months: 18, bt_apr_months: 18 },
+    },
+    {
+      id: "midwest-bankcentre-world-rewards-mastercard",
+      card_name: "Midwest BankCentre Mastercard World with REWARDS",
+      issuer: "midwest-bankcentre",
+      offer_link: "https://www.midwestbankcentre.com/personal-banking/personal-credit-cards/",
+      key_benefits: [
+        "$500 cash back after $5,000 in purchases within the first 3 months",
+        "3% cash back on travel and dining, 2% on gas, 1% on everything else",
+        "No annual fee",
+      ],
+      eligibility: "midwestBankCentre",
+      bonus_amount: 500,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 5000,
+      spend_months: 3,
+      rewards: [
+        { categories: ["travel", "dining"], multiplier: 3, unit: "%" },
+        { categories: ["gas_stations"], multiplier: 2, unit: "%" },
+        { categories: ["everything_else"], multiplier: 1, unit: "%" },
+      ],
+    },
+    {
+      id: "midwest-bankcentre-platinum-rewards-mastercard",
+      card_name: "Midwest BankCentre Mastercard Platinum REWARDS",
+      issuer: "midwest-bankcentre",
+      offer_link: "https://www.midwestbankcentre.com/personal-banking/personal-credit-cards/",
+      key_benefits: [
+        "$50 cash back after $1,000 in purchases within the first 3 months",
+        "1% cash back on all purchases",
+        "No annual fee",
+      ],
+      eligibility: "midwestBankCentre",
+      bonus_amount: 50,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
     },
   ],
 })

@@ -1,11 +1,17 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const arkansasCards = buildStateCards({
   state: "AR",
   verifiedAt: VERIFIED_AT,
   eligibility: {
+    arvest: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "Arvest Bank is a regional bank headquartered in Fayetteville, AR, operating branches in Arkansas, Oklahoma, Missouri, and Kansas. Its Cobalt Visa Signature and Cash Back credit cards are own-brand in-house products (not Elan/FNBO/TCM white-label). Standard credit approval applies; no membership requirement. Serves AR, OK, MO, and KS.",
+      eligibility_source: "https://www.arvest.com/personal/bank/credit-cards",
+    },
     afcu: {
       eligibility_scope: "statewide",
       eligibility_notes:
@@ -26,6 +32,44 @@ export const arkansasCards = buildStateCards({
     },
   },
   seeds: [
+    {
+      id: "arvest-cobalt-visa-signature-2026",
+      card_name: "Arvest Cobalt Visa Signature",
+      issuer: "arvest-bank",
+      offer_link: "https://www.arvest.com/personal/bank/credit-cards/cobalt-visa-signature",
+      state_restricted: ["AR", "OK", "MO", "KS"],
+      key_benefits: [
+        "$150 (15,000 Flex Rewards points) after $500 in purchases in the first 3 billing cycles",
+        "Flex Rewards points redeemable for cash back, travel, gift cards, and merchandise",
+        "No annual fee",
+      ],
+      eligibility: "arvest",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "arvest-cash-back-visa-2026",
+      card_name: "Arvest Cash Back Credit Card",
+      issuer: "arvest-bank",
+      offer_link: "https://www.arvest.com/personal/bank/credit-cards/cash-back",
+      state_restricted: ["AR", "OK", "MO", "KS"],
+      key_benefits: [
+        "$150 cash back after $500 in purchases in the first 3 billing cycles",
+        "Cash back on everyday purchases",
+        "No annual fee",
+      ],
+      eligibility: "arvest",
+      bonus_amount: 150,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
+    },
     {
       id: "arkansas-federal-cu-cash-back-world-mastercard",
       card_name: "Arkansas Federal CU Cash Back World Mastercard",

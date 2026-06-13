@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const texasCards = buildStateCards({
   state: "TX",
@@ -83,6 +83,12 @@ export const texasCards = buildStateCards({
       eligibility_notes:
         "Frost Bank is a Texas-only bank; its Business Rewards Credit Card is offered to current Frost business customers (for-profit/non-profit companies) and is issued by Commerce Bank, a Frost partner. Availability tracks Frost's Texas branch footprint.",
       eligibility_source: "https://www.frostbank.com/business/banking/cards",
+    },
+    aacreditunion: {
+      eligibility_scope: "association",
+      eligibility_notes:
+        "American Airlines Federal Credit Union membership is open to employees and retirees of American Airlines and its affiliates, related aviation/air-transport companies, and their immediate family members. Industry SEG-based; not geographic-only.",
+      eligibility_source: "https://www.aacreditunion.org/join/",
     },
   },
   seeds: [
@@ -457,6 +463,29 @@ export const texasCards = buildStateCards({
       eligibility: "frost",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
+    },
+    {
+      id: "aacreditunion-visa-platinum-rewards",
+      card_name: "American Airlines FCU Visa Platinum Rewards",
+      issuer: "american-airlines-fcu",
+      offer_link: "https://www.aacreditunion.org/banking/credit-cards/credit-card-rewards-offer/",
+      key_benefits: [
+        "5,000 Connection Points after your first purchase (promotional window 4/1–6/30/2026)",
+        "4x Connection Points on travel, 3x on home improvement, 2x on all other purchases during first 90 days",
+        "No annual fee; no foreign transaction fee; no balance-transfer fee",
+      ],
+      eligibility: "aacreditunion",
+      bonus_amount: 5000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 0,
+      spend_months: 3,
+      rewards: [
+        { categories: ["travel"], multiplier: 4 },
+        { categories: ["home_improvement"], multiplier: 3 },
+        { categories: ["everything_else"], multiplier: 2 },
+      ],
+      travel: { no_foreign_tx_fee: true },
     },
   ],
 })

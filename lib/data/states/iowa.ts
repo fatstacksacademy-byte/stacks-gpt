@@ -1,11 +1,17 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-13"
 
 export const iowaCards = buildStateCards({
   state: "IA",
   verifiedAt: VERIFIED_AT,
   eligibility: {
+    greenstate: {
+      eligibility_scope: "selected_areas",
+      eligibility_notes:
+        "GreenState Credit Union (formerly UICCU; Iowa City, IA) membership is open to anyone who lives or works in any Iowa county; residents of select border counties in Illinois, Wisconsin, Nebraska, and South Dakota; University of Iowa and associated-institution employees, students, and alumni; and eligible family of members. A $5 share-savings deposit establishes membership. No nationwide association or donation backdoor.",
+      eligibility_source: "https://www.greenstate.org/about-greenstate/join",
+    },
     dupaco: {
       eligibility_scope: "selected_areas",
       eligibility_notes:
@@ -56,6 +62,52 @@ export const iowaCards = buildStateCards({
     },
   },
   seeds: [
+    {
+      id: "greenstate-cu-world-mastercard-2026",
+      card_name: "GreenState Credit Union World Mastercard",
+      issuer: "greenstate-cu",
+      offer_link: "https://www.greenstate.org/credit-cards/mastercards/world-mastercard",
+      state_restricted: ["IA", "IL", "WI", "NE", "SD"],
+      key_benefits: [
+        "25,000 bonus points ($250 cash value) after $1,000 in purchases within the first 2 months",
+        "3x points on dining and gas, 2x on groceries and streaming, 1.5x on everything else",
+        "No annual fee and no foreign transaction fee",
+      ],
+      eligibility: "greenstate",
+      bonus_amount: 25000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 2,
+      rewards: [
+        { categories: ["dining", "gas_stations"], multiplier: 3 },
+        { categories: ["groceries", "streaming"], multiplier: 2 },
+        { categories: ["everything_else"], multiplier: 1.5 },
+      ],
+      travel: { no_foreign_tx_fee: true },
+    },
+    {
+      id: "greenstate-cu-platinum-rewards-mastercard-2026",
+      card_name: "GreenState Credit Union Platinum Rewards Mastercard",
+      issuer: "greenstate-cu",
+      offer_link: "https://www.greenstate.org/credit-cards/mastercards/platinum-rewards-mastercard",
+      state_restricted: ["IA", "IL", "WI", "NE", "SD"],
+      key_benefits: [
+        "15,000 bonus points ($150 cash value) after $500 in purchases within the first 2 months",
+        "2x points on gas and groceries, 1x on everything else",
+        "No annual fee",
+      ],
+      eligibility: "greenstate",
+      bonus_amount: 15000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 500,
+      spend_months: 2,
+      rewards: [
+        { categories: ["gas_stations", "groceries"], multiplier: 2 },
+        { categories: ["everything_else"], multiplier: 1 },
+      ],
+    },
     {
       id: "dupaco-rewards-visa",
       card_name: "Dupaco Rewards Visa",

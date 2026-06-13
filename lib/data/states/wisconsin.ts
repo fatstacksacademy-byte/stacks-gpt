@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-12"
 
 export const wisconsinCards = buildStateCards({
   state: "WI",
@@ -53,6 +53,12 @@ export const wisconsinCards = buildStateCards({
       eligibility_notes:
         "TruStone Financial membership is open to people who live, work, worship, volunteer, or attend school in eligible counties - 6 in Wisconsin (Kenosha, Milwaukee, Pierce, Racine, St. Croix, Waukesha) and ~24 in Minnesota - plus members of partner education communities, employer groups, and associations. No nationwide backdoor.",
       eligibility_source: "https://trustonefinancial.org/about-us/membership",
+    },
+    landmark: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Landmark Credit Union (New Berlin, WI) membership is open to anyone who lives, works, worships, volunteers, or attends school in Wisconsin; employees of partner companies; and immediate family of members. A $5 Share Savings deposit establishes membership. No nationwide open-association backdoor; WI-only field of membership.",
+      eligibility_source: "https://landmarkcu.com/about-us/membership/",
     },
   },
   seeds: [
@@ -329,6 +335,42 @@ export const wisconsinCards = buildStateCards({
       ],
       eligibility: "trustone",
       travel: { no_foreign_tx_fee: true },
+    },
+    {
+      id: "landmark-cu-rewards-visa-2026",
+      card_name: "Landmark Credit Union Rewards Visa",
+      issuer: "landmark-credit-union",
+      offer_link: "https://landmarkcu.com/spend-pay/credit-cards/",
+      key_benefits: [
+        "20,000 bonus points after $1,000 in purchases within the first 90 days",
+        "Points redeemable for cash back, travel, gift cards, and merchandise",
+        "No annual fee",
+      ],
+      eligibility: "landmark",
+      bonus_amount: 20000,
+      bonus_currency: "points",
+      cpp_value: 0.01,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+    },
+    {
+      id: "landmark-cu-visa-signature-cash-back-2026",
+      card_name: "Landmark Credit Union Visa Signature Cash Back",
+      issuer: "landmark-credit-union",
+      offer_link: "https://landmarkcu.com/spend-pay/credit-cards/visa-signature-cash-back/",
+      key_benefits: [
+        "$200 cash bonus after $1,000 in purchases within the first 90 days",
+        "Unlimited cash back on all purchases",
+        "No annual fee",
+      ],
+      eligibility: "landmark",
+      bonus_amount: 200,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1000,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
     },
   ],
 })

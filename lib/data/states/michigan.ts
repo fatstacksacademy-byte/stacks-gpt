@@ -1,6 +1,6 @@
 import { buildStateCards } from "./_builder"
 
-const VERIFIED_AT = "2026-06-11"
+const VERIFIED_AT = "2026-06-12"
 
 export const michiganCards = buildStateCards({
   state: "MI",
@@ -30,6 +30,12 @@ export const michiganCards = buildStateCards({
         "Dort Financial Credit Union membership is open to any person who lives, worships, works, or goes to school in the State of Michigan (plus immediate family of members). No nationwide charitable-donation backdoor disclosed.",
       eligibility_source:
         "https://dort-financial-credit-union.helpscoutdocs.com/article/10-how-do-i-become-a-dort-financial-member",
+    },
+    cuone: {
+      eligibility_scope: "statewide",
+      eligibility_notes:
+        "Credit Union ONE membership is open to anyone who lives or works in Michigan; a charitable-association path is available for those who don't otherwise qualify, but the association's own eligibility is anchored in Michigan. Not a nationwide-open backdoor. A $5 savings share establishes membership.",
+      eligibility_source: "https://www.cuone.org/join",
     },
   },
   seeds: [
@@ -131,6 +137,25 @@ export const michiganCards = buildStateCards({
       bonus_currency: "cash",
       cpp_value: 1,
       intro_apr: { bt_apr_months: 9, go_to_apr_low: 11.5, go_to_apr_high: 11.5 },
+    },
+    {
+      id: "cuone-achieve-rewards-mastercard-2026",
+      card_name: "Credit Union ONE Achieve Rewards Mastercard",
+      issuer: "credit-union-one",
+      offer_link: "https://www.cuone.org/accounts/personal-banking/credit-cards/achieve-rewards-credit-card",
+      key_benefits: [
+        "20,000 bonus points ($200 cash back) after $1,500 in purchases within the first 90 days (offer valid Apr 1, 2025–Dec 31, 2026)",
+        "1 CURewards point per $1 spent (100 points = $1); 4.99% intro APR for 12 months on first-90-day purchases",
+        "No annual fee",
+      ],
+      eligibility: "cuone",
+      bonus_amount: 200,
+      bonus_currency: "cash",
+      cpp_value: 1,
+      min_spend: 1500,
+      spend_months: 3,
+      rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 13.75, go_to_apr_high: 26.75 },
     },
   ],
 })
