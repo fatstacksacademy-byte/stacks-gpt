@@ -116,7 +116,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
               Unlock your bonus plan
             </h1>
             <p style={{ fontSize: 15, color: "#888", lineHeight: 1.5, margin: "0 0 8px" }}>
-              Your first bonus typically earns $300–$400. Stacks costs $50/year.
+              Your first bonus typically earns $300–$400. Stacks costs $99/year.
             </p>
             <p style={{ fontSize: 13, color: "#bbb", lineHeight: 1.5, margin: "0 0 28px" }}>
               Your plan updates as banks change their promotions.
@@ -129,11 +129,11 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
               }}>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>Annual</div>
-                  <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>$4.17/mo · billed $50/year</div>
+                  <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>$8.25/mo · billed $99/year</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", padding: "3px 8px", borderRadius: 4 }}>SAVE 17%</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>$50</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", padding: "3px 8px", borderRadius: 4 }}>SAVE 18%</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>$99</span>
                 </div>
               </button>
 
@@ -146,7 +146,7 @@ export default function SubscriptionGate({ children, isSubscribed }: Props) {
                   <div style={{ fontSize: 13, color: "#999", marginTop: 2 }}>Cancel anytime</div>
                 </div>
                 <span style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>
-                  $5<span style={{ fontSize: 13, fontWeight: 400, color: "#999" }}>/mo</span>
+                  $10<span style={{ fontSize: 13, fontWeight: 400, color: "#999" }}>/mo</span>
                 </span>
               </button>
             </div>

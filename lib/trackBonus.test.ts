@@ -38,6 +38,8 @@ vi.mock("./data/savingsBonuses", () => ({
       notes: null,
     },
   ],
+  HOLD_BUFFER_DAYS: 10,
+  practicalHoldDays: (b: { total_hold_days: number }) => b.total_hold_days + 10,
 }))
 vi.mock("./data/creditCardBonuses", () => ({
   creditCardBonuses: [

@@ -129,10 +129,20 @@ export function rankByTravelValue(
 ): CreditCardBonus[] {
   // With a program selected, transfer mode admits indirect earners too, so we
   // can't pre-filter on hasTravelValue (indirect cards have no travel block).
-  const filtered =
-    mode === "transfer" && program
-      ? cards.filter(c => !c.expired && transferKind(c, program) !== null)
-      : cards.filter(c => !c.expired && hasTravelValue(c, mode))
+  let filtered: CreditCardBonus[]
+  if (mode === "transfer" && program) {
+    filtered = cards.filter(c => !c.expired && transferKind(c, program) !== null)
+    // A card that transfers directly shouldn't ALSO show up as an indirect
+    // "pool to transfer" row. This happens with duplicate catalog entries where
+    // one twin carries transfer_partners and the other doesn't — suppress the
+    // indirect twin so the same card isn't listed twice with conflicting advice.
+    const directNames = new Set(
+      filtered.filter(c => cardTransfersTo(c, program)).map(c => c.card_name),
+    )
+    filtered = filtered.filter(c => cardTransfersTo(c, program) || !directNames.has(c.card_name))
+  } else {
+    filtered = cards.filter(c => !c.expired && hasTravelValue(c, mode))
+  }
 
   return filtered.sort((a, b) => {
     if (mode === "transfer") {

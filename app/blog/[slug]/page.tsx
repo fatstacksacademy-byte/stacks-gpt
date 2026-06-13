@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById, getCardById } from "../../../lib/data/blogPosts"
 import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
+import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import NewsletterCTA from "../components/NewsletterCTA"
@@ -436,16 +437,17 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
         <InfoRow label="Base APY" value={`${(bonus.base_apy * 100).toFixed(2)}%`} />
         <InfoRow label="Funding Window" value={`${bonus.funding_window_days} days`} />
         <InfoRow label="Maintenance Period" value={`${bonus.maintenance_days} days`} />
-        <InfoRow label="Total Hold" value={`~${bonus.total_hold_days} days`} />
+        <InfoRow label="Total Hold" value={`~${practicalHoldDays(bonus)} days`} />
       </div>
 
       {/* Bonus Tiers */}
       <Section title="Bonus Tiers & Effective APY">
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {bonus.tiers.map((tier: any, i: number) => {
-            const interest = Math.round(tier.min_deposit * bonus.base_apy * (bonus.total_hold_days / 365))
+            const holdDays = practicalHoldDays(bonus)
+            const interest = Math.round(tier.min_deposit * bonus.base_apy * (holdDays / 365))
             const total = tier.bonus_amount + interest
-            const effectiveApy = ((total / tier.min_deposit) * (365 / bonus.total_hold_days) * 100).toFixed(1)
+            const effectiveApy = ((total / tier.min_deposit) * (365 / holdDays) * 100).toFixed(1)
             return (
               <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>

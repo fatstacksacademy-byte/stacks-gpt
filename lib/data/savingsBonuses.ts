@@ -41,6 +41,26 @@ export type SavingsBonus = {
   deposit_action_label?: string
 }
 
+/**
+ * Extra days a deposit is realistically committed beyond the modeled
+ * `total_hold_days`. The stored hold assumes you fund at the last legal
+ * moment and the bonus posts the instant maintenance ends. In practice the
+ * capital is tied up longer: ACH settlement (3–5 business days), funding
+ * earlier than the deadline rather than cutting it close, and bonus payout
+ * posting lag (often a statement cycle after you qualify).
+ *
+ * This slack is roughly fixed-duration regardless of hold length, so it's an
+ * ADDITIVE buffer — it (correctly) penalizes short holds more than long ones,
+ * which is where the optimistic-APY error concentrates. Always read the hold
+ * through `practicalHoldDays()` rather than `total_hold_days` directly so the
+ * effective-APY, interest, and rotation math stay conservative and consistent.
+ */
+export const HOLD_BUFFER_DAYS = 10
+
+/** Practical capital-committed window: modeled hold + fixed settlement/payout buffer. */
+export const practicalHoldDays = (b: Pick<SavingsBonus, "total_hold_days">) =>
+  b.total_hold_days + HOLD_BUFFER_DAYS
+
 export const savingsBonuses: SavingsBonus[] = [
   {
     id: "etrade-premium-savings-2026",
@@ -447,6 +467,7 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 60,
     total_hold_days: 90,
     tiers: [
+      { min_deposit: 500, bonus_amount: 30 },
       { min_deposit: 2000, bonus_amount: 100 },
       { min_deposit: 10000, bonus_amount: 200 },
       { min_deposit: 50000, bonus_amount: 400 },
@@ -458,13 +479,13 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "Cash account (brokerage cash sweep). SIPC protected, not FDIC insured. New customers."
+      eligibility_notes: "New customers only (no prior moomoo deposit before 1/1/2026). Reward paid in fractional NVDA stock. SIPC protected, not FDIC insured. Window 1/1–8/31/2026. A separate 3% ACAT transfer-in coupon (max $600) can stack."
     },
-    source_links: ["https://www.moomoo.com/",
-      "https://www.doctorofcredit.com/moomoo-8-1-apy-savings-account-rate-for-first-3-months/"
+    source_links: ["https://www.moomoo.com/us/support/topic4_410",
+      "https://www.doctorofcredit.com/moomoo-brokerage-triple-stack-signup-transfer-bonus-offer/"
     ],
-    raw_excerpt: "Moomoo $200-$1,000 cash account bonus. 4.1% APY. 60-day hold. SIPC protected.",
-    notes: "Bonus paid in NVDA stock (can be sold immediately). SIPC protected, not FDIC insured. Hold: 60d for lower tiers, 120d for k, 180d for k."
+    raw_excerpt: "Moomoo welcome deposit: up to $1,000 in NVDA stock. $500→$30, $2k→$100, $10k→$200, $50k→$400, $100k→$1,000. Stackable 3% ACAT transfer coupon (max $600).",
+    notes: "Bonus paid in NVDA stock (sellable immediately, price risk until then). SIPC protected, not FDIC insured. Hold tiered: 60d ($500–$10k), 120d ($50k), 180d ($100k). Deposit bonus + 3% ACAT transfer coupon stack for new customers."
   },
   {
     id: "cit-bank-savings-300-2026",
@@ -636,7 +657,8 @@ export const savingsBonuses: SavingsBonus[] = [
     },
     source_links: ["https://www.doctorofcredit.com/tastyworks-brokerage-bonus-fund-with-2000-earn-200-bonus/"],
     raw_excerpt: "Tastytrade 4% deposit bonus (up to $10,000 on $250k deposit). 12-month hold. Promo code MYNEWBONUS, or BIGDEAL if signing up via referral link.",
-    notes: "Brokerage account. No cash APY — funds must be invested or held as cash in brokerage."
+    expired: true,
+    notes: "EXPIRED — the 4% deposit-match (code BIGDEAL) was pulled Jan 23, 2026. Only a $100/$100 referral remains (Jun 1–Aug 31, 2026). Re-add if the deposit match returns."
   },
   {
     id: "sofi-invest-150-2026",
@@ -648,7 +670,7 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 30,
     total_hold_days: 30,
     tiers: [
-      { min_deposit: 1000, bonus_amount: 150 },
+      { min_deposit: 100, bonus_amount: 150 },
     ],
     cooldown_months: null,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
@@ -656,13 +678,214 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: true,
-      eligibility_notes: "New SoFi Invest customers. $1,000 deposit. Available via Finder portal."
+      eligibility_notes: "New SoFi Active Investing customers, via Rakuten/Swagbucks shopping portal. Deposit $100, trade $50, hold 30 days. (SoFi's own native offer is now 'up to $1,000 in stock' — a probabilistic grant worth a few dollars on average, not a flat bonus.)"
     },
     source_links: ["https://www.sofi.com/invest/",
-      "https://www.doctorofcredit.com/sofi-invest-150-bonus-via-finder/"
+      "https://www.doctorofcredit.com/swagbucks-signup-for-sofi-invest-get-75-bonus-100-deposit-required/"
     ],
-    raw_excerpt: "SoFi Invest $150 bonus for $1,000 deposit. 30-day hold. Quick and easy.",
-    notes: "Brokerage account. Very low barrier — $1,000 for $150 is 15% return in 30 days."
+    raw_excerpt: "SoFi Invest $150 (15,000 MR / Rakuten cash) for $100 deposit + $50 trade, 30-day hold. Portal amount fluctuates $50–$200.",
+    notes: "Brokerage account. Live $150 is the Rakuten/Swagbucks portal path ($100 deposit) — far better terms than the old $1,000 native offer, which has been replaced by a near-worthless probabilistic stock grant."
+  },
+  {
+    id: "jpmorgan-self-directed-brokerage-2026",
+    brokerage: true,
+    bank_name: "J.P. Morgan Self-Directed (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 45,
+    maintenance_days: 90,
+    total_hold_days: 90,
+    tiers: [
+      { min_deposit: 5000, bonus_amount: 50 },
+      { min_deposit: 25000, bonus_amount: 150 },
+      { min_deposit: 100000, bonus_amount: 325 },
+      { min_deposit: 250000, bonus_amount: 1000 },
+    ],
+    cooldown_months: 12,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New Chase brokerage or IRA. Net-new money from a non-Chase/non-J.P. Morgan source. Coupon enrollment required. 90-day hold (trading losses excluded). One investing new-money bonus per 12 months."
+    },
+    source_links: ["https://www.chase.com/personal/investments/online-investing",
+      "https://www.doctorofcredit.com/chase-you-invest-bonus-200-625-bonus-with-25000-250000-investment-account/"
+    ],
+    raw_excerpt: "J.P. Morgan Self-Directed Investing up to $1,000. $5k→$50, $25k→$150, $100k→$325, $250k→$1,000. 45-day fund, 90-day hold. Extended to 07/21/2026.",
+    notes: "Brokerage account. Short 90-day hold and tiers start at $5k — one of the cleanest brokerage cash bonuses live. Pairs with Chase checking/Sapphire new-money offers (1 investing bonus per 12 mo)."
+  },
+  {
+    id: "tradestation-brokerage-2026",
+    brokerage: true,
+    bank_name: "TradeStation (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 45,
+    maintenance_days: 270,
+    total_hold_days: 270,
+    tiers: [
+      { min_deposit: 500, bonus_amount: 50 },
+      { min_deposit: 25000, bonus_amount: 250 },
+      { min_deposit: 100000, bonus_amount: 400 },
+      { min_deposit: 200000, bonus_amount: 800 },
+      { min_deposit: 1000000, bonus_amount: 3000 },
+      { min_deposit: 2000000, bonus_amount: 5000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New clients only (no prior promo-cash recipients). Net-new equities/futures funds from outside TradeStation. IRAs/tax-qualified excluded. Promo code INCTAGGV. 270-day hold."
+    },
+    source_links: ["https://www.tradestation.com/promo/investmentcurrent/",
+      "https://bankbonus.com/promotions/tradestation/"
+    ],
+    raw_excerpt: "TradeStation up to $5,000. $500→$50 up to $2M→$5,000. 45-day fund, 270-day (9-mo) hold. Code INCTAGGV.",
+    notes: "Brokerage account. Low $500 entry tier but a long 9-month hold. Use the official promo code INCTAGGV (aggregator codes are stale)."
+  },
+  {
+    id: "betterment-invest-brokerage-2026",
+    brokerage: true,
+    bank_name: "Betterment (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 45,
+    maintenance_days: 1095,
+    total_hold_days: 1095,
+    tiers: [
+      { min_deposit: 2500, bonus_amount: 100 },
+      { min_deposit: 10000, bonus_amount: 125 },
+      { min_deposit: 25000, bonus_amount: 250 },
+      { min_deposit: 50000, bonus_amount: 750 },
+      { min_deposit: 100000, bonus_amount: 1250 },
+      { min_deposit: 200000, bonus_amount: 2000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "Net-new qualified deposits to a Betterment Investing account. 45-day fund window, 3-YEAR hold (early withdrawal triggers a fee). New and existing customers."
+    },
+    source_links: ["https://www.betterment.com/",
+      "https://www.doctorofcredit.com/betterment-up-to-1000-investment-bonus-3-year-hold-period/"
+    ],
+    raw_excerpt: "Betterment up to $2,000. $2,500→$100 up to $200k→$2,000. 45-day fund, 3-year hold.",
+    notes: "Brokerage account (robo). High headline tiers but a punishing 3-year hold tanks the effective APY — only worth it if you'd park the money there long-term anyway."
+  },
+  {
+    id: "ally-invest-brokerage-2026",
+    brokerage: true,
+    bank_name: "Ally Invest (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 30,
+    maintenance_days: 90,
+    total_hold_days: 90,
+    tiers: [
+      { min_deposit: 1000, bonus_amount: 200 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: true,
+      eligibility_notes: "Existing Ally Bank customers who have never had Ally Invest. $200 for $1,000 in net-new external funds ($100 if transferred from an existing Ally account). Self-Directed Trading account. Open by 12/31/2026, 90-day hold."
+    },
+    source_links: ["https://www.ally.com/invest/",
+      "https://www.doctorofcredit.com/best-brokerage-bonuses-earn-up-to-3500/"
+    ],
+    raw_excerpt: "Ally Invest $200 for $1,000 external deposit (existing Ally Bank customers, new to Invest). 30-day fund, 90-day hold. Open by 12/31/2026.",
+    notes: "Brokerage account. Excellent rate ($200 on $1k = 20%) but gated to existing Ally Bank customers who've never held Ally Invest."
+  },
+  {
+    id: "interactive-brokers-brokerage-2026",
+    brokerage: true,
+    bank_name: "Interactive Brokers (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 30,
+    maintenance_days: 365,
+    total_hold_days: 365,
+    tiers: [
+      { min_deposit: 10000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 500 },
+      { min_deposit: 100000, bonus_amount: 1000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: true,
+      eligibility_notes: "Only clients who have NEVER held an IBKR account. $1 in IBKR stock per $100 deposited/transferred (max $1,000), linear. Min $10k funded within 30 days to qualify; net deposits count over 1 year. Bonus shares held 1 year before withdrawable."
+    },
+    source_links: ["https://www.interactivebrokers.com/en/index.php?f=stockBenefitsLandingPage",
+      "https://www.brokerage-review.com/online-brokers/promotionoffer/interactivebrokers-promotions.aspx"
+    ],
+    raw_excerpt: "Interactive Brokers $1 in IBKR stock per $100 deposited, up to $1,000. Min $10k/30 days. 1-year hold on bonus shares.",
+    notes: "Brokerage account. Reward is IBKR stock (price risk). Standing program — only for first-time IBKR clients."
+  },
+  {
+    id: "tradier-brokerage-2026",
+    brokerage: true,
+    bank_name: "Tradier (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 60,
+    maintenance_days: 180,
+    total_hold_days: 180,
+    tiers: [
+      { min_deposit: 5000, bonus_amount: 100 },
+      { min_deposit: 50000, bonus_amount: 1000 },
+      { min_deposit: 150000, bonus_amount: 3000 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "New Tradier clients via the promo page. 2% cash back on ACAT-transferred assets (min $5,000), capped at $3,000. 180-day hold; withdrawals forfeit remaining bonus. Up to $100 ACAT fee reimbursement. Verify 2026 campaign dates."
+    },
+    source_links: ["https://blog.tradier.com/blog/acat-transfer-promo",
+      "https://www.doctorofcredit.com/tradier-2-match-brokerage-bonus/"
+    ],
+    raw_excerpt: "Tradier 2% cash back on ACAT transfers (min $5k, cap $3,000). 6-month hold. Includes 2 months free Tradier Pro.",
+    notes: "Brokerage account. 2% of transferred assets. DoC marked the 2025 run expired but Tradier re-launched for 2026 — confirm current campaign dates before promoting."
+  },
+  {
+    id: "public-brokerage-2026",
+    brokerage: true,
+    bank_name: "Public.com (Brokerage)",
+    product_type: "savings",
+    base_apy: 0.0,
+    funding_window_days: 30,
+    maintenance_days: 1825,
+    total_hold_days: 1825,
+    tiers: [
+      { min_deposit: 5000, bonus_amount: 50 },
+      { min_deposit: 50000, bonus_amount: 500 },
+      { min_deposit: 250000, bonus_amount: 2500 },
+    ],
+    cooldown_months: null,
+    fees: { monthly_fee: 0, early_closure_fee: 0 },
+    eligibility: {
+      state_restricted: false,
+      states_allowed: ["Nationwide (U.S.)"],
+      lifetime_language: false,
+      eligibility_notes: "1% uncapped match on ACAT transfers (brokerage or IRA). Up to $100 ACAT fee reimbursement if account > $5,000. Transfers on/after 5/1/2025 carry a 5-YEAR hold. Re-verify current window (last published end date 5/31/2026)."
+    },
+    source_links: ["https://help.public.com/en/articles/6499808-transfer-account-bonus",
+      "https://www.doctorofcredit.com/public-brokerage-up-to-10000-bonus/"
+    ],
+    raw_excerpt: "Public.com 1% uncapped ACAT transfer match. 5-year hold on transfers since 5/1/2025. Fee reimbursement up to $100.",
+    notes: "Brokerage account. Only 1% and a brutal 5-year lock — ranks low on effective APY by design. Included for completeness; re-confirm the offer window is still live."
   },
   // ─── BUSINESS CHECKING (capital deployment) ───────────────────
   {
@@ -950,5 +1173,39 @@ export const savingsBonuses: SavingsBonus[] = [
     ],
     "raw_excerpt": "Centier Bank offers up to $1200 bonus (includes optional $200 recurring deposit boost) on tiered deposits from $10k-$200k+, maintained for 90 days, with 3.90% APY. Promo code SUMMER26 required by 6/30/26.",
     "notes": "Bonus structure includes base bonus plus optional recurring deposit bonus. For max tier ($200k+): $1000 base + $200 recurring bonus = $1200 total. Recurring deposits must be set up within 14 days and execute at least 2 times within 90 days. Bonus posts within 30 days after 90-day hold period. Operated through Raisin platform."
+  }
+,
+  {
+    "id": "etrade-premium-savings-400-2026",
+    "bank_name": "E*TRADE",
+    "product_type": "savings",
+    "base_apy": 0.04,
+    "funding_window_days": 30,
+    "maintenance_days": 45,
+    "total_hold_days": 75,
+    "tiers": [
+      {
+        "min_deposit": 20000,
+        "bonus_amount": 400
+      }
+    ],
+    "cooldown_months": null,
+    "fees": {
+      "monthly_fee": 0,
+      "early_closure_fee": 0
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": [],
+      "lifetime_language": true,
+      "eligibility_notes": "Customer limited to lifetime maximum of two new Premium Savings Account cash bonus offers. May only be enrolled in one PSA cash bonus offer at a time. Promo code SAVING26 required."
+    },
+    "source_links": [
+      "https://us.etrade.com/promo/savings",
+      "https://www.profitablecontent.com/etrade-250-savings-bonus/"
+    ],
+    "raw_excerpt": "E*TRADE Premium Savings Account offers $400 bonus for depositing $20k within 30 days and maintaining balance for 45 additional days. Account also earns 4% APY for 6 months.",
+    "brokerage": true,
+    "notes": "Requires promo code SAVING26. Valid through 9/30/26. Bonus posts within 30 days of completion."
   }
 ]

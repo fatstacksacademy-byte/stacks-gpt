@@ -354,7 +354,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   "amex-american-express-blue-cash-everyday-rwp": {
     summary: "The American Express Blue Cash EveryDay is currently offering $200 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
     strategy: "To hit the $2,000 requirement in 6 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Blue Cash EveryDay until you've earned the $200 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    bestFor: "USAA-eligible applicants who want a $250 bonus and simple unlimited 1.5% cash back with no annual fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
@@ -1252,14 +1252,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-marriott-bonvoy-brilliant-rwp": {
-    summary: "The Marriott Bonvoy Brilliant is currently offering 95,000 Marriott Bonvoy after $0 in purchases within 6 months. It carries a $650 annual fee, with no first-year credits to soften it. Estimated net year-one value: $15 based on a 0.7¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 6 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Marriott Bonvoy Brilliant until you've earned the 95,000 Marriott Bonvoy bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 95,000 Marriott Bonvoy bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $650 annual fee.",
+    summary: "The Marriott Bonvoy Brilliant is offering up to 150,000 Marriott Bonvoy points: 100,000 after $6,000 in purchases, plus another 50,000 after an additional $2,000, all within 6 months. It carries a $650 annual fee and includes up to $300 in annual dining credits.",
+    strategy: "Plan for $8,000 of organic spend over 6 months, or about $1,334 per month, to earn the full 150,000-point offer. The first $6,000 unlocks 100,000 points; the next $2,000 unlocks another 50,000. Use the monthly dining credits as they become available and track both spend milestones separately.",
+    bestFor: "Marriott loyalists who can complete $8,000 of organic spend, use the $300 annual dining credits, and value Priority Pass and premium Marriott benefits enough to offset the $650 fee.",
     pros: [
-      "95,000 Marriott Bonvoy sign-up bonus",
-      "6x on hotels_(portal)",
-      "No Foreign Transaction Fees",
-      "Transfer Partners Available",
+      "Up to 150,000 Marriott Bonvoy points",
+      "$300 annual dining credits",
+      "Priority Pass Select",
+      "6x at participating Marriott hotels",
     ],
     cons: [
       "$650 annual fee",
@@ -1268,14 +1268,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Marriott Bonvoy Brilliant is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Brilliant sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 95,000 Marriott Bonvoy after spending $0 on purchases within 6 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Brilliant sign-up bonus?", a: "Up to 150,000 points: 100,000 after $6,000 in purchases, plus 50,000 after an additional $2,000, all within 6 months." },
       { q: "What's the Marriott Bonvoy Brilliant annual fee?", a: "The annual fee is $650." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the Marriott Bonvoy Brilliant sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How much spend is required for the full offer?", a: "$8,000 total within 6 months, split into a $6,000 first milestone and an additional $2,000 second milestone." },
     ],
     relatedSlugs: ["american-express-business-green-rewards-15000-membership-rewards","american-express-gold-100000-membership-rewards","barclays-bank-luxury-black-card-0-points"],
     verifiedAt: "2026-06-12T07:01:08.329Z",
-    verifiedUrl: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Marriott",
+    verifiedUrl: "https://www.americanexpress.com/us/credit-cards/card/marriott-bonvoy-brilliant/",
   },
 
   "amex-marriott-bonvoy-business-rwp": {
@@ -1700,11 +1700,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-jetblue-business-rwp": {
-    summary: "The JetBlue Business is currently offering 60,000 Points after $4,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $501 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the JetBlue Business until you've earned the 60,000 Points bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The JetBlue Business is currently offering 50,000 points after $4,000 in purchases and payment of the $99 annual fee in full, both within 90 days.",
+    strategy: "Plan for about $1,334 per month in organic business spend for 3 months, and make sure the $99 annual fee is paid in full during the same 90-day window. Both conditions are required for the 50,000-point offer.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
-      "60,000 Points sign-up bonus",
+      "50,000-point sign-up bonus",
       "6x on airfare_(portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
@@ -1715,7 +1715,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's business lineup, the closest comparison is the Hawaiian Airlines Business (50,000 Points after $4,000/3mo, $99 AF). The JetBlue Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current JetBlue Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current JetBlue Business sign-up bonus?", a: "50,000 points after $4,000 in purchases and payment of the annual fee in full within 90 days." },
       { q: "What's the JetBlue Business annual fee?", a: "The annual fee is $99." },
       { q: "How long does the JetBlue Business sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1847,23 +1847,23 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-upromise-300": {
-    summary: "The Barclays Upromise is currently offering $300 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Barclays Upromise until you've earned the $300 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $300 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "This $300 Barclays Upromise offer is expired. The current public offer is $100 after $500 in purchases within 90 days, with no annual fee.",
+    strategy: "Do not apply expecting the former $300 offer. Verify the live Barclays page; the current public terms require $500 of purchases within 90 days for a $100 bonus.",
+    bestFor: "Historical reference only; use the current Upromise catalog entry before applying.",
     pros: [
-      "$300 sign-up bonus",
+      "Expired $300 sign-up offer",
       "$0 annual fee",
       "No annual fee",
-      "1.25% cash back on everything",
+      "Current public offer is $100 after $500",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Barclays Upromise is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Barclays Upromise sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Barclays Upromise sign-up bonus?", a: "The former $300 offer is expired. The current public offer is $100 after $500 in purchases within 90 days." },
       { q: "What's the Barclays Upromise annual fee?", a: "There is no annual fee on the Barclays Upromise." },
-      { q: "How long does the Barclays Upromise sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "Can I still earn the $300 offer?", a: "Not from the current public application page; verify any targeted offer's terms before applying." },
     ],
     relatedSlugs: ["barclays-jetblue-plus-75000-jetblue-trueblue","amex-hilton-honors-no-fee-70000-hilton-honors"],
     verifiedAt: "2026-04-19T22:03:00.703Z",
@@ -1877,7 +1877,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "1.25x on all_other",
+      "1.529% cash back when linked to an eligible Upromise account",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -4607,23 +4607,23 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-united-explorer-rwp": {
-    summary: "The United Explorer is currently offering 60,000 United MileagePlus after $3,000 in purchases within 3 months. It carries a $150 annual fee, with no first-year credits to soften it. Estimated net year-one value: $450 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Explorer until you've earned the 60,000 United MileagePlus bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 60,000 United MileagePlus bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
+    summary: "The United Explorer is offering 50,000 miles after $3,000 in purchases within 3 months, plus 10,000 additional miles after adding an authorized user within 3 months. The $150 annual fee is waived the first year.",
+    strategy: "Plan for $1,000 per month in organic spend for the 50,000-mile spend bonus. If appropriate, add an authorized user within the same 3-month window for the separate 10,000-mile component.",
+    bestFor: "United flyers who can meet the $3,000 spend requirement and use the checked-bag and United Club pass benefits while the first-year annual fee is waived.",
     pros: [
-      "60,000 United MileagePlus sign-up bonus",
+      "50,000 miles after $3,000, plus 10,000 for adding an authorized user",
       "2x on airfare_(portal), dining, hotels, hotels_(portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
-      "$150 annual fee",
+      "$150 annual fee after the waived first year",
       "Subject to Chase 5/24 — counts against your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The United Explorer is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current United Explorer sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 United MileagePlus after spending $3,000 on purchases within 3 months of account opening." },
-      { q: "What's the United Explorer annual fee?", a: "The annual fee is $150." },
+      { q: "What's the current United Explorer sign-up bonus?", a: "50,000 miles after $3,000 in purchases within 3 months, plus 10,000 miles after adding an authorized user within 3 months." },
+      { q: "What's the United Explorer annual fee?", a: "$0 for the first year, then $150." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the United Explorer sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4820,23 +4820,23 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "citi-american-airlines-aadvantage-executive-rwp": {
-    summary: "The American Airlines AAdvantage Executive is currently offering 70,000 miles after $0 in purchases within 3 months. It carries a $595 annual fee, with no first-year credits to soften it. Estimated net year-one value: $105 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Airlines AAdvantage Executive until you've earned the 70,000 miles bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The American Airlines AAdvantage Executive is currently offering 70,000 miles after $7,000 in purchases within 3 months. It carries a $595 annual fee and includes Admirals Club membership.",
+    strategy: "To hit the $7,000 requirement in 3 months, plan for about $2,334 per month in organic spend. The high spend and $595 fee make this primarily an Admirals Club card, not a low-cost welcome-bonus play.",
     bestFor: "Cardholders who can fully use the 70,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $595 annual fee.",
     pros: [
       "70,000 miles sign-up bonus",
       "10x on car_rentals_(portal), hotels_(portal)",
       "No Foreign Transaction Fees",
-      "Travel Portal Redemption",
+      "Admirals Club membership",
     ],
     cons: [
       "$595 annual fee",
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The American Airlines AAdvantage Executive is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage Executive sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage Executive sign-up bonus?", a: "70,000 miles after $7,000 in purchases within 3 months." },
       { q: "What's the American Airlines AAdvantage Executive annual fee?", a: "The annual fee is $595." },
-      { q: "How long does the American Airlines AAdvantage Executive sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How much monthly spend does the bonus require?", a: "About $2,334 per month for 3 months if you spread the $7,000 requirement evenly." },
     ],
     relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","amex-hilton-aspire-175000-hilton-honors"],
     verifiedAt: "2026-06-12T06:31:38.463Z",
@@ -9598,11 +9598,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "usaa-bank-usaa-bank-preferred-cash-rewards-rwp": {
-    summary: "The USAA Bank Preferred Cash Rewards is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the USAA Bank Preferred Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The USAA Bank Preferred Cash Rewards is currently offering $250 after $1,000 in qualifying purchases within 90 days. It has no annual fee and earns unlimited 1.5% cash back.",
+    strategy: "Plan for about $334 per month in organic spend over 3 months to earn the $250 reward bonus. USAA membership eligibility is required.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "$200 sign-up bonus",
+      "$250 sign-up bonus",
       "$0 annual fee",
       "1.5x on all_other",
       "No Foreign Transaction Fees",
@@ -9612,7 +9612,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Cashback Rewards Plus ($0 after $0/3mo, $0 AF). The USAA Bank Preferred Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current USAA Bank Preferred Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Bank Preferred Cash Rewards sign-up bonus?", a: "$250 after $1,000 in qualifying purchases within 90 days." },
       { q: "What's the USAA Bank Preferred Cash Rewards annual fee?", a: "There is no annual fee on the USAA Bank Preferred Cash Rewards." },
       { q: "How long does the USAA Bank Preferred Cash Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9622,11 +9622,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "usaa-bank-usaa-bank-rewards-amex-rwp": {
-    summary: "The USAA Bank Rewards (AMEX) is currently offering 2,500 Points after $0 in purchases within 3 months. There's no annual fee, which makes the 2,500 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $23 based on a 0.9¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the USAA Bank Rewards (AMEX) until you've earned the 2,500 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 2,500 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "This legacy USAA Rewards American Express offer is no longer in USAA's current public credit-card lineup and is marked expired.",
+    strategy: "Do not apply expecting these legacy terms; compare USAA's current public cards instead.",
+    bestFor: "Historical reference only.",
     pros: [
-      "2,500 Points sign-up bonus",
+      "Expired legacy offer",
       "$0 annual fee",
       "3x on dining",
       "No Foreign Transaction Fees",
@@ -9636,7 +9636,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Cashback Rewards Plus ($0 after $0/3mo, $0 AF). The USAA Bank Rewards (AMEX) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current USAA Bank Rewards (AMEX) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 2,500 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Bank Rewards (AMEX) sign-up bonus?", a: "This legacy product is not in USAA's current public lineup." },
       { q: "What's the USAA Bank Rewards (AMEX) annual fee?", a: "There is no annual fee on the USAA Bank Rewards (AMEX)." },
       { q: "How long does the USAA Bank Rewards (AMEX) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9646,11 +9646,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "usaa-bank-usaa-bank-rewards-visa-rwp": {
-    summary: "The USAA Bank Rewards (VISA) is currently offering 2,500 Points after $0 in purchases within 3 months. There's no annual fee, which makes the 2,500 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $23 based on a 0.9¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the USAA Bank Rewards (VISA) until you've earned the 2,500 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 2,500 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "This legacy USAA Rewards Visa offer is no longer in USAA's current public credit-card lineup and is marked expired.",
+    strategy: "Do not apply expecting these legacy terms; compare USAA's current public cards instead.",
+    bestFor: "Historical reference only.",
     pros: [
-      "2,500 Points sign-up bonus",
+      "Expired legacy offer",
       "$0 annual fee",
       "2x on dining, gas_stations",
       "No Foreign Transaction Fees",
@@ -9660,7 +9660,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Cashback Rewards Plus ($0 after $0/3mo, $0 AF). The USAA Bank Rewards (VISA) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current USAA Bank Rewards (VISA) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 2,500 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Bank Rewards (VISA) sign-up bonus?", a: "This legacy product is not in USAA's current public lineup." },
       { q: "What's the USAA Bank Rewards (VISA) annual fee?", a: "There is no annual fee on the USAA Bank Rewards (VISA)." },
       { q: "How long does the USAA Bank Rewards (VISA) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],

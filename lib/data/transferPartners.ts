@@ -68,7 +68,7 @@ export function programValueDollars(programSlug: string): number {
   return cents == null ? 0 : cents / 100
 }
 
-export type CurrencyKey = "amex" | "chase" | "citi" | "capone" | "bilt"
+export type CurrencyKey = "amex" | "chase" | "citi" | "capone" | "bilt" | "wells"
 export type CurrencyTransfer = { program: string; ratio: number }
 
 /**
@@ -154,6 +154,15 @@ export const CURRENCY_PARTNERS: Record<CurrencyKey, CurrencyTransfer[]> = {
     { program: "ihg", ratio: 1 },
     { program: "wyndham", ratio: 1 },
   ],
+  // Wells Fargo Rewards (Autograph family). Confirmed June 2026 — verify before
+  // launch. Canonical valued partners only; Iberia/Aer Lingus omitted (not
+  // independently valued here). All 1:1.
+  wells: [
+    { program: "flying-blue", ratio: 1 },
+    { program: "avianca", ratio: 1 },
+    { program: "british-airways", ratio: 1 },
+    { program: "choice", ratio: 1 },
+  ],
 }
 
 /** Map a card's `bonus_currency` free-text to a known transferable bank currency. */
@@ -164,6 +173,7 @@ export function currencyKey(bonusCurrency: string | undefined | null): CurrencyK
   if (c.includes("thankyou") || c.includes("thank you")) return "citi"
   if (c.includes("capital one")) return "capone"
   if (c.includes("bilt")) return "bilt"
+  if (c.includes("wells fargo")) return "wells"
   return null
 }
 
@@ -237,6 +247,7 @@ export const POOL_HINT: Record<CurrencyKey, string> = {
   citi: "a premium Citi Strata card",
   capone: "a Capital One miles card",
   bilt: "Bilt",
+  wells: "a Wells Fargo Autograph card",
 }
 
 /** Pooling hint for a card's currency, or null if it isn't a known currency. */

@@ -1,5 +1,5 @@
 import { bonuses } from "./bonuses"
-import { savingsBonuses } from "./savingsBonuses"
+import { savingsBonuses, practicalHoldDays } from "./savingsBonuses"
 import { creditCardBonuses } from "./creditCardBonuses"
 
 export type BlogPost = {
@@ -56,8 +56,9 @@ const savingsPosts: BlogPost[] = savingsBonuses
     const amount = formatMoney(maxTier.bonus_amount)
     // Calculate best effective APY for tags
     const minTier = b.tiers[0]
-    const interest = minTier.min_deposit * b.base_apy * (b.total_hold_days / 365)
-    const effApy = (((minTier.bonus_amount + interest) / minTier.min_deposit) * (365 / b.total_hold_days) * 100).toFixed(1)
+    const holdDays = practicalHoldDays(b)
+    const interest = minTier.min_deposit * b.base_apy * (holdDays / 365)
+    const effApy = (((minTier.bonus_amount + interest) / minTier.min_deposit) * (365 / holdDays) * 100).toFixed(1)
     const tags: string[] = ["Savings", "Bank Bonus", "Nationwide"]
     if (b.base_apy >= 0.03) tags.push("High Yield")
     if (b.fees.monthly_fee === 0) tags.push("No Monthly Fee")

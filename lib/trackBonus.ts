@@ -1,7 +1,7 @@
 import { markBonusStarted, getCompletedBonuses } from "./completedBonuses"
 import { addSavingsEntry, getSavingsEntries } from "./savingsEntries"
 import { addOwnedCard } from "./ownedCards"
-import { savingsBonuses } from "./data/savingsBonuses"
+import { savingsBonuses, practicalHoldDays } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
 import { signupBonusValue } from "./data/cardSpendValue"
 
@@ -63,14 +63,14 @@ export async function trackCatalogBonus(
     const open = existing.find(e => e.bonus_name === bonus.id && e.status !== "completed" && e.status !== "canceled")
     if (open) return "duplicate"
     const tier = bonus.tiers[0]
-    const interestEarned = Math.round(tier.min_deposit * bonus.base_apy * (bonus.total_hold_days / 365))
+    const interestEarned = Math.round(tier.min_deposit * bonus.base_apy * (practicalHoldDays(bonus) / 365))
     const expectedTotal = tier.bonus_amount + interestEarned
     const result = await addSavingsEntry(userId, {
       institution_name: bonus.bank_name,
       bonus_name: bonus.id,
       bonus_amount: tier.bonus_amount,
       deposit_required: tier.min_deposit,
-      holding_period_days: bonus.total_hold_days,
+      holding_period_days: practicalHoldDays(bonus),
       offer_apy: bonus.base_apy,
       promo_apy: null,
       estimated_yield: interestEarned,

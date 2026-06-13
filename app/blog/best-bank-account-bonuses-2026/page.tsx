@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { blogPosts, getCheckingBonusById, getSavingsBonusById } from "../../../lib/data/blogPosts"
 import { blogContent } from "../../../lib/data/blogContent"
+import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import AffiliateDisclosure from "../components/AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
@@ -46,10 +47,12 @@ export default function BestBankBonuses() {
     .sort((a, b) => {
       const aB = a.bonus!, bB = b.bonus!
       const aT = aB.tiers[0], bT = bB.tiers[0]
-      const aI = aT.min_deposit * aB.base_apy * (aB.total_hold_days / 365)
-      const bI = bT.min_deposit * bB.base_apy * (bB.total_hold_days / 365)
-      const aE = ((aT.bonus_amount + aI) / aT.min_deposit) * (365 / aB.total_hold_days)
-      const bE = ((bT.bonus_amount + bI) / bT.min_deposit) * (365 / bB.total_hold_days)
+      const aHold = practicalHoldDays(aB)
+      const bHold = practicalHoldDays(bB)
+      const aI = aT.min_deposit * aB.base_apy * (aHold / 365)
+      const bI = bT.min_deposit * bB.base_apy * (bHold / 365)
+      const aE = ((aT.bonus_amount + aI) / aT.min_deposit) * (365 / aHold)
+      const bE = ((bT.bonus_amount + bI) / bT.min_deposit) * (365 / bHold)
       return bE - aE
     })
 
@@ -242,8 +245,9 @@ export default function BestBankBonuses() {
                 {savingsSorted.map(({ post, bonus }, i) => {
                   const b = bonus!
                   const t = b.tiers[0]
-                  const interest = t.min_deposit * b.base_apy * (b.total_hold_days / 365)
-                  const effApy = (((t.bonus_amount + interest) / t.min_deposit) * (365 / b.total_hold_days) * 100).toFixed(1)
+                  const holdDays = practicalHoldDays(b)
+                  const interest = t.min_deposit * b.base_apy * (holdDays / 365)
+                  const effApy = (((t.bonus_amount + interest) / t.min_deposit) * (365 / holdDays) * 100).toFixed(1)
                   return (
                     <tr key={post.slug}>
                       <td style={{ color: i < 3 ? "#0d7c5f" : "#bbb", fontWeight: 700 }}>{i + 1}</td>
@@ -254,7 +258,7 @@ export default function BestBankBonuses() {
                       </td>
                       <td style={{ color: "#0d7c5f", fontWeight: 700 }}>{money(t.bonus_amount)}</td>
                       <td style={{ color: "#666" }}>{money(t.min_deposit)}</td>
-                      <td style={{ color: "#999" }}>{b.total_hold_days}d</td>
+                      <td style={{ color: "#999" }}>{holdDays}d</td>
                       <td style={{ color: "#999" }}>{(b.base_apy * 100).toFixed(2)}%</td>
                       <td style={{ color: "#0d7c5f", fontWeight: 700 }}>{effApy}%</td>
                       <td><Link href={`/blog/${post.slug}`} style={{ fontSize: 12, color: "#0d7c5f", textDecoration: "none" }}>Review</Link></td>
@@ -329,7 +333,7 @@ export default function BestBankBonuses() {
           }}>
             See your projected earnings &rarr;
           </Link>
-          <div style={{ fontSize: 12, color: "#bbb", marginTop: 12 }}>$5/month or $50/year. Most first bonuses are $300-$400.</div>
+          <div style={{ fontSize: 12, color: "#bbb", marginTop: 12 }}>$10/month or $99/year. Most first bonuses are $300-$400.</div>
         </div>
 
         {/* ── FAQ ── */}

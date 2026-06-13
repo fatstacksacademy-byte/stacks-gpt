@@ -516,7 +516,7 @@ export default function HubClient({
             total={portfolio12mo}
             breakdown={[
               { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
-              { label: "Spending", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
+              { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
               { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
             ]}
           />

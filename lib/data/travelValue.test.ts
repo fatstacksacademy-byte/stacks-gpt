@@ -115,9 +115,9 @@ describe("rankByTravelValue with a program filter", () => {
 
 describe("indirect transfer earners (pooling)", () => {
   // A no-fee Chase Ink: earns Ultimate Rewards but never opted into transfers.
-  const inkCash = card({ id: "ink", bonus_currency: "Ultimate Rewards" })
+  const inkCash = card({ id: "ink", card_name: "Ink Cash", bonus_currency: "Ultimate Rewards" })
   // A premium UR card that does transfer to Hyatt directly.
-  const inkPreferred = card({ id: "pref", bonus_currency: "Ultimate Rewards", travel: { transfer_partners: ["Hyatt", "United"] } })
+  const inkPreferred = card({ id: "pref", card_name: "Ink Preferred", bonus_currency: "Ultimate Rewards", travel: { transfer_partners: ["Hyatt", "United"] } })
 
   it("classifies a UR earner as indirect for Hyatt", () => {
     expect(transferKind(inkCash, "hyatt")).toBe("indirect")
@@ -140,6 +140,15 @@ describe("indirect transfer earners (pooling)", () => {
   it("summarizes the pooling requirement", () => {
     expect(travelSummary(inkCash, "transfer", "hyatt"))
       .toBe("1.6¢/pt to World of Hyatt when pooled into a premium Chase card (Sapphire or Ink Preferred)")
+  })
+  it("suppresses an indirect twin when a same-named direct card exists (dup-catalog guard)", () => {
+    // Duplicate catalog entries: one Sapphire carries transfer_partners (direct),
+    // the twin doesn't (would classify indirect). The finder must not list the
+    // same card twice with conflicting 'pool to transfer' advice.
+    const direct = card({ id: "csp1", card_name: "Chase Sapphire Preferred", bonus_currency: "Ultimate Rewards", travel: { transfer_partners: ["Hyatt"] } })
+    const twin = card({ id: "csp2", card_name: "Chase Sapphire Preferred", bonus_currency: "Ultimate Rewards" })
+    const r = rankByTravelValue([twin, direct], "transfer", "hyatt")
+    expect(r.map(c => c.id)).toEqual(["csp1"])
   })
 })
 

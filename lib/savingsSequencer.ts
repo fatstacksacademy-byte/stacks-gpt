@@ -1,4 +1,4 @@
-import { savingsBonuses, SavingsBonus, SavingsBonusTier } from "./data/savingsBonuses"
+import { savingsBonuses, SavingsBonus, SavingsBonusTier, practicalHoldDays } from "./data/savingsBonuses"
 
 export type SavingsSequencedEntry = {
   id: string
@@ -174,7 +174,7 @@ export function runSavingsSequencer({
     if (isChurnable) {
       // Max APY: feeds parallel redeployment math
       for (const tier of affordableTiers) {
-        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
         if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
           bestCandidate = { tier, ...result }
         }
@@ -185,7 +185,7 @@ export function runSavingsSequencer({
       // so walk from the top down.
       for (let i = affordableTiers.length - 1; i >= 0; i--) {
         const tier = affordableTiers[i]
-        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
         if (currentHysaApy > 0 && result.effectiveApy <= currentHysaApy) continue
         bestCandidate = { tier, ...result }
         break
@@ -196,7 +196,7 @@ export function runSavingsSequencer({
       // decided to take it).
       if (!bestCandidate) {
         for (const tier of affordableTiers) {
-          const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, bonus.total_hold_days)
+          const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
           if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
             bestCandidate = { tier, ...result }
           }
@@ -250,13 +250,13 @@ export function runSavingsSequencer({
 
       rotation++
       const startDay = currentDay
-      const endDay = startDay + bonus.total_hold_days
+      const endDay = startDay + practicalHoldDays(bonus)
 
       // What would the same deposit have earned in the user's current HYSA
       // over the same hold window? This is the opportunity-cost baseline.
       // When currentHysaApy isn't set, baseline is 0 and incremental ==
       // total_earnings (consistent with previous behavior).
-      const hysaBaseline = Math.round(tier.min_deposit * currentHysaApy * (bonus.total_hold_days / 365))
+      const hysaBaseline = Math.round(tier.min_deposit * currentHysaApy * (practicalHoldDays(bonus) / 365))
       const incremental = totalEarnings - hysaBaseline
 
       entries.push({
@@ -268,7 +268,7 @@ export function runSavingsSequencer({
         interest_earned: interestEarned,
         total_earnings: totalEarnings,
         effective_apy: effectiveApy,
-        hold_days: bonus.total_hold_days,
+        hold_days: practicalHoldDays(bonus),
         tier,
         bonus,
         start_day: startDay,

@@ -9,6 +9,7 @@ import {
   type MonthlyBankPick,
   type MonthlyBankPicks,
 } from "../../../lib/data/monthlyBankPicks"
+import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import AffiliateDisclosure from "./AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
@@ -70,10 +71,11 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
   const savings = getSavingsBonusById(p.bonusId)
   if (savings) {
     const t = savings.tiers[0]
-    const interest = t.min_deposit * savings.base_apy * (savings.total_hold_days / 365)
+    const holdDays = practicalHoldDays(savings)
+    const interest = t.min_deposit * savings.base_apy * (holdDays / 365)
     const effApy = (
       ((t.bonus_amount + interest) / t.min_deposit) *
-      (365 / savings.total_hold_days) *
+      (365 / holdDays) *
       100
     ).toFixed(1)
     return {
@@ -82,7 +84,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       bankShort: savings.bank_name.split("(")[0].trim(),
       bonusAmount: t.bonus_amount,
       minDeposit: t.min_deposit,
-      holdDays: savings.total_hold_days,
+      holdDays,
       effApy,
       takeaway: p.takeaway,
       slug,
@@ -532,7 +534,7 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
           >
             See your projected earnings &rarr;
           </Link>
-          <div style={{ fontSize: 12, color: "#bbb", marginTop: 12 }}>$5/month or $50/year</div>
+          <div style={{ fontSize: 12, color: "#bbb", marginTop: 12 }}>$10/month or $99/year</div>
         </div>
 
         <div
