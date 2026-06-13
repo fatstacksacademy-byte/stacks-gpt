@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { createClient } from "../../lib/supabase/client"
 
 /**
  * Shared email-gate state for the regional card / state-bonus catalog.
@@ -9,6 +10,12 @@ import { useCallback, useEffect, useState } from "react"
  * page that uses this hook (so unlocking a state on /spending also unlocks the
  * state filter on /bonuses, and vice versa). `hydrated` guards against an
  * SSR/client flash for returning visitors.
+ *
+ * On unlock we also start a FREE Stacks OS account for the captured email via a
+ * passwordless magic link (Supabase signInWithOtp, shouldCreateUser). This is
+ * best-effort: if the user is already signed in, or OTP isn't enabled, the
+ * cards still unlock and the lead is still captured — only the account step
+ * no-ops. `accountLinkSent` lets the page show a "check your email" nudge.
  */
 const STORAGE_KEY = "fsa_catalog_unlocked"
 
@@ -17,6 +24,8 @@ export function useCatalogUnlock() {
   const [hydrated, setHydrated] = useState(false)
   const [unlocking, setUnlocking] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [accountLinkSent, setAccountLinkSent] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   useEffect(() => {
     try {
@@ -46,6 +55,29 @@ export function useCatalogUnlock() {
           setError("Something went wrong — try again.")
           return false
         }
+
+        // Best-effort: spin up a free account via magic link (skip if already
+        // signed in). Never block the unlock on this.
+        try {
+          const supabase = createClient()
+          const { data: { user } } = await supabase.auth.getUser()
+          if (!user) {
+            const { error: otpErr } = await supabase.auth.signInWithOtp({
+              email: trimmed,
+              options: {
+                shouldCreateUser: true,
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=/stacksos`,
+              },
+            })
+            if (!otpErr) {
+              setAccountLinkSent(true)
+              setPendingEmail(trimmed)
+            }
+          }
+        } catch {
+          /* OTP unavailable — unlock + lead capture still succeeded */
+        }
+
         try {
           localStorage.setItem(STORAGE_KEY, trimmed)
         } catch {
@@ -63,5 +95,5 @@ export function useCatalogUnlock() {
     [],
   )
 
-  return { unlocked, hydrated, unlocking, error, unlock }
+  return { unlocked, hydrated, unlocking, error, unlock, accountLinkSent, pendingEmail }
 }

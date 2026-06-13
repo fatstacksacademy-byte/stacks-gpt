@@ -10,7 +10,7 @@ import type {
 } from "../../lib/data/catalogTaxonomy"
 import { US_STATES, isEligibleInState } from "../../lib/data/catalogTaxonomy"
 import { useCatalogUnlock } from "./useCatalogUnlock"
-import CatalogUnlockGate from "./CatalogUnlockGate"
+import CatalogUnlockGate, { AccountLinkBanner } from "./CatalogUnlockGate"
 
 /**
  * Client-side catalog browsing experience.
@@ -45,7 +45,7 @@ type Props = {
 }
 
 export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) {
-  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
+  const { unlocked, unlocking, error: unlockError, unlock, accountLinkSent, pendingEmail } = useCatalogUnlock()
   const [search, setSearch] = useState("")
   const [stateCode, setStateCode] = useState<string>("")
   const [category, setCategory] = useState<CatalogCategory | "">("")
@@ -326,6 +326,7 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+          {accountLinkSent && <AccountLinkBanner email={pendingEmail} />}
           {sorted.map(item => (
             <ResultCard key={item.id} item={item} reviewHref={reviewHrefs?.[item.id] ?? null} sourcePage="/bonuses" />
           ))}

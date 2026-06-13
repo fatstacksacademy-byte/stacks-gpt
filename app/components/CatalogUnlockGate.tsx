@@ -50,7 +50,7 @@ export default function CatalogUnlockGate({
       </div>
       <p style={{ fontSize: 14, color: "#555", lineHeight: 1.55, margin: "0 auto 16px", maxWidth: 460 }}>
         These are verified local bank &amp; credit-union offers you won&apos;t find on the big aggregators.
-        Drop your email to unlock every state — free, one time.
+        Drop your email to unlock every state and spin up a free Stacks OS account to track them — no password needed.
       </p>
       <form
         onSubmit={onSubmit}
@@ -96,8 +96,41 @@ export default function CatalogUnlockGate({
       </form>
       {error && <div style={{ fontSize: 12, color: "#b91c1c", marginTop: 10 }}>{error}</div>}
       <div style={{ fontSize: 11, color: "#999", marginTop: 12, lineHeight: 1.5 }}>
-        One email unlocks every state · weekly high-value bonus alerts · unsubscribe anytime.
+        One email unlocks every state · free Stacks OS account to track your bonuses · unsubscribe anytime.
       </div>
+    </div>
+  )
+}
+
+/**
+ * Post-unlock confirmation banner. Shown once the magic-link account email has
+ * gone out, above the now-revealed catalog, so the visitor knows to check their
+ * inbox to finish their free account. Renders nothing if no link was sent
+ * (e.g. already signed in, or OTP disabled).
+ */
+export function AccountLinkBanner({ email }: { email: string | null }) {
+  if (!email) return null
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 8,
+        background: "#e6f5f0",
+        border: "1px solid #a7f3d0",
+        borderRadius: 10,
+        padding: "12px 16px",
+        marginBottom: 16,
+        fontSize: 13,
+        color: "#0d6e51",
+        lineHeight: 1.5,
+      }}
+    >
+      <span style={{ fontWeight: 700 }}>✓ Unlocked.</span>
+      <span>
+        Check <strong>{email}</strong> for a magic link to finish your free Stacks OS account and track these — no password needed.
+      </span>
     </div>
   )
 }

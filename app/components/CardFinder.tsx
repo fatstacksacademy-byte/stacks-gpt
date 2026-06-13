@@ -25,7 +25,7 @@ import {
 } from "../../lib/data/travelValue"
 import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
 import { useCatalogUnlock } from "./useCatalogUnlock"
-import CatalogUnlockGate from "./CatalogUnlockGate"
+import CatalogUnlockGate, { AccountLinkBanner } from "./CatalogUnlockGate"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -48,7 +48,7 @@ const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel
 const STATE_PAGE_SIZE = 10
 
 export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
-  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
+  const { unlocked, unlocking, error: unlockError, unlock, accountLinkSent, pendingEmail } = useCatalogUnlock()
   const [path, setPath] = useState<Path | null>(null)
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
   const [mode, setMode] = useState<RankMode>("ongoing")
@@ -410,6 +410,12 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
 
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
       <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} />
+
+      {selectedState && stateCards.length > 0 && unlocked && accountLinkSent && (
+        <div style={{ marginTop: 28 }}>
+          <AccountLinkBanner email={pendingEmail} />
+        </div>
+      )}
 
       {selectedState && stateCards.length > 0 && unlocked && (
         <ResultBlock
