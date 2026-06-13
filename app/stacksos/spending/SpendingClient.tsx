@@ -5,7 +5,6 @@ import CheckpointNav from "../../components/CheckpointNav"
 import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard, SPENDING_CATEGORIES, SPENDING_CATEGORIES_PRIMARY, SPENDING_CATEGORIES_EXTRA, CATEGORY_LABELS } from "../../../lib/ownedCards"
 import { computeCategoryGaps, GAP_MIN_MONTHLY_SPEND } from "../../../lib/categoryGaps"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
-import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses, type CreditCardBonus } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { isAirlineOrHotelCard, cardRedemptionModes } from "../../../lib/cardCategorization"
@@ -21,6 +20,7 @@ import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import { DEFAULT_BENEFIT_PROFILE, type UserBenefitProfile } from "../../../lib/cardBenefits"
 import { computeWalletSlots } from "../../../lib/walletSlots"
 import CreditCardProgress from "../../components/CreditCardProgress"
+import { useProfile as useUserProfile } from "../../components/ProfileProvider"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const todayStr = () => new Date().toISOString().split("T")[0]
@@ -33,6 +33,7 @@ const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, ba
 const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
 
 export default function SpendingClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
+  const { profile: userProfile, setProfile: setUserProfile } = useUserProfile()
   const [cards, setCards] = useState<OwnedCard[]>([])
   const [profile, setProfile] = useState<SpendingProfile>({ user_id: userId, ...DEFAULT_SPENDING_PROFILE, updated_at: "" })
   const [loading, setLoading] = useState(true)
@@ -79,25 +80,24 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [fStatus, setFStatus] = useState<OwnedCard["status"]>("planned")
   const [fNotes, setFNotes] = useState("")
   const [fMultipliers, setFMultipliers] = useState<Record<string, string>>({})
-  // User's state (from user_profiles, not spending_profile) — used to filter
-  // cards with state_restricted lists. Fetched alongside spending profile.
-  const [userState, setUserState] = useState<string | null>(null)
-  const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
+  // State and military eligibility live in the shared user profile used by
+  // Paycheck, Savings, and the dashboard. Updating them here immediately
+  // updates every sequencer instead of maintaining a second local copy.
+  const userState = userProfile.state ?? null
+  const militaryAffiliated = userProfile.military_affiliated === true
+  const regionalCardCount = userState
+    ? creditCardBonuses.filter(c => !c.expired && c.state_restricted?.includes(userState)).length
+    : 0
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    const sb = createClient()
-    const [c, p, userProfile, vStates] = await Promise.all([
+    const [c, p, vStates] = await Promise.all([
       getOwnedCards(userId),
       getSpendingProfile(userId),
-      sb.from("user_profiles").select("state, military_affiliated").eq("user_id", userId).maybeSingle(),
       getVerificationStateMap(),
     ])
     setCards(c)
     setProfile(p)
-    const up = userProfile.data as { state?: string | null; military_affiliated?: boolean | null } | null
-    setUserState(up?.state ?? null)
-    setMilitaryAffiliated(up?.military_affiliated === true)
     setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
@@ -268,12 +268,10 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
         <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
-          <select value="" onChange={async e => {
-            if (!e.target.value) return
-            const sb = createClient()
-            await sb.from("user_profiles").update({ state: e.target.value }).eq("user_id", userId)
+          <select value={userState ?? ""} onChange={e => {
+            setUserProfile({ state: e.target.value || null })
           }}
-            style={{ fontSize: 12, color: "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            style={{ fontSize: 12, color: userState ? "#0d7c5f" : "#999", fontWeight: userState ? 700 : 400, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
             <option value="">State</option>
             {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
               <option key={s} value={s}>{s}</option>
@@ -296,6 +294,14 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
           </span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
           <span style={{ fontSize: 12, color: "#555" }}>Sequenced by return per month for your spend</span>
+          {userState && (
+            <>
+              <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+              <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>
+                {userState}: {regionalCardCount} regional card{regionalCardCount === 1 ? "" : "s"} unlocked
+              </span>
+            </>
+          )}
         </div>
       </div>
 
