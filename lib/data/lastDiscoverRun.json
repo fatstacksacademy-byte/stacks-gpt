@@ -1,4 +1,4 @@
 {
-  "lastRunAt": "2026-06-12",
+  "lastRunAt": "2026-06-13",
   "note": "Auto-bumped by .github/workflows/bump-catalog-date.yml whenever lib/data/{bonuses,savingsBonuses,creditCardBonuses}.ts changes on main."
 }
