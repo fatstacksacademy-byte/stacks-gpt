@@ -83,6 +83,12 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [showCppOverrides, setShowCppOverrides] = useState(false)
   const [cppResetFlash, setCppResetFlash] = useState(false)
   const [recSearch, setRecSearch] = useState("")
+  // Recommendation list is capped at the top 15 by merit rank so the page
+  // doesn't render the entire catalog. Low-value regional cards unlocked by
+  // a state selection rank below that cutoff, so the cap was silently hiding
+  // the very cards the status strip advertises as "unlocked". This toggle
+  // reveals the full ranked list on demand.
+  const [showAllRecs, setShowAllRecs] = useState(false)
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
@@ -783,7 +789,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                 </label>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {ccSequence.slice(0, 15).map((sc, idx) => {
+                {(showAllRecs ? ccSequence : ccSequence.slice(0, 15)).map((sc, idx) => {
                   const isExpanded = expandedRecCard === sc.card.id
                   const accentColor = sc.card.card_type === "business" ? "#7c3aed" : "#2563eb"
                   return (
@@ -975,9 +981,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   )
                 })}
                 {ccSequence.length > 15 && (
-                  <div style={{ fontSize: 12, color: "#999", textAlign: "center", padding: 8 }}>
-                    + {ccSequence.length - 15} more cards available
-                  </div>
+                  <button
+                    onClick={() => setShowAllRecs(s => !s)}
+                    style={{ width: "100%", fontSize: 12, color: "#0d7c5f", fontWeight: 600, textAlign: "center", padding: 8, background: "none", border: "none", cursor: "pointer" }}>
+                    {showAllRecs
+                      ? "Show top 15 only ▲"
+                      : `+ ${ccSequence.length - 15} more cards available ▼`}
+                  </button>
                 )}
               </div>
 
