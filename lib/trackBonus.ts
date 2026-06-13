@@ -3,6 +3,7 @@ import { addSavingsEntry, getSavingsEntries } from "./savingsEntries"
 import { addOwnedCard } from "./ownedCards"
 import { savingsBonuses } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
+import { signupBonusValue } from "./data/cardSpendValue"
 
 export type TrackKind =
   | "personal-checking"
@@ -88,7 +89,7 @@ export async function trackCatalogBonus(
   if (kind === "credit-card") {
     const card = creditCardBonuses.find(c => c.id === bonusId)
     if (!card) return "error"
-    const signupCash = Math.round(card.bonus_amount * card.cpp_value)
+    const signupCash = signupBonusValue(card)
     const feeY1 = card.annual_fee_waived_first_year ? 0 : card.annual_fee
     const expected = signupCash + card.statement_credits_year1 - feeY1
     const openedDate = today()
@@ -103,7 +104,9 @@ export async function trackCatalogBonus(
       expected_value: expected,
       actual_value: null,
       status: "active",
-      role: null,
+      role: "sub-in-progress",
+      source_type: "catalog",
+      canonical_offer_id: card.id,
       notes: null,
       incomplete_info: false,
     })

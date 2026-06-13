@@ -2,7 +2,7 @@
  * Portfolio gap analysis for the Spending tab.
  *
  * Bridges two vocabularies:
- *   1. The user-facing spending category keys (lib/ownedCards.ts SPENDING_CATEGORIES)
+ *   1. The user-facing spending category keys (lib/spendingCategories.ts)
  *   2. The reward-tier tokens that creditCardBonuses.ts cards advertise
  *      (e.g. "gas_stations", "cell_phone_carriers", "online_retail")
  *
@@ -14,33 +14,18 @@
 
 import type { CreditCardBonus, RewardsTier } from "./data/creditCardBonuses"
 import type { OwnedCard } from "./ownedCards"
-import type { SpendingCategory } from "./ownedCards"
+import {
+  isSpendingCategory,
+  SPENDING_TO_CATALOG_TOKENS,
+  type SpendingCategory,
+} from "./spendingCategories"
 
 /**
  * One spending key can map to multiple catalog tokens (e.g. ridesharing →
  * uber + lyft + ridesharing) — we take the max multiplier across all of them
  * when matching cards. Order doesn't matter; this is a set check.
  */
-export const SPENDING_TO_CATALOG_TOKENS: Record<string, string[]> = {
-  dining: ["dining"],
-  groceries: ["groceries", "groceries_online"],
-  gas: ["gas_stations"],
-  travel: ["travel"],
-  utilities: ["utilities"],
-  online_shopping: ["online_retail"],
-  other: ["everything_else", "all_other"],
-  streaming_services: ["streaming_services"],
-  ridesharing: ["ridesharing", "uber", "lyft"],
-  transit: ["transit"],
-  drug_stores: ["drug_stores"],
-  ev_charging: ["ev_charging"],
-  cell_phone_internet: ["cell_phone_carriers", "internet_and_cable"],
-  home_improvement: ["home_improvement_stores"],
-  wholesale_clubs: ["wholesale_clubs", "costco_wholesale"],
-  amazon: ["amazon"],
-  hotels_direct: ["hotels"],
-  flights_direct: ["airfare"],
-}
+export { SPENDING_TO_CATALOG_TOKENS }
 
 /** Min monthly spend that triggers gap surfacing. Below this, the row is hidden. */
 export const GAP_MIN_MONTHLY_SPEND = 50
@@ -162,8 +147,8 @@ export function computeCategoryGaps(
 
   for (const [spendingCategory, monthly] of Object.entries(categorySpend)) {
     if (!monthly || monthly < GAP_MIN_MONTHLY_SPEND) continue
+    if (!isSpendingCategory(spendingCategory)) continue
     const catalogTokens = SPENDING_TO_CATALOG_TOKENS[spendingCategory]
-    if (!catalogTokens) continue
 
     // Best owned multiplier across the user's portfolio (active + completed).
     let ownedBest: CategoryGap["ownedBest"] = {

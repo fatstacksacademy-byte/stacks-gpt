@@ -5,6 +5,7 @@ import { blogPosts } from "../../lib/data/blogPosts"
 import { creditCardBonuses } from "../../lib/data/creditCardBonuses"
 import { getCategorizedBonuses } from "../../lib/data/bonusCategories"
 import CardFinder from "../components/CardFinder"
+import { signupYearOneValue } from "../../lib/data/cardSpendValue"
 import {
   BrowseHeader,
   BrowseFooter,
@@ -37,9 +38,7 @@ function slugForBonus(bonusId: string): string | null {
 }
 
 function yearOneValue(c: typeof creditCardBonuses[number]): number {
-  const points = c.bonus_amount * c.cpp_value
-  const fee = c.annual_fee_waived_first_year ? 0 : c.annual_fee
-  return Math.round(points + c.statement_credits_year1 - fee)
+  return signupYearOneValue(c)
 }
 
 function bonusLabel(c: typeof creditCardBonuses[number]): string {

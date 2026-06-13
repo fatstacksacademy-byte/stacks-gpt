@@ -212,3 +212,35 @@ export function resolveTransfers(card: CreditCardBonus): ResolvedTransfer[] {
 export function bestTransferCpp(card: CreditCardBonus): number {
   return resolveTransfers(card).reduce((max, t) => (t.cpp > max ? t.cpp : max), 0)
 }
+
+/**
+ * Dollar value of one point of `bonusCurrency` transferred into `program`,
+ * derived purely from the currency's partner map — independent of whether any
+ * single card opted into transfers. This is what an "indirect" earner card is
+ * worth once its points are pooled into a premium card of the same currency.
+ * Returns 0 if the currency is unknown or doesn't reach the program.
+ */
+export function currencyTransferCpp(
+  bonusCurrency: string | undefined | null,
+  program: string,
+): number {
+  const key = currencyKey(bonusCurrency)
+  if (!key) return 0
+  const t = CURRENCY_PARTNERS[key].find(p => p.program === program)
+  return t ? t.ratio * programValueDollars(program) : 0
+}
+
+/** Short human hint for which card pools an earner's points into transfers. */
+export const POOL_HINT: Record<CurrencyKey, string> = {
+  amex: "a premium Amex (Gold/Platinum)",
+  chase: "a premium Chase card (Sapphire or Ink Preferred)",
+  citi: "a premium Citi Strata card",
+  capone: "a Capital One miles card",
+  bilt: "Bilt",
+}
+
+/** Pooling hint for a card's currency, or null if it isn't a known currency. */
+export function poolHint(bonusCurrency: string | undefined | null): string | null {
+  const key = currencyKey(bonusCurrency)
+  return key ? POOL_HINT[key] : null
+}

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "./ccSequencer"
 import { creditCardBonuses } from "./data/creditCardBonuses"
+import { transferKind } from "./data/travelValue"
 
 describe("formatCurrency", () => {
   it("rounds to whole dollars with thousands separators", () => {
@@ -63,11 +64,35 @@ describe("sequenceCards — contract against real catalog", () => {
   it("net_value stays within a sane multiple of the gross sign-up value", () => {
     const sequenced = sequenceCards(creditCardBonuses, 5000)
     for (const s of sequenced) {
-      const gross = s.card.bonus_amount * s.card.cpp_value + s.card.statement_credits_year1
+      const gross = s.value_breakdown.welcome_bonus + s.card.statement_credits_year1
       // Sanity guard — net shouldn't exceed gross by more than a few thousand
       // (accounts for category multiplier earn during the spend window).
       expect(s.net_value).toBeLessThanOrEqual(gross + 5000)
     }
+  })
+
+  it("can rank by max bonus or return on required spend", () => {
+    const base = creditCardBonuses.find(c => c.offer_link && !c.expired)!
+    const cards = [
+      { ...base, id: "big-bonus", card_name: "Big Bonus", bonus_amount: 500, bonus_currency: "cash", cpp_value: 1, min_spend: 5000, spend_months: 3, annual_fee: 0 },
+      { ...base, id: "efficient-bonus", card_name: "Efficient Bonus", bonus_amount: 300, bonus_currency: "cash", cpp_value: 1, min_spend: 1000, spend_months: 3, annual_fee: 0 },
+    ]
+    expect(sequenceCards(cards, 5000, null, 4, false, null, false, null, "max_bonus")[0].card.id).toBe("big-bonus")
+    expect(sequenceCards(cards, 5000, null, 4, false, null, false, null, "return_on_spend")[0].card.id).toBe("efficient-bonus")
+  })
+
+  it("travel target filters to currencies that reach the selected program", () => {
+    const sequenced = sequenceCards(creditCardBonuses, 10000, null, 8, true, null, false, null, "return_on_spend", "hyatt")
+    expect(sequenced.length).toBeGreaterThan(0)
+    expect(sequenced.every(s => transferKind(s.card, "hyatt") !== null)).toBe(true)
+  })
+
+  it("values legacy cash rows at face value", () => {
+    const legacyCash = creditCardBonuses.find(c => c.offer_link && !c.expired)!
+    const sequenced = sequenceCards([
+      { ...legacyCash, id: "legacy-cash", card_name: "Legacy Cash", bonus_amount: 200, bonus_currency: "cash", cpp_value: 0.01, min_spend: 1000, spend_months: 3, annual_fee: 0 },
+    ], 1000)
+    expect(sequenced[0].net_value).toBe(200)
   })
 })
 

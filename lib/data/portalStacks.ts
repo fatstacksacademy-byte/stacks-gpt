@@ -72,11 +72,6 @@ export const portalStacks: Record<string, PortalOption[]> = {
   "wells-fargo-400-everyday-checking-2026": [
     stack("Rakuten", "Wells Fargo"),
   ],
-  "citi-regular-checking-325-edd-2026": [
-    stack("Rakuten", "Citi"),
-    stack("TopCashback", "Citi"),
-  ],
-
   // ── Savings ──
   "marcus-savings-bonus-2026": [
     stack("Rakuten", "Marcus by Goldman Sachs"),

@@ -11,12 +11,16 @@ import {
   type IntroAprMode,
 } from "../../lib/data/introApr"
 import {
-  SPEND_BUCKETS,
   rankCardsForSpend,
   signupYearOneValue,
   type SpendInput,
   type RankMode,
 } from "../../lib/data/cardSpendValue"
+import {
+  SPENDING_CATEGORIES_PRIMARY,
+  SPENDING_CATEGORY_BY_KEY,
+  type SpendingCategory,
+} from "../../lib/spendingCategories"
 import {
   rankByTravelValue,
   travelPerkValue,
@@ -28,6 +32,7 @@ import {
 import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
 import { useCatalogUnlock } from "./useCatalogUnlock"
 import CatalogUnlockGate from "./CatalogUnlockGate"
+import SpendingCategoryPicker from "./SpendingCategoryPicker"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -42,11 +47,11 @@ import CatalogUnlockGate from "./CatalogUnlockGate"
 
 type Path = "signup" | "spend" | "apr" | "travel"
 
-const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online: 0, other: 0 }
+const ZERO_SPEND: SpendInput = {}
 
 // A representative starting profile so the calculator shows something useful
 // before the user touches anything.
-const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online: 150, other: 800 }
+const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online_shopping: 150, other: 800 }
 // How many ranked rows each path shows before the "Show all" expander.
 const DEFAULT_VISIBLE = 12
 
@@ -54,6 +59,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
   const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [path, setPath] = useState<Path | null>(null)
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
+  const [spendCategories, setSpendCategories] = useState<SpendingCategory[]>([...SPENDING_CATEGORIES_PRIMARY])
   const [mode, setMode] = useState<RankMode>("ongoing")
   const [stateSlug, setStateSlug] = useState<string>("")
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
@@ -73,7 +79,22 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     return showAll[p] ? list : list.slice(0, DEFAULT_VISIBLE)
   }
 
-  const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
+  const totalMonthly = Object.values(spend).reduce((sum, value) => sum + (value ?? 0), 0)
+  const activeSpendCategories = spendCategories.map(category => SPENDING_CATEGORY_BY_KEY[category])
+
+  function addSpendCategory(category: SpendingCategory) {
+    setSpendCategories(current => current.includes(category) ? current : [...current, category])
+  }
+
+  function removeSpendCategory(category: SpendingCategory) {
+    if (SPENDING_CATEGORY_BY_KEY[category].core) return
+    setSpendCategories(current => current.filter(item => item !== category))
+    setSpend(current => {
+      const next = { ...current }
+      delete next[category]
+      return next
+    })
+  }
 
   // Cards a resident of the chosen state can actually get: every nationwide
   // card, plus any regional/credit-union cards specific to that state. With no
@@ -200,9 +221,14 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               Rough numbers are fine. We&apos;ll rank cards by the rewards you&apos;d actually earn.
             </div>
             <div className="cf-spend-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-              {SPEND_BUCKETS.map(b => (
+              {activeSpendCategories.map(b => (
                 <label key={b.key} style={{ display: "block" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#444" }}>{b.label}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#444" }}>{b.label}</span>
+                    {!b.core && (
+                      <button type="button" onClick={() => removeSpendCategory(b.key)} aria-label={`Remove ${b.label}`} style={{ border: 0, background: "transparent", color: "#aaa", cursor: "pointer", padding: 0 }}>×</button>
+                    )}
+                  </div>
                   <div style={{ fontSize: 10, color: "#aaa", marginBottom: 4 }}>{b.hint}</div>
                   <div style={{ display: "flex", alignItems: "center", border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 10px", background: "#fafafa" }}>
                     <span style={{ fontSize: 13, color: "#999" }}>$</span>
@@ -210,7 +236,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                       type="number"
                       min={0}
                       value={spend[b.key] || ""}
-                      onChange={e => setSpend(s => ({ ...s, [b.key]: e.target.value ? Number(e.target.value) : 0 } as SpendInput))}
+                      onChange={e => setSpend(s => ({ ...s, [b.key]: e.target.value ? Number(e.target.value) : 0 }))}
                       placeholder="0"
                       style={{ border: "none", outline: "none", background: "transparent", padding: "9px 6px", fontSize: 14, color: "#111", width: "100%" }}
                     />
@@ -219,13 +245,19 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 </label>
               ))}
             </div>
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }}>
+              <div style={{ fontSize: 11, color: "#777", marginBottom: 7 }}>
+                Add precise categories, including direct travel and issuer-portal bookings.
+              </div>
+              <SpendingCategoryPicker selected={spendCategories} onAdd={addSpendCategory} />
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 16 }}>
               <div style={{ fontSize: 12, color: "#666" }}>
                 ${totalMonthly.toLocaleString()}/mo · ${(totalMonthly * 12).toLocaleString()}/yr total
                 {" · "}
                 <button onClick={() => setSpend(ZERO_SPEND)} style={linkBtn}>clear</button>
                 {" · "}
-                <button onClick={() => setSpend(SAMPLE_SPEND)} style={linkBtn}>reset to example</button>
+                <button onClick={() => { setSpend(SAMPLE_SPEND); setSpendCategories([...SPENDING_CATEGORIES_PRIMARY]) }} style={linkBtn}>reset to example</button>
               </div>
               <div style={{ display: "inline-flex", border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden" }}>
                 <ModeTab active={mode === "ongoing"} onClick={() => setMode("ongoing")}>Best long-term keeper</ModeTab>
@@ -248,8 +280,8 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               </div>
             ) : (
               visible(spendRanked, "spend").map((e, i) => {
-                const topBuckets = SPEND_BUCKETS
-                  .map(b => ({ label: b.label, val: e.breakdown[b.key] }))
+                const topBuckets = activeSpendCategories
+                  .map(b => ({ label: b.label, val: e.breakdown[b.key] ?? 0 }))
                   .filter(x => x.val > 0)
                   .sort((a, b) => b.val - a.val)
                   .slice(0, 2)

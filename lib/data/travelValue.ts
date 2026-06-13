@@ -14,7 +14,7 @@
  */
 import type { CreditCardBonus, TravelValue } from "./creditCardBonuses"
 import { resolveProgramSlug, findTransferProgram } from "./catalogTaxonomy"
-import { resolveTransfers, bestTransferCpp, currencyKey } from "./transferPartners"
+import { resolveTransfers, bestTransferCpp, currencyKey, currencyTransferCpp, poolHint } from "./transferPartners"
 
 export type TravelMode = "perks" | "transfer"
 
@@ -39,7 +39,8 @@ export function hasTravelValue(card: CreditCardBonus, mode: TravelMode): boolean
  * cert + nominal lounge + amortized Global Entry. Excludes transfer upside,
  * which is mode-specific (you only realize it if you redeem that way).
  */
-export function travelPerkValue(t: TravelValue): number {
+export function travelPerkValue(t: TravelValue | undefined | null): number {
+  if (!t) return 0
   let v = 0
   v += t.travel_credit ?? 0
   v += t.free_night_value ?? 0
@@ -54,6 +55,21 @@ export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boo
 }
 
 /**
+ * How a card reaches a transfer program:
+ *  - "direct":   the card itself transfers there (premium/opt-in card).
+ *  - "indirect": the card EARNS a currency that reaches the program, but didn't
+ *                opt into transfers — its points get there only when pooled into
+ *                a premium card of the same currency (e.g. no-fee Chase Inks →
+ *                Hyatt via a Sapphire/Ink Preferred).
+ *  - null:       the card can't reach the program at all.
+ */
+export function transferKind(card: CreditCardBonus, programSlug: string): "direct" | "indirect" | null {
+  if (cardTransfersTo(card, programSlug)) return "direct"
+  if (currencyTransferCpp(card.bonus_currency, programSlug) > 0) return "indirect"
+  return null
+}
+
+/**
  * Dollar value of one of this card's points when transferred — into a specific
  * `program` if given, otherwise the card's best partner. Replaces reading the
  * single card-level `max_transfer_cpp` so a per-program view shows that
@@ -61,7 +77,13 @@ export function cardTransfersTo(card: CreditCardBonus, programSlug: string): boo
  */
 export function travelTransferCpp(card: CreditCardBonus, program?: string): number {
   const resolved = resolveTransfers(card)
-  if (program) return resolved.find(t => t.program === program)?.cpp ?? 0
+  if (program) {
+    // Direct transfer if the card opted in; otherwise fall back to the value
+    // its currency fetches once pooled (indirect). Same per-point worth — the
+    // only difference is you need a premium card on hand to move the points.
+    const direct = resolved.find(t => t.program === program)?.cpp
+    return direct ?? currencyTransferCpp(card.bonus_currency, program)
+  }
   return resolved.reduce((max, t) => (t.cpp > max ? t.cpp : max), 0)
 }
 
@@ -96,34 +118,54 @@ function transferLabels(card: CreditCardBonus, program?: string): string[] {
  *  - transfer: best transfer-partner redemption (cpp) first; ties by perk value.
  *
  * `program` (transfer mode only): when set to a canonical program slug, keep
- * only cards that transfer into that currency — for users collecting a specific
- * loyalty program rather than browsing all transferable cards.
+ * cards that reach that program — directly (own transfer partners) or
+ * indirectly (earns the currency, pooled into a premium card). Indirect cards
+ * always rank below direct ones so the "just apply and transfer" picks lead.
  */
 export function rankByTravelValue(
   cards: CreditCardBonus[],
   mode: TravelMode,
   program?: string,
 ): CreditCardBonus[] {
-  return cards
-    .filter(c => !c.expired && hasTravelValue(c, mode))
-    .filter(c => !(mode === "transfer" && program) || cardTransfersTo(c, program!))
-    .sort((a, b) => {
-      if (mode === "transfer") {
-        // Rank by value into the chosen program (or best partner if browsing all).
-        const ac = travelTransferCpp(a, program)
-        const bc = travelTransferCpp(b, program)
-        if (ac !== bc) return bc - ac
-        return travelPerkValue(b.travel!) - travelPerkValue(a.travel!)
+  // With a program selected, transfer mode admits indirect earners too, so we
+  // can't pre-filter on hasTravelValue (indirect cards have no travel block).
+  const filtered =
+    mode === "transfer" && program
+      ? cards.filter(c => !c.expired && transferKind(c, program) !== null)
+      : cards.filter(c => !c.expired && hasTravelValue(c, mode))
+
+  return filtered.sort((a, b) => {
+    if (mode === "transfer") {
+      if (program) {
+        // Direct picks first, then by per-point value into the chosen program.
+        const ad = cardTransfersTo(a, program) ? 1 : 0
+        const bd = cardTransfersTo(b, program) ? 1 : 0
+        if (ad !== bd) return bd - ad
       }
-      const ap = travelPerkValue(a.travel!)
-      const bp = travelPerkValue(b.travel!)
-      if (ap !== bp) return bp - ap
-      return bestTransferCpp(b) - bestTransferCpp(a)
-    })
+      const ac = travelTransferCpp(a, program)
+      const bc = travelTransferCpp(b, program)
+      if (ac !== bc) return bc - ac
+      return travelPerkValue(b.travel) - travelPerkValue(a.travel)
+    }
+    const ap = travelPerkValue(a.travel)
+    const bp = travelPerkValue(b.travel)
+    if (ap !== bp) return bp - ap
+    return bestTransferCpp(b) - bestTransferCpp(a)
+  })
 }
 
 /** Human-readable summary of a card's travel value for the chosen lens. */
 export function travelSummary(card: CreditCardBonus, mode: TravelMode, program?: string): string {
+  // Indirect transfer earner: no own transfer partners, but its currency reaches
+  // the selected program once pooled into a premium card. Handle before the
+  // no-travel-data guard, since these cards carry no `travel` block.
+  if (mode === "transfer" && program && transferKind(card, program) === "indirect") {
+    const cpp = currencyTransferCpp(card.bonus_currency, program)
+    const programName = findTransferProgram(program)?.name ?? program
+    const via = poolHint(card.bonus_currency) ?? "a premium card on the same points"
+    return `${(cpp * 100).toFixed(1)}¢/pt to ${programName} when pooled into ${via}`
+  }
+
   const t = card.travel
   if (!t) return "No travel data"
 

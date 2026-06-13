@@ -5,6 +5,8 @@ import {
   rankByTravelValue,
   cardTransfersTo,
   travelSummary,
+  transferKind,
+  travelTransferCpp,
   LOUNGE_VALUE,
   GLOBAL_ENTRY_ANNUAL,
 } from "./travelValue"
@@ -108,6 +110,36 @@ describe("rankByTravelValue with a program filter", () => {
   })
   it("returns empty when no card feeds the chosen currency", () => {
     expect(rankByTravelValue([deltaCard], "transfer", "hyatt")).toEqual([])
+  })
+})
+
+describe("indirect transfer earners (pooling)", () => {
+  // A no-fee Chase Ink: earns Ultimate Rewards but never opted into transfers.
+  const inkCash = card({ id: "ink", bonus_currency: "Ultimate Rewards" })
+  // A premium UR card that does transfer to Hyatt directly.
+  const inkPreferred = card({ id: "pref", bonus_currency: "Ultimate Rewards", travel: { transfer_partners: ["Hyatt", "United"] } })
+
+  it("classifies a UR earner as indirect for Hyatt", () => {
+    expect(transferKind(inkCash, "hyatt")).toBe("indirect")
+    expect(transferKind(inkPreferred, "hyatt")).toBe("direct")
+  })
+  it("is null for a program the currency can't reach", () => {
+    expect(transferKind(inkCash, "delta")).toBeNull() // Chase UR doesn't do Delta
+  })
+  it("is null when the currency isn't transferable at all", () => {
+    expect(transferKind(card({ bonus_currency: "cash" }), "hyatt")).toBeNull()
+  })
+  it("includes indirect earners in the program list, ranked below direct cards", () => {
+    const r = rankByTravelValue([inkCash, inkPreferred], "transfer", "hyatt")
+    expect(r.map(c => c.id)).toEqual(["pref", "ink"])
+  })
+  it("values an indirect earner at the currency's per-point worth", () => {
+    // Chase UR → Hyatt is 1:1 at 1.55¢ → $0.0155/pt
+    expect(travelTransferCpp(inkCash, "hyatt")).toBeCloseTo(0.0155, 6)
+  })
+  it("summarizes the pooling requirement", () => {
+    expect(travelSummary(inkCash, "transfer", "hyatt"))
+      .toBe("1.6¢/pt to World of Hyatt when pooled into a premium Chase card (Sapphire or Ink Preferred)")
   })
 })
 

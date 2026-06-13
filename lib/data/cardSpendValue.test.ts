@@ -29,7 +29,7 @@ function card(partial: Partial<CreditCardBonus>): CreditCardBonus {
   }
 }
 
-const noSpend: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online: 0, other: 0 }
+const noSpend: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online_shopping: 0, other: 0 }
 
 describe("estimateCard", () => {
   it("values a category multiplier through cpp", () => {
@@ -88,6 +88,13 @@ describe("estimateCard", () => {
     expect(e.annualRewards).toBe(120)
     expect(e.netAnnual).toBe(25)
   })
+
+  it("does not treat an issuer-portal hotel rate as ordinary travel", () => {
+    const c = card({ rewards: [{ categories: ["hotels_(portal)"], multiplier: 10 }, { categories: ["all_other"], multiplier: 1 }] })
+    const e = estimateCard(c, { travel: 500, hotels_portal: 500 })
+    expect(e.breakdown.travel).toBe(60)
+    expect(e.breakdown.hotels_portal).toBe(600)
+  })
 })
 
 describe("signupYearOneValue", () => {
@@ -99,6 +106,10 @@ describe("signupYearOneValue", () => {
   it("ignores a waived first-year fee", () => {
     const c = card({ bonus_amount: 50000, cpp_value: 0.01, annual_fee: 95, annual_fee_waived_first_year: true })
     expect(signupYearOneValue(c)).toBe(500)
+  })
+  it("treats cash bonus amounts as dollars even when legacy cpp is 0.01", () => {
+    const c = card({ bonus_amount: 200, bonus_currency: "cash", cpp_value: 0.01 })
+    expect(signupYearOneValue(c)).toBe(200)
   })
 })
 
