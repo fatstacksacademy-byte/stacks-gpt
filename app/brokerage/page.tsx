@@ -4,6 +4,7 @@ import NewsletterCTA from "../blog/components/NewsletterCTA"
 import { blogPosts } from "../../lib/data/blogPosts"
 import { blogContent } from "../../lib/data/blogContent"
 import { getCategorizedBonuses, shortBankName } from "../../lib/data/bonusCategories"
+import { practicalHoldDays } from "../../lib/data/savingsBonuses"
 import {
   BrowseHeader,
   BrowseFooter,
@@ -76,7 +77,7 @@ export default function BrokerageBrowsePage() {
               bonusType: "brokerage",
               bank: shortBankName(b),
               value: money(t.bonus_amount),
-              sub: `${money(t.min_deposit)} · ${b.total_hold_days}d hold · ${effApy.toFixed(1)}% eff APY`,
+              sub: `${money(t.min_deposit)} · ${practicalHoldDays(b)}d hold · ${effApy.toFixed(1)}% eff APY`,
               href: slugForBonus(b.id) ? `/blog/${slugForBonus(b.id)}` : undefined,
               summary: blogContent[b.id]?.summary,
             }
@@ -90,7 +91,7 @@ export default function BrokerageBrowsePage() {
                 bank: shortBankName(b),
                 bonus: money(t.bonus_amount),
                 col3: money(t.min_deposit),
-                col4: `${b.total_hold_days}d`,
+                col4: `${practicalHoldDays(b)}d`,
                 col5: `${effApy.toFixed(1)}%`,
                 href: slugForBonus(b.id) ? `/blog/${slugForBonus(b.id)}` : undefined,
                 bonusId: b.id,

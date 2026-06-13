@@ -76,15 +76,15 @@ export default function UpgradeUpsell({ feature, description, bullets, source }:
               display: "flex", justifyContent: "space-between", alignItems: "center",
               fontSize: 15, fontWeight: 700,
             }}>
-              <span>{loading === "annual" ? "Loading…" : "Upgrade — $50/year"}</span>
-              <span style={{ fontSize: 11, background: "#fff", color: "#0d7c5f", padding: "3px 8px", borderRadius: 4, fontWeight: 700 }}>SAVE 17%</span>
+              <span>{loading === "annual" ? "Loading…" : "Upgrade — $99/year"}</span>
+              <span style={{ fontSize: 11, background: "#fff", color: "#0d7c5f", padding: "3px 8px", borderRadius: 4, fontWeight: 700 }}>SAVE 18%</span>
             </button>
             <button onClick={() => handleCheckout("monthly")} disabled={loading !== null} style={{
               padding: "14px 20px", borderRadius: 10, border: "1px solid #e0e0e0", background: "#fff",
               color: "#111", cursor: loading ? "wait" : "pointer",
               fontSize: 14, fontWeight: 600,
             }}>
-              {loading === "monthly" ? "Loading…" : "Or $5/month"}
+              {loading === "monthly" ? "Loading…" : "Or $10/month"}
             </button>
           </div>
 

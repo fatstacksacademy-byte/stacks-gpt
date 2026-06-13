@@ -195,7 +195,7 @@ export function StacksOsCta({ totalBonuses }: { totalBonuses: number }) {
       }}>
         See your projected earnings →
       </Link>
-      <div style={{ fontSize: 12, color: "#999", marginTop: 12 }}>$5/month or $50/year · most first bonuses are $300–$400</div>
+      <div style={{ fontSize: 12, color: "#999", marginTop: 12 }}>$10/month or $99/year · most first bonuses are $300–$400</div>
     </div>
   )
 }

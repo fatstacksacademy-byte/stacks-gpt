@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { blogPosts, getSavingsBonusById } from "../../../lib/data/blogPosts"
 import { blogContent } from "../../../lib/data/blogContent"
+import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import AffiliateDisclosure from "../components/AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
@@ -36,10 +37,12 @@ export default function BestSavingsBonuses() {
       const bBonus = b.bonus!
       const aTier = aBonus.tiers[0]
       const bTier = bBonus.tiers[0]
-      const aInterest = aTier.min_deposit * aBonus.base_apy * (aBonus.total_hold_days / 365)
-      const bInterest = bTier.min_deposit * bBonus.base_apy * (bBonus.total_hold_days / 365)
-      const aEff = ((aTier.bonus_amount + aInterest) / aTier.min_deposit) * (365 / aBonus.total_hold_days)
-      const bEff = ((bTier.bonus_amount + bInterest) / bTier.min_deposit) * (365 / bBonus.total_hold_days)
+      const aHold = practicalHoldDays(aBonus)
+      const bHold = practicalHoldDays(bBonus)
+      const aInterest = aTier.min_deposit * aBonus.base_apy * (aHold / 365)
+      const bInterest = bTier.min_deposit * bBonus.base_apy * (bHold / 365)
+      const aEff = ((aTier.bonus_amount + aInterest) / aTier.min_deposit) * (365 / aHold)
+      const bEff = ((bTier.bonus_amount + bInterest) / bTier.min_deposit) * (365 / bHold)
       return bEff - aEff
     })
 
@@ -121,9 +124,10 @@ export default function BestSavingsBonuses() {
           {sorted.map(({ post, bonus }, i) => {
             const b = bonus!
             const minTier = b.tiers[0]
-            const interest = Math.round(minTier.min_deposit * b.base_apy * (b.total_hold_days / 365))
+            const holdDays = practicalHoldDays(b)
+            const interest = Math.round(minTier.min_deposit * b.base_apy * (holdDays / 365))
             const total = minTier.bonus_amount + interest
-            const effApy = ((total / minTier.min_deposit) * (365 / b.total_hold_days) * 100).toFixed(1)
+            const effApy = ((total / minTier.min_deposit) * (365 / holdDays) * 100).toFixed(1)
             const content = blogContent[post.bonusId]
             return (
               <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
@@ -145,7 +149,7 @@ export default function BestSavingsBonuses() {
                       {i === 0 && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "2px 8px", borderRadius: 99 }}>TOP PICK</span>}
                     </div>
                     <div style={{ fontSize: 12, color: "#777" }}>
-                      {money(minTier.min_deposit)} deposit | {b.total_hold_days}-day hold | {(b.base_apy * 100).toFixed(2)}% base APY
+                      {money(minTier.min_deposit)} deposit | {holdDays}-day hold | {(b.base_apy * 100).toFixed(2)}% base APY
                       {b.tiers.length > 1 ? ` | ${b.tiers.length} tiers` : ""}
                     </div>
                     {content && (

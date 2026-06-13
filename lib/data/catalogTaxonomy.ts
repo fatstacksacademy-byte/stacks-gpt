@@ -222,15 +222,29 @@ function normalizeProgramKey(s: string): string {
 }
 
 // Common short forms / brand-only names that should resolve to a slug.
+// Keys must be in normalizeProgramKey() form (lowercase, alnum-joined by "-")
+// since lookups are normalized before hitting PROGRAM_INDEX.
 const PROGRAM_ALIASES: Record<string, string> = {
   ba: "british-airways",
   avios: "british-airways",
   krisflyer: "singapore",
   lifemiles: "avianca",
   "asia-miles": "cathay",
+  // Cathay's program is "Asia Miles"; the catalog also stores the airline name.
+  "cathay-pacific": "cathay",
   bonvoy: "marriott",
   honors: "hilton",
   "world-of-hyatt": "hyatt",
+  // Air France-KLM's program is Flying Blue; the catalog stores the airline-
+  // group name on several cards (Citi Strata Premier, Bilt), which otherwise
+  // fails to match a "Flying Blue" program filter.
+  "air-france-klm": "flying-blue",
+  "air-france": "flying-blue",
+  "klm": "flying-blue",
+  // Air Canada's program is Aeroplan.
+  "air-canada": "aeroplan",
+  "mileage-plan": "alaska",
+  "alaska-airlines": "alaska",
 }
 
 const PROGRAM_INDEX: Map<string, string> = (() => {

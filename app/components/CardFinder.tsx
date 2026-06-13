@@ -11,19 +11,28 @@ import {
   type IntroAprMode,
 } from "../../lib/data/introApr"
 import {
-  SPEND_BUCKETS,
   rankCardsForSpend,
   signupYearOneValue,
   type SpendInput,
   type RankMode,
 } from "../../lib/data/cardSpendValue"
 import {
+  SPENDING_CATEGORIES_PRIMARY,
+  SPENDING_CATEGORY_BY_KEY,
+  type SpendingCategory,
+} from "../../lib/spendingCategories"
+import {
   rankByTravelValue,
   travelPerkValue,
+  travelTransferCpp,
   travelSummary,
+  transferKind,
   type TravelMode,
 } from "../../lib/data/travelValue"
 import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailability"
+import { useCatalogUnlock } from "./useCatalogUnlock"
+import CatalogUnlockGate from "./CatalogUnlockGate"
+import SpendingCategoryPicker from "./SpendingCategoryPicker"
 
 /**
  * "Choose your own adventure" credit-card finder.
@@ -38,25 +47,54 @@ import { cardsForState, stateSpecificCards } from "../../lib/data/cardAvailabili
 
 type Path = "signup" | "spend" | "apr" | "travel"
 
-const ZERO_SPEND: SpendInput = { groceries: 0, gas: 0, dining: 0, travel: 0, online: 0, other: 0 }
+const ZERO_SPEND: SpendInput = {}
 
 // A representative starting profile so the calculator shows something useful
 // before the user touches anything.
-const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online: 150, other: 800 }
-const STATE_PAGE_SIZE = 10
+const SAMPLE_SPEND: SpendInput = { groceries: 600, gas: 150, dining: 300, travel: 200, online_shopping: 150, other: 800 }
+// How many ranked rows each path shows before the "Show all" expander.
+const DEFAULT_VISIBLE = 12
 
 export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
+  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [path, setPath] = useState<Path | null>(null)
   const [spend, setSpend] = useState<SpendInput>(SAMPLE_SPEND)
+  const [spendCategories, setSpendCategories] = useState<SpendingCategory[]>([...SPENDING_CATEGORIES_PRIMARY])
   const [mode, setMode] = useState<RankMode>("ongoing")
   const [stateSlug, setStateSlug] = useState<string>("")
-  const [statePage, setStatePage] = useState(0)
   const [aprMode, setAprMode] = useState<IntroAprMode>("balance_transfer")
   const [balance, setBalance] = useState<number>(5000)
   const [travelMode, setTravelMode] = useState<TravelMode>("perks")
   const [travelProgram, setTravelProgram] = useState<string>("")
+  // Each ranked list defaults to the top DEFAULT_VISIBLE rows for a fast,
+  // skimmable page; "Show all" expands to the full eligible set so the finder
+  // never silently hides cards a user qualifies for.
+  const [showAll, setShowAll] = useState<Record<Path, boolean>>({
+    signup: false,
+    spend: false,
+    apr: false,
+    travel: false,
+  })
+  function visible<T>(list: T[], p: Path): T[] {
+    return showAll[p] ? list : list.slice(0, DEFAULT_VISIBLE)
+  }
 
-  const totalMonthly = Object.values(spend).reduce((a, b) => a + (b || 0), 0)
+  const totalMonthly = Object.values(spend).reduce((sum, value) => sum + (value ?? 0), 0)
+  const activeSpendCategories = spendCategories.map(category => SPENDING_CATEGORY_BY_KEY[category])
+
+  function addSpendCategory(category: SpendingCategory) {
+    setSpendCategories(current => current.includes(category) ? current : [...current, category])
+  }
+
+  function removeSpendCategory(category: SpendingCategory) {
+    if (SPENDING_CATEGORY_BY_KEY[category].core) return
+    setSpendCategories(current => current.filter(item => item !== category))
+    setSpend(current => {
+      const next = { ...current }
+      delete next[category]
+      return next
+    })
+  }
 
   // Cards a resident of the chosen state can actually get: every nationwide
   // card, plus any regional/credit-union cards specific to that state. With no
@@ -65,12 +103,18 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
     () => (stateSlug ? US_STATES.find(s => s.slug === stateSlug)?.code ?? null : null),
     [stateSlug],
   )
-  const eligibleCards = useMemo(() => cardsForState(cards, stateCode), [cards, stateCode])
+  // Regional cards only fold into the ranked lists once the email gate is
+  // unlocked; until then the rankings stay nationwide-only (same as no state).
+  const effectiveStateCode = unlocked ? stateCode : null
+  const eligibleCards = useMemo(() => cardsForState(cards, effectiveStateCode), [cards, effectiveStateCode])
   const stateAddedCount = useMemo(
     () => (stateCode ? stateSpecificCards(cards, stateCode).length : 0),
     [cards, stateCode],
   )
   const selectedState = stateSlug ? US_STATES.find(s => s.slug === stateSlug) : null
+  // Regional cards no longer get their own list — once unlocked they fold into
+  // the merit-ranked paths above (tagged with a "Regional" chip). We still
+  // compute the state's cards here to drive the email gate's count + preview.
   const stateCards = useMemo(
     () =>
       stateCode
@@ -80,38 +124,31 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
         : [],
     [cards, stateCode],
   )
-  const statePageCount = Math.max(1, Math.ceil(stateCards.length / STATE_PAGE_SIZE))
-  const visibleStateCards = stateCards.slice(
-    statePage * STATE_PAGE_SIZE,
-    (statePage + 1) * STATE_PAGE_SIZE,
-  )
 
   function changeState(slug: string) {
     setStateSlug(slug)
-    setStatePage(0)
   }
 
   const signupRanked = useMemo(
     () =>
       eligibleCards
         .map(c => ({ card: c, value: signupYearOneValue(c) }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 12),
+        .sort((a, b) => b.value - a.value),
     [eligibleCards],
   )
 
   const spendRanked = useMemo(
-    () => rankCardsForSpend(eligibleCards, spend, mode).slice(0, 12),
+    () => rankCardsForSpend(eligibleCards, spend, mode),
     [eligibleCards, spend, mode],
   )
 
   const aprRanked = useMemo(
-    () => rankByIntroApr(eligibleCards, aprMode).slice(0, 12),
+    () => rankByIntroApr(eligibleCards, aprMode),
     [eligibleCards, aprMode],
   )
 
   const travelRanked = useMemo(
-    () => rankByTravelValue(eligibleCards, travelMode, travelProgram || undefined).slice(0, 12),
+    () => rankByTravelValue(eligibleCards, travelMode, travelProgram || undefined),
     [eligibleCards, travelMode, travelProgram],
   )
   const selectedProgram = travelProgram ? findTransferProgram(travelProgram) : null
@@ -155,7 +192,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
           heading="Top sign-up offers, ranked by year-one value"
           note="Year-one value = signup points × point value + first-year statement credits − annual fee."
         >
-          {signupRanked.map(({ card, value }, i) => (
+          {visible(signupRanked, "signup").map(({ card, value }, i) => (
             <CardRow
               key={card.id}
               rank={i + 1}
@@ -165,6 +202,11 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               secondary={`${bonusLabel(card)} after $${card.min_spend.toLocaleString()} in ${card.spend_months}mo`}
             />
           ))}
+          <MoreToggle
+            total={signupRanked.length}
+            expanded={showAll.signup}
+            onToggle={() => setShowAll(s => ({ ...s, signup: !s.signup }))}
+          />
         </ResultBlock>
       )}
 
@@ -179,9 +221,14 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
               Rough numbers are fine. We&apos;ll rank cards by the rewards you&apos;d actually earn.
             </div>
             <div className="cf-spend-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-              {SPEND_BUCKETS.map(b => (
+              {activeSpendCategories.map(b => (
                 <label key={b.key} style={{ display: "block" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#444" }}>{b.label}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#444" }}>{b.label}</span>
+                    {!b.core && (
+                      <button type="button" onClick={() => removeSpendCategory(b.key)} aria-label={`Remove ${b.label}`} style={{ border: 0, background: "transparent", color: "#aaa", cursor: "pointer", padding: 0 }}>×</button>
+                    )}
+                  </div>
                   <div style={{ fontSize: 10, color: "#aaa", marginBottom: 4 }}>{b.hint}</div>
                   <div style={{ display: "flex", alignItems: "center", border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 10px", background: "#fafafa" }}>
                     <span style={{ fontSize: 13, color: "#999" }}>$</span>
@@ -189,7 +236,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                       type="number"
                       min={0}
                       value={spend[b.key] || ""}
-                      onChange={e => setSpend(s => ({ ...s, [b.key]: e.target.value ? Number(e.target.value) : 0 } as SpendInput))}
+                      onChange={e => setSpend(s => ({ ...s, [b.key]: e.target.value ? Number(e.target.value) : 0 }))}
                       placeholder="0"
                       style={{ border: "none", outline: "none", background: "transparent", padding: "9px 6px", fontSize: 14, color: "#111", width: "100%" }}
                     />
@@ -198,13 +245,19 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 </label>
               ))}
             </div>
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }}>
+              <div style={{ fontSize: 11, color: "#777", marginBottom: 7 }}>
+                Add precise categories, including direct travel and issuer-portal bookings.
+              </div>
+              <SpendingCategoryPicker selected={spendCategories} onAdd={addSpendCategory} />
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 16 }}>
               <div style={{ fontSize: 12, color: "#666" }}>
                 ${totalMonthly.toLocaleString()}/mo · ${(totalMonthly * 12).toLocaleString()}/yr total
                 {" · "}
                 <button onClick={() => setSpend(ZERO_SPEND)} style={linkBtn}>clear</button>
                 {" · "}
-                <button onClick={() => setSpend(SAMPLE_SPEND)} style={linkBtn}>reset to example</button>
+                <button onClick={() => { setSpend(SAMPLE_SPEND); setSpendCategories([...SPENDING_CATEGORIES_PRIMARY]) }} style={linkBtn}>reset to example</button>
               </div>
               <div style={{ display: "inline-flex", border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden" }}>
                 <ModeTab active={mode === "ongoing"} onClick={() => setMode("ongoing")}>Best long-term keeper</ModeTab>
@@ -226,9 +279,9 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 Enter some spend above to see your ranking.
               </div>
             ) : (
-              spendRanked.map((e, i) => {
-                const topBuckets = SPEND_BUCKETS
-                  .map(b => ({ label: b.label, val: e.breakdown[b.key] }))
+              visible(spendRanked, "spend").map((e, i) => {
+                const topBuckets = activeSpendCategories
+                  .map(b => ({ label: b.label, val: e.breakdown[b.key] ?? 0 }))
                   .filter(x => x.val > 0)
                   .sort((a, b) => b.val - a.val)
                   .slice(0, 2)
@@ -250,6 +303,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                   />
                 )
               })
+            )}
+            {totalMonthly > 0 && (
+              <MoreToggle
+                total={spendRanked.length}
+                expanded={showAll.spend}
+                onToggle={() => setShowAll(s => ({ ...s, spend: !s.spend }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -294,7 +354,7 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 researching intro-APR terms card by card — this list lights up as the data lands.
               </div>
             ) : (
-              aprRanked.map((c, i) => {
+              visible(aprRanked, "apr").map((c, i) => {
                 const cost = balanceTransferCost(c, balance)
                 return (
                   <CardRow
@@ -311,6 +371,13 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                   />
                 )
               })
+            )}
+            {aprRanked.length > 0 && (
+              <MoreToggle
+                total={aprRanked.length}
+                expanded={showAll.apr}
+                onToggle={() => setShowAll(s => ({ ...s, apr: !s.apr }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -380,20 +447,32 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
                 )}
               </div>
             ) : (
-              travelRanked.map((c, i) => {
-                const perk = travelPerkValue(c.travel!)
-                const cpp = c.travel?.max_transfer_cpp ?? 0
+              visible(travelRanked, "travel").map((c, i) => {
+                const perk = travelPerkValue(c.travel)
+                const cpp = travelTransferCpp(c, travelProgram || undefined)
+                const indirect =
+                  travelMode === "transfer" &&
+                  travelProgram &&
+                  transferKind(c, travelProgram) === "indirect"
                 return (
                   <CardRow
                     key={c.id}
                     rank={i + 1}
                     card={c}
                     primary={travelMode === "transfer" ? `${(cpp * 100).toFixed(1)}¢` : `$${perk.toLocaleString()}`}
-                    primaryLabel={travelMode === "transfer" ? "per point" : "travel value/yr"}
-                    secondary={travelSummary(c, travelMode)}
+                    primaryLabel={travelMode === "transfer" ? (travelProgram ? "per point" : "best partner") : "travel value/yr"}
+                    secondary={travelSummary(c, travelMode, travelProgram || undefined)}
+                    badge={indirect ? "Pool to transfer" : undefined}
                   />
                 )
               })
+            )}
+            {travelRanked.length > 0 && (
+              <MoreToggle
+                total={travelRanked.length}
+                expanded={showAll.travel}
+                onToggle={() => setShowAll(s => ({ ...s, travel: !s.travel }))}
+              />
             )}
           </ResultBlock>
         </div>
@@ -403,50 +482,49 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {path && <BuildPlanCta path={path} />}
 
       {/* ── State filter: add regional/credit-union cards for the user's state ── */}
-      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} />
+      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked} />
 
-      {selectedState && visibleStateCards.length > 0 && (
-        <ResultBlock
-          heading={`${selectedState.name} regional cards`}
-          note={`Verified local bank and credit-union cards, shown ${STATE_PAGE_SIZE} at a time. Membership requirements still apply.`}
-        >
-          {visibleStateCards.map(({ card }, index) => {
-            const hasSignupBonus = card.bonus_amount > 0
-            return (
-              <CardRow
-                key={card.id}
-                rank={statePage * STATE_PAGE_SIZE + index + 1}
-                card={card}
-                primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
-                primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
-                secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
-              />
-            )
-          })}
-          {statePageCount > 1 && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 4 }}>
-              <button
-                type="button"
-                disabled={statePage === 0}
-                onClick={() => setStatePage(page => Math.max(0, page - 1))}
-                style={{ ...pagerButton, opacity: statePage === 0 ? 0.45 : 1 }}
-              >
-                ← Previous 10
-              </button>
-              <span style={{ fontSize: 12, color: "#777" }}>
-                Page {statePage + 1} of {statePageCount}
-              </span>
-              <button
-                type="button"
-                disabled={statePage >= statePageCount - 1}
-                onClick={() => setStatePage(page => Math.min(statePageCount - 1, page + 1))}
-                style={{ ...pagerButton, opacity: statePage >= statePageCount - 1 ? 0.45 : 1 }}
-              >
-                Next 10 →
-              </button>
+      {/* ── Email gate: regional cards stay locked until the visitor unlocks ── */}
+      {selectedState && stateCards.length > 0 && !unlocked && (
+        <div style={{ marginTop: 28 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#111", marginBottom: 2 }}>
+            {selectedState.name} regional cards
+          </div>
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>
+            {stateCards.length} verified local bank and credit-union cards available in {selectedState.name}. Membership requirements still apply.
+          </div>
+          <div style={{ position: "relative", marginBottom: 12 }}>
+            <div
+              aria-hidden
+              style={{ display: "grid", gap: 10, filter: "blur(5px)", pointerEvents: "none", userSelect: "none", maxHeight: 190, overflow: "hidden", opacity: 0.75 }}
+            >
+              {stateCards.slice(0, 3).map(({ card }, index) => {
+                const hasSignupBonus = card.bonus_amount > 0
+                return (
+                  <CardRow
+                    key={card.id}
+                    rank={index + 1}
+                    card={card}
+                    primary={hasSignupBonus ? bonusLabel(card) : `$${card.annual_fee}`}
+                    primaryLabel={hasSignupBonus ? "sign-up bonus" : "annual fee"}
+                    secondary={card.key_benefits[0] || card.eligibility_notes || "Verify current terms before applying."}
+                  />
+                )
+              })}
             </div>
-          )}
-        </ResultBlock>
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 72%)", pointerEvents: "none" }} />
+          </div>
+          <CatalogUnlockGate
+            count={stateCards.length}
+            stateName={selectedState.name}
+            stateCode={stateCode ?? ""}
+            source="spending_state"
+            unlock={unlock}
+            unlocking={unlocking}
+            error={unlockError}
+            noun="local cards"
+          />
+        </div>
       )}
 
       <style>{`
@@ -506,7 +584,7 @@ function BuildPlanCta({ path }: { path: Path }) {
 }
 
 // ── State card filter: pull in regional/credit-union cards for a state ──
-function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number }) {
+function StateCardFilter({ stateSlug, onChange, addedCount, unlocked }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number; unlocked: boolean }) {
   const selected = US_STATES.find(s => s.slug === stateSlug)
   return (
     <div style={{ marginTop: 28, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
@@ -515,8 +593,9 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       </div>
       <div style={{ fontSize: 13, color: "#666", lineHeight: 1.55, marginBottom: 14 }}>
         Most cards above are nationwide. Pick your state to add regional bank and credit-union
-        cards available in your area — they&apos;ll fold into the rankings above. Some require a
-        qualifying county, employer, family, military, or association membership.
+        cards available in your area — they&apos;ll fold straight into the ranked lists above,
+        ranked by the same value math and tagged with a <strong>Regional</strong> chip. Some require
+        a qualifying county, employer, family, military, or association membership.
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
         <select
@@ -541,7 +620,11 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       {selected && (
         <div style={{ fontSize: 13, color: addedCount > 0 ? "#0d7c5f" : "#888", marginTop: 12, lineHeight: 1.5 }}>
           {addedCount > 0 ? (
-            <>Added <strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Check each eligibility note before applying.</>
+            unlocked ? (
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} for {selected.name} {addedCount === 1 ? "is" : "are"} now mixed into the rankings above — look for the <strong>Regional</strong> chip. Check each eligibility note before applying.</>
+            ) : (
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Unlock below to fold {addedCount === 1 ? "it" : "them"} into the rankings above.</>
+            )
           ) : (
             <>No regional cards verified for {selected.name} yet — we add them as issuer and membership terms are confirmed. Nationwide cards above still apply.</>
           )}
@@ -549,17 +632,6 @@ function StateCardFilter({ stateSlug, onChange, addedCount }: { stateSlug: strin
       )}
     </div>
   )
-}
-
-const pagerButton: React.CSSProperties = {
-  border: "1px solid #d8d8d8",
-  borderRadius: 8,
-  background: "#fff",
-  color: "#0d7c5f",
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 700,
-  padding: "9px 12px",
 }
 
 // ── Path chooser card ────────────────────────────────────────────────
@@ -598,8 +670,36 @@ function ResultBlock({ heading, note, children }: { heading: string; note: strin
   )
 }
 
+// ── "Show all" expander ──────────────────────────────────────────────
+// Renders nothing until a list exceeds DEFAULT_VISIBLE, so short result
+// sets stay clean. Lets the finder show every eligible card instead of
+// silently capping the ranking.
+function MoreToggle({ total, expanded, onToggle }: { total: number; expanded: boolean; onToggle: () => void }) {
+  if (total <= DEFAULT_VISIBLE) return null
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      style={{
+        marginTop: 2,
+        justifySelf: "center",
+        border: "1px solid #d8d8d8",
+        borderRadius: 8,
+        background: "#fff",
+        color: "#0d7c5f",
+        cursor: "pointer",
+        fontSize: 13,
+        fontWeight: 700,
+        padding: "10px 18px",
+      }}
+    >
+      {expanded ? "Show fewer" : `Show all ${total} cards`}
+    </button>
+  )
+}
+
 // ── One card result row, with a faux card-art tile ───────────────────
-function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string }) {
+function CardRow({ rank, card, primary, primaryLabel, secondary, badge }: { rank: number; card: CreditCardBonus; primary: string; primaryLabel: string; secondary: string; badge?: string }) {
   const earnChips = topEarnChips(card)
   const score = creditScoreChip(card)
   const detail = detailChips(card)
@@ -609,7 +709,17 @@ function CardRow({ rank, card, primary, primaryLabel, secondary }: { rank: numbe
       <div style={{ fontSize: 13, fontWeight: 800, color: "#bbb", width: 22, textAlign: "center" }}>{rank}</div>
       <CardArt card={card} />
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</span>
+          {badge && (
+            <span
+              title="Earns this currency but doesn't transfer on its own — pool its points into a premium card of the same currency to transfer."
+              style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, letterSpacing: "0.02em", background: "#fff5e6", color: "#9a6400", border: "1px solid #f0dcb4", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap" }}
+            >
+              {badge}
+            </span>
+          )}
+        </div>
         <div style={{ fontSize: 12, color: "#777", marginTop: 2 }}>{secondary}</div>
         {hasAnyChip && (
           <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>

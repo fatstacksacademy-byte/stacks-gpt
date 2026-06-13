@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { existsSync } from "node:fs"
 // Auto-load .env.local so ANTHROPIC_API_KEY / Supabase keys are visible
 // without needing `set -a; source .env.local` first. Node ≥21.7 ships
@@ -31,6 +30,7 @@ import type {
   ProposedEdit,
   FieldResult,
 } from "./types"
+import { auditBankBonuses, printCatalogPreflight } from "../catalog-preflight"
 
 // CLI flags: --only=<id>[,<id>...], --limit=<n>, --no-cache, --no-escalate, --include-expired, --persist
 const args = process.argv.slice(2)
@@ -45,6 +45,7 @@ const USE_CACHE = !args.includes("--no-cache")
 const ESCALATE = !args.includes("--no-escalate")
 const INCLUDE_EXPIRED = args.includes("--include-expired")
 const PERSIST = args.includes("--persist")
+const PREFLIGHT_ONLY = args.includes("--preflight-only")
 
 const CONCURRENCY = 3
 const MAX_ESCALATIONS_PER_RUN = 20
@@ -453,14 +454,18 @@ async function persistResults(
 }
 
 async function main() {
-  // Pull admin URL overrides + verdicts from Supabase. No-op if env unset —
-  // the run still completes, just without the feedback loop.
-  feedbackState = await loadFeedbackState()
-
   const all: BonusRecord[] = [
     ...(bonuses as BonusRecord[]),
     ...(savingsBonuses as unknown as BonusRecord[]),
   ]
+
+  const preflightIssues = auditBankBonuses(all)
+  printCatalogPreflight("bonuses", preflightIssues)
+  if (PREFLIGHT_ONLY) return
+
+  // Pull admin URL overrides + verdicts from Supabase. No-op if env unset —
+  // the run still completes, just without the feedback loop.
+  feedbackState = await loadFeedbackState()
 
   let targets = all
   if (ONLY_IDS) targets = targets.filter((b) => ONLY_IDS.has(b.id))

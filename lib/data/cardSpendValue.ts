@@ -6,40 +6,21 @@
  * signup bonus is layered on separately by the UI so users can weigh a big
  * first-year haul against steady long-term earning.
  *
- * The catalog stores granular reward categories (76+ tokens). We collapse them
- * into the handful of buckets a normal person actually budgets by, then for
- * each bucket pick the card's best-earning tier that covers it.
+ * The catalog stores granular reward categories (76+ tokens). The shared
+ * spending taxonomy exposes a compact core plus precise searchable add-ons,
+ * then picks the card's best-earning tier for every category the user enters.
  */
 import type { CreditCardBonus, RewardsTier } from "./creditCardBonuses"
+import {
+  SPENDING_CATEGORY_BY_KEY,
+  SPENDING_CATEGORY_DEFINITIONS,
+  type SpendingCategory,
+} from "../spendingCategories"
 
-/** User-facing spend buckets. Keep this list short — it's a form, not a survey. */
-export type SpendBucket = "groceries" | "gas" | "dining" | "travel" | "online" | "other"
+export type SpendBucket = SpendingCategory
+export type SpendInput = Partial<Record<SpendBucket, number>>
 
-export type SpendInput = Record<SpendBucket, number> // monthly $ per bucket
-
-export const SPEND_BUCKETS: { key: SpendBucket; label: string; hint: string }[] = [
-  { key: "groceries", label: "Groceries", hint: "supermarkets, warehouse clubs" },
-  { key: "gas", label: "Gas & EV", hint: "gas stations, charging" },
-  { key: "dining", label: "Dining", hint: "restaurants, takeout, delivery" },
-  { key: "travel", label: "Travel", hint: "flights, hotels, transit, rideshare" },
-  { key: "online", label: "Online shopping", hint: "Amazon, online retail" },
-  { key: "other", label: "Everything else", hint: "all other purchases" },
-]
-
-/**
- * Which granular catalog tokens roll up into each user bucket. A card tier
- * "counts" for a bucket if any of its categories appears here. Portal-gated
- * tiers (e.g. "airfare_(portal)") are intentionally EXCLUDED — they require
- * booking through the issuer's travel portal, so they overstate everyday earn.
- */
-const BUCKET_TOKENS: Record<SpendBucket, string[]> = {
-  groceries: ["groceries", "groceries_online", "wholesale_clubs", "walmart", "target", "costco_wholesale", "sam's_club", "department_stores"],
-  gas: ["gas_stations", "gas", "ev_charging"],
-  dining: ["dining"],
-  travel: ["travel", "airfare", "hotels", "car_rentals", "cruises", "transit", "ridesharing", "uber", "lyft", "parking", "toll_fees"],
-  online: ["amazon", "online_retail", "paypal", "digital_wallet_payments", "apple"],
-  other: ["all_other", "everything_else"],
-}
+export const SPEND_BUCKETS = SPENDING_CATEGORY_DEFINITIONS
 
 /** Fallback "base" tier tokens — what unbucketed spend earns. */
 const BASE_TOKENS = ["all_other", "everything_else"]
@@ -74,7 +55,7 @@ function baseRate(card: CreditCardBonus): number {
 
 /** Best $/$ rate a card earns for a given bucket, and whether it beat base. */
 function bestRateForBucket(card: CreditCardBonus, bucket: SpendBucket): { rate: number; capped?: number } {
-  const tokens = BUCKET_TOKENS[bucket]
+  const tokens = SPENDING_CATEGORY_BY_KEY[bucket].catalogTokens
   let best = baseRate(card)
   let cap: number | undefined
   for (const tier of card.rewards ?? []) {
@@ -94,24 +75,34 @@ export type SpendEstimate = {
   /** Ongoing annual reward value in dollars (excludes signup bonus). */
   annualRewards: number
   /** Per-bucket annual reward dollars, for the breakdown UI. */
-  breakdown: Record<SpendBucket, number>
+  breakdown: Partial<Record<SpendBucket, number>>
   /** First-year signup value (points × cpp + credits − effective annual fee). */
   signupValue: number
   /** annualRewards − annual fee (effective ongoing value after year one). */
   netAnnual: number
 }
 
+/** Cash-equivalent value of the welcome bonus before fees or credits. */
+export function signupBonusValue(card: CreditCardBonus, cppOverride?: number): number {
+  // True cashback offers are stored as face-value dollars. A few legacy rows
+  // still say "cash" while carrying points-shaped amounts (20,000+); keep
+  // those on cpp math until the catalog cleanup reaches them.
+  if (card.bonus_currency === "cash" && card.bonus_amount < 2000) return card.bonus_amount
+  return Math.round(card.bonus_amount * (cppOverride ?? card.cpp_value))
+}
+
 /** Signup year-one value, mirroring the /spending page's yearOneValue. */
 export function signupYearOneValue(card: CreditCardBonus): number {
-  const points = card.bonus_amount * card.cpp_value
+  const points = signupBonusValue(card)
   const fee = card.annual_fee_waived_first_year ? 0 : card.annual_fee
   return Math.round(points + card.statement_credits_year1 - fee)
 }
 
 export function estimateCard(card: CreditCardBonus, spend: SpendInput): SpendEstimate {
-  const breakdown = {} as Record<SpendBucket, number>
+  const breakdown: Partial<Record<SpendBucket, number>> = {}
   let annualRewards = 0
-  for (const { key } of SPEND_BUCKETS) {
+  for (const key of Object.keys(spend) as SpendBucket[]) {
+    if (!SPENDING_CATEGORY_BY_KEY[key]) continue
     const monthly = Math.max(0, spend[key] || 0)
     const annualSpend = monthly * 12
     const { rate, capped } = bestRateForBucket(card, key)

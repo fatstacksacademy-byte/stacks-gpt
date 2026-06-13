@@ -11,6 +11,8 @@
  */
 
 import { CreditCardBonus } from "./data/creditCardBonuses"
+import { signupBonusValue } from "./data/cardSpendValue"
+import { transferKind, travelTransferCpp } from "./data/travelValue"
 import { getTravelCpp } from "./travelCpp"
 import {
   DEFAULT_BENEFIT_PROFILE,
@@ -33,10 +35,13 @@ export type SequencedCard = {
   net_value: number
   months_to_complete: number
   return_per_month: number
+  return_on_spend: number
   cumulative_value: number
   cumulative_months: number
   value_breakdown: ValueBreakdown
 }
+
+export type CardRankingMode = "return_per_month" | "max_bonus" | "return_on_spend"
 
 /** Default cap on credit card applications per year. 4 ≈ one every 90 days,
  *  the rough churning consensus for keeping new-account inquiries under
@@ -60,6 +65,10 @@ export function sequenceCards(
   /** User benefit usage profile. Drives per-card benefits value math.
    *  Defaults to DEFAULT_BENEFIT_PROFILE if null/undefined. */
   benefitProfile: UserBenefitProfile | null = null,
+  /** Ranking lens. Defaults to the legacy return-per-month behavior. */
+  rankingMode: CardRankingMode = "return_per_month",
+  /** In Travel Mode, optionally keep only cards whose currency reaches this program. */
+  targetTravelProgram?: string | null,
 ): SequencedCard[] {
   const profile = benefitProfile ?? DEFAULT_BENEFIT_PROFILE
   // Exclude cards with no actionable apply link — recommending them would
@@ -85,7 +94,8 @@ export function sequenceCards(
     }
     // Military-only cards (USAA / Navy Federal / AAFES) — hide unless
     // the user is military-affiliated.
-    if ((c as any).military_only === true && !militaryAffiliated) return false
+    if (c.military_only === true && !militaryAffiliated) return false
+    if (useTravelCpp && targetTravelProgram && transferKind(c, targetTravelProgram) === null) return false
     return true
   })
 
@@ -104,13 +114,15 @@ export function sequenceCards(
 
   const scored = feasible.map(card => {
     // In Travel Mode, swap the per-card cpp for a redemption-ceiling
-    // cpp from TRAVEL_CPP (or the user's per-currency override). Cash
-    // currency keeps its 1:1 short-circuit because TRAVEL_CPP["cash"]
-    // is 0.01 anyway and bonus_amount is already in dollars.
-    const effective_cpp = useTravelCpp ? getTravelCpp(card, cppOverrides) : card.cpp_value
-    const welcome_bonus = card.cpp_value >= 1
-      ? card.bonus_amount * 1                  // cash cards: bonus_amount IS the dollar value
-      : card.bonus_amount * effective_cpp      // points cards
+    // cpp from TRAVEL_CPP, a selected transfer program, or the user's
+    // per-currency override. Cash bonus normalization lives in
+    // signupBonusValue so legacy catalog rows don't collapse to $2 offers.
+    const effective_cpp = useTravelCpp
+      ? targetTravelProgram
+        ? travelTransferCpp(card, targetTravelProgram)
+        : getTravelCpp(card, cppOverrides)
+      : card.cpp_value
+    const welcome_bonus = signupBonusValue(card, effective_cpp)
 
     // Per-card benefits value gated by the user's usage profile. Cards
     // not in the registry return [] and contribute 0 — math unchanged.
@@ -142,12 +154,22 @@ export function sequenceCards(
     const return_per_month = months_to_complete > 0
       ? net_value / months_to_complete
       : net_value
+    const return_on_spend = card.min_spend > 0
+      ? net_value / card.min_spend
+      : net_value
 
-    return { card, net_value, months_to_complete, return_per_month, cumulative_value: 0, cumulative_months: 0, value_breakdown }
+    return { card, net_value, months_to_complete, return_per_month, return_on_spend, cumulative_value: 0, cumulative_months: 0, value_breakdown }
   })
 
-  // Sort by return per month descending — highest value per month of spend first
-  scored.sort((a, b) => b.return_per_month - a.return_per_month)
+  scored.sort((a, b) => {
+    if (rankingMode === "max_bonus") {
+      return b.value_breakdown.welcome_bonus - a.value_breakdown.welcome_bonus || b.net_value - a.net_value
+    }
+    if (rankingMode === "return_on_spend") {
+      return b.return_on_spend - a.return_on_spend || b.net_value - a.net_value
+    }
+    return b.return_per_month - a.return_per_month
+  })
 
   // Filter to only positive-value cards
   const positive = scored.filter(s => s.net_value > 0)

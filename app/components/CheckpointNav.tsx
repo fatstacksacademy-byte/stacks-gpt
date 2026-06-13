@@ -6,7 +6,7 @@ import StacksAccountMenu from "./StacksAccountMenu"
 const tabs = [
   { label: "Dashboard", href: "/stacksos", exact: true },
   { label: "Paycheck", href: "/stacksos/paycheck" },
-  { label: "Spending", href: "/stacksos/spending" },
+  { label: "Spending", href: "/stacksos/spending", beta: true },
   { label: "Savings", href: "/stacksos/savings" },
   { label: "Debt", href: "/stacksos/debt" },
   { label: "Cards", href: "/stacksos/cards" },
@@ -65,6 +65,11 @@ export default function CheckpointNav() {
                 }}
               >
                 {tab.label}
+                {"beta" in tab && tab.beta && (
+                  <sup style={{ fontSize: 8, fontWeight: 700, color: "#0d7c5f", marginLeft: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    Beta
+                  </sup>
+                )}
               </a>
             )
           })}

@@ -2,10 +2,15 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
-import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard, SPENDING_CATEGORIES, SPENDING_CATEGORIES_PRIMARY, SPENDING_CATEGORIES_EXTRA, CATEGORY_LABELS } from "../../../lib/ownedCards"
+import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard } from "../../../lib/ownedCards"
+import {
+  CATEGORY_LABELS,
+  SPENDING_CATEGORIES_EXTRA,
+  SPENDING_CATEGORIES_PRIMARY,
+  type SpendingCategory,
+} from "../../../lib/spendingCategories"
 import { computeCategoryGaps, GAP_MIN_MONTHLY_SPEND } from "../../../lib/categoryGaps"
 import { getSpendingProfile, upsertSpendingProfile, SpendingProfile, DEFAULT_SPENDING_PROFILE } from "../../../lib/spendingProfile"
-import { createClient } from "../../../lib/supabase/client"
 import { creditCardBonuses, type CreditCardBonus } from "../../../lib/data/creditCardBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
 import { isAirlineOrHotelCard, cardRedemptionModes } from "../../../lib/cardCategorization"
@@ -15,12 +20,17 @@ import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import VerifiedBadge from "../../components/VerifiedBadge"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
-import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR } from "../../../lib/ccSequencer"
+import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode } from "../../../lib/ccSequencer"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
+import { signupBonusValue, signupYearOneValue } from "../../../lib/data/cardSpendValue"
+import { TRANSFER_PROGRAMS, findTransferProgram } from "../../../lib/data/catalogTaxonomy"
+import { transferKind } from "../../../lib/data/travelValue"
 import { DEFAULT_BENEFIT_PROFILE, type UserBenefitProfile } from "../../../lib/cardBenefits"
 import { computeWalletSlots } from "../../../lib/walletSlots"
 import CreditCardProgress from "../../components/CreditCardProgress"
+import { useProfile as useUserProfile } from "../../components/ProfileProvider"
+import SpendingCategoryPicker from "../../components/SpendingCategoryPicker"
 
 const money = (n: number) => `$${n.toLocaleString()}`
 const todayStr = () => new Date().toISOString().split("T")[0]
@@ -33,6 +43,7 @@ const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, ba
 const STATUS_OPTIONS = ["planned", "active", "completed", "canceled"] as const
 
 export default function SpendingClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
+  const { profile: userProfile, setProfile: setUserProfile } = useUserProfile()
   const [cards, setCards] = useState<OwnedCard[]>([])
   const [profile, setProfile] = useState<SpendingProfile>({ user_id: userId, ...DEFAULT_SPENDING_PROFILE, updated_at: "" })
   const [loading, setLoading] = useState(true)
@@ -40,6 +51,8 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [showProfile, setShowProfile] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showAdvancedModal, setShowAdvancedModal] = useState(false)
+  const [addedProfileCategories, setAddedProfileCategories] = useState<SpendingCategory[]>([])
+  const [addedModalCategories, setAddedModalCategories] = useState<SpendingCategory[]>([])
   const [showRecommendations, setShowRecommendations] = useState(true)
   const [expandedRecCard, setExpandedRecCard] = useState<string | null>(null)
   const [includeHotelAirline, setIncludeHotelAirline] = useState(false)
@@ -59,9 +72,23 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     const v = localStorage.getItem("stacks_cc_rewards_mode")
     return v === "travel" ? "travel" : "cash"
   })
+  const [rankingMode, setRankingMode] = useState<Extract<CardRankingMode, "max_bonus" | "return_on_spend">>(() => {
+    if (typeof window === "undefined") return "return_on_spend"
+    return localStorage.getItem("stacks_cc_ranking_mode") === "max_bonus" ? "max_bonus" : "return_on_spend"
+  })
+  const [travelProgram, setTravelProgram] = useState<string>(() => {
+    if (typeof window === "undefined") return ""
+    return localStorage.getItem("stacks_cc_travel_program") ?? ""
+  })
   const [showCppOverrides, setShowCppOverrides] = useState(false)
   const [cppResetFlash, setCppResetFlash] = useState(false)
   const [recSearch, setRecSearch] = useState("")
+  // Recommendation list is capped at the top 15 by merit rank so the page
+  // doesn't render the entire catalog. Low-value regional cards unlocked by
+  // a state selection rank below that cutoff, so the cap was silently hiding
+  // the very cards the status strip advertises as "unlocked". This toggle
+  // reveals the full ranked list on demand.
+  const [showAllRecs, setShowAllRecs] = useState(false)
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
@@ -79,25 +106,24 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [fStatus, setFStatus] = useState<OwnedCard["status"]>("planned")
   const [fNotes, setFNotes] = useState("")
   const [fMultipliers, setFMultipliers] = useState<Record<string, string>>({})
-  // User's state (from user_profiles, not spending_profile) — used to filter
-  // cards with state_restricted lists. Fetched alongside spending profile.
-  const [userState, setUserState] = useState<string | null>(null)
-  const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
+  // State and military eligibility live in the shared user profile used by
+  // Paycheck, Savings, and the dashboard. Updating them here immediately
+  // updates every sequencer instead of maintaining a second local copy.
+  const userState = userProfile.state ?? null
+  const militaryAffiliated = userProfile.military_affiliated === true
+  const regionalCardCount = userState
+    ? creditCardBonuses.filter(c => !c.expired && c.state_restricted?.includes(userState)).length
+    : 0
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    const sb = createClient()
-    const [c, p, userProfile, vStates] = await Promise.all([
+    const [c, p, vStates] = await Promise.all([
       getOwnedCards(userId),
       getSpendingProfile(userId),
-      sb.from("user_profiles").select("state, military_affiliated").eq("user_id", userId).maybeSingle(),
       getVerificationStateMap(),
     ])
     setCards(c)
     setProfile(p)
-    const up = userProfile.data as { state?: string | null; military_affiliated?: boolean | null } | null
-    setUserState(up?.state ?? null)
-    setMilitaryAffiliated(up?.military_affiliated === true)
     setVerificationStates(vStates)
     setLoading(false)
   }, [userId])
@@ -107,7 +133,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   function resetForm() {
     setFCardName(""); setFIssuer(""); setFSignupBonus(""); setFAnnualFee(""); setFSpendReq("")
     setFSpendDeadline(""); setFOpenedDate(todayStr()); setFExpectedValue(""); setFActualValue("")
-    setFStatus("planned"); setFNotes(""); setFMultipliers({}); setEditingId(null); setShowAdvancedModal(false)
+    setFStatus("planned"); setFNotes(""); setFMultipliers({}); setEditingId(null); setShowAdvancedModal(false); setAddedModalCategories([])
   }
 
   function populateForm(c: OwnedCard) {
@@ -119,6 +145,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     const mults: Record<string, string> = {}
     for (const [k, v] of Object.entries(c.category_multipliers ?? {})) mults[k] = String(v)
     setFMultipliers(mults)
+    setAddedModalCategories(Object.keys(mults).filter((key): key is SpendingCategory => SPENDING_CATEGORIES_EXTRA.includes(key as SpendingCategory)))
     setShowAdvancedModal(Object.keys(mults).length > 0)
   }
 
@@ -178,6 +205,33 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const monthlySpend = profile.monthly_spend ?? 0
   const baseRate = profile.current_multipliers?.["base"] ?? 2
   const baseAnnualRewards = (monthlySpend * baseRate * 12) / 100
+  const selectedProfileCategories = [
+    ...SPENDING_CATEGORIES_PRIMARY,
+    ...SPENDING_CATEGORIES_EXTRA.filter(category =>
+      addedProfileCategories.includes(category) ||
+      Boolean(profile.category_spend?.[category]) ||
+      Boolean(profile.current_cards?.[category]) ||
+      Boolean(profile.current_multipliers?.[category]),
+    ),
+  ]
+  const selectedModalCategories = [
+    ...SPENDING_CATEGORIES_PRIMARY,
+    ...SPENDING_CATEGORIES_EXTRA.filter(category =>
+      addedModalCategories.includes(category) || Boolean(fMultipliers[category]),
+    ),
+  ]
+
+  function removeProfileCategory(category: SpendingCategory) {
+    if (SPENDING_CATEGORIES_PRIMARY.includes(category)) return
+    const categorySpend = { ...profile.category_spend }
+    const currentCards = { ...profile.current_cards }
+    const currentMultipliers = { ...profile.current_multipliers }
+    delete categorySpend[category]
+    delete currentCards[category]
+    delete currentMultipliers[category]
+    setAddedProfileCategories(current => current.filter(item => item !== category))
+    updateProfile({ category_spend: categorySpend, current_cards: currentCards, current_multipliers: currentMultipliers })
+  }
 
   const totalEarned = completedCards.reduce((s, c) => s + (c.actual_value ?? c.expected_value ?? 0), 0)
   const inProgressValue = activeCards.reduce((s, c) => s + (c.expected_value ?? (c.signup_bonus_value ?? 0) - (c.annual_fee ?? 0)), 0)
@@ -194,14 +248,26 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const trackedNames = new Set(cards.map(c => c.card_name.toLowerCase()))
   const recSearchQ = recSearch.trim().toLowerCase()
   const isTravel = rewardsMode === "travel"
+  const selectedTravelProgram = travelProgram ? findTransferProgram(travelProgram) : null
   const cppOverrides = profile?.cpp_overrides ?? null
   const benefitProfile: UserBenefitProfile = profile?.benefit_usage ?? DEFAULT_BENEFIT_PROFILE
-  const ccSequence = sequenceCards(creditCardBonuses, monthlySpend || 2000, userState, maxCardsPerYear, isTravel, cppOverrides, militaryAffiliated, benefitProfile)
+  const ccSequence = sequenceCards(
+    creditCardBonuses,
+    monthlySpend || 2000,
+    userState,
+    maxCardsPerYear,
+    isTravel,
+    cppOverrides,
+    militaryAffiliated,
+    benefitProfile,
+    rankingMode,
+    travelProgram || null,
+  )
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => {
       const modes = cardRedemptionModes(sc.card)
       if (isTravel) {
-        return modes.includes("travel") && (includeHotelAirline || !isAirlineOrHotelCard(sc.card))
+        return modes.includes("travel") && (travelProgram !== "" || includeHotelAirline || !isAirlineOrHotelCard(sc.card))
       }
       return modes.includes("cash")
     })
@@ -221,7 +287,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     resetForm()
     setFCardName(c.card_name)
     setFIssuer(c.issuer)
-    setFSignupBonus(String(Math.round(c.bonus_amount * c.cpp_value)))
+    setFSignupBonus(String(signupBonusValue(c)))
     setFAnnualFee(String(c.annual_fee_waived_first_year ? 0 : c.annual_fee))
     setFSpendReq(String(c.min_spend))
     setFSpendDeadline(deadlineDate.toISOString().split("T")[0])
@@ -265,15 +331,17 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
 
       {/* Top Bar */}
       <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
-        <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
+          <span style={{ fontSize: 10, fontWeight: 700, color: "#0d7c5f", background: "#e7f7f0", border: "1px solid #a7f3d0", borderRadius: 99, padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Spending Beta</span>
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
-          <select value="" onChange={async e => {
-            if (!e.target.value) return
-            const sb = createClient()
-            await sb.from("user_profiles").update({ state: e.target.value }).eq("user_id", userId)
+          <select value={userState ?? ""} onChange={e => {
+            const nextState = e.target.value || null
+            setUserProfile({ state: nextState })
           }}
-            style={{ fontSize: 12, color: "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            style={{ fontSize: 12, color: userState ? "#0d7c5f" : "#999", fontWeight: userState ? 700 : 400, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
             <option value="">State</option>
             {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
               <option key={s} value={s}>{s}</option>
@@ -295,7 +363,15 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
             Tracking <strong>{creditCardBonuses.filter(c => !c.expired).length}</strong> credit cards
           </span>
           <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-          <span style={{ fontSize: 12, color: "#555" }}>Sequenced by return per month for your spend</span>
+          <span style={{ fontSize: 12, color: "#555" }}>Sequenced by your chosen bonus-return strategy</span>
+          {userState && (
+            <>
+              <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
+              <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>
+                {userState}: {regionalCardCount} regional card{regionalCardCount === 1 ? "" : "s"} unlocked
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -340,18 +416,12 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
             </div>
             <div style={{ fontSize: 11, color: "#bbb", marginTop: 12 }}>Changes save automatically</div>
 
-            {/* Advanced: category breakdown.
-                Two-tier layout: the legacy 7 (dining, groceries, etc.) are always
-                visible; an inner "+ More categories" toggle reveals 11 additional
-                tokens that map directly to creditCardBonuses.ts rewards keys
-                (streaming, transit, EV charging, etc.) so the gap analyzer
-                downstream can match user spend to bonus categories precisely. */}
             <details style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
               <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Advanced rewards setup</summary>
               <div style={{ marginTop: 12 }}>
                 <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Break down your monthly spend by category. Categories with $50+/month feed the Portfolio Gaps analysis above the recommendations.</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
-                  {SPENDING_CATEGORIES_PRIMARY.map(cat => (
+                  {selectedProfileCategories.map(cat => (
                     <CategorySpendRow
                       key={cat}
                       cat={cat}
@@ -359,26 +429,18 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                       profile={profile}
                       updateProfile={updateProfile}
                       inputStyle={inputStyle}
+                      removable={!SPENDING_CATEGORIES_PRIMARY.includes(cat)}
+                      onRemove={() => removeProfileCategory(cat)}
                     />
                   ))}
                 </div>
-                <details style={{ marginTop: 12 }}>
-                  <summary style={{ fontSize: 11, fontWeight: 600, color: "#7c3aed", cursor: "pointer", padding: "4px 0" }}>
-                    + More categories ({SPENDING_CATEGORIES_EXTRA.length})
-                  </summary>
-                  <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
-                    {SPENDING_CATEGORIES_EXTRA.map(cat => (
-                      <CategorySpendRow
-                        key={cat}
-                        cat={cat}
-                        label={CATEGORY_LABELS[cat]}
-                        profile={profile}
-                        updateProfile={updateProfile}
-                        inputStyle={inputStyle}
-                      />
-                    ))}
-                  </div>
-                </details>
+                <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #f3f3f3" }}>
+                  <SpendingCategoryPicker
+                    selected={selectedProfileCategories}
+                    onAdd={category => setAddedProfileCategories(current => current.includes(category) ? current : [...current, category])}
+                    placeholder="Add travel, household, or business spend"
+                  />
+                </div>
               </div>
             </details>
           </div>
@@ -486,10 +548,9 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   </button>
                 )}
               </div>
-              {/* Rewards Mode — Cash uses cash-floor cpp from the catalog,
-                  Travel swaps in TRAVEL_CPP redemption ceilings (with optional
-                  per-currency overrides). Travel mode auto-includes hotel +
-                  airline cards regardless of the airline-toggle below. */}
+              {/* Rewards Mode — Cash uses cash-floor cpp from the catalog.
+                  Travel can target a specific transfer program, matching the
+                  public site's award-travel finder. */}
               <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>
@@ -530,6 +591,32 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   })}
                 </div>
               </div>
+              {isTravel && (
+                <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 200 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Point currency target</div>
+                    <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
+                      Filter to cards that can feed the airline or hotel program you want.
+                    </div>
+                  </div>
+                  <select
+                    value={travelProgram}
+                    onChange={e => {
+                      setTravelProgram(e.target.value)
+                      if (typeof window !== "undefined") localStorage.setItem("stacks_cc_travel_program", e.target.value)
+                    }}
+                    style={{ ...selectStyle, minWidth: 210 }}
+                  >
+                    <option value="">Any transferable currency</option>
+                    <optgroup label="Airlines">
+                      {TRANSFER_PROGRAMS.filter(p => p.kind === "airline").map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
+                    </optgroup>
+                    <optgroup label="Hotels">
+                      {TRANSFER_PROGRAMS.filter(p => p.kind === "hotel").map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
+                    </optgroup>
+                  </select>
+                </div>
+              )}
               {isTravel && (
                 <div style={{ marginBottom: 10 }}>
                   <button
@@ -637,12 +724,45 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   })}
                 </div>
               </div>
+              <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 8, padding: "10px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Ranking priority</div>
+                  <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
+                    Choose the biggest welcome bonus per application or the strongest net return per dollar required.
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 4, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: 2 }}>
+                  {([
+                    ["max_bonus", "Max SUB / app"],
+                    ["return_on_spend", "Max return / spend"],
+                  ] as const).map(([mode, text]) => {
+                    const active = rankingMode === mode
+                    return (
+                      <button
+                        key={mode}
+                        onClick={() => {
+                          setRankingMode(mode)
+                          if (typeof window !== "undefined") localStorage.setItem("stacks_cc_ranking_mode", mode)
+                        }}
+                        style={{
+                          padding: "5px 10px", fontSize: 12, fontWeight: active ? 700 : 500,
+                          color: active ? "#fff" : "#666", background: active ? "#0d7c5f" : "transparent",
+                          border: "none", borderRadius: 4, cursor: "pointer",
+                        }}
+                      >
+                        {text}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
                 <div style={{ fontSize: 12, color: "#999" }}>
-                  Ranked by return per month at {money(monthlySpend || 2000)}/mo spend. Points at 1&cent; (0.5&cent; hotel). Net = bonus - fee + year-1 credits.
+                  {rankingMode === "max_bonus" ? "Ranked by welcome-bonus value per application" : "Ranked by net value divided by required spend"} at {money(monthlySpend || 2000)}/mo spend.
+                  {selectedTravelProgram && <> Targeting <strong>{selectedTravelProgram.name}</strong>.</>}
                   {recSearchQ && <> · <strong>{ccSequence.length}</strong> match{ccSequence.length !== 1 ? "es" : ""} for &ldquo;{recSearch}&rdquo;</>}
                 </div>
-                <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
+                {isTravel && !travelProgram && <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
                   <div onClick={() => setIncludeHotelAirline(!includeHotelAirline)}
                     style={{
                       width: 36, height: 20, borderRadius: 10, position: "relative",
@@ -654,10 +774,22 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                     }} />
                   </div>
                   <span style={{ fontSize: 12, color: "#555" }}>Include airline &amp; hotel cards</span>
+                </label>}
+                <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0 }}>
+                  <input
+                    type="checkbox"
+                    checked={militaryAffiliated}
+                    onChange={e => {
+                      const enabled = e.target.checked
+                      setUserProfile({ military_affiliated: enabled })
+                    }}
+                    style={{ accentColor: "#0d7c5f" }}
+                  />
+                  <span style={{ fontSize: 12, color: "#555" }}>Show USAA / Navy Federal offers</span>
                 </label>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {ccSequence.slice(0, 15).map((sc, idx) => {
+                {(showAllRecs ? ccSequence : ccSequence.slice(0, 15)).map((sc, idx) => {
                   const isExpanded = expandedRecCard === sc.card.id
                   const accentColor = sc.card.card_type === "business" ? "#7c3aed" : "#2563eb"
                   return (
@@ -672,6 +804,9 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                             <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{sc.card.card_name}</span>
                             {sc.card.card_type === "business" && (
                               <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
+                            )}
+                            {travelProgram && transferKind(sc.card, travelProgram) === "indirect" && (
+                              <span title="These points reach the selected program when pooled into a premium card in the same rewards family" style={{ fontSize: 9, color: "#7c3aed", background: "#f5f3ff", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>POOL</span>
                             )}
                             <VerifiedBadge state={verificationStates.get(sc.card.id)} compact />
                             {(() => {
@@ -701,7 +836,12 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                               = {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
                             </div>
                           )}
-                          <div style={{ fontSize: 10, color: "#999" }}>{formatCurrency(sc.return_per_month)}/mo · {sc.months_to_complete.toFixed(1)}mo</div>
+                          <div style={{ fontSize: 10, color: "#999" }}>
+                            {rankingMode === "return_on_spend"
+                              ? `${(sc.return_on_spend * 100).toFixed(1)}% return on required spend`
+                              : `${formatCurrency(sc.return_per_month)}/mo`}
+                            {` · ${sc.months_to_complete.toFixed(1)}mo`}
+                          </div>
                         </div>
                       </div>
                       <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
@@ -734,9 +874,12 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                               annual_fee: sc.card.annual_fee,
                               opened_date: payload.opened_date,
                               spend_deadline: null,
-                              expected_value: sc.card.bonus_amount,
+                              expected_value: signupYearOneValue(sc.card),
                               actual_value: payload.bonus_received ? payload.actual_amount ?? null : null,
                               status: "completed",
+                              role: "daily-driver",
+                              source_type: "catalog",
+                              canonical_offer_id: sc.card.id,
                               notes: payload.incomplete_info ? "Added via 'Already have' — dates unknown" : null,
                               incomplete_info: payload.incomplete_info,
                             })
@@ -815,7 +958,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                           )}
                           {sc.value_breakdown.excluded_benefits.length > 0 && (
                             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                              <div style={{ fontSize: 10, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Not counted (you said you wouldn't use)</div>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Not counted (you said you wouldn&apos;t use)</div>
                               {sc.value_breakdown.excluded_benefits.map((b, i) => (
                                 <div key={i} style={{ fontSize: 11, color: "#bbb" }}>○ ${b.annualValue} — {b.label}</div>
                               ))}
@@ -838,9 +981,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   )
                 })}
                 {ccSequence.length > 15 && (
-                  <div style={{ fontSize: 12, color: "#999", textAlign: "center", padding: 8 }}>
-                    + {ccSequence.length - 15} more cards available
-                  </div>
+                  <button
+                    onClick={() => setShowAllRecs(s => !s)}
+                    style={{ width: "100%", fontSize: 12, color: "#0d7c5f", fontWeight: 600, textAlign: "center", padding: 8, background: "none", border: "none", cursor: "pointer" }}>
+                    {showAllRecs
+                      ? "Show top 15 only ▲"
+                      : `+ ${ccSequence.length - 15} more cards available ▼`}
+                  </button>
                 )}
               </div>
 
@@ -1030,9 +1177,9 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                 <details open={showAdvancedModal} onToggle={e => setShowAdvancedModal((e.target as HTMLDetailsElement).open)}>
                   <summary style={{ fontSize: 12, fontWeight: 600, color: "#999", cursor: "pointer" }}>Advanced: category multipliers</summary>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
-                    {SPENDING_CATEGORIES.map(cat => (
+                    {selectedModalCategories.map(cat => (
                       <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 12, color: "#555", width: 100 }}>{CATEGORY_LABELS[cat]}</span>
+                        <span style={{ fontSize: 12, color: "#555", width: 130 }}>{CATEGORY_LABELS[cat]}</span>
                         <div style={{ position: "relative", flex: 1 }}>
                           <input type="number" step="0.1" value={fMultipliers[cat] ?? ""} onChange={e => setFMultipliers(prev => ({ ...prev, [cat]: e.target.value }))}
                             style={{ ...inputStyle, fontSize: 12 }} placeholder="1" />
@@ -1040,6 +1187,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                         </div>
                       </div>
                     ))}
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    <SpendingCategoryPicker
+                      selected={selectedModalCategories}
+                      onAdd={category => setAddedModalCategories(current => current.includes(category) ? current : [...current, category])}
+                      placeholder="Add another multiplier category"
+                    />
                   </div>
                 </details>
               </div>
@@ -1195,16 +1349,23 @@ function CategorySpendRow({
   profile,
   updateProfile,
   inputStyle,
+  removable,
+  onRemove,
 }: {
-  cat: string
+  cat: SpendingCategory
   label: string
   profile: SpendingProfile
   updateProfile: (updates: Partial<SpendingProfile>) => void
   inputStyle: React.CSSProperties
+  removable?: boolean
+  onRemove?: () => void
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <div style={{ fontSize: 11, color: "#999" }}>{label}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, color: "#999" }}>
+        <span>{label}</span>
+        {removable && <button type="button" onClick={onRemove} aria-label={`Remove ${label}`} style={{ border: 0, padding: 0, color: "#aaa", background: "transparent", cursor: "pointer" }}>×</button>}
+      </div>
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ position: "relative", flex: 1 }}>
           <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12 }}>$</span>
@@ -1231,9 +1392,8 @@ function CategorySpendRow({
 //    where the user reports $50+/mo, compares their best owned-card multiplier
 //    to the best multiplier in the catalog they don't already own. Renders one
 //    row per category, sorted by annual $ uplift descending. Also embeds a
-//    "My current cards" pill list + a quick "+ Add card" search that writes
-//    directly to owned_cards (status='completed') so the gap math gets honest
-//    inputs without making users round-trip through the Base tab. ──
+//    "My current cards" pill list + a quick "+ Add card" search with separate
+//    actions for a bonus in progress versus a wallet-only card. ──
 function PortfolioGaps({
   ownedCards,
   categorySpend,
@@ -1272,15 +1432,28 @@ function PortfolioGaps({
       .slice(0, 8)
   }, [search, ownedNameSet])
 
-  async function quickAddOwned(card: CreditCardBonus) {
+  async function quickAddOwned(card: CreditCardBonus, status: "active" | "completed") {
     setAdding(card.id)
+    const openedDate = status === "active" ? todayStr() : null
+    const deadlineDate = new Date(`${openedDate ?? todayStr()}T00:00:00`)
+    deadlineDate.setMonth(deadlineDate.getMonth() + card.spend_months)
     await addOwnedCard(userId, {
       card_name: card.card_name,
       issuer: card.issuer,
       annual_fee: card.annual_fee,
-      status: "completed",
-      incomplete_info: true,
-      notes: "Added via Portfolio Gaps quick-add — dates not entered",
+      signup_bonus_value: status === "active" ? signupBonusValue(card) : null,
+      spend_requirement: status === "active" ? card.min_spend : null,
+      spend_deadline: status === "active" ? deadlineDate.toISOString().split("T")[0] : null,
+      opened_date: openedDate,
+      expected_value: status === "active" ? signupYearOneValue(card) : null,
+      status,
+      role: status === "active" ? "sub-in-progress" : "daily-driver",
+      source_type: "catalog",
+      canonical_offer_id: card.id,
+      incomplete_info: status === "completed",
+      notes: status === "active"
+        ? "Added via Portfolio Gaps — actively working on welcome bonus"
+        : "Added via Portfolio Gaps — wallet card, dates not entered",
     })
     setSearch("")
     setShowAddCard(false)
@@ -1313,9 +1486,7 @@ function PortfolioGaps({
         </div>
       </div>
 
-      {/* My current cards pill list — single source of truth is the
-          owned_cards table. Adding here writes status='completed' so the
-          card appears in the Completed strip below as well. */}
+      {/* My current cards pill list — single source of truth is owned_cards. */}
       <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", marginBottom: 10 }}>
         <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
           My current cards ({ownedActive.length})
@@ -1360,18 +1531,25 @@ function PortfolioGaps({
                 {searchResults.length === 0 ? (
                   <div style={{ fontSize: 11, color: "#999", padding: "8px 10px" }}>No matches.</div>
                 ) : searchResults.map(card => (
-                  <button key={card.id} onClick={() => quickAddOwned(card)}
-                    disabled={adding !== null}
-                    style={{
-                      display: "block", width: "100%", textAlign: "left", padding: "7px 10px",
-                      background: "#fff", border: "none", borderBottom: "1px solid #f5f5f5",
-                      cursor: adding ? "not-allowed" : "pointer",
-                      fontSize: 12, color: "#111",
-                    }}>
-                    <span style={{ fontWeight: 600 }}>{card.card_name}</span>
-                    <span style={{ color: "#999", marginLeft: 6 }}>{card.issuer}</span>
-                    {adding === card.id && <span style={{ color: "#0d7c5f", marginLeft: 6 }}>adding…</span>}
-                  </button>
+                  <div key={card.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", background: "#fff", borderBottom: "1px solid #f5f5f5" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, color: "#111", fontWeight: 600 }}>{card.card_name}</div>
+                      <div style={{ fontSize: 10, color: "#999", marginTop: 1 }}>
+                        {card.issuer}
+                        {signupBonusValue(card) > 0 && <> · ${signupBonusValue(card).toLocaleString()} after ${card.min_spend.toLocaleString()}</>}
+                      </div>
+                    </div>
+                    {signupBonusValue(card) > 0 && card.min_spend > 0 && (
+                      <button onClick={() => quickAddOwned(card, "active")} disabled={adding !== null}
+                        style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#2563eb", border: "none", borderRadius: 5, padding: "5px 8px", cursor: adding ? "not-allowed" : "pointer" }}>
+                        Track SUB
+                      </button>
+                    )}
+                    <button onClick={() => quickAddOwned(card, "completed")} disabled={adding !== null}
+                      style={{ fontSize: 10, fontWeight: 600, color: "#555", background: "#fff", border: "1px solid #ddd", borderRadius: 5, padding: "5px 8px", cursor: adding ? "not-allowed" : "pointer" }}>
+                      {adding === card.id ? "Adding…" : "Add to wallet"}
+                    </button>
+                  </div>
                 ))}
               </div>
             )}

@@ -3,8 +3,20 @@
 import React, { Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { runSequencer, SequencedBonus } from "@/lib/sequencer"
+import { runSavingsSequencer } from "@/lib/savingsSequencer"
+import { sequenceCards, DEFAULT_MAX_CARDS_PER_YEAR } from "@/lib/ccSequencer"
+import { creditCardBonuses } from "@/lib/data/creditCardBonuses"
+import { bonuses as checkingBonuses } from "@/lib/data/bonuses"
+import { savingsBonuses } from "@/lib/data/savingsBonuses"
 import { createClient } from "@/lib/supabase/client"
 import { track } from "@/lib/analytics"
+
+// Size of the live catalog we sequence from — used to contrast the curated
+// plan against the full pool ("the X most profitable, picked from N tracked").
+const TOTAL_TRACKED =
+  checkingBonuses.filter((b: any) => !b.expired).length +
+  savingsBonuses.length +
+  creditCardBonuses.filter(c => !c.expired).length
 
 // Opt out of static prerender — useSearchParams reads from the request,
 // and the now-Supabase-free root layout no longer transitively marks
@@ -28,6 +40,11 @@ const FREQ_LABEL: Record<PayFrequency, string> = {
 }
 
 type Step = "frequency" | "paycheck" | "projection"
+
+// One row in the projection list, normalized across all three sequencers
+// (checking/paycheck, savings, and credit-card spending) so the total and
+// the displayed bonuses cover every angle, not just direct deposit.
+type ProjItem = { bank_name: string; amount: number; start_week: number }
 
 function addDays(days: number): Date {
   const d = new Date()
@@ -60,7 +77,9 @@ function OnboardingInner() {
   const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [ddSlots, setDdSlots] = useState<string>("1")
   const [savingsBalance, setSavingsBalance] = useState<string>("")
-  const [bonuses, setBonuses] = useState<SequencedBonus[]>([])
+  const [monthlySpend, setMonthlySpend] = useState<string>("")
+  const [bonuses, setBonuses] = useState<ProjItem[]>([])
+  const [counts, setCounts] = useState({ paycheck: 0, savings: 0, spending: 0 })
   const [yearTotal, setYearTotal] = useState(0)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -85,8 +104,11 @@ function OnboardingInner() {
 
   function handleBuildPlan() {
     const amt = parseInt(paycheck.replace(/\D/g, "")) || 0
-    if (amt <= 0) return
+    if (amt <= 0 || !userState) return
+    const savingsAmt = parseInt(savingsBalance.replace(/\D/g, "")) || 0
+    const spendAmt = parseInt(monthlySpend.replace(/\D/g, "")) || 0
 
+    // ── 1. Paycheck (checking / direct-deposit bonuses) ──
     const result = runSequencer({
       slots: parseInt(ddSlots) || 1,
       payFrequency: frequency,
@@ -96,19 +118,45 @@ function OnboardingInner() {
       userState: userState || undefined,
       militaryAffiliated,
     })
-
-    const allBonusEntries = result.slots.flat().filter(
+    const checkingEntries = result.slots.flat().filter(
       (e): e is SequencedBonus => e.type === "bonus" && e.start_week <= 52
     )
+    // Use NET bonuses (post-fee). Every placement the sequencer fits inside the
+    // 52-week horizon is a real, feasible bonus, so surface them all rather than
+    // clamping the count.
+    const checkingItems: ProjItem[] = [...checkingEntries]
+      .sort((a, b) => a.start_week - b.start_week)
+      .map(b => ({ bank_name: b.bank_name, amount: b.net_bonus ?? b.bonus_amount, start_week: b.start_week }))
 
-    // First-year projection: use NET bonuses (post-fee) and cap at the first 12
-    // placements ranked by start week. The unclamped sum of every slot×bonus
-    // over 52 weeks reads as implausibly high — 12 bonuses is what the
-    // landing copy promises and lines up with a realistic first-year cadence.
-    const sortedByStart = [...allBonusEntries].sort((a, b) => a.start_week - b.start_week)
-    const firstYearBonuses = sortedByStart.slice(0, 12)
-    const total = firstYearBonuses.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount), 0)
-    setBonuses(firstYearBonuses)
+    // ── 2. Savings (park-cash bonuses ranked by effective APY) ──
+    // Only count bonuses that can be *started* within the next 12 months —
+    // the savings sequencer rotates capital indefinitely, so cap the horizon.
+    let savingsItems: ProjItem[] = []
+    if (savingsAmt > 0) {
+      const sres = runSavingsSequencer({
+        availableBalance: savingsAmt,
+        userState: userState || undefined,
+        includeBrokerage: true,
+        militaryAffiliated,
+      })
+      savingsItems = (sres.entries ?? [])
+        .filter(e => e.start_day <= 365)
+        .map(e => ({ bank_name: e.bank_name, amount: Math.round(e.total_earnings ?? 0), start_week: Math.max(1, Math.round(e.start_day / 7)) }))
+    }
+
+    // ── 3. Spending (credit-card signup bonuses ranked by net value) ──
+    let spendingItems: ProjItem[] = []
+    if (spendAmt > 0) {
+      const seq = sequenceCards(creditCardBonuses, spendAmt, userState || null, DEFAULT_MAX_CARDS_PER_YEAR, false, null, militaryAffiliated)
+      spendingItems = seq
+        .filter(s => s.cumulative_months <= 12)
+        .map(s => ({ bank_name: s.card.card_name, amount: Math.round(s.net_value), start_week: Math.max(1, Math.round(Math.max(0, s.cumulative_months - s.months_to_complete) * 4.33)) }))
+    }
+
+    const merged = [...checkingItems, ...savingsItems, ...spendingItems].sort((a, b) => a.start_week - b.start_week)
+    const total = merged.reduce((s, b) => s + b.amount, 0)
+    setBonuses(merged)
+    setCounts({ paycheck: checkingItems.length, savings: savingsItems.length, spending: spendingItems.length })
     setYearTotal(total)
     setStep("projection")
   }
@@ -137,6 +185,8 @@ function OnboardingInner() {
   }
 
   const paycheckAmt = parseInt(paycheck.replace(/\D/g, "")) || 0
+  const savingsAmt = parseInt(savingsBalance.replace(/\D/g, "")) || 0
+  const spendAmt = parseInt(monthlySpend.replace(/\D/g, "")) || 0
   const firstBonus = bonuses[0] ?? null
 
 
@@ -212,6 +262,9 @@ function OnboardingInner() {
               </h1>
               <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine. This helps us find the best bonuses for you.</p>
             </div>
+            <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>
+              Paycheck amount <span style={{ color: "#bbb" }}>({FREQ_LABEL[frequency]}, take-home)</span>
+            </div>
             <div style={{ position: "relative", marginBottom: 24 }}>
               <span style={{
                 position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)",
@@ -240,10 +293,18 @@ function OnboardingInner() {
                 </select>
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available <span style={{ color: "#bbb" }}>(optional)</span></div>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available</div>
                 <div style={{ position: "relative" }}>
                   <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
                   <input type="number" value={savingsBalance} onChange={e => setSavingsBalance(e.target.value)}
+                    style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Monthly card spend <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Beta</span></div>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
+                  <input type="number" value={monthlySpend} onChange={e => setMonthlySpend(e.target.value)}
                     style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
                 </div>
               </div>
@@ -251,8 +312,8 @@ function OnboardingInner() {
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(unlocks state-specific bonuses)</span></div>
               <select value={userState} onChange={e => setUserState(e.target.value)}
-                style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
-                <option value="">Nationwide bonuses only</option>
+                style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: userState ? "#111" : "#999" }}>
+                <option value="" disabled>Select your state</option>
                 {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -274,12 +335,12 @@ function OnboardingInner() {
                 </span>
               </label>
             </div>
-            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0}
+            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0 || !userState}
               style={{
                 width: "100%", padding: "16px", fontSize: 16, fontWeight: 700,
-                background: paycheckAmt > 0 ? "#0d7c5f" : "#e0e0e0",
+                background: paycheckAmt > 0 && userState ? "#0d7c5f" : "#e0e0e0",
                 color: "#fff", border: "none", borderRadius: 12,
-                cursor: paycheckAmt > 0 ? "pointer" : "not-allowed",
+                cursor: paycheckAmt > 0 && userState ? "pointer" : "not-allowed",
                 transition: "background 0.15s",
               }}>
               Show my projection →
@@ -306,9 +367,11 @@ function OnboardingInner() {
                   <p style={{ fontSize: 16, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>in the next 12 months</p>
                   <p style={{ fontSize: 14, color: "#999", margin: "0 0 4px" }}>
                     Based on a ${paycheckAmt.toLocaleString()} {FREQ_LABEL[frequency]} paycheck
+                    {savingsAmt > 0 ? `, $${savingsAmt.toLocaleString()} savings` : ""}
+                    {spendAmt > 0 ? `, $${spendAmt.toLocaleString()}/mo card spend` : ""}
                   </p>
                   <p style={{ fontSize: 13, color: "#aaa", margin: 0 }}>
-                    Most first bonuses pay $300–$400.
+                    Across checking, savings &amp; credit-card bonuses.
                   </p>
                 </div>
 
@@ -324,7 +387,7 @@ function OnboardingInner() {
                       <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{firstBonus.bank_name}</div>
                       <div style={{ fontSize: 12, color: "#666" }}>Start ~{fmtDate(addDays(firstBonus.start_week * 7))}</div>
                     </div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.bonus_amount}</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f" }}>${firstBonus.amount.toLocaleString()}</div>
                   </div>
                 )}
 
@@ -339,22 +402,34 @@ function OnboardingInner() {
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
                         <div style={{ fontSize: 11, color: "#bbb" }}>Start ~{fmtDate(addDays(b.start_week * 7))}</div>
                       </div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>${b.bonus_amount}</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#0d7c5f" }}>${b.amount.toLocaleString()}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* Total count teaser */}
-                {bonuses.length > 3 && (
+                {/* Plan breakdown by category */}
+                {bonuses.length > 0 && (
                   <div style={{
                     background: "#f8f8f8", border: "1px solid #e8e8e8", borderRadius: 10,
-                    padding: "14px 16px", marginBottom: 16, textAlign: "center",
+                    padding: "16px", marginBottom: 16,
                   }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 2 }}>
-                      10+ more bonuses in your plan
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 12, textAlign: "center" }}>
+                      {bonuses.length} bonuses in your plan
                     </div>
-                    <div style={{ fontSize: 12, color: "#999" }}>
-                      Stacks OS tracks nationwide bonuses worth your time and ranks them by profitability.
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {[
+                        { label: "Paycheck", n: counts.paycheck },
+                        { label: "Savings", n: counts.savings },
+                        { label: "Credit card", n: counts.spending },
+                      ].map(c => (
+                        <div key={c.label} style={{ flex: 1, textAlign: "center", padding: "10px 6px", background: "#fff", border: "1px solid #eee", borderRadius: 8 }}>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f", lineHeight: 1 }}>{c.n}</div>
+                          <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>{c.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#999", marginTop: 12, textAlign: "center" }}>
+                      The most profitable picks from the <strong style={{ color: "#0d7c5f" }}>{TOTAL_TRACKED.toLocaleString()}+ bonuses</strong> Stacks OS tracks — ranked and sequenced for you.
                     </div>
                   </div>
                 )}
@@ -375,8 +450,8 @@ function OnboardingInner() {
                       boxShadow: selectedPlan === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
                       transition: "all 0.15s",
                     }}>
-                      Annual · $50/yr
-                      <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 700, marginLeft: 6 }}>Save 17%</span>
+                      Annual · $99/yr
+                      <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 700, marginLeft: 6 }}>Save 18%</span>
                     </button>
                     <button onClick={() => setSelectedPlan("monthly")} style={{
                       flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -386,17 +461,17 @@ function OnboardingInner() {
                       boxShadow: selectedPlan === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
                       transition: "all 0.15s",
                     }}>
-                      Monthly · $5/mo
+                      Monthly · $10/mo
                     </button>
                   </div>
 
                   {selectedPlan === "annual" ? (
                     <>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
-                        $50 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
+                        $99 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
                       </div>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
-                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 50)}x return.</strong>
+                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 99)}x return.</strong>
                       </div>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
                         Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
@@ -405,10 +480,10 @@ function OnboardingInner() {
                   ) : (
                     <>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
-                        $5/mo unlocks ~<strong style={{ color: "#111" }}>${Math.round(yearTotal / 12).toLocaleString()}/month</strong> in bonuses.
+                        $10/mo unlocks ~<strong style={{ color: "#111" }}>${Math.round(yearTotal / 12).toLocaleString()}/month</strong> in bonuses.
                       </div>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
-                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 60)}x return.</strong>
+                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 120)}x return.</strong>
                       </div>
                       <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
                         Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
@@ -423,7 +498,7 @@ function OnboardingInner() {
                       color: "#fff", border: "none", borderRadius: 10,
                       cursor: checkoutLoading ? "wait" : "pointer",
                     }}>
-                    {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my bonus plan for $50/year" : "Unlock my bonus plan for $5/mo"}
+                    {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my bonus plan for $99/year" : "Unlock my bonus plan for $10/mo"}
                   </button>
                   {checkoutError && (
                     <div style={{ fontSize: 12, color: "#dc2626", textAlign: "center" as const, marginTop: 8 }}>
@@ -459,6 +534,10 @@ function OnboardingInner() {
                     ))}
                   </div>
                 </div>
+                <button onClick={() => setStep("paycheck")}
+                  style={{ display: "block", margin: "16px auto 0", fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer" }}>
+                  ← Edit my numbers
+                </button>
               </>
             ) : (
               <div style={{ textAlign: "center" }}>

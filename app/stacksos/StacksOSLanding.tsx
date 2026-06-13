@@ -16,6 +16,23 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
   const [error, setError] = useState<string | null>(null)
   const [billingLoading, setBillingLoading] = useState(false)
 
+  // Prefill the email captured by the catalog email-gate (localStorage key set
+  // by useCatalogUnlock on /spending and /bonuses), so a visitor who unlocked
+  // the catalog but didn't click their magic link sees their email already
+  // filled here — one less field to re-type to finish their free account.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("fsa_catalog_unlocked")
+      // One-time seed from localStorage (an external system) on mount; kept in
+      // an effect rather than a lazy initializer so server/client first render
+      // match (no hydration mismatch). Single, harmless extra render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (saved && saved.includes("@")) setEmail(prev => prev || saved)
+    } catch {
+      /* localStorage unavailable (private mode) — no prefill, no harm */
+    }
+  }, [])
+
   async function handleManageBilling() {
     setBillingLoading(true)
     try {
@@ -128,10 +145,10 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               <span style={{ color: "#0d7c5f" }}>in one place — free.</span>
             </h1>
             <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 12px", maxWidth: 480 }}>
-              Banks pay $300–$500 cash bonuses for new accounts. Stacks OS keeps a checklist for every bonus you start, reminds you about deadlines, and tracks your lifetime earnings — all free.
+              Banks pay $300–$500 cash bonuses for new accounts. Stacks OS replaces your bonus spreadsheet — the full researched catalog, a checklist for every bonus, deposit and deadline tracking, cooldown countdowns, and lifetime earnings. All free.
             </p>
             <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.6, margin: "0 0 32px", maxWidth: 480 }}>
-              Upgrade to <strong style={{ color: "#0d7c5f" }}>Pro ($5/mo)</strong> when you want the personalized queue that ranks bonuses for your paycheck.
+              Upgrade to <strong style={{ color: "#0d7c5f" }}>Pro ($10/mo)</strong> when you want the personalized queues that rank checking, savings, and credit-card bonuses and tell you which to do next.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
@@ -198,18 +215,24 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
           Everything handled in one place
         </h2>
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
+        <p style={{ fontSize: 12, color: "#bbb", textAlign: "center", margin: "-36px 0 40px" }}>Everything below is <span style={{ fontWeight: 700, color: "#0d7c5f" }}>free</span>. <span style={{ fontWeight: 700, color: "#0d7c5f" }}>Pro</span>-tagged items add the sequencer on top.</p>
         <div className="lp-grid-2">
-          {[
-            { title: "Bonus research done for you", desc: "Bank promotions change constantly. Stacks keeps track of current offers so you don't have to check blogs and forums." },
-            { title: "Never miss a requirement", desc: "Track deposit amounts and deadlines so bonuses don't slip through the cracks." },
+          {([
+            { title: "Full researched bonus catalog", desc: "Every current offer with complete requirements — deposit amounts, deadlines, fees, and eligibility. No more digging through blogs, forums, and Reddit." },
             { title: "Step-by-step checklist for every bonus", desc: "Each bonus is broken into simple steps. Check them off as you go. Always know what to do next." },
-            { title: "Know which bonus to do next", desc: "Stacks builds a personalized sequence based on your paycheck. No guessing which bank to try." },
+            { title: "Never miss a requirement", desc: "Track deposit amounts and deadlines so bonuses don't slip through the cracks." },
+            { title: "Know when you're eligible again", desc: "Stacks tracks each bonus's cooldown and counts down the days until you can earn it a second time. No spreadsheet formula required." },
+            { title: "Lifetime earnings + history", desc: "Every bonus you've earned, totaled automatically, with a full record of what you've completed." },
             { title: "One dashboard for everything", desc: "See what's in progress, what's next, and what's cooling down — all in one place." },
-            { title: "12-month earnings projection", desc: "See your projected bonus earnings before you even start. Updated as you complete bonuses." },
-            { title: "Bonuses ranked by value", desc: "Stacks OS prioritizes the highest-value bank bonuses available. Recommendations are based on profitability and requirements — not affiliate payouts." },
-          ].map((f, i) => (
+            { title: "Know which bonus to do next", desc: "Stacks ranks checking, savings, and credit-card bonuses for your situation and tells you which one to start next. No guessing which bank to try.", pro: true },
+            { title: "12-month earnings projection", desc: "See your projected bonus earnings before you even start. Updated as you complete bonuses.", pro: true },
+            { title: "Bonuses ranked by value", desc: "Stacks OS prioritizes the highest-value bank bonuses available. Recommendations are based on profitability and requirements — not affiliate payouts.", pro: true },
+          ] as { title: string; desc: string; pro?: boolean }[]).map((f, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 12, padding: "24px", border: "1px solid #e8e8e8" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{f.title}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{f.title}</span>
+                {f.pro && <span style={{ fontSize: 10, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", padding: "2px 7px", borderRadius: 99, letterSpacing: "0.04em", textTransform: "uppercase" }}>Pro</span>}
+              </div>
               <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>{f.desc}</div>
             </div>
           ))}
@@ -251,7 +274,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             Sign up free. Start tracking bonuses in 30 seconds.
           </h3>
           <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px", lineHeight: 1.5 }}>
-            No credit card. Upgrade to Pro anytime for the personalized queue.
+            No credit card. Upgrade to Pro anytime for the personalized checking, savings, and card queues.
           </p>
 
           <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -275,7 +298,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
               cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
             }}>
-              {loading ? "Creating account…" : "Show my projection →"}
+              {loading ? "Creating account…" : "Start tracking free →"}
             </button>
           </form>
 
@@ -332,7 +355,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 40px" }}>The bonuses are real. The tracking becomes the problem.</p>
         <div className="lp-compare" style={{ gap: 20 }}>
           <div style={{ background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Doing it manually</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Tracking in a spreadsheet</div>
             {[
               "Checking blogs and Reddit for new bonuses",
               "Trying to remember deposit requirements and deadlines",
@@ -347,13 +370,13 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             ))}
           </div>
           <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Using Stacks OS</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS — free</div>
             {[
-              "Current bonuses organized in one place",
+              "Full researched catalog with every requirement",
               "Clear checklist for every bonus",
-              "Dashboard shows what's in progress and what's next",
+              "Dashboard shows what's in progress and cooling down",
               "Track deposits and deadlines automatically",
-              "A personalized roadmap that keeps bonuses going",
+              "Cooldown countdowns show when you're eligible again",
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
                 <span style={{ color: "#0d7c5f", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
@@ -401,8 +424,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── PRICING ── */}
       <section id="pricing" className="lp-section" style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Free, with an optional upgrade</h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Start free. Upgrade to Pro when you want the personalized queue.</p>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Free does the tracking. Pro does the thinking.</h2>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Free replaces your bonus spreadsheet. Upgrade to Pro when you want the sequencer to rank and schedule what to do next.</p>
 
         <div className="lp-pricing-row">
           {/* ── FREE ── */}
@@ -410,10 +433,10 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             background: "#fff", border: "1px solid #e8e8e8",
             borderRadius: 16, padding: "32px", textAlign: "left",
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 14 }}>Free</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Free</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 14 }}>Replaces your bonus spreadsheet</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
               <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>$0</span>
-              <span style={{ fontSize: 16, color: "#999" }}>/forever</span>
             </div>
             <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>No credit card required</div>
 
@@ -427,11 +450,11 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                "Track any bank bonus you start",
-                "Step-by-step checklist for every bonus",
+                "Full researched catalog — every requirement, fee & deadline",
+                "Track any bonus you start, step-by-step",
                 "Deposit + deadline reminders",
-                "Lifetime earned + history",
-                "Browse the public master bonus list",
+                "Cooldown countdown — when you're eligible again",
+                "Lifetime earned + full history",
               ].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#555" }}>
                   <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}
@@ -452,7 +475,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             }}>
               RECOMMENDED
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 14 }}>Pro</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Pro</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 14 }}>The sequencer — tells you what to do next</div>
 
             <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 14 }}>
               <button onClick={() => setBillingCycle("monthly")} style={{
@@ -466,15 +490,15 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 background: billingCycle === "annual" ? "#fff" : "transparent",
                 color: billingCycle === "annual" ? "#111" : "#999",
                 boxShadow: billingCycle === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-              }}>Annual <span style={{ fontSize: 10, color: "#0d7c5f", fontWeight: 700 }}>Save 17%</span></button>
+              }}>Annual <span style={{ fontSize: 10, color: "#0d7c5f", fontWeight: 700 }}>Save 18%</span></button>
             </div>
 
             <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "5" : "50"}</span>
+              <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "10" : "99"}</span>
               <span style={{ fontSize: 16, color: "#999" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
             </div>
             <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>
-              {billingCycle === "annual" ? "$4.17/mo billed annually" : "Cancel anytime"}
+              {billingCycle === "annual" ? "$8.25/mo billed annually" : "Cancel anytime"}
             </div>
 
             <a href="#signup" style={{
@@ -488,12 +512,12 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             <div style={{ fontSize: 12, fontWeight: 600, color: "#666", marginBottom: 10 }}>Everything in Free, plus:</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                "Personalized bonus queue ranked by net payout",
-                "Sequencing with cooldown + eligibility logic",
-                "Savings + spending sequencers",
+                "Paycheck queue — checking bonuses ranked by net payout",
+                "Savings sequencer — HYSA & savings bonuses ranked by APY",
+                "Spending sequencer (Beta) — credit-card bonuses ranked by net value",
+                "Auto-sequencing with cooldown + eligibility logic",
                 "12-month earnings projection",
                 "Tax summary tools",
-                "Bonus details + full requirements",
               ].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#555" }}>
                   <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}

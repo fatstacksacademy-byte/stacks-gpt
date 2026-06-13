@@ -16,7 +16,7 @@
  * All functions are pure and cheap; recompute on the client at render time.
  */
 
-import { savingsBonuses } from "./data/savingsBonuses"
+import { savingsBonuses, practicalHoldDays } from "./data/savingsBonuses"
 import { bonuses } from "./data/bonuses"
 import { creditCardBonuses, type RewardsTier } from "./data/creditCardBonuses"
 import type { OwnedAccount } from "./ownedAccounts"
@@ -88,12 +88,13 @@ export function recommendSavingsRateGaps(
     const affordable = b.tiers.filter(t => t.min_deposit <= balance)
     if (affordable.length === 0) continue
     const tier = affordable.reduce((best, t) => t.bonus_amount > best.bonus_amount ? t : best)
-    const interestForRanking = tier.min_deposit * b.base_apy * (b.total_hold_days / 365)
-    const effectiveApy = (tier.bonus_amount + interestForRanking) / tier.min_deposit * (365 / b.total_hold_days)
+    const holdDays = practicalHoldDays(b)
+    const interestForRanking = tier.min_deposit * b.base_apy * (holdDays / 365)
+    const effectiveApy = (tier.bonus_amount + interestForRanking) / tier.min_deposit * (365 / holdDays)
     // The user-facing dollar figure assumes their whole balance flows
     // into the bonus account (capped by tier.min_deposit only when the
     // tier itself caps deposits — most bonuses don't, so use balance).
-    const interestDuringHold = balance * b.base_apy * (b.total_hold_days / 365)
+    const interestDuringHold = balance * b.base_apy * (holdDays / 365)
     const totalEarnings = tier.bonus_amount + interestDuringHold
     candidates.push({
       bonus: b,
@@ -110,7 +111,7 @@ export function recommendSavingsRateGaps(
   for (const c of top3) {
     const gap = c.effectiveApy - currentApy
     if (gap < SAVINGS_APY_GAP) continue
-    const days = c.bonus.total_hold_days
+    const days = practicalHoldDays(c.bonus)
     out.push({
       id: `savings-rate:${c.bonus.id}`,
       kind: "savings-rate",

@@ -4,6 +4,7 @@ export type BonusRecord = {
   product_type: string
   bonus_amount?: number
   expired?: boolean
+  tiers?: { bonus: number; min_dd_total: number }[]
   requirements?: {
     direct_deposit_required?: boolean | null
     min_direct_deposit_total?: number | null

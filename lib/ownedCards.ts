@@ -1,5 +1,12 @@
 import { createClient } from "./supabase/client"
 import { reportError } from "./toast"
+export {
+  CATEGORY_LABELS,
+  SPENDING_CATEGORIES,
+  SPENDING_CATEGORIES_EXTRA,
+  SPENDING_CATEGORIES_PRIMARY,
+  type SpendingCategory,
+} from "./spendingCategories"
 
 export const OWNED_CARD_ROLES = [
   "sub-in-progress",
@@ -36,64 +43,6 @@ export type OwnedCard = {
   updated_at: string
 }
 
-// Top-of-form, always-visible categories (legacy 7).
-export const SPENDING_CATEGORIES_PRIMARY = [
-  "dining",
-  "groceries",
-  "gas",
-  "travel",
-  "utilities",
-  "online_shopping",
-  "other",
-] as const
-
-// Behind a "More categories" expander. Tokens match creditCardBonuses.ts
-// rewards tier vocabulary directly (cell_phone_internet maps to two tokens —
-// see lib/categoryGaps.ts SPENDING_TO_CATALOG_TOKENS).
-export const SPENDING_CATEGORIES_EXTRA = [
-  "streaming_services",
-  "ridesharing",
-  "transit",
-  "drug_stores",
-  "ev_charging",
-  "cell_phone_internet",
-  "home_improvement",
-  "wholesale_clubs",
-  "amazon",
-  "hotels_direct",
-  "flights_direct",
-] as const
-
-// Combined list — kept exported as SPENDING_CATEGORIES for back-compat with
-// existing call sites (the per-card-multipliers form, etc.).
-export const SPENDING_CATEGORIES = [
-  ...SPENDING_CATEGORIES_PRIMARY,
-  ...SPENDING_CATEGORIES_EXTRA,
-] as const
-
-export type SpendingCategory = (typeof SPENDING_CATEGORIES)[number]
-
-export const CATEGORY_LABELS: Record<SpendingCategory, string> = {
-  dining: "Dining",
-  groceries: "Groceries",
-  gas: "Gas",
-  travel: "Travel",
-  utilities: "Utilities",
-  online_shopping: "Online Shopping",
-  other: "Other",
-  streaming_services: "Streaming Services",
-  ridesharing: "Ridesharing",
-  transit: "Transit",
-  drug_stores: "Drug Stores",
-  ev_charging: "EV Charging",
-  cell_phone_internet: "Cell / Internet",
-  home_improvement: "Home Improvement",
-  wholesale_clubs: "Wholesale Clubs",
-  amazon: "Amazon",
-  hotels_direct: "Hotels (direct)",
-  flights_direct: "Flights (direct)",
-}
-
 export async function getOwnedCards(userId: string): Promise<OwnedCard[]> {
   const supabase = createClient()
   const { data, error } = await supabase
@@ -126,6 +75,8 @@ export async function addOwnedCard(
       actual_value: card.actual_value ?? null,
       status: card.status ?? "planned",
       role: card.role ?? null,
+      source_type: card.source_type ?? "manual",
+      canonical_offer_id: card.canonical_offer_id ?? null,
       notes: card.notes ?? null,
       incomplete_info: card.incomplete_info ?? false,
     })

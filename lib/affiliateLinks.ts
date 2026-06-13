@@ -26,6 +26,8 @@ export const affiliateLinks: Record<string, string> = {
     "https://www.varomoney.com/r1/?r=Nathaniel2908",
   "capital-one-360-checking-300-offer300":
     "https://i.capitalone.com/GRErGO2HT",
+  "bofa-bank-of-america-customized-cash-rewards-rwp":
+    "https://www.bankofamerica.com/refer?prod=ccr&refid=CR2IP1EM-CCCR01",
 }
 
 // Renderer-facing helper. Always returns a /go/<bonus_id> URL. The redirect

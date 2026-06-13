@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Credit-card bonus verifier. Parallel to scripts/verify-bonuses/run.ts but
  * targets CreditCardBonus records and uses CC-specific extractors.
@@ -37,6 +36,7 @@ import {
   type FeedbackState,
 } from "./feedback-loop"
 import { escalateCard, type Escalation } from "./escalate"
+import { auditCreditCards, printCatalogPreflight } from "../catalog-preflight"
 
 const args = process.argv.slice(2)
 function flag(name: string): string | undefined {
@@ -48,6 +48,7 @@ const USE_CACHE = !args.includes("--no-cache")
 const ESCALATE = !args.includes("--no-escalate")
 const INCLUDE_EXPIRED = args.includes("--include-expired")
 const PERSIST = args.includes("--persist")
+const PREFLIGHT_ONLY = args.includes("--preflight-only")
 
 const OUT_DIR = join(process.cwd(), "verification-output")
 const CACHE_DIR = join(process.cwd(), ".cache", "verify-cards")
@@ -123,7 +124,13 @@ function compareCard(card: CreditCardBonus, extracted: CardExtracted): FieldResu
   // Bonus amount — with a 10% tolerance (points totals often round)
   if (extracted.bonusAmount === null) {
     out.push({ field: "bonus_amount", stored: card.bonus_amount, extracted: null, status: "missing" })
-  } else if (card.bonus_amount === extracted.bonusAmount) {
+  } else if (
+    card.bonus_amount === extracted.bonusAmount ||
+    card.key_benefits.some((benefit) => {
+      const match = /(?:additional|plus)\D*(\d{1,3}(?:,\d{3})*)/i.exec(benefit)
+      return match ? card.bonus_amount + Number(match[1].replace(/,/g, "")) === extracted.bonusAmount : false
+    })
+  ) {
     out.push({ field: "bonus_amount", stored: card.bonus_amount, extracted: extracted.bonusAmount, status: "match" })
   } else {
     const ratio = Math.abs(card.bonus_amount - extracted.bonusAmount) / Math.max(card.bonus_amount, extracted.bonusAmount)
@@ -162,6 +169,8 @@ function compareCard(card: CreditCardBonus, extracted: CardExtracted): FieldResu
   // Annual fee
   if (extracted.annualFee === null) {
     out.push({ field: "annual_fee", stored: card.annual_fee, extracted: null, status: "missing" })
+  } else if (card.annual_fee_waived_first_year && extracted.annualFee === 0) {
+    out.push({ field: "annual_fee", stored: card.annual_fee, extracted: extracted.annualFee, status: "match" })
   } else {
     out.push({
       field: "annual_fee",
@@ -172,6 +181,22 @@ function compareCard(card: CreditCardBonus, extracted: CardExtracted): FieldResu
   }
 
   return out
+}
+
+function cardNameMatchesUrl(urlValue: string, cardName: string): boolean {
+  try {
+    const path = new URL(urlValue).pathname.toLowerCase().replace(/[^a-z0-9]+/g, " ")
+    const tokens = cardName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .split(" ")
+      .filter((token) => token.length >= 4 && !["bank", "card", "rewards"].includes(token))
+    if (tokens.length === 0) return false
+    const hits = tokens.filter((token) => path.includes(token)).length
+    return hits >= Math.min(2, tokens.length)
+  } catch {
+    return false
+  }
 }
 
 async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
@@ -248,11 +273,12 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
   }
 
   const extracted = pageSignal === "fetch_error" || pageSignal === "offer_dead" ? null : extractAll(textContent, card.card_name)
+  const nameMatchesUrl = cardNameMatchesUrl(finalUrl, card.card_name)
 
   // Promote "card_name_not_on_page" to a page-level signal — this is the
   // exact class of bug that hit Upromise (URL resolves 200 but is some
   // other page entirely).
-  if (extracted && !extracted.cardNameOnPage && pageSignal === "ok") {
+  if (extracted && !extracted.cardNameOnPage && !nameMatchesUrl && pageSignal === "ok") {
     pageSignal = "card_name_mismatch"
   }
 
@@ -263,6 +289,7 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
   if (
     extracted &&
     pageSignal === "ok" &&
+    !nameMatchesUrl &&
     extracted.bonusAmount === null &&
     extracted.minSpend === null &&
     extracted.annualFee === null
@@ -561,6 +588,10 @@ async function persistResults(
 }
 
 async function main() {
+  const preflightIssues = auditCreditCards(creditCardBonuses as CreditCardBonus[])
+  printCatalogPreflight("cards", preflightIssues)
+  if (PREFLIGHT_ONLY) return
+
   feedbackState = await loadFeedbackState()
 
   let targets: CreditCardBonus[] = creditCardBonuses as CreditCardBonus[]

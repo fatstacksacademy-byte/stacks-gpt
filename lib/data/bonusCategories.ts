@@ -1,5 +1,5 @@
 import { bonuses } from "./bonuses"
-import { savingsBonuses } from "./savingsBonuses"
+import { savingsBonuses, practicalHoldDays } from "./savingsBonuses"
 
 export type Category = "personal-checking" | "personal-savings" | "business" | "brokerage"
 
@@ -64,8 +64,9 @@ export function getCategorizedBonuses() {
 
 export function effectiveApy(savingsBonus: any): number {
   const t = savingsBonus.tiers[0]
-  const interest = t.min_deposit * savingsBonus.base_apy * (savingsBonus.total_hold_days / 365)
-  return ((t.bonus_amount + interest) / t.min_deposit) * (365 / savingsBonus.total_hold_days) * 100
+  const holdDays = practicalHoldDays(savingsBonus)
+  const interest = t.min_deposit * savingsBonus.base_apy * (holdDays / 365)
+  return ((t.bonus_amount + interest) / t.min_deposit) * (365 / holdDays) * 100
 }
 
 export function shortBankName(b: any): string {
