@@ -4138,7 +4138,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "https://www.bankofamerica.com/credit-cards/products/spirit-airlines-credit-card/",
-    expired: false,
+    expired: true, // Spirit Airlines ceased operations May 2026
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
       { categories: ["airfare_(portal)"], multiplier: 2, unit: "points" },
@@ -4183,7 +4183,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "https://www.bankofamerica.com/credit-cards/products/spirit-airlines-credit-card/",
-    expired: false,
+    expired: true, // Spirit Airlines ceased operations May 2026
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
       { categories: ["airfare_(portal)"], multiplier: 3, unit: "points" },
@@ -4253,7 +4253,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "",
-    expired: false,
+    expired: true, // discontinued Oct 2025 — Hawaiian merged into Alaska
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
       { categories: ["airfare_(portal)"], multiplier: 3, unit: "points" },
@@ -7445,7 +7445,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "",
-    expired: false,
+    expired: true, // discontinued Oct 2025 — Hawaiian merged into Alaska
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
       { categories: ["dining","gas_stations","office_supplies"], multiplier: 2, unit: "points" },
