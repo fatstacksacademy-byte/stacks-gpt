@@ -1,35 +1,41 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createAdminClient } from "@/lib/stackhouse/supabaseAdmin"
 
+/**
+ * Newsletter signup (the on-site NewsletterCTA box).
+ *
+ * Writes to the owned `contacts` table — the same list the email gate feeds and
+ * the in-house Resend broadcast system (/admin/broadcasts) sends from. This is
+ * the single source of truth; we no longer split signups off into Beehiiv.
+ */
 export async function POST(req: NextRequest) {
-  const { email } = await req.json()
+  let email = ""
+  try {
+    const body = await req.json()
+    email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : ""
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+  }
 
-  if (!email || !email.includes("@")) {
+  if (!email.includes("@") || email.length < 5) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 })
   }
 
-  const apiKey = process.env.BEEHIIV_API_KEY
-  const pubId = process.env.BEEHIIV_PUBLICATION_ID
+  const admin = createAdminClient()
+  const now = new Date().toISOString()
 
-  if (!apiKey || !pubId) {
-    return NextResponse.json({ error: "Newsletter not configured" }, { status: 500 })
-  }
-
-  const res = await fetch(`https://api.beehiiv.com/v2/publications/${pubId}/subscriptions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
+  const { error } = await admin.from("contacts").upsert(
+    {
       email,
-      reactivate_existing: true,
-      send_welcome_email: true,
-    }),
-  })
-
-  if (!res.ok) {
-    const body = await res.text()
-    console.error("[newsletter] BeeHiiv error:", res.status, body)
+      source: "newsletter_cta",
+      newsletter_opted_in: true,
+      newsletter_opt_in_at: now,
+      updated_at: now,
+    },
+    { onConflict: "email", ignoreDuplicates: false },
+  )
+  if (error) {
+    console.error("[newsletter] contacts upsert failed:", error.message)
     return NextResponse.json({ error: "Subscription failed" }, { status: 500 })
   }
 

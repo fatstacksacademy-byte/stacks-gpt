@@ -4,10 +4,12 @@ import { createAdminClient } from "@/lib/stackhouse/supabaseAdmin"
 /**
  * Email-gate unlock for the regional card / state-bonus catalog.
  *
- * Captures the lead (contacts, newsletter opt-in) and best-effort subscribes
- * them to the Beehiiv list. One submit unlocks every state client-side. This
- * is a conversion gate, not DRM — the catalog data is already shipped to the
- * browser; the value is the captured email + newsletter subscriber.
+ * Saves the lead into the `contacts` table with newsletter consent — which is
+ * already the audience for the in-house Resend broadcast system (see
+ * lib/email/broadcast.ts and /admin/broadcasts). No external ESP: landing in
+ * `contacts` IS the integration. One submit unlocks every state client-side.
+ * This is a conversion gate, not DRM — the catalog data already ships to the
+ * browser; the value is the captured, owned, consented email.
  */
 export async function POST(req: NextRequest) {
   let body: { email?: unknown; source?: unknown; state?: unknown }
@@ -41,29 +43,6 @@ export async function POST(req: NextRequest) {
   if (contactErr) {
     console.error("[catalog-unlock] contacts upsert failed:", contactErr.message)
     return NextResponse.json({ error: "Could not save contact" }, { status: 500 })
-  }
-
-  // Best-effort newsletter subscribe — never block the unlock on Beehiiv.
-  const apiKey = process.env.BEEHIIV_API_KEY
-  const pubId = process.env.BEEHIIV_PUBLICATION_ID
-  if (apiKey && pubId) {
-    try {
-      const res = await fetch(`https://api.beehiiv.com/v2/publications/${pubId}/subscriptions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          email,
-          reactivate_existing: true,
-          send_welcome_email: true,
-          utm_source: source,
-        }),
-      })
-      if (!res.ok) {
-        console.error("[catalog-unlock] beehiiv subscribe non-ok:", res.status, await res.text())
-      }
-    } catch (e) {
-      console.error("[catalog-unlock] beehiiv subscribe threw:", (e as Error).message)
-    }
   }
 
   return NextResponse.json({ ok: true })
