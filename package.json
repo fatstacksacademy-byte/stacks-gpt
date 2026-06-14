@@ -24,7 +24,10 @@
     "generate:bonus-blog": "tsx scripts/generate-bonus-blog/run.ts",
     "ingest:rwp-cards": "tsx scripts/ingest-rwp-cards/run.ts",
     "find:offer-links": "tsx scripts/find-offer-links/run.ts",
-    "search:offer-links": "tsx scripts/search-offer-links/run.ts"
+    "search:offer-links": "tsx scripts/search-offer-links/run.ts",
+    "linksync:auth": "tsx scripts/link-sync/auth.ts",
+    "linksync:scan": "tsx scripts/link-sync/run.ts scan",
+    "linksync:apply": "tsx scripts/link-sync/run.ts apply"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

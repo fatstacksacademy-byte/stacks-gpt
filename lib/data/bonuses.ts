@@ -329,31 +329,22 @@ export const bonuses: any[] = [
       "screening_notes": "Soft pull reported; inquiry sensitivity not clearly defined."
     },
     "eligibility": {
-      "state_restricted": true,
-      "states_allowed": null,
-      "states_excluded": null,
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "Limited to PNC footprint states; must not have PNC consumer checking, must not have received PNC promotional premium in past 24 months, and must not have closed PNC account recently (90 days noted; some sources cite 12 months)."
+      "eligibility_notes": "Nationwide; open online or at branch by August 31, 2026. Must not have PNC consumer checking, must not have received PNC promotional premium in past 24 months, and must not have closed PNC account in past 90 days."
     },
     "timeline": {
       "bonus_posting_days_est": 150,
       "must_remain_open_days": 150
     },
     "source_links": [
-      "https://www.pnc.com/en/personal-banking/banking/checking/campaigns/checking-offer-for-PNC-customers.html",
+      "https://www.pnc.com/en/personal-banking/banking/checking/bonus-offer.html",
       "https://www.doctorofcredit.com/pnc-up-to-250-400-checking-bonus/"
     ],
-    "raw_excerpt": "For $400 tier: $5,000+ qualifying direct deposits in first 60 days; bonus 60–90 days after qualification.",
-    "missing_fields": [
-      "requirements.min_direct_deposit_per_deposit",
-      "requirements.dd_count_required",
-      "requirements.holding_period_days",
-      "requirements.min_balance",
-      "requirements.debit_transactions_required",
-      "requirements.billpay_required",
-      "eligibility.states_allowed",
-      "eligibility.states_excluded"
-    ]
+    "raw_excerpt": "Earn up to $400 with a PNC Checking Account Bonus Offer. Open by August 31, 2026. $5,000+ qualifying direct deposits in first 60 days for $400 tier (Virtual Wallet with Performance Select). Bonus posted 60–90 days after qualification.",
+    "verified_at": "2026-06-14"
   },
   {
     "id": "chase-total-checking-400-2026",
@@ -5219,29 +5210,24 @@ export const bonuses: any[] = [
     "raw_excerpt": "M&T Bank $1,500 business checking bonus. Balance-based tiers in 3rd month. Tiered: $300/$500/$750/$1,500. State restricted. Expires June 30, 2026."
   },
   {
-    "id": "pnc-business-checking-1000-2026",
+    "id": "pnc-business-checking-400-2026",
     "bank_name": "PNC Bank",
     "product_type": "checking",
     "business": true,
-    "bonus_amount": 1000,
+    "bonus_amount": 400,
     "cooldown_months": null,
-    "tiers": [
-      { "bonus": 400, "min_dd_total": 2000 },
-      { "bonus": 500, "min_dd_total": 30000 },
-      { "bonus": 1000, "min_dd_total": 100000 }
-    ],
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 90,
+      "deposit_window_days": null,
       "holding_period_days": null,
       "min_opening_deposit": null,
-      "min_balance": 100000,
+      "min_balance": 30000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Enterprise tier: $100k balance for 3 billing cycles. Expires June 30, 2026."
+      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Maintain average ledger balance of $30,000+ for each of the first 3 statement cycles. Reward credited within 90 days after conditions met."
     },
     "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5250,14 +5236,15 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Expires June 30, 2026. New business checking customers only."
+      "eligibility_notes": "Nationwide. New PNC business checking customers only. Open by June 30, 2026."
     },
-    "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
     "source_links": [
       "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
       "https://www.doctorofcredit.com/pnc-1000-business-checking-bonus/"
     ],
-    "raw_excerpt": "PNC Bank $1,000 business checking bonus. Enterprise: $100k balance for 3 cycles. Tiered: $400/$500/$1,000. Expires June 30, 2026."
+    "raw_excerpt": "Earn a $400 reward when you open a PNC Business Checking Plus by 6/30/26 and maintain an average ledger balance of $30,000+ for each of the first 3 statement cycles.",
+    "verified_at": "2026-06-14"
   },
   {
     "id": "fulton-bank-business-500-2026",

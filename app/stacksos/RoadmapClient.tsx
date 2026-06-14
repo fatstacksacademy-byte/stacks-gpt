@@ -274,6 +274,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   // apply CTA to the combo-specific URL instead of the standalone offer.
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [bonusSearch, setBonusSearch] = useState("")
+  const [flippedHeroes, setFlippedHeroes] = useState<Set<string>>(new Set())
   const [matchingCustomId, setMatchingCustomId] = useState<string | null>(null)
   const [alreadyHadBonusId, setAlreadyHadBonusId] = useState<string | null>(null)
 
@@ -1502,10 +1503,65 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       Income source {workingBonuses.length + heroIdx + 1} — open slot
                     </div>
                   )}
-                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                    {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em", flex: 1 }}>
+                      {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
+                    </div>
+                    <button
+                      onClick={() => setFlippedHeroes(prev => {
+                        const next = new Set(prev)
+                        next.has(hb.bonus.id) ? next.delete(hb.bonus.id) : next.add(hb.bonus.id)
+                        return next
+                      })}
+                      title={flippedHeroes.has(hb.bonus.id) ? "Show offer overview" : "Show step-by-step guide"}
+                      style={{ flexShrink: 0, marginTop: 4, fontSize: 12, fontWeight: 600, color: accentColor, background: "none", border: `1px solid ${accentColor}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
+                    >
+                      {flippedHeroes.has(hb.bonus.id) ? "← Back" : "How to do this →"}
+                    </button>
                   </div>
-                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
+                  {flippedHeroes.has(hb.bonus.id) ? (
+                    // ── BACK: step-by-step guide ────────────────────────────
+                    <div style={{ marginTop: 20 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 14 }}>
+                        How to earn this bonus
+                      </div>
+                      <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                        {(() => {
+                          const r = hb.bonus.requirements ?? {}
+                          const steps: { label: string; detail?: string }[] = []
+                          const applyLink = (() => { const l = bestLink(hb.bonus.source_links); return l ? applyUrl(hb.bonus.id) : null })()
+                          steps.push({ label: `Open a new ${hb.bonus.product_type ?? "checking"} account at ${hb.bonus.bank_name}`, detail: applyLink ? undefined : undefined })
+                          if (r.min_opening_deposit > 0) steps.push({ label: `Fund with at least $${r.min_opening_deposit.toLocaleString()} to open` })
+                          if (r.min_direct_deposit_total) {
+                            steps.push({ label: `Receive $${r.min_direct_deposit_total.toLocaleString()}+ in direct deposits within ${r.deposit_window_days ?? 90} days`, detail: r.dd_count_required ? `Split across ${r.dd_count_required} deposits` : undefined })
+                          } else if (r.min_direct_deposit_per_deposit) {
+                            steps.push({ label: `Make ${r.dd_count_required ?? 1} direct deposit${(r.dd_count_required ?? 1) > 1 ? "s" : ""} of $${r.min_direct_deposit_per_deposit.toLocaleString()}+ each`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
+                          } else if (r.direct_deposit_required) {
+                            steps.push({ label: "Set up direct deposit from your employer or payroll" })
+                          }
+                          if (r.debit_transactions_required) steps.push({ label: `Make ${r.debit_transactions_required} qualifying debit card purchases`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
+                          if (r.billpay_required) steps.push({ label: "Pay at least one bill via online bill pay" })
+                          if (r.min_balance > 0) steps.push({ label: `Maintain $${r.min_balance.toLocaleString()} average daily balance`, detail: "Bonus is based on balance maintained, not just deposited" })
+                          if (hb.bonus.timeline?.must_remain_open_days) steps.push({ label: `Keep the account open for ${hb.bonus.timeline.must_remain_open_days} days`, detail: hb.bonus.fees?.early_closure_fee > 0 ? `$${hb.bonus.fees.early_closure_fee} early closure fee if closed sooner` : undefined })
+                          steps.push({ label: `Collect your ${money(hb.bonus.bonus_amount)} bonus`, detail: hb.bonus.timeline?.bonus_posting_days_est ? `Posted within ~${hb.bonus.timeline.bonus_posting_days_est} days of completing requirements` : "Posted after requirements are met" })
+                          if (r.other_requirements_text) steps.push({ label: "Additional details", detail: r.other_requirements_text })
+                          return steps.map((s, i) => (
+                            <li key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                              <span style={{ flexShrink: 0, width: 24, height: 24, borderRadius: "50%", background: accentColor, color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                {i + 1}
+                              </span>
+                              <div>
+                                <div style={{ fontSize: 14, fontWeight: 600, color: "#111", lineHeight: 1.4 }}>{s.label}</div>
+                                {s.detail && <div style={{ fontSize: 12, color: "#888", marginTop: 2, lineHeight: 1.5 }}>{s.detail}</div>}
+                              </div>
+                            </li>
+                          ))
+                        })()}
+                      </ol>
+                    </div>
+                  ) : (
+                  // ── FRONT: offer overview ────────────────────────────────
+                  <><div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
                     {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
                   </div>
                   <div style={{ marginTop: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
@@ -1750,6 +1806,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       )}
                     </div>
                   )}
+                  </>)}
                 </div>
               )
             })}
@@ -2778,8 +2835,26 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               </div>
             )}
 
+            {/* ── Paid search bar — always visible for Pro users ── */}
+            {isPaid && (
+              <div style={{ marginBottom: 12, position: "relative" }}>
+                <input
+                  type="search"
+                  value={bonusSearch}
+                  onChange={e => { setBonusSearch(e.target.value); if (e.target.value) setShowAdvanced(true) }}
+                  placeholder="Search bank bonuses by name…"
+                  style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+                />
+                {bonusSearch && (
+                  <button onClick={() => setBonusSearch("")}
+                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                    aria-label="Clear search">✕</button>
+                )}
+              </div>
+            )}
+
             {/* ── Bottom links ── */}
-            <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 16 }}>
+            <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
               <button onClick={() => setShowAddCustom(true)}
                 style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add custom bonus
@@ -2803,24 +2878,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 {showAdvanced ? "Hide full plan" : "View full bonus plan"}
               </button>
+              {!isPaid && (
+                <>
+                  <span style={{ color: "#e0e0e0" }}>|</span>
+                  <span style={{ fontSize: 13, color: "#bbb" }}>🔍 Search banks — Pro only</span>
+                </>
+              )}
             </div>
 
             {showAdvanced && (
               <>
-              <div style={{ marginBottom: 12, position: "relative" }}>
-                <input
-                  type="search"
-                  value={bonusSearch}
-                  onChange={e => setBonusSearch(e.target.value)}
-                  placeholder="Search banks…"
-                  style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
-                />
-                {bonusSearch && (
-                  <button onClick={() => setBonusSearch("")}
-                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
-                    aria-label="Clear search">✕</button>
-                )}
-              </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
                 {[...inProgress, ...available].filter(({ bonus: b }) => {
                   const q = bonusSearch.trim().toLowerCase()
