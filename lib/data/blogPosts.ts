@@ -1,6 +1,7 @@
 import { bonuses } from "./bonuses"
 import { savingsBonuses, practicalHoldDays } from "./savingsBonuses"
 import { creditCardBonuses } from "./creditCardBonuses"
+import { isBusinessBonus, isBrokerageBonus } from "./bonusCategories"
 
 export type BlogPost = {
   slug: string
@@ -55,25 +56,34 @@ const checkingPosts: BlogPost[] = bonuses
     }
   })
 
-// Generate savings bonus posts from savingsBonuses.ts
+// Generate savings/brokerage bonus posts from savingsBonuses.ts
 const savingsPosts: BlogPost[] = savingsBonuses
   .filter(b => !b.expired)
   .map(b => {
     const bankShort = b.bank_name.split("(")[0].trim()
-    const maxTier = b.tiers[b.tiers.length - 1]
-    const amount = formatMoney(maxTier.bonus_amount)
-    // Calculate best effective APY for tags
+    const isBusiness = isBusinessBonus(b)
+    const isBrokerage = isBrokerageBonus(b)
+    const hasTiers = b.tiers.length > 1
     const minTier = b.tiers[0]
+    const maxTier = b.tiers[b.tiers.length - 1]
+    const amountLabel = hasTiers
+      ? `${formatMoney(minTier.bonus_amount)}–${formatMoney(maxTier.bonus_amount)}`
+      : formatMoney(maxTier.bonus_amount)
+    const accountLabel = isBrokerage ? "Brokerage" : isBusiness ? "Business Savings" : "Savings"
+    // Effective APY from lowest tier (most achievable)
     const holdDays = practicalHoldDays(b)
     const interest = minTier.min_deposit * b.base_apy * (holdDays / 365)
     const effApy = (((minTier.bonus_amount + interest) / minTier.min_deposit) * (365 / holdDays) * 100).toFixed(1)
-    const tags: string[] = ["Savings", "Bank Bonus", "Nationwide"]
+    const tags: string[] = [accountLabel, "Bank Bonus", "Nationwide"]
+    if (isBusiness) tags.push("Business")
+    if (isBrokerage) tags.push("Brokerage")
     if (b.base_apy >= 0.03) tags.push("High Yield")
     if (b.fees.monthly_fee === 0) tags.push("No Monthly Fee")
-    if (b.tiers.length > 1) tags.push("Tiered Bonus")
+    if (hasTiers) tags.push("Tiered Bonus")
+    const slugSuffix = isBrokerage ? "brokerage-bonus" : isBusiness ? "business-savings-bonus" : "savings-bonus"
     return {
-      slug: slugify(`${bankShort}-${maxTier.bonus_amount}-savings-bonus`),
-      title: `${bankShort} ${amount} Savings Bonus (${effApy}% Effective APY) - 2026 Review`,
+      slug: slugify(`${bankShort}-${maxTier.bonus_amount}-${slugSuffix}`),
+      title: `${bankShort} ${amountLabel} ${accountLabel} Bonus (${effApy}% Effective APY) - 2026 Review`,
       excerpt: b.raw_excerpt || "",
       category: "Savings Bonuses" as const,
       tags,
