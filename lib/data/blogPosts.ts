@@ -26,18 +26,26 @@ const checkingPosts: BlogPost[] = bonuses
   .filter((b: any) => !b.expired)
   .map((b: any) => {
     const bankShort = b.bank_name.split("(")[0].trim()
-    const amount = formatMoney(b.bonus_amount)
-    // Build tags based on bonus characteristics
+    const isBusiness = !!b.business
+    const hasTiers = Array.isArray(b.tiers) && b.tiers.length > 1
+    const minTierAmount: number = hasTiers ? b.tiers[0].bonus : b.bonus_amount
+    const maxTierAmount: number = b.bonus_amount
+    const amountLabel = hasTiers
+      ? `${formatMoney(minTierAmount)}–${formatMoney(maxTierAmount)}`
+      : formatMoney(maxTierAmount)
+    const accountLabel = isBusiness ? "Business Checking" : "Checking Account"
     const tags: string[] = ["Checking", "Bank Bonus"]
+    if (isBusiness) tags.push("Business")
     if (b.requirements?.direct_deposit_required) tags.push("Direct Deposit")
     if (b.requirements?.debit_transactions_required) tags.push("Transaction Requirement")
     if (b.eligibility?.state_restricted) tags.push("Regional")
     else tags.push("Nationwide")
     if (b.screening?.chex_sensitive === "low") tags.push("Easy Approval")
     if (b.fees?.monthly_fee === 0) tags.push("No Monthly Fee")
+    if (hasTiers) tags.push("Tiered Bonus")
     return {
-      slug: slugify(`${bankShort}-${b.bonus_amount}-checking-bonus`),
-      title: `${bankShort} ${amount} Checking Account Bonus (2026) - Review & Requirements`,
+      slug: slugify(`${bankShort}-${b.bonus_amount}-${isBusiness ? "business-" : ""}checking-bonus`),
+      title: `${bankShort} ${amountLabel} ${accountLabel} Bonus (2026) - Review & Requirements`,
       excerpt: b.raw_excerpt || b.requirements?.other_requirements_text || "",
       category: "Bank Bonuses" as const,
       tags,
