@@ -76,8 +76,8 @@ function OnboardingInner() {
   const [userState, setUserState] = useState<string>("")
   const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [ddSlots, setDdSlots] = useState<string>("1")
-  const [savingsBalance, setSavingsBalance] = useState<string>("")
-  const [monthlySpend, setMonthlySpend] = useState<string>("")
+  const [savingsBalance, setSavingsBalance] = useState<string>("0")
+  const [monthlySpend, setMonthlySpend] = useState<string>("0")
   const [bonuses, setBonuses] = useState<ProjItem[]>([])
   const [counts, setCounts] = useState({ paycheck: 0, savings: 0, spending: 0 })
   const [yearTotal, setYearTotal] = useState(0)
@@ -335,12 +335,12 @@ function OnboardingInner() {
                 </span>
               </label>
             </div>
-            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0 || !userState}
+            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0 || !userState || savingsBalance === "" || monthlySpend === ""}
               style={{
                 width: "100%", padding: "16px", fontSize: 16, fontWeight: 700,
-                background: paycheckAmt > 0 && userState ? "#0d7c5f" : "#e0e0e0",
+                background: paycheckAmt > 0 && userState && savingsBalance !== "" && monthlySpend !== "" ? "#0d7c5f" : "#e0e0e0",
                 color: "#fff", border: "none", borderRadius: 12,
-                cursor: paycheckAmt > 0 && userState ? "pointer" : "not-allowed",
+                cursor: paycheckAmt > 0 && userState && savingsBalance !== "" && monthlySpend !== "" ? "pointer" : "not-allowed",
                 transition: "background 0.15s",
               }}>
               Show my projection →
