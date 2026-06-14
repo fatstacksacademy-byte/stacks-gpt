@@ -142,6 +142,23 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
 
   return (
     <div style={{ marginBottom: 48 }}>
+      {/* ── State filter (top): pick your state first; regional cards fold into the results below ── */}
+      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked}>
+        {selectedState && stateAddedCount > 0 && !unlocked && (
+          <CatalogUnlockGate
+            count={stateAddedCount}
+            stateName={selectedState.name}
+            stateCode={stateCode ?? ""}
+            source="spending_state"
+            unlock={unlock}
+            unlocking={unlocking}
+            error={unlockError}
+            noun="local cards"
+            buttonLabel={`Unlock ${selectedState.name} cards`}
+          />
+        )}
+      </StateCardFilter>
+
       {/* ── Four-path chooser ────────────────────────────────────────── */}
       <div className="cf-paths" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
         <PathCard
@@ -468,23 +485,6 @@ export default function CardFinder({ cards }: { cards: CreditCardBonus[] }) {
       {/* ── Build-my-plan handoff (shows once a path is chosen) ── */}
       {path && <BuildPlanCta path={path} />}
 
-      {/* ── State filter: add regional/credit-union cards for the user's state ── */}
-      <StateCardFilter stateSlug={stateSlug} onChange={changeState} addedCount={stateAddedCount} unlocked={unlocked}>
-        {selectedState && stateAddedCount > 0 && !unlocked && (
-          <CatalogUnlockGate
-            count={stateAddedCount}
-            stateName={selectedState.name}
-            stateCode={stateCode ?? ""}
-            source="spending_state"
-            unlock={unlock}
-            unlocking={unlocking}
-            error={unlockError}
-            noun="local cards"
-            buttonLabel={`Unlock ${selectedState.name} cards`}
-          />
-        )}
-      </StateCardFilter>
-
       <style>{`
         @media (max-width: 1000px) {
           .cf-paths { grid-template-columns: 1fr 1fr !important; }
@@ -545,13 +545,13 @@ function BuildPlanCta({ path }: { path: Path }) {
 function StateCardFilter({ stateSlug, onChange, addedCount, unlocked, children }: { stateSlug: string; onChange: (slug: string) => void; addedCount: number; unlocked: boolean; children?: React.ReactNode }) {
   const selected = US_STATES.find(s => s.slug === stateSlug)
   return (
-    <div style={{ marginTop: 28, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
+    <div style={{ margin: "0 0 28px", background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "22px 24px" }}>
       <div style={{ fontSize: 16, fontWeight: 800, color: "#111", marginBottom: 4 }}>
         Live in a specific state?
       </div>
       <div style={{ fontSize: 13, color: "#666", lineHeight: 1.55, marginBottom: 14 }}>
-        Most cards above are nationwide. Pick your state to add regional bank and credit-union
-        cards available in your area — they&apos;ll fold straight into the ranked lists above,
+        Most cards below are nationwide. Pick your state to add regional bank and credit-union
+        cards available in your area — they&apos;ll fold straight into the ranked lists below,
         ranked by the same value math and tagged with a <strong>Regional</strong> chip. Some require
         a qualifying county, employer, family, military, or association membership.
       </div>
@@ -579,12 +579,12 @@ function StateCardFilter({ stateSlug, onChange, addedCount, unlocked, children }
         <div style={{ fontSize: 13, color: addedCount > 0 ? "#0d7c5f" : "#888", marginTop: 12, lineHeight: 1.5 }}>
           {addedCount > 0 ? (
             unlocked ? (
-              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} for {selected.name} {addedCount === 1 ? "is" : "are"} now mixed into the rankings above — look for the <strong>Regional</strong> chip. Check each eligibility note before applying.</>
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} for {selected.name} {addedCount === 1 ? "is" : "are"} now mixed into the rankings below — look for the <strong>Regional</strong> chip. Check each eligibility note before applying.</>
             ) : (
-              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Unlock below to fold {addedCount === 1 ? "it" : "them"} into the rankings above.</>
+              <><strong>{addedCount}</strong> regional card{addedCount === 1 ? "" : "s"} available in {selected.name}. Unlock to fold {addedCount === 1 ? "it" : "them"} into the rankings below.</>
             )
           ) : (
-            <>No regional cards verified for {selected.name} yet — we add them as issuer and membership terms are confirmed. Nationwide cards above still apply.</>
+            <>No regional cards verified for {selected.name} yet — we add them as issuer and membership terms are confirmed. Nationwide cards below still apply.</>
           )}
         </div>
       )}
