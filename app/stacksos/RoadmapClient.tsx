@@ -1519,7 +1519,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       {flippedHeroes.has(hb.bonus.id) ? "← Back" : "How to do this →"}
                     </button>
                   </div>
-                  {flippedHeroes.has(hb.bonus.id) ? (
+                  {(() => {
+                    const heroApplyLink = (() => { const l = bestLink(hb.bonus.source_links); return l ? applyUrl(hb.bonus.id) : null })()
+                    return flippedHeroes.has(hb.bonus.id) ? (
                     // ── BACK: step-by-step guide ────────────────────────────
                     <div style={{ marginTop: 20 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 14 }}>
@@ -1529,8 +1531,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         {(() => {
                           const r = hb.bonus.requirements ?? {}
                           const steps: { label: string; detail?: string }[] = []
-                          const applyLink = (() => { const l = bestLink(hb.bonus.source_links); return l ? applyUrl(hb.bonus.id) : null })()
-                          steps.push({ label: `Open a new ${hb.bonus.product_type ?? "checking"} account at ${hb.bonus.bank_name}`, detail: applyLink ? undefined : undefined })
+                          steps.push({ label: `Open a new ${hb.bonus.product_type ?? "checking"} account at ${hb.bonus.bank_name}`, detail: heroApplyLink ? `Apply at ${hb.bonus.bank_name}'s website` : undefined })
                           if (r.min_opening_deposit > 0) steps.push({ label: `Fund with at least $${r.min_opening_deposit.toLocaleString()} to open` })
                           if (r.min_direct_deposit_total) {
                             steps.push({ label: `Receive $${r.min_direct_deposit_total.toLocaleString()}+ in direct deposits within ${r.deposit_window_days ?? 90} days`, detail: r.dd_count_required ? `Split across ${r.dd_count_required} deposits` : undefined })
@@ -1558,6 +1559,17 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           ))
                         })()}
                       </ol>
+                      {heroApplyLink && (
+                        <a href={heroApplyLink} target="_blank" rel="noreferrer"
+                          style={{ display: "inline-block", marginTop: 20, padding: "14px 28px", fontSize: 15, fontWeight: 700, background: accentColor, color: "#fff", borderRadius: 12, textDecoration: "none" }}>
+                          Apply now →
+                        </a>
+                      )}
+                      {hb.bonus.raw_excerpt && (
+                        <div style={{ marginTop: 16, fontSize: 12, color: "#888", lineHeight: 1.6, fontStyle: "italic", borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                          &ldquo;{hb.bonus.raw_excerpt}&rdquo;
+                        </div>
+                      )}
                     </div>
                   ) : (
                   // ── FRONT: offer overview ────────────────────────────────
@@ -1806,7 +1818,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       )}
                     </div>
                   )}
-                  </>)}
+                  </>)
+                  })()}
                 </div>
               )
             })}

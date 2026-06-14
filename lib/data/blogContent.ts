@@ -3107,7 +3107,7 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: [],
   },
 
-  "pnc-business-checking-1000-2026": {
+  "pnc-business-checking-400-2026": {
     ddMethods: [
       { method: "Payroll", works: true, notes: "Business payroll deposits work." },
       { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
