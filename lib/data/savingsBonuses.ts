@@ -544,7 +544,7 @@ export const savingsBonuses: SavingsBonus[] = [
   {
     id: "etrade-brokerage-2026",
     brokerage: true,
-    bank_name: "E*TRADE (Brokerage)",
+    bank_name: "E*TRADE (Brokerage / IRA)",
     product_type: "savings",
     base_apy: 0.035,
     funding_window_days: 60,
@@ -552,12 +552,15 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 365,
     tiers: [
       { min_deposit: 1000, bonus_amount: 50 },
-      { min_deposit: 10000, bonus_amount: 150 },
-      { min_deposit: 50000, bonus_amount: 500 },
-      { min_deposit: 100000, bonus_amount: 1000 },
-      { min_deposit: 250000, bonus_amount: 2500 },
-      { min_deposit: 500000, bonus_amount: 5000 },
-      { min_deposit: 1000000, bonus_amount: 6500 },
+      { min_deposit: 5000, bonus_amount: 150 },
+      { min_deposit: 20000, bonus_amount: 300 },
+      { min_deposit: 100000, bonus_amount: 600 },
+      { min_deposit: 200000, bonus_amount: 1000 },
+      { min_deposit: 500000, bonus_amount: 1500 },
+      { min_deposit: 1000000, bonus_amount: 3000 },
+      { min_deposit: 1500000, bonus_amount: 5000 },
+      { min_deposit: 2000000, bonus_amount: 6000 },
+      { min_deposit: 5000000, bonus_amount: 10000 },
     ],
     cooldown_months: null,
     fees: { monthly_fee: 0, early_closure_fee: 0 },
@@ -565,13 +568,15 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "Brokerage or IRA. 12-month hold. Funds must be net new to E*TRADE."
+      eligibility_notes: "Covers both brokerage (OFFER26) and retirement IRA accounts (RETIRE26). 12-month hold required. Funds must be net new to E*TRADE. One bonus per customer. Account must be opened by June 30, 2026 and funded within 60 days."
     },
-    source_links: ["https://us.etrade.com/promo/brokerage",
+    source_links: [
+      "https://us.etrade.com/promo/retirement",
+      "https://us.etrade.com/promo/brokerage",
       "https://www.doctorofcredit.com/etrade-up-to-3500-brokerage-referral-bonus-25000-1000000-required/"
     ],
-    raw_excerpt: "E*TRADE up to $6,500 brokerage bonus. 12-month hold. Tiered from $1k-$1M deposits.",
-    notes: "Brokerage account. 12-month hold is long but tiers start at just $1,000."
+    raw_excerpt: "E*TRADE up to $10,000 brokerage/IRA bonus. 12-month hold. Tiered from $1k–$5M+ deposits. Expires June 30, 2026.",
+    notes: "Covers both brokerage (OFFER26) and retirement IRA (RETIRE26) promos — same tiers and terms. 12-month hold is long but tiers start at just $1,000."
   },
   {
     id: "schwab-brokerage-2026",
