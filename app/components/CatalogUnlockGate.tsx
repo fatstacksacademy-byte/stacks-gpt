@@ -97,8 +97,11 @@ export default function CatalogUnlockGate({
         </button>
       </form>
       {error && <div style={{ fontSize: 12, color: "#b91c1c", marginTop: 10 }}>{error}</div>}
-      <div style={{ fontSize: 11, color: "#999", marginTop: 12, lineHeight: 1.5 }}>
-        One email unlocks every state · weekly high-value bonus alerts · unsubscribe anytime.
+      <div style={{ fontSize: 13, color: "#555", marginTop: 12, lineHeight: 1.5, maxWidth: 460, marginLeft: "auto", marginRight: "auto" }}>
+        Unlocking also subscribes you to the free weekly bonus newsletter — unsubscribe anytime.
+      </div>
+      <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>
+        One email unlocks every state.
       </div>
     </div>
   )
