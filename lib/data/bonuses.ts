@@ -6,6 +6,59 @@ import { stateBankBonuses } from "./stateBankBonuses"
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const bonuses: any[] = [
   {
+    "id": "amex-rewards-checking-300-2026",
+    "bank_name": "American Express",
+    "product_type": "checking",
+    "bonus_amount": 300,
+    "expiration_date": "2026-07-30",
+    "offer_verified_at": "2026-06-14",
+    "cooldown_months": null,
+    "requirements": {
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 7500,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 90,
+      "holding_period_days": null,
+      "min_opening_deposit": null,
+      "min_balance": null,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Must be an existing American Express card member (at least 5 days tenure), Additional Card Member, or existing Amex HYSA/CD holder. Qualifying direct deposits must be ACH payroll, pension, government benefits, or tax refunds — P2P transfers, inter-account transfers, and check deposits do not qualify."
+    },
+    "fees": {
+      "monthly_fee": 0,
+      "monthly_fee_waiver_text": null,
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Soft pull only per DoC reports; no ChexSystems pull reported."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": true,
+      "eligibility_notes": "One bonus per customer. Must be an existing Amex card member or Amex HYSA/CD holder (5+ days tenure). Cannot have an existing Amex Rewards Checking account. Account must remain open and in good standing until bonus posts. Bonus reported as taxable income on Form 1099."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 84,
+      "must_remain_open_days": null
+    },
+    "source_links": [
+      "https://www.americanexpress.com/en-us/banking/checking-account/",
+      "https://www.doctorofcredit.com/american-express-250-checking-bonus/"
+    ],
+    "raw_excerpt": "$7,500+ in qualifying direct deposits within 90 days of opening, $300 bonus posts within 8–12 weeks. Offer expires July 30, 2026. Requires existing Amex card membership.",
+    "missing_fields": [
+      "fees.early_closure_fee",
+      "timeline.must_remain_open_days"
+    ]
+  },
+  {
     "id": "psecu-300-checking-2026",
     "bank_name": "PSECU (Pennsylvania State Employees Credit Union)",
     "product_type": "checking",

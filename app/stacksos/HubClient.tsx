@@ -489,7 +489,17 @@ export default function HubClient({
                     textDecoration: "none",
                   }}
                 >
-                  Browse catalog
+                  Bank Bonuses
+                </a>
+                <a
+                  href="/spending"
+                  style={{
+                    fontSize: 13, fontWeight: 600, color: "#0d7c5f",
+                    padding: "8px 14px", border: "1px solid #0d7c5f", borderRadius: 8,
+                    textDecoration: "none",
+                  }}
+                >
+                  Credit Cards
                 </a>
                 <button
                   onClick={() => { track("custom_bonus_modal_opened", { source: "dashboard_active_tab" }); setShowAddModal(true) }}
@@ -571,10 +581,24 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
             textDecoration: "none",
           }}
         >
-          <div style={{ fontSize: 22 }}>📚</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Browse catalog</div>
+          <div style={{ fontSize: 22 }}>🏦</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Bank Bonuses</div>
           <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
-            Pick from every live bank bonus and one-click track.
+            Every live checking, savings, and brokerage offer — one-click track.
+          </div>
+        </a>
+        <a
+          href="/spending"
+          style={{
+            display: "flex", flexDirection: "column", gap: 6,
+            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            textDecoration: "none",
+          }}
+        >
+          <div style={{ fontSize: 22 }}>💳</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Credit Cards</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+            Welcome bonuses and top cards — ranked by net value.
           </div>
         </a>
 
