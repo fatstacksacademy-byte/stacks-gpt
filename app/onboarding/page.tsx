@@ -359,7 +359,7 @@ function OnboardingInner() {
               <>
                 <div style={{ textAlign: "center", marginBottom: 28 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
-                    Projected bank bonus earnings
+                    Projected bonus earnings
                   </div>
                   <h1 style={{ fontSize: 40, fontWeight: 800, color: "#0d7c5f", margin: "0 0 4px", letterSpacing: "-0.02em", lineHeight: 1 }}>
                     ${yearTotal.toLocaleString()}
@@ -509,13 +509,11 @@ function OnboardingInner() {
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
                   </div>
 
-                  {isLoggedIn && (
-                    <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 18, paddingTop: 14, textAlign: "center" as const }}>
-                      <a href="/stacksos" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-                        Or, start tracking bonuses for free →
-                      </a>
-                    </div>
-                  )}
+                  <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 18, paddingTop: 14, textAlign: "center" as const }}>
+                    <a href={isLoggedIn ? "/stacksos" : "/#signup"} style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                      Or, start tracking bonuses for free →
+                    </a>
+                  </div>
 
                   {/* Feature checklist */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>

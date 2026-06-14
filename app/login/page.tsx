@@ -169,7 +169,7 @@ function LoginInner() {
               {mode === "forgot" ? (
                 <>Remember it? <button type="button" onClick={() => { setMode("signin"); setMessage("") }} style={linkBtn}>Sign in</button></>
               ) : (
-                <>Don&apos;t have an account? <Link href="/" style={linkBtn}>Sign up</Link></>
+                <>Don&apos;t have an account? <Link href="/#signup" style={linkBtn}>Sign up</Link></>
               )}
             </p>
           </div>
