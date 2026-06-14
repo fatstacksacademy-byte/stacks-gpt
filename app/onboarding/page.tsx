@@ -414,7 +414,7 @@ function OnboardingInner() {
                     padding: "16px", marginBottom: 16,
                   }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 12, textAlign: "center" }}>
-                      {bonuses.length} bonuses in your plan
+                      ${yearTotal.toLocaleString()} across {bonuses.length} bonuses in year 1
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
                       {[
