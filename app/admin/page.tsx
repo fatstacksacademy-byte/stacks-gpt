@@ -595,6 +595,7 @@ function QuickActions() {
     { href: "/admin/triage", emoji: "🏦", title: "Bonus triage", sub: "Bank + savings bonus drift from verify:bonuses", bg: "#fdf6e0", fg: "#8a6d00", border: "#f0e2a8" },
     { href: "/admin/discover-review", emoji: "🔎", title: "Discover review", sub: "Approve / reject new leads from discover:bonuses", bg: "#f3f0fa", fg: "#534493", border: "#dcd2ee" },
     { href: "/admin/broadcasts", emoji: "📣", title: "Broadcasts", sub: "Compose + send Beehiiv newsletter pushes", bg: "#fff1ea", fg: "#a14620", border: "#f3d4be" },
+    { href: "/admin/blog-posts", emoji: "📝", title: "Blog posts", sub: "Pick monthly bank + card picks, copy code to publish", bg: "#f0f4ff", fg: "#2d4da0", border: "#c7d2f3" },
   ]
   return (
     <div style={{ marginBottom: 24 }}>
