@@ -214,7 +214,7 @@ export const washingtonCards = buildStateCards({
       card_name: "Numerica Visa Luna",
       issuer: "numerica",
       state_restricted: ["WA", "ID"],
-      annual_fee: 29,
+      annual_fee: 0,
       offer_link: "https://www.numericacu.com/personal/visa-cards",
       key_benefits: [
         "1.5% cash back on every purchase",

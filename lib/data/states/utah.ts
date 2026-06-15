@@ -189,6 +189,7 @@ export const utahCards = buildStateCards({
       min_spend: 0,
       spend_months: 6,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
+      expired: true,
     },
     {
       id: "cyprus-rewards-visa",

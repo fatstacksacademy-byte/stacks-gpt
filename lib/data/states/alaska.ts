@@ -151,7 +151,7 @@ export const alaskaCards = buildStateCards({
         "$15 annual fee",
       ],
       eligibility: "cu1",
-      annual_fee: 15,
+      annual_fee: 0,
       credit_score_required: "poor",
     },
     {

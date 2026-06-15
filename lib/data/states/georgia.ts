@@ -339,7 +339,7 @@ export const georgiaCards = buildStateCards({
         "$15 annual fee",
       ],
       eligibility: "membersFirst",
-      annual_fee: 15,
+      annual_fee: 0,
       credit_score_required: "poor",
     },
     {

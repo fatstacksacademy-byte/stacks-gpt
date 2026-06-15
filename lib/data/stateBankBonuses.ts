@@ -279,6 +279,8 @@ const SEEDS: Seed[] = [
     notes: "Membership: Utah field of membership (formerly UFirst/University FCU). The prior $400 promo has expired; the current page offers $150 with a new direct deposit. Exact DD amount/deadline not stated on the official page.",
     excerpt: "This offer has expired, but you can still get $150 with a new direct deposit!",
     src: ["https://www.canyonviewcu.com/services-benefits/400-new-member-promo.html"],
+  ,
+    expired: true,
   },
   {
     id: "sunward-slfcu-200-checking-2026", bank: "Sunward Credit Union", amount: 200, states: ["NM"],
@@ -356,7 +358,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "communityamerica-cu-400-checking-2026", bank: "CommunityAmerica Credit Union", amount: 400, states: ["MO", "KS", "IL"],
-    dd: 2000, ddWindow: 90, payout: 30, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-07-31", lifetime: true,
+    dd: 10000, ddWindow: 90, payout: 30, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-07-31", lifetime: true,
     reqText: "Open Cashback Free or Chiefs Checking (promo code SPRING26): 2+ direct deposits totaling $2,000+ ($150), $5,000+ ($250), or $10,000+ ($400), plus eStatements, within 90 days. Zelle/P2P excluded.",
     feeWaiver: "No monthly fee, no minimum balance.",
     notes: "Membership: reside in the Kansas City (MO-KS) or St. Louis (MO-IL) markets and meet CommunityAmerica's field of membership. No CommunityAmerica personal checking in the past 12 months. Window 3/23/2026–7/31/2026. Bonus within 30 days after the deposit period.",
@@ -408,6 +410,8 @@ const SEEDS: Seed[] = [
     notes: "Membership: Royal CU field of membership (WI/MN). Open window 5/4/2026–6/12/2026 (closes today). Ineligible if you had a Royal checking account in the last 12 months; one per member. Account must stay open 6 months. Paid within 10 days of the 2nd deposit.",
     excerpt: "Open a new checking account by June 12 ... receive two payroll direct deposits of $400 or more, and we'll put $400 in your savings account.",
     src: ["https://www.rcu.org/promos/checking/spring-2026-incentive-checking"],
+  ,
+    expired: true,
   },
   {
     id: "associated-bank-600-checking-2026", bank: "Associated Bank", amount: 600, states: ["WI", "IL", "MN"],
@@ -613,6 +617,8 @@ const SEEDS: Seed[] = [
     notes: "Membership: Florida community charter. Paid within 90 days of meeting the criteria. (The separate $400 business-checking promo ended 12/31/2025.) Deadline not stated on the official page.",
     excerpt: "$50 ... recurring direct deposit aggregate of $500 or more per month on a new checking account.",
     src: ["https://www.achievacu.com/Promo/CheckingOffer"],
+  ,
+    expired: true,
   },
   {
     id: "fairwinds-cu-50-checking-2026", bank: "FAIRWINDS Credit Union", amount: 50, states: ["FL"],

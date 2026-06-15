@@ -5271,7 +5271,7 @@ export const bonuses: any[] = [
     "bank_name": "PNC Bank",
     "product_type": "checking",
     "business": true,
-    "bonus_amount": 1000,
+    "bonus_amount": 400,
     "tiers": [
       { "bonus": 400, "min_balance": 30000 },
       { "bonus": 1000, "min_balance": 100000 }
@@ -5282,7 +5282,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": 30000,
@@ -6050,7 +6050,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 120,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,

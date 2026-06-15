@@ -260,6 +260,7 @@ export const pennsylvaniaCards = buildStateCards({
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
       intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 14.75, go_to_apr_high: 18.0 },
+      expired: true,
     },
     {
       id: "diamond-visa-platinum-rewards",
@@ -277,6 +278,7 @@ export const pennsylvaniaCards = buildStateCards({
       cpp_value: 0.01,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 12.4, go_to_apr_high: 18.0 },
+      expired: true,
     },
     {
       id: "freedom-cu-visa-cash-back",
