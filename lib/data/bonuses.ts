@@ -5275,7 +5275,7 @@ export const bonuses: any[] = [
       { "bonus": 400, "min_balance": 2000 },
       { "bonus": 1000, "min_balance": 30000 }
     ],
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
@@ -5285,9 +5285,9 @@ export const bonuses: any[] = [
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": 2000,
-      "debit_transactions_required": null,
+      "debit_transactions_required": 10,
       "billpay_required": null,
-      "other_requirements_text": "Open PNC Business Checking or Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $2,000–$29,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $30,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
+      "other_requirements_text": "Tier 1 ($400): Open PNC Business Checking or Business Checking Plus by June 30, 2026. Maintain average ledger balance of $2,000 for each of the first 3 statement cycles AND complete at least 10 qualifying transactions within the first 3 statement cycles. Qualifying transactions include: Visa Business Debit Card purchases, ACH/Wire/Zelle debits or credits, Online Banking/Bill Pay payments, Remote Deposit, and other electronic transactions. Tier 2 ($1,000): Open a PNC Treasury Enterprise Plan (including Analysis Business Checking) account by June 30, 2026. Maintain average ledger balance of $30,000+ for each of the first 3 statement cycles (no transaction requirement). Reward credited within 90 days after all conditions met. Available to businesses with annual revenue under $5 million (Tier 1 only)."
     },
     "fees": { "monthly_fee": 12, "monthly_fee_waiver_text": "Business Checking: $12/mo (waivable with qualifying balance). Business Checking Plus: $25/mo (waivable with qualifying balance). Bonus applies to both account types.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5296,13 +5296,13 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "Nationwide. New PNC business checking customers only. Open by June 30, 2026. Cooldown unknown — likely 24 months per standard PNC business terms."
+      "eligibility_notes": "Nationwide. New PNC business checking customers only (no existing PNC business checking; no account closed in past 90 days; no bonus received in past 12 months). Open by June 30, 2026. Annual revenue under $5 million required for $400 tier. 12-month cooldown confirmed per official terms."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 90 },
     "source_links": [
       "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html"
     ],
-    "raw_excerpt": "Tiered PNC Business Checking Plus bonus: $400 for $2,000–$29,999 average ledger balance or $1,000 for $30,000+ average balance, each maintained across the first 3 statement cycles. No direct deposit required. Open by June 30, 2026.",
+    "raw_excerpt": "PNC Business Checking $400 bonus: $2,000 avg ledger balance + 10 qualifying transactions in first 3 statement cycles. PNC Treasury Enterprise Plan $1,000 bonus: $30,000 avg ledger balance in first 3 statement cycles. 12-month cooldown. Under $5M revenue required. Open by June 30, 2026.",
     "verified_at": "2026-06-14"
   },
   {
