@@ -62,6 +62,9 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
   const [profileState, setProfileState] = useState<string | null>(null)
 
   // Load profile state (best-effort — if not signed in, skip).
+  // When arriving via a search ?q= link, skip the auto-enable of
+  // "Available to me" so the searched item isn't hidden by state filter.
+  const hasSearchQuery = !!searchParams.get("q")
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
@@ -74,8 +77,10 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
       const s = (profile as { state?: string | null } | null)?.state
       if (s) {
         setProfileState(s)
-        setStateCode(s)
-        setAvailableToMe(true)
+        if (!hasSearchQuery) {
+          setStateCode(s)
+          setAvailableToMe(true)
+        }
       }
     })
   }, [])

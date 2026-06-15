@@ -5923,10 +5923,7 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.bankatfidelity.com/summer-checking-bonus/",
-      "https://www.fidelitydeposit.com/"
-    ,
-      "https://www.doctorofcredit.com/northeastern-pa-only-fidelity-bank-400-checking/"
+      "https://www.bankatfidelity.com/moneymarket/"
     ],
     "raw_excerpt": "Fidelity Bank (PA) $500 checking bonus. Northeastern PA only."
   },
