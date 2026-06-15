@@ -145,6 +145,11 @@ export function checkingBonusStep(
     }
   }
 
+  // Bonus already confirmed received and no hold remaining — nothing left to do.
+  if (record.bonus_received) {
+    return { nextStep: null, deadline: null, urgency: "none" }
+  }
+
   if (postDeadline) {
     const remaining = daysUntil(postDeadline)
     const isOverdue = !(remaining != null && remaining > 0)

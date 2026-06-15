@@ -24,6 +24,7 @@ type ResolvedPick =
       kind: "checking" | "business-checking"
       rank: number
       bankShort: string
+      articleTitle?: string
       bonusAmount: number
       ddRequired: number | null
       windowDays: number | null
@@ -35,6 +36,7 @@ type ResolvedPick =
       kind: "savings"
       rank: number
       bankShort: string
+      articleTitle?: string
       bonusAmount: number
       minDeposit: number
       holdDays: number
@@ -44,7 +46,9 @@ type ResolvedPick =
     }
 
 function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
-  const slug = getPostByBonusId(p.bonusId)?.slug
+  const post = getPostByBonusId(p.bonusId)
+  const slug = post?.slug
+  const articleTitle = post?.title
 
   const checking = getCheckingBonusById(p.bonusId) as
     | {
@@ -67,6 +71,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       kind: isBusiness ? "business-checking" : "checking",
       rank,
       bankShort: displayName,
+      articleTitle,
       bonusAmount: checking.bonus_amount,
       ddRequired: checking.requirements?.min_direct_deposit_total ?? null,
       windowDays: checking.requirements?.deposit_window_days ?? null,
@@ -78,7 +83,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
 
   const savings = getSavingsBonusById(p.bonusId)
   if (savings) {
-    const t = savings.tiers[0]
+    const t = savings.tiers[savings.tiers.length - 1]
     const holdDays = practicalHoldDays(savings)
     const interest = t.min_deposit * savings.base_apy * (holdDays / 365)
     const effApy = (
@@ -90,6 +95,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       kind: "savings",
       rank,
       bankShort: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
+      articleTitle,
       bonusAmount: t.bonus_amount,
       minDeposit: t.min_deposit,
       holdDays,
@@ -361,14 +367,14 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                   </div>
                   <h2
                     style={{
-                      fontSize: 24,
+                      fontSize: r.articleTitle ? 18 : 24,
                       fontWeight: 800,
                       color: "#111",
                       margin: "0 0 4px",
-                      lineHeight: 1.2,
+                      lineHeight: 1.25,
                     }}
                   >
-                    {r.bankShort}
+                    {r.articleTitle ?? r.bankShort}
                   </h2>
                 </div>
                 <div style={{ textAlign: "right" }}>

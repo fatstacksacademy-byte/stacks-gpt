@@ -5271,7 +5271,7 @@ export const bonuses: any[] = [
     "bank_name": "PNC Bank",
     "product_type": "checking",
     "business": true,
-    "bonus_amount": 400,
+    "bonus_amount": 1000,
     "tiers": [
       { "bonus": 400, "min_balance": 30000 },
       { "bonus": 1000, "min_balance": 100000 }
@@ -5282,13 +5282,13 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 90,
+      "deposit_window_days": null,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": 30000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Maintain average ledger balance of $30,000+ for each of the first 3 statement cycles. Reward credited within 90 days after conditions met."
+      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $30,000–$99,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $100,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
     },
     "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5296,15 +5296,14 @@ export const bonuses: any[] = [
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
-      "lifetime_language": true,
-      "eligibility_notes": "Nationwide. New PNC business checking customers only. Open by June 30, 2026."
+      "lifetime_language": false,
+      "eligibility_notes": "Nationwide. New PNC business checking customers only. Open by June 30, 2026. Cooldown unknown — likely 24 months per standard PNC business terms."
     },
-    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 90 },
     "source_links": [
-      "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
-      "https://www.doctorofcredit.com/pnc-1000-business-checking-bonus/"
+      "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html"
     ],
-    "raw_excerpt": "Earn a $400 reward when you open a PNC Business Checking Plus by 6/30/26 and maintain an average ledger balance of $30,000+ for each of the first 3 statement cycles.",
+    "raw_excerpt": "Tiered PNC Business Checking Plus bonus: $400 for $30,000–$99,999 average ledger balance or $1,000 for $100,000+ average balance, each maintained across the first 3 statement cycles. No direct deposit required. Open by June 30, 2026.",
     "verified_at": "2026-06-14"
   },
   {

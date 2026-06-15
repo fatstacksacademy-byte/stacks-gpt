@@ -288,8 +288,12 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
         <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>
           Offer Details
         </div>
-        <InfoRow label="Bonus Amount" value={money(bonus.bonus_amount)} accent />
-        <InfoRow label="Account Type" value="Checking" />
+        <InfoRow label="Bonus Amount" value={
+          Array.isArray(bonus.tiers) && bonus.tiers.length > 1
+            ? `${money(bonus.tiers[0].bonus)}–${money(bonus.tiers[bonus.tiers.length - 1].bonus)}`
+            : money(bonus.bonus_amount)
+        } accent />
+        <InfoRow label="Account Type" value={bonus.business ? "Business Checking" : "Checking"} />
         {req.direct_deposit_required && (
           <InfoRow label="Direct Deposit Required" value={req.min_direct_deposit_total ? money(req.min_direct_deposit_total) + " total" : "Yes"} />
         )}
@@ -315,6 +319,28 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
           <InfoRow label="Cooldown" value={`${bonus.cooldown_months} months`} />
         )}
       </div>
+
+      {/* Balance tiers with effective APY (balance-hold checking bonuses — no DD required) */}
+      {!req.direct_deposit_required && Array.isArray(bonus.tiers) && bonus.tiers.length > 0 && (
+        <Section title="Bonus Tiers &amp; Effective APY">
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {bonus.tiers.map((tier: { bonus: number; min_balance: number }, i: number) => {
+              const holdDays = timeline.must_remain_open_days ?? 90
+              const effectiveApy = ((tier.bonus / tier.min_balance) * (365 / holdDays) * 100).toFixed(1)
+              return (
+                <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: "#111" }}>{money(tier.min_balance)} avg balance</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{effectiveApy}% effective APY</span>
+                  </div>
+                  <InfoRow label="Cash Bonus" value={money(tier.bonus)} accent />
+                  <InfoRow label="Maintain for" value={`${holdDays} days (~3 statement cycles)`} />
+                </div>
+              )
+            })}
+          </div>
+        </Section>
+      )}
 
       {/* What Counts as Direct Deposit */}
       {content?.ddMethods && content.ddMethods.length > 0 && (

@@ -675,7 +675,6 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 30,
     total_hold_days: 30,
     tiers: [
-      { min_deposit: 100, bonus_amount: 50 },
       { min_deposit: 100, bonus_amount: 150 },
     ],
     cooldown_months: null,
@@ -684,13 +683,13 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: true,
-      eligibility_notes: "New SoFi Active Investing customers, via Rakuten/Swagbucks shopping portal. Deposit $100, trade $50, hold 30 days. (SoFi's own native offer is now 'up to $1,000 in stock' — a probabilistic grant worth a few dollars on average, not a flat bonus.)"
+      eligibility_notes: "New SoFi Active Investing customers, via Rakuten/Swagbucks shopping portal. Deposit $100, trade $50, hold 30 days. (SoFi's own native offer is now 'up to $1,000 in stock' — a probabilistic grant that typically pays $3–$20 in practice, not a flat bonus.)"
     },
     source_links: ["https://www.sofi.com/invest/",
       "https://www.doctorofcredit.com/swagbucks-signup-for-sofi-invest-get-75-bonus-100-deposit-required/"
     ],
     raw_excerpt: "SoFi Invest $150 (15,000 MR / Rakuten cash) for $100 deposit + $50 trade, 30-day hold. Portal amount fluctuates $50–$200.",
-    notes: "Brokerage account. Live $150 is the Rakuten/Swagbucks portal path ($100 deposit) — far better terms than the old $1,000 native offer, which has been replaced by a near-worthless probabilistic stock grant."
+    notes: "Brokerage account. $150 via Rakuten/Swagbucks portal ($100 deposit + $50 trade) — far better than SoFi's native 'up to $1,000 in stock' offer, which typically pays $3–$20 in practice."
   },
   {
     id: "jpmorgan-self-directed-brokerage-2026",

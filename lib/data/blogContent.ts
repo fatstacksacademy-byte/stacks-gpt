@@ -710,6 +710,44 @@ export const blogContent: Record<string, BlogContent> = {
     relatedSlugs: ["chase-400-checking-bonus", "chime-100-checking-bonus", "varo-bank-150-checking-bonus"],
   },
 
+  "amex-rewards-checking-300-2026": {
+    ddMethods: [
+      { method: "Employer payroll (ACH)", works: true, notes: "The safest and most reliable method. Must be $500+ per deposit from your employer." },
+      { method: "Government benefits (SSA, pension)", works: true, notes: "Social Security and other government benefit ACH deposits qualify per the official terms." },
+      { method: "Tax refund (IRS ACH)", works: true, notes: "IRS tax refunds sent via ACH count as qualifying direct deposits per Amex's terms." },
+      { method: "Fidelity ACH push", works: "mixed", notes: "No confirmed data points yet. Amex explicitly requires deposits from 'an employer or the government' — broker-coded ACH may not qualify. Payroll is safer." },
+      { method: "Ally/SoFi/Schwab ACH push", works: "mixed", notes: "No confirmed data points. Amex terms restrict to employer/government ACH. Results may vary — report your experience on DoC." },
+      { method: "P2P (PayPal, Venmo, Zelle)", works: false, notes: "Explicitly excluded in Amex terms." },
+      { method: "Checking-to-checking transfer", works: false, notes: "Explicitly excluded — 'demand deposit account to demand deposit account transfers' do not qualify." },
+    ],
+    summary: "American Express Rewards Checking pays a $300 bonus for $7,500 in qualifying direct deposits within 90 days — one of the strictest DD definitions around. Amex specifically requires payroll, pension, government benefits, or tax refunds via ACH; bank-to-bank transfers and P2P don't count. On the upside: no hard pull, no ChexSystems, no monthly fee, and the account earns a competitive APY.",
+    strategy: "Open the Amex Rewards Checking account and route your actual payroll or government benefit ACH to it. You need $7,500 in qualifying deposits within 90 days — if your paycheck is $2,500, that's 3 deposits over the window. Because Amex is strict about the DD definition, don't rely on bank-to-bank ACH hacks; use real payroll. The bonus posts 8–12 weeks after you qualify, so budget about 3–4 months total. Note the eligibility gate: you must be an existing Amex card member (or Amex HYSA/CD holder) for at least 5 days before opening.",
+    bestFor: "Existing Amex cardholders who have a real payroll or pension ACH they can route. If you're already carrying an Amex card and can point your paycheck here for a quarter, this is clean profit with no credit pull and no fee.",
+    pros: [
+      "No hard pull and no ChexSystems — won't affect your credit or banking history",
+      "No monthly fee",
+      "90-day DD window is generous — just 3 paychecks at $2,500",
+      "Competitive APY on balances while you hold",
+      "Bonus pays regardless of account closure timing (account must be open until bonus posts)",
+    ],
+    cons: [
+      "Strict DD definition — must be employer/government ACH; bank-to-bank tricks likely won't work",
+      "$7,500 total is a high DD threshold compared to Chase ($1,000) or Citi ($1,500)",
+      "Requires existing Amex card membership (5+ days tenure) to even apply",
+      "Lifetime language — one bonus per customer",
+      "Bonus posts 8–12 weeks after qualifying — one of the slower timelines",
+    ],
+    comparison: "Compared to the Chase $400 bonus ($1,000 DD in 90 days), Amex's $300 requires 7.5× more in deposits. Compared to Citi ($1,500 DD, $325 bonus), Amex requires 5× more. The $300 Amex bonus only pencils out if you have a large paycheck you can route — if you're routing $7,500+ per quarter anyway, it's a free $300 on an account you'd want for the APY. For lower earners or people relying on ACH hacks, Chase or Citi are better first moves.",
+    faqs: [
+      { q: "What counts as a qualifying direct deposit at Amex?", a: "Per Amex's terms: a single ACH transfer of $500+ from an employer or the government — specifically payroll, pension, government benefits (like Social Security), or tax refunds. P2P transfers, checking-to-checking transfers, and non-employer/government ACH do not qualify." },
+      { q: "Does Amex run a hard credit pull?", a: "No. Amex Rewards Checking uses a soft pull only. No ChexSystems inquiry has been reported either — it's one of the most accessible accounts for people with ChexSystems history." },
+      { q: "Can I open Amex Rewards Checking if I don't have an Amex card?", a: "No — you must be an existing Amex card member (personal or business) for at least 5 days, or be an existing Amex HYSA or CD holder. If you're not already an Amex customer, get any Amex card first, wait 5 days, then open the checking account." },
+      { q: "When does the bonus post?", a: "Amex posts the bonus 8–12 weeks after your qualifying deposits are complete. Budget about 3–4 months from account opening to receiving the bonus." },
+      { q: "Can I close the account after the bonus posts?", a: "Yes. There's no explicit minimum time to keep the account open after the bonus posts. The terms say the account must be 'open and in good standing until the bonus posts' — once it does, you're free to close." },
+    ],
+    relatedSlugs: ["chase-400-checking-bonus", "sofi-checking-savings-300-dd-2026", "citi-regular-checking-325-edd-2026"],
+  },
+
   "citi-regular-checking-325-edd-2026": {
     ddMethods: [
       { method: "Employer payroll", works: true },
@@ -3108,18 +3146,31 @@ export const blogContent: Record<string, BlogContent> = {
   },
 
   "pnc-business-checking-400-2026": {
-    ddMethods: [
-      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
-      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
+    summary: "PNC Business Checking Plus offers a tiered balance bonus: $400 for maintaining $30,000–$99,999 average ledger balance, or $1,000 for $100,000+, across the first 3 statement cycles. No direct deposit required — this is a pure balance-hold play. At $30k for 90 days, the $400 bonus works out to a solid 5.4% effective APY; at $100k, the $1,000 return is 4.1%.",
+    strategy: "Open a PNC Business Checking Plus account by June 30, 2026, and fund it to your target tier before your first statement cycle closes. The balance requirement is the average ledger balance for each of the first 3 statement cycles (~90 days total). Tier 1 ($30k–$99,999 → $400) is the capital-efficient play. Tier 2 ($100k+ → $1,000) is better if you have idle business cash that would otherwise sit in a low-yield account. The $25/month fee is waived if you maintain the qualifying balance, so you should clear the fee automatically while holding for the bonus. Bonus posts within 90 days of meeting conditions.",
+    bestFor: "Business owners with significant idle cash who want a no-DD bonus. If you have $30k–$100k+ sitting in a business checking account earning nothing, this is a straightforward reallocation that earns a flat cash bonus with no transaction hoops.",
+    pros: [
+      "No direct deposit required — just hold a balance",
+      "$25/month fee auto-waived by the qualifying balance",
+      "Nationwide availability",
+      "No hard pull on business credit",
+      "$1,000 top tier is one of the largest business checking bonuses available",
     ],
-    summary: "PNC's business checking bonus goes up to $1,000 at the Enterprise tier ($100k balance for 3 billing cycles). The $400 tier at $2,000 is the most accessible entry point. Available nationwide.",
-    strategy: "Open a PNC business checking account. For the $400 tier, deposit $2,000. For the top $1,000 tier, maintain $100,000 for 3 billing cycles. The $400 tier is the capital-efficient play; the $1,000 tier is for businesses with large idle balances.",
-    bestFor: "Business owners looking for a nationwide option. The $400 tier at $2,000 is great for low-capital stacking alongside other business bonuses.",
-    pros: ["$400 tier only requires $2,000 — very accessible", "Nationwide availability", "Three tiers for different capital levels"],
-    cons: ["Top tier requires $100,000 for 3 billing cycles", "$25/month fee unless qualifying balance maintained"],
-    comparison: "",
-    faqs: [{ q: "What is the Enterprise tier?", a: "PNC's Enterprise Business Checking requires maintaining $100,000 for 3 billing cycles to earn the full $1,000 bonus." }],
-    relatedSlugs: [],
+    cons: [
+      "$30,000 minimum is a high capital bar for the base tier",
+      "Balance must be maintained across all 3 statement cycles — dropping below even once may disqualify",
+      "June 30, 2026 open deadline is tight",
+      "Cooldown period unconfirmed — verify before attempting to repeat",
+    ],
+    comparison: "For business owners who can't meet a $30k balance, Chase Business Complete Checking ($300 at $2,000) or U.S. Bank Business Checking ($500 at $5,000) have lower floors. For those with $30k+, PNC's $400/$1,000 returns (5.4%/4.1% effective APY) are competitive. If you already bank at PNC personally, the business account stacks cleanly without switching institutions.",
+    faqs: [
+      { q: "What is the average ledger balance requirement?", a: "PNC uses average ledger balance — the average of all end-of-day balances in the account during a statement cycle. If you deposit $30,000 on day 1 and maintain it through the full cycle, you meet the $30k threshold. Withdrawing funds mid-cycle will lower your average and could disqualify you." },
+      { q: "Is there a direct deposit requirement?", a: "No. This is a pure balance-hold bonus. There is no direct deposit, transaction, or bill-pay requirement — just maintain the average balance for 3 statement cycles." },
+      { q: "Is this a lifetime limit?", a: "The terms say 'new PNC business checking customers only,' meaning you need to be a new business checking customer. The cooldown period after earning the bonus is unconfirmed — it may be 24 months (standard for PNC consumer offers) or there may be no repeat. Verify with PNC before a second attempt." },
+      { q: "How do I avoid the $25/month fee?", a: "The fee is waived when you maintain the qualifying balance — which you need to do anyway for the bonus. While you're holding $30k+ during the qualification period, the fee is automatically waived." },
+      { q: "When does the bonus post?", a: "PNC credits the reward within 90 days after you've met the 3-cycle balance requirement. So from account opening, budget roughly 3 months to qualify plus up to 3 more months for posting — about 180 days total before you see the cash." },
+    ],
+    relatedSlugs: ["chase-500-business-checking-bonus", "fulton-bank-500-business-savings-bonus"],
   },
 
   "fulton-bank-business-500-2026": {
@@ -4305,6 +4356,7 @@ export const blogContent: Record<string, BlogContent> = {
       "Monthly fee waivable with $500+ direct deposit, $1,500+ daily balance, or $5,000+ avg daily balance",
     ],
     cons: [
+      "Uses your 24-month Chase checking slot — doing this bonus means you can't earn any other Chase Total Checking bonus (including the standard $400 offer) for 24 months",
       "Direct deposit requirement — Zelle, wires, and P2P transfers don't qualify",
       "$15/month fee if you can't meet a waiver condition",
       "Must be a new Chase checking customer (no existing account, none closed in last 90 days)",

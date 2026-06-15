@@ -279,8 +279,8 @@ export default function HubClient({
       })
     }
 
-    // Order is finalized by StartedBonusesList (urgency-first, then deadline).
-    return out
+    // Drop items where nextStep is null — bonus is fully done (received + no hold remaining).
+    return out.filter(item => item.nextStep != null)
   }, [completedRecords, customBonuses, ownedCards, savingsEntries])
 
   // ─── Lifetime earned (completed across all modules) ───────────────
