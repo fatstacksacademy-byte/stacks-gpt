@@ -274,6 +274,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [overrideWindowDays, setOverrideWindowDays] = useState("")
   const [overrideNotes, setOverrideNotes] = useState("")
 
+  // Inline date prompts for custom bonus step actions
+  const [pendingStepDate, setPendingStepDate] = useState<{ id: string; type: "open" | "close" } | null>(null)
+  const [stepDateValue, setStepDateValue] = useState(todayStr())
+  const [stepBonusReceived, setStepBonusReceived] = useState(true)
+  const [stepActualAmount, setStepActualAmount] = useState("")
+
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
 
@@ -1654,57 +1660,6 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     const effNotes = catO.notes ?? null
                     const hasOverride = Object.keys(catO).length > 0
 
-                    if (editingCatalogTerms === hb.bonus.id) {
-                      return (
-                        <div style={{ marginTop: 16, background: "#f8f8f8", borderRadius: 10, padding: "16px 18px" }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#111", marginBottom: 12 }}>Customize terms for your tracking</div>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                            <div>
-                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Bonus amount ($)</label>
-                              <input type="number" value={overrideAmt} onChange={e => setOverrideAmt(e.target.value)}
-                                placeholder={String(hb.bonus.bonus_amount)}
-                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
-                            </div>
-                            <div>
-                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Min DD total ($)</label>
-                              <input type="number" value={overrideDdTotal} onChange={e => setOverrideDdTotal(e.target.value)}
-                                placeholder={String(hb.bonus.requirements?.min_direct_deposit_total ?? "")}
-                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
-                            </div>
-                            <div>
-                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Deposit window (days)</label>
-                              <input type="number" value={overrideWindowDays} onChange={e => setOverrideWindowDays(e.target.value)}
-                                placeholder={String(hb.bonus.requirements?.deposit_window_days ?? 90)}
-                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
-                            </div>
-                            <div>
-                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Notes</label>
-                              <input type="text" value={overrideNotes} onChange={e => setOverrideNotes(e.target.value)}
-                                placeholder="Your notes…"
-                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
-                            </div>
-                          </div>
-                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            <button onClick={() => saveCatalogTermOverride(hb.bonus.id)}
-                              style={{ padding: "8px 18px", fontSize: 13, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                              Save
-                            </button>
-                            <button onClick={() => setEditingCatalogTerms(null)}
-                              style={{ padding: "8px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
-                              Cancel
-                            </button>
-                            {hasOverride && (
-                              <button onClick={() => clearCatalogTermOverride(hb.bonus.id)}
-                                style={{ padding: "8px 14px", fontSize: 12, color: "#dc2626", background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>
-                                Reset to catalog
-                              </button>
-                            )}
-                          </div>
-                          <div style={{ fontSize: 11, color: "#aaa", marginTop: 10 }}>Overrides are saved locally and only affect your view.</div>
-                        </div>
-                      )
-                    }
-
                     return (
                       <>
                         <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
@@ -2056,7 +2011,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 return (
                                   <div key={step.key}
                                     style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: step.done ? "default" : "pointer", borderRadius: 6 }}
-                                    onClick={() => { if (!step.done) advanceCustomStep(step.key) }}>
+                                    onClick={() => {
+                                      if (!step.done) {
+                                        if (step.key === "account_opened") {
+                                          setPendingStepDate({ id: c.id, type: "open" })
+                                          setStepDateValue(todayStr())
+                                        } else {
+                                          advanceCustomStep(step.key)
+                                        }
+                                      }
+                                    }}>
                                     <div style={{
                                       width: 18, height: 18, borderRadius: 4, flexShrink: 0,
                                       border: step.done ? "none" : `2px solid ${isActive ? "#7c3aed" : "#d4d4d4"}`,
@@ -2082,6 +2046,25 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               })}
                             </div>
                           </div>
+
+                          {/* Inline date prompt — Account Opened */}
+                          {pendingStepDate?.id === c.id && pendingStepDate?.type === "open" && (
+                            <div style={{ padding: "8px 24px 0" }}>
+                              <div style={{ background: "#f9f5ff", border: "1px solid #e0d7ff", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#7c3aed", marginBottom: 10 }}>When did you open the account?</div>
+                                <input type="date" value={stepDateValue} onChange={e => setStepDateValue(e.target.value)}
+                                  style={{ ...modalInput, marginBottom: 10 }} />
+                                <div style={{ display: "flex", gap: 8 }}>
+                                  <button onClick={() => setPendingStepDate(null)} style={{ ...cancelBtnLight, flex: 1 }}>Cancel</button>
+                                  <button onClick={async () => {
+                                    await updateCustomBonus(c.id, { current_step: "account_opened", opened_date: stepDateValue })
+                                    setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, current_step: "account_opened", opened_date: stepDateValue } : x))
+                                    setPendingStepDate(null)
+                                  }} style={{ ...confirmBtnLight, flex: 1 }}>Confirm</button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Deposit tracking */}
                           {c.dd_required && totalRequired > 0 && (
@@ -2147,30 +2130,62 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           )}
 
                           {/* Actions */}
-                          {bonusPosted && (
+                          {pendingStepDate?.id === c.id && pendingStepDate?.type === "close" ? (
                             <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                                <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                  Mark account closed
-                                </button>
-                                <button onClick={() => handleCustomKeptOpen(c.id)}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
-                                  Keep open
-                                </button>
-                                <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
-                                  Closing the account starts your cooldown period for this bonus.
+                              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 10 }}>When did you close the account?</div>
+                                <input type="date" value={stepDateValue} onChange={e => setStepDateValue(e.target.value)}
+                                  style={{ ...modalInput, marginBottom: 10 }} />
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                                  <input type="checkbox" id={`cr-${c.id}`} checked={stepBonusReceived} onChange={e => setStepBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
+                                  <label htmlFor={`cr-${c.id}`} style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+                                </div>
+                                {stepBonusReceived && (
+                                  <div style={{ position: "relative", marginBottom: 10 }}>
+                                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                                    <input type="number" value={stepActualAmount} onChange={e => setStepActualAmount(e.target.value)}
+                                      placeholder={String(c.bonus_amount)} style={{ ...modalInput, paddingLeft: 24 }} />
+                                  </div>
+                                )}
+                                <div style={{ display: "flex", gap: 8 }}>
+                                  <button onClick={() => setPendingStepDate(null)} style={{ ...cancelBtnLight, flex: 1 }}>Cancel</button>
+                                  <button onClick={async () => {
+                                    const parsed = stepActualAmount ? parseInt(stepActualAmount.replace(/\D/g, "")) : undefined
+                                    await closeCustomBonus(c.id, stepDateValue, stepBonusReceived, parsed)
+                                    await loadRecords()
+                                    setPendingStepDate(null)
+                                  }} style={{ ...confirmBtnLight, flex: 1 }}>Confirm close</button>
                                 </div>
                               </div>
                             </div>
-                          )}
-                          {!bonusPosted && (
-                            <div style={{ padding: "14px 24px 0" }}>
-                              <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("") }}
-                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
-                                Mark as closed
-                              </button>
-                            </div>
+                          ) : (
+                            <>
+                              {bonusPosted && (
+                                <div style={{ padding: "16px 24px 0" }}>
+                                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                                    <button onClick={() => { setPendingStepDate({ id: c.id, type: "close" }); setStepDateValue(todayStr()); setStepBonusReceived(true); setStepActualAmount(String(c.bonus_amount)) }}
+                                      style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                      Mark account closed
+                                    </button>
+                                    <button onClick={() => handleCustomKeptOpen(c.id)}
+                                      style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                      Keep open
+                                    </button>
+                                    <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
+                                      Closing the account starts your cooldown period for this bonus.
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              {!bonusPosted && (
+                                <div style={{ padding: "14px 24px 0" }}>
+                                  <button onClick={() => { setPendingStepDate({ id: c.id, type: "close" }); setStepDateValue(todayStr()); setStepBonusReceived(false); setStepActualAmount("") }}
+                                    style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
+                                    Mark as closed
+                                  </button>
+                                </div>
+                              )}
+                            </>
                           )}
 
                           {/* Edit / Remove */}
@@ -2606,8 +2621,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             </div>
                           )}
 
-                          {/* ── Remove ── */}
-                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end" }}>
+                          {/* ── Edit terms / Remove ── */}
+                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <button onClick={() => openEditCatalogTerms(b.id)}
+                              style={{ fontSize: 11, color: Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "#d97706" : "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              {Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "Edited terms ✎" : "Edit terms"}
+                            </button>
                             <button onClick={() => handleDelete(b.id)}
                               style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                               Remove
@@ -3195,6 +3214,50 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
           </p>
         </div>
       </div>
+
+      {/* Catalog Term Overrides Modal */}
+      {editingCatalogTerms && (() => {
+        const b = allBonuses.find(x => x.id === editingCatalogTerms)
+        const hasOverride = Object.keys(catalogOverrides[editingCatalogTerms] ?? {}).length > 0
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Customize Terms</div>
+              <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>{b?.bank_name ?? editingCatalogTerms} — overrides saved locally, only affect your view</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <label style={modalLabel}>Bonus amount ($)</label>
+                  <input type="number" value={overrideAmt} onChange={e => setOverrideAmt(e.target.value)}
+                    placeholder={String(b?.bonus_amount ?? "")} style={modalInput} />
+                </div>
+                <div>
+                  <label style={modalLabel}>Min DD total ($)</label>
+                  <input type="number" value={overrideDdTotal} onChange={e => setOverrideDdTotal(e.target.value)}
+                    placeholder={String(b?.requirements?.min_direct_deposit_total ?? "")} style={modalInput} />
+                </div>
+                <div>
+                  <label style={modalLabel}>Deposit window (days)</label>
+                  <input type="number" value={overrideWindowDays} onChange={e => setOverrideWindowDays(e.target.value)}
+                    placeholder={String(b?.requirements?.deposit_window_days ?? 90)} style={modalInput} />
+                </div>
+                <div>
+                  <label style={modalLabel}>Notes</label>
+                  <input type="text" value={overrideNotes} onChange={e => setOverrideNotes(e.target.value)}
+                    placeholder="Your notes…" style={modalInput} />
+                </div>
+              </div>
+              <div style={modalActions}>
+                <button onClick={() => setEditingCatalogTerms(null)} style={cancelBtnLight}>Cancel</button>
+                {hasOverride && (
+                  <button onClick={() => clearCatalogTermOverride(editingCatalogTerms)}
+                    style={{ ...cancelBtnLight, color: "#dc2626" }}>Reset</button>
+                )}
+                <button onClick={() => saveCatalogTermOverride(editingCatalogTerms)} style={confirmBtnLight}>Save</button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Modal */}
       {actionBonus && (
