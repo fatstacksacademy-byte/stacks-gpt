@@ -49,6 +49,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
   const checking = getCheckingBonusById(p.bonusId) as
     | {
         bank_name: string
+        product_name?: string
         bonus_amount: number
         requirements?: { min_direct_deposit_total?: number; deposit_window_days?: number }
         fees?: { monthly_fee?: number }
@@ -58,7 +59,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
     return {
       kind: "checking",
       rank,
-      bankShort: checking.bank_name.split("(")[0].trim(),
+      bankShort: checking.product_name ?? checking.bank_name.split("(")[0].trim(),
       bonusAmount: checking.bonus_amount,
       ddRequired: checking.requirements?.min_direct_deposit_total ?? null,
       windowDays: checking.requirements?.deposit_window_days ?? null,
@@ -81,7 +82,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
     return {
       kind: "savings",
       rank,
-      bankShort: savings.bank_name.split("(")[0].trim(),
+      bankShort: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
       bonusAmount: t.bonus_amount,
       minDeposit: t.min_deposit,
       holdDays,

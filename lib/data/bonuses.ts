@@ -232,6 +232,7 @@ export const bonuses: any[] = [
   {
     "id": "bank-of-america-500-tiered-checking-2026",
     "bank_name": "Bank of America",
+    "product_name": "Bank of America Advantage Banking",
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": 12,
@@ -402,6 +403,7 @@ export const bonuses: any[] = [
   {
     "id": "chase-total-checking-400-2026",
     "bank_name": "Chase",
+    "product_name": "Chase Total Checking",
     "product_type": "checking",
     "bonus_amount": 400,
     "expiration_date": "2026-07-15",
@@ -1041,6 +1043,7 @@ export const bonuses: any[] = [
   {
     "id": "us-bank-smartly-checking-450-2026",
     "bank_name": "U.S. Bank",
+    "product_name": "U.S. Bank Smartly Checking",
     "product_type": "checking",
     "bonus_amount": 450,
     "expiration_date": "2026-06-18",
@@ -1162,6 +1165,7 @@ export const bonuses: any[] = [
   {
     "id": "wintrust-500-checking-2026",
     "bank_name": "Wintrust Bank",
+    "product_name": "Wintrust Total Access Checking",
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": null,
