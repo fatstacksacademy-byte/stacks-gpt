@@ -675,6 +675,7 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 30,
     total_hold_days: 30,
     tiers: [
+      { min_deposit: 100, bonus_amount: 50 },
       { min_deposit: 100, bonus_amount: 150 },
     ],
     cooldown_months: null,
