@@ -1,12 +1,14 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import MonthlyCardBonuses from "../components/MonthlyCardBonuses"
-import { getMonthlyCardPicks } from "../../../lib/data/monthlyCardPicks"
+import { getMonthlyCardPicks, type MonthlyCardPicks } from "../../../lib/data/monthlyCardPicks"
+import { createClient } from "../../../lib/supabase/server"
 
 const BASE = "https://fatstacksacademy.com"
 const SLUG = "june-2026"
 
-const picks = getMonthlyCardPicks(SLUG)
+// Static fallback used for metadata (synchronous)
+const staticPicks = getMonthlyCardPicks(SLUG)
 
 export const metadata: Metadata = {
   title: "Best Credit Cards — June 2026 (Top Picks) - Fat Stacks Academy",
@@ -31,7 +33,28 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Best Credit Cards — June 2026" },
 }
 
-export default function Page() {
+export default async function Page() {
+  // Try DB first (admin saves here), fall back to static TS data
+  let picks: MonthlyCardPicks | undefined = staticPicks
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from("monthly_card_picks")
+      .select("*")
+      .eq("month_slug", SLUG)
+      .single()
+    if (data) {
+      picks = {
+        monthSlug: data.month_slug,
+        monthLabel: data.month_label,
+        publishedDate: data.published_date,
+        videoId: data.video_id ?? undefined,
+        intro: data.intro,
+        picks: data.picks,
+      }
+    }
+  } catch {}
+
   if (!picks) notFound()
   return <MonthlyCardBonuses data={picks} />
 }
