@@ -275,10 +275,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [overrideNotes, setOverrideNotes] = useState("")
 
   // Inline date prompts for custom bonus step actions
-  const [pendingStepDate, setPendingStepDate] = useState<{ id: string; type: "open" | "close" } | null>(null)
+  const [pendingStepDate, setPendingStepDate] = useState<{ id: string; type: "open" | "close"; isEdit?: boolean } | null>(null)
   const [stepDateValue, setStepDateValue] = useState(todayStr())
   const [stepBonusReceived, setStepBonusReceived] = useState(true)
   const [stepActualAmount, setStepActualAmount] = useState("")
+  const [editingCloseDateId, setEditingCloseDateId] = useState<string | null>(null)
+  const [editingCloseDateVal, setEditingCloseDateVal] = useState("")
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
@@ -2041,6 +2043,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     }}>
                                       {step.label}
                                     </span>
+                                    {step.key === "account_opened" && step.done && c.opened_date && (
+                                      <>
+                                        <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(c.opened_date)}</span>
+                                        <button
+                                          onClick={e => { e.stopPropagation(); setPendingStepDate({ id: c.id, type: "open", isEdit: true }); setStepDateValue(c.opened_date) }}
+                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>
+                                          ✎
+                                        </button>
+                                      </>
+                                    )}
                                   </div>
                                 )
                               })}
@@ -2057,8 +2069,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 <div style={{ display: "flex", gap: 8 }}>
                                   <button onClick={() => setPendingStepDate(null)} style={{ ...cancelBtnLight, flex: 1 }}>Cancel</button>
                                   <button onClick={async () => {
-                                    await updateCustomBonus(c.id, { current_step: "account_opened", opened_date: stepDateValue })
-                                    setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, current_step: "account_opened", opened_date: stepDateValue } : x))
+                                    const stepUpdates = pendingStepDate?.isEdit
+                                      ? { opened_date: stepDateValue }
+                                      : { current_step: "account_opened", opened_date: stepDateValue }
+                                    await updateCustomBonus(c.id, stepUpdates)
+                                    setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, ...stepUpdates } : x))
                                     setPendingStepDate(null)
                                   }} style={{ ...confirmBtnLight, flex: 1 }}>Confirm</button>
                                 </div>
@@ -2980,14 +2995,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     )
                   })}
                   {closedCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: 0.6 }}>
+                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: editingCloseDateId === c.id ? 1 : 0.6 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
                             <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
-                          <div style={{ fontSize: 11, color: "#999", marginTop: 2 }}>Closed {fmtShortDate(c.closed_date!)}</div>
+                          <div style={{ fontSize: 11, color: "#999", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                            Closed {fmtShortDate(c.closed_date!)}
+                            <button onClick={() => { setEditingCloseDateId(c.id); setEditingCloseDateVal(c.closed_date!) }}
+                              style={{ fontSize: 10, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                          </div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           {c.bonus_received ? (
@@ -2999,6 +3018,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
                         </div>
                       </div>
+                      {editingCloseDateId === c.id && (
+                        <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                          <input type="date" value={editingCloseDateVal} onChange={e => setEditingCloseDateVal(e.target.value)}
+                            style={{ ...modalInput, flex: 1, marginBottom: 0 }} />
+                          <button onClick={() => setEditingCloseDateId(null)} style={cancelBtnLight}>Cancel</button>
+                          <button onClick={async () => {
+                            await updateCustomBonus(c.id, { closed_date: editingCloseDateVal })
+                            setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, closed_date: editingCloseDateVal } : x))
+                            setEditingCloseDateId(null)
+                          }} style={confirmBtnLight}>Save</button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
