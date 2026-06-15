@@ -3198,10 +3198,6 @@ export const blogContent: Record<string, BlogContent> = {
   },
 
   "central-bank-business-500-2026": {
-    ddMethods: [
-      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
-      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
-    ],
     summary: "Central Bank of the Midwest offers a $500 business checking bonus with a simple $3,000 balance at day 90. Use promo code 500BB18. Available in OK, IL, KS, MO, CO.",
     strategy: "Open a Central Bank business checking account with promo code 500BB18. Maintain a $3,000 balance through day 90. Low capital requirement makes this an easy stacking play.",
     bestFor: "Business owners in the central US (OK, IL, KS, MO, CO) looking for a low-capital business checking bonus.",
@@ -3327,10 +3323,6 @@ export const blogContent: Record<string, BlogContent> = {
   },
 
   "bluevine-business-500-2026": {
-    ddMethods: [
-      { method: "Payroll", works: true, notes: "Business payroll deposits work." },
-      { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
-    ],
     summary: "Bluevine offers a $500 business checking bonus with promo code NW500 through September 30, 2026. Funding alone is not enough: the offer requires qualifying business activity in each 30-day period for 90 days.",
     strategy: "Deposit $5,000 within 30 days. Then maintain a $5,000 minimum daily balance while meeting at least one activity path in each 30-day period for the next 90 days: $5,000+ in eligible merchant-services deposits, $5,000+ in outbound payroll payments through eligible providers, or $2,000+ in eligible Bluevine business-card spend.",
     bestFor: "Small business owners and freelancers who want a no-fee business checking account with a solid bonus.",
@@ -4163,7 +4155,13 @@ export const blogContent: Record<string, BlogContent> = {
   },
 
   "greenfi-75-checking-2026": {
-    summary: "GreenFi is currently offering $75 on its fee-free checking. The headline requirement is a single $200+ qualifying direct deposit within 45 days of opening. There's no monthly fee on the account, so the entire bonus is profit once it posts.",
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "The safest method — $200+ from employer/payroll/benefits within 45 days." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Bank-to-bank ACH push (Fidelity, Ally, Chase, etc.)", works: false, notes: "GreenFi explicitly EXCLUDES external bank-to-bank ACH transfers — these will not trigger the bonus. Use real payroll or government deposits." },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false, notes: "P2P transfers do not qualify." },
+    ],
+    summary: "GreenFi is currently offering $75 on its fee-free checking. The headline requirement is a single $200+ qualifying direct deposit within 45 days of opening. There's no monthly fee on the account, so the entire bonus is profit once it posts. Note: GreenFi excludes external bank-to-bank ACH transfers — only true payroll/benefits direct deposits qualify.",
     strategy: "Route one $200+ direct deposit into the new GreenFi account within 45 days — payroll or a confirmed-working DD-coded ACH push both work. GreenFi posts the bonus within ~5 days of qualifying activity, which is unusually fast. Since the account is fee-free, there's no carrying cost while you wait, and no rush to close after the bonus lands.",
     bestFor: "Anyone wanting a quick, low-friction bonus to start a churning rotation. Especially nice for first-timers because the $200 trigger is far below most peer offers.",
     pros: [
@@ -4217,7 +4215,13 @@ export const blogContent: Record<string, BlogContent> = {
     verifiedUrl: "https://www.grasshopper.bank/april-checking-bonus/",
   },
   "four-leaf-fcu-550-checking-2026": {
-    summary: "Four Leaf Federal Credit Union is currently offering $550 on its checking bonus. The headline requirement is $500 in qualifying direct deposits within 90 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    ddMethods: [
+      { method: "Employer payroll (recurring)", works: true, notes: "A recurring paycheck of $500+ is the intended method." },
+      { method: "Pension / government benefits (recurring)", works: true },
+      { method: "One-time transfers / brokerage ACH pushes", works: false, notes: "Four Leaf requires RECURRING qualifying direct deposits — one-time transfers and most brokerage ACH pushes will not count." },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false },
+    ],
+    summary: "Four Leaf Federal Credit Union is currently offering $550 on its checking bonus. The headline requirement is recurring qualifying direct deposits of $500+ within 90 days of opening — one-time deposits do not qualify. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
     strategy: "Plan to route $500 in payroll (or a confirmed-working ACH push) into the new Four Leaf Federal Credit Union account within the 90-day window. Bonus posting times vary by bank; budget 30–60 days unless the catalog says otherwise. No lifetime language means this bonus is repeatable on the typical cooldown. Four Leaf Federal Credit Union screens ChexSystems aggressively — unfreeze ChexSystems before applying, and avoid this offer if your ChexSystems file is messy.",
     bestFor: "Working-income earners with at least $500 of qualifying direct-deposit capacity over a 90-day window who want a $550 cash bonus without committing to a long holding period.",
     pros: [
@@ -4232,7 +4236,7 @@ export const blogContent: Record<string, BlogContent> = {
     ],
     comparison: "Among checking bonuses in our catalog, the closest peer is the Bank of America $500 offer. Four Leaf Federal Credit Union's version stands out when you value the higher headline bonus.",
     faqs: [
-      { q: "What's the current Four Leaf Federal Credit Union checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $550 after $500 in qualifying direct deposits within 90 days of opening." },
+      { q: "What's the current Four Leaf Federal Credit Union checking bonus?", a: "$550 after recurring qualifying direct deposits of $500+ within 90 days of opening (one-time deposits do not count). Confirm the live terms on the credit union's page before applying." },
       { q: "Does Four Leaf Federal Credit Union run a hard credit pull for this account?", a: "No — Four Leaf Federal Credit Union uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
     ],
     relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
@@ -4264,7 +4268,13 @@ export const blogContent: Record<string, BlogContent> = {
     verifiedUrl: "https://www.percapita.com/en/earn300",
   },
   "horizon-bank-250-checking-2026": {
-    summary: "Horizon Bank is currently offering $250 on its checking bonus. The headline requirement is $500 in qualifying direct deposits within 90 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "One recurring $500+ direct deposit within 90 days (use promo code America250 at opening; also requires 10 debit-card transactions)." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity / brokerage ACH push", works: "mixed", notes: "DD-coded pushes may work but Horizon-specific data is thin — payroll is safest." },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false },
+    ],
+    summary: "Horizon Bank is currently offering $250 on Everyday Checking (IN/MI). Use promo code America250 at opening, then set up one recurring $500+ direct deposit AND complete 10 debit-card transactions within 90 days. There's no monthly fee on the account.",
     strategy: "Plan to route $500 in payroll (or a confirmed-working ACH push) into the new Horizon Bank account within the 90-day window. Once you've met requirements, plan on roughly 30 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown. Horizon Bank runs a ChexSystems check; make sure your file is unfrozen before applying.",
     bestFor: "Working-income earners with at least $500 of qualifying direct-deposit capacity over a 90-day window who want a $250 cash bonus without committing to a long holding period.",
     pros: [
@@ -4279,7 +4289,7 @@ export const blogContent: Record<string, BlogContent> = {
     ],
     comparison: "Among checking bonuses in our catalog, the closest peer is the Farmers Insurance Federal Credit Union $250 offer. Horizon Bank's version stands out when you prefer Horizon Bank's footprint or screening profile over the higher peer payout.",
     faqs: [
-      { q: "What's the current Horizon Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $250 after $500 in qualifying direct deposits within 90 days of opening." },
+      { q: "What's the current Horizon Bank checking bonus?", a: "$250 after one recurring $500+ direct deposit and 10 debit-card transactions within 90 days, using promo code America250 at opening. Available in Indiana and Michigan." },
       { q: "Does Horizon Bank run a hard credit pull for this account?", a: "No — Horizon Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
       { q: "How long does the Horizon Bank bonus take to post?", a: "Approximately 30 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
     ],
@@ -4288,7 +4298,14 @@ export const blogContent: Record<string, BlogContent> = {
     verifiedUrl: "https://www.horizonbank.com/america250",
   },
   "provident-bank-300-checking-2026": {
-    summary: "Provident Bank is currently offering $300 on its checking bonus. The headline requirement is $1,000 in qualifying direct deposits within 60 days of opening. There's no monthly fee on the account, so the bonus is close to pure profit once the qualifying activity posts.",
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "Two separate $500+ direct deposits within 60 days." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "ACH automatic debit (alternative)", works: true, notes: "Setting up one recurring ACH automatic debit on the account can satisfy the requirement as an alternative to two DDs." },
+      { method: "Brokerage ACH push (Fidelity, etc.)", works: "mixed", notes: "Limited Provident-specific data — payroll is safest." },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false },
+    ],
+    summary: "Provident Bank is currently offering $300 on its checking bonus (NJ/NY/PA). The requirement is two separate $500+ direct deposits ($1,000 total) within 60 days of opening — or one recurring ACH automatic debit as an alternative. There's no monthly fee on the account.",
     strategy: "Plan to route $1,000 in payroll (or a confirmed-working ACH push) into the new Provident Bank account within the 60-day window. Once you've met requirements, plan on roughly 120 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown.",
     bestFor: "Working-income earners with at least $1,000 of qualifying direct-deposit capacity over a 60-day window who want a $300 cash bonus without committing to a long holding period.",
     pros: [
@@ -4304,7 +4321,7 @@ export const blogContent: Record<string, BlogContent> = {
     ],
     comparison: "Among checking bonuses in our catalog, the closest peer is the PSECU $300 offer. Provident Bank's version stands out when you prefer Provident Bank's footprint or screening profile over the higher peer payout.",
     faqs: [
-      { q: "What's the current Provident Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $300 after $1,000 in qualifying direct deposits within 60 days of opening." },
+      { q: "What's the current Provident Bank checking bonus?", a: "$300 after two separate $500+ direct deposits within 60 days of opening (or one recurring ACH automatic debit as an alternative). Available in NJ, NY, and PA." },
       { q: "Does Provident Bank run a hard credit pull for this account?", a: "No — Provident Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
       { q: "How long does the Provident Bank bonus take to post?", a: "Approximately 120 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
     ],
@@ -4313,7 +4330,14 @@ export const blogContent: Record<string, BlogContent> = {
     verifiedUrl: "https://www.provident.bank/basic-offer",
   },
   "ascend-bank-300-checking-2026": {
-    summary: "Ascend Bank is currently offering $300 on its checking bonus. The headline requirement is $100 in qualifying direct deposits within 30 days of opening. The account carries a $15 monthly fee (waivable — see terms).",
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "First qualifying direct deposit within 30 days triggers the bonus (plus active debit-card use)." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Teller / ATM / mobile check deposit", works: false, notes: "Explicitly EXCLUDED — only electronic direct deposits qualify." },
+      { method: "Brokerage ACH push", works: "mixed", notes: "Limited Ascend-specific data; payroll is safest." },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false },
+    ],
+    summary: "Ascend Bank (CT) is currently offering $300 on its checking bonus. The requirement is a qualifying electronic direct deposit plus active debit-card use within 30 days of opening — teller, ATM, and mobile check deposits are explicitly excluded. The account carries a $15 monthly fee (waivable — see terms).",
     strategy: "Plan to route $100 in payroll (or a confirmed-working ACH push) into the new Ascend Bank account within the 30-day window. Once you've met requirements, plan on roughly 60 days for the bonus to actually post. No lifetime language means this bonus is repeatable on the typical cooldown.",
     bestFor: "Working-income earners with at least $100 of qualifying direct-deposit capacity over a 30-day window who want a $300 cash bonus without committing to a long holding period.",
     pros: [
@@ -4327,7 +4351,7 @@ export const blogContent: Record<string, BlogContent> = {
     ],
     comparison: "Among checking bonuses in our catalog, the closest peer is the PSECU $300 offer. Ascend Bank's version stands out when you prefer Ascend Bank's footprint or screening profile over the higher peer payout.",
     faqs: [
-      { q: "What's the current Ascend Bank checking bonus?", a: "As verified directly from the bank's offer page, the current bonus is $300 after $100 in qualifying direct deposits within 30 days of opening." },
+      { q: "What's the current Ascend Bank checking bonus?", a: "$300 after a qualifying electronic direct deposit plus active debit-card use within 30 days of opening. Teller, ATM, and mobile check deposits don't count. Connecticut only." },
       { q: "Does Ascend Bank run a hard credit pull for this account?", a: "No — Ascend Bank uses a soft pull (if any). It won't affect your credit score, though a ChexSystems inquiry is also run, so make sure ChexSystems is unfrozen." },
       { q: "How long does the Ascend Bank bonus take to post?", a: "Approximately 60 days after you meet the qualifying activity requirement. Stacks OS will track the milestone so the cutoff doesn't sneak up on you." },
       { q: "What's the Ascend Bank monthly fee on this account?", a: "$15 per month, waivable based on the bank's stated criteria (see the offer terms)." },
@@ -4337,6 +4361,17 @@ export const blogContent: Record<string, BlogContent> = {
     verifiedUrl: "https://ascend.bank/spring-personal-checking-offer/",
   },
   "chase-total-checking-900-tiered-2026": {
+    ddMethods: [
+      { method: "Employer payroll", works: true, notes: "The most reliable method." },
+      { method: "Government benefits (SSA, pension)", works: true },
+      { method: "Fidelity CMA ACH push", works: true, notes: "Confirmed Chase DD workaround." },
+      { method: "Chase Business → personal transfer", works: true },
+      { method: "TreasuryDirect", works: true },
+      { method: "Ally ACH push", works: true, notes: "DoC lists Ally as a working Chase DD trigger." },
+      { method: "Capital One ACH push", works: "mixed", notes: "Mixed DoC datapoints — has worked, with some failures." },
+      { method: "Bank of America ACH push", works: false },
+      { method: "PayPal / Venmo / Zelle (P2P)", works: false, notes: "Chase excludes all P2P transfers." },
+    ],
     summary: "Chase Total Checking is offering a tiered bonus of $450–$900 — technically a checking account, but it works like a savings bonus. The real work is parking $5k–$15k+ in new money for 90 days; the one required direct deposit is incidental. Bonus tiers: $450 for $5k–$10k, $600 for $10k–$15k, $900 for $15k+. Offer expires 07/15/2026.",
     strategy: "Use coupon EK42726 when opening to lock in the tiered offer. Deposit your full target amount within 30 days and hold it for 90 days. Set up one qualifying direct deposit (payroll, pension, or government benefits via ACH — Zelle and P2P don't count) at any point during that window. Pair with the Chase Savings combo offer if you want to stack a second bonus on the same relationship. Budget 120 days total before the money is fully liquid.",
     bestFor: "Anyone who can park $5k–$15k in new money for 90 days and route a paycheck through Chase. The $900 tier is one of the strongest checking bonuses available; even the $450 floor is competitive for a no-hard-pull account.",
