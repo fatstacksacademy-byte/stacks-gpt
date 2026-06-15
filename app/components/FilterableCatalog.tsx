@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "../../lib/supabase/client"
 import TrackBonusButton from "./TrackBonusButton"
@@ -46,7 +47,8 @@ type Props = {
 
 export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) {
   const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
-  const [search, setSearch] = useState("")
+  const searchParams = useSearchParams()
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "")
   const [stateCode, setStateCode] = useState<string>("")
   const [category, setCategory] = useState<CatalogCategory | "">("")
   const [requirement, setRequirement] = useState<RequirementFilter>("any")

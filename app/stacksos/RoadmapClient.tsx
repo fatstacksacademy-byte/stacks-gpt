@@ -260,6 +260,20 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [actionCustom, setActionCustom] = useState<{ bonus: CustomBonus; mode: "start" | "close" } | null>(null)
   const [editingCustom, setEditingCustom] = useState<CustomBonus | null>(null)
 
+  // Per-catalog-bonus term overrides — stored in localStorage so users can
+  // correct stale or wrong catalog data without touching the catalog itself.
+  const [catalogOverrides, setCatalogOverrides] = useState<Record<string, {
+    bonus_amount?: number
+    min_dd_total?: number
+    deposit_window_days?: number
+    notes?: string
+  }>>({})
+  const [editingCatalogTerms, setEditingCatalogTerms] = useState<string | null>(null)
+  const [overrideAmt, setOverrideAmt] = useState("")
+  const [overrideDdTotal, setOverrideDdTotal] = useState("")
+  const [overrideWindowDays, setOverrideWindowDays] = useState("")
+  const [overrideNotes, setOverrideNotes] = useState("")
+
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
 
@@ -292,6 +306,50 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     }
     setTransactionsMet(next)
   }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const prefix = "stacks:term-override:"
+    const overrides: typeof catalogOverrides = {}
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k?.startsWith(prefix)) {
+        try { overrides[k.slice(prefix.length)] = JSON.parse(localStorage.getItem(k) ?? "{}") } catch {}
+      }
+    }
+    if (Object.keys(overrides).length > 0) setCatalogOverrides(overrides)
+  }, [])
+
+  function openEditCatalogTerms(bonusId: string) {
+    const o = catalogOverrides[bonusId] ?? {}
+    const b = allBonuses.find(x => x.id === bonusId)
+    setOverrideAmt(o.bonus_amount != null ? String(o.bonus_amount) : b ? String(b.bonus_amount) : "")
+    setOverrideDdTotal(o.min_dd_total != null ? String(o.min_dd_total) : b?.requirements?.min_direct_deposit_total ? String(b.requirements.min_direct_deposit_total) : "")
+    setOverrideWindowDays(o.deposit_window_days != null ? String(o.deposit_window_days) : b?.requirements?.deposit_window_days ? String(b.requirements.deposit_window_days) : "")
+    setOverrideNotes(o.notes ?? "")
+    setEditingCatalogTerms(bonusId)
+  }
+
+  function saveCatalogTermOverride(bonusId: string) {
+    const override: typeof catalogOverrides[string] = {}
+    if (overrideAmt) override.bonus_amount = parseInt(overrideAmt)
+    if (overrideDdTotal) override.min_dd_total = parseInt(overrideDdTotal)
+    if (overrideWindowDays) override.deposit_window_days = parseInt(overrideWindowDays)
+    if (overrideNotes.trim()) override.notes = overrideNotes.trim()
+    setCatalogOverrides(prev => ({ ...prev, [bonusId]: override }))
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`stacks:term-override:${bonusId}`, JSON.stringify(override))
+    }
+    setEditingCatalogTerms(null)
+  }
+
+  function clearCatalogTermOverride(bonusId: string) {
+    setCatalogOverrides(prev => { const next = { ...prev }; delete next[bonusId]; return next })
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`stacks:term-override:${bonusId}`)
+    }
+    setEditingCatalogTerms(null)
+  }
 
   function toggleTransactionsMet(bonusId: string) {
     setTransactionsMet(prev => {
@@ -1481,10 +1539,14 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   {hb.bonus.cooldown_months && (
                     <div style={{ fontSize: 13, color: "#888", marginTop: 6 }}>Churnable · every {hb.bonus.cooldown_months}mo</div>
                   )}
-                  <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
+                  <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                     <button onClick={() => openStartCustomModal(hb.bonus)}
                       style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: "#7c3aed", color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}>
                       Start now
+                    </button>
+                    <button onClick={() => handleOpenEditCustom(hb.bonus)}
+                      style={{ padding: "16px 20px", fontSize: 14, color: "#7c3aed", background: "none", border: "1px solid #c4b5fd", borderRadius: 12, cursor: "pointer" }}>
+                      Edit
                     </button>
                     <button onClick={async () => { await updateCustomBonus(hb.bonus.id, { current_step: "skipped" }); setCustomBonuses(prev => prev.map(x => x.id === hb.bonus.id ? { ...x, current_step: "skipped" } : x)) }}
                       style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
@@ -1505,19 +1567,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
                     <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em", flex: 1 }}>
-                      {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
+                      {(() => {
+                        const effAmt = (catalogOverrides[hb.bonus.id] ?? {}).bonus_amount ?? hb.bonus.bonus_amount
+                        return totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(effAmt)} Is Ready` : `Your First ${money(effAmt)} Is Ready`
+                      })()}
                     </div>
-                    <button
-                      onClick={() => setFlippedHeroes(prev => {
-                        const next = new Set(prev)
-                        next.has(hb.bonus.id) ? next.delete(hb.bonus.id) : next.add(hb.bonus.id)
-                        return next
-                      })}
-                      title={flippedHeroes.has(hb.bonus.id) ? "Show offer overview" : "Show step-by-step guide"}
-                      style={{ flexShrink: 0, marginTop: 4, fontSize: 12, fontWeight: 600, color: accentColor, background: "none", border: `1px solid ${accentColor}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
-                    >
-                      {flippedHeroes.has(hb.bonus.id) ? "← Back" : "How to do this →"}
-                    </button>
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 4 }}>
+                      <button
+                        onClick={() => openEditCatalogTerms(hb.bonus.id)}
+                        title="Customize bonus terms"
+                        style={{ fontSize: 12, fontWeight: 600, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
+                      >
+                        {Object.keys(catalogOverrides[hb.bonus.id] ?? {}).length > 0 ? "Edited ✎" : "Edit terms"}
+                      </button>
+                      <button
+                        onClick={() => setFlippedHeroes(prev => {
+                          const next = new Set(prev)
+                          next.has(hb.bonus.id) ? next.delete(hb.bonus.id) : next.add(hb.bonus.id)
+                          return next
+                        })}
+                        title={flippedHeroes.has(hb.bonus.id) ? "Show offer overview" : "Show step-by-step guide"}
+                        style={{ fontSize: 12, fontWeight: 600, color: accentColor, background: "none", border: `1px solid ${accentColor}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
+                      >
+                        {flippedHeroes.has(hb.bonus.id) ? "← Back" : "How to do this →"}
+                      </button>
+                    </div>
                   </div>
                   {(() => {
                     const heroApplyLink = (() => { const l = bestLink(hb.bonus.source_links); return l ? applyUrl(hb.bonus.id) : null })()
@@ -1573,30 +1647,92 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     </div>
                   ) : (
                   // ── FRONT: offer overview ────────────────────────────────
-                  <><div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
-                    {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
-                  </div>
-                  <div style={{ marginTop: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
-                    <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
-                    <div style={{ fontSize: 14, color: "#666" }}>
-                      Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                    {hb.bonus.requirements?.min_direct_deposit_total && (
-                      <div style={{ fontSize: 14, color: "#555" }}>
-                        Deposit ${hb.bonus.requirements.min_direct_deposit_total.toLocaleString()} in {hb.bonus.requirements.deposit_window_days ?? 90} days using your regular paycheck
-                      </div>
-                    )}
-                    {!hb.bonus.requirements?.min_direct_deposit_total && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                      <div style={{ fontSize: 14, color: "#555" }}>
-                        Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
-                      </div>
-                    )}
-                    {!hb.bonus.requirements?.min_direct_deposit_total && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                      <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
-                    )}
+                  <>{(() => {
+                    const catO = catalogOverrides[hb.bonus.id] ?? {}
+                    const effDdTotal = catO.min_dd_total ?? hb.bonus.requirements?.min_direct_deposit_total
+                    const effWindowDays = catO.deposit_window_days ?? hb.bonus.requirements?.deposit_window_days ?? 90
+                    const effNotes = catO.notes ?? null
+                    const hasOverride = Object.keys(catO).length > 0
+
+                    if (editingCatalogTerms === hb.bonus.id) {
+                      return (
+                        <div style={{ marginTop: 16, background: "#f8f8f8", borderRadius: 10, padding: "16px 18px" }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#111", marginBottom: 12 }}>Customize terms for your tracking</div>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                            <div>
+                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Bonus amount ($)</label>
+                              <input type="number" value={overrideAmt} onChange={e => setOverrideAmt(e.target.value)}
+                                placeholder={String(hb.bonus.bonus_amount)}
+                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Min DD total ($)</label>
+                              <input type="number" value={overrideDdTotal} onChange={e => setOverrideDdTotal(e.target.value)}
+                                placeholder={String(hb.bonus.requirements?.min_direct_deposit_total ?? "")}
+                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Deposit window (days)</label>
+                              <input type="number" value={overrideWindowDays} onChange={e => setOverrideWindowDays(e.target.value)}
+                                placeholder={String(hb.bonus.requirements?.deposit_window_days ?? 90)}
+                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Notes</label>
+                              <input type="text" value={overrideNotes} onChange={e => setOverrideNotes(e.target.value)}
+                                placeholder="Your notes…"
+                                style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 7, outline: "none", boxSizing: "border-box" as const }} />
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            <button onClick={() => saveCatalogTermOverride(hb.bonus.id)}
+                              style={{ padding: "8px 18px", fontSize: 13, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                              Save
+                            </button>
+                            <button onClick={() => setEditingCatalogTerms(null)}
+                              style={{ padding: "8px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                              Cancel
+                            </button>
+                            {hasOverride && (
+                              <button onClick={() => clearCatalogTermOverride(hb.bonus.id)}
+                                style={{ padding: "8px 14px", fontSize: 12, color: "#dc2626", background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>
+                                Reset to catalog
+                              </button>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#aaa", marginTop: 10 }}>Overrides are saved locally and only affect your view.</div>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <>
+                        <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
+                          {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
+                          {hasOverride && <span style={{ marginLeft: 8, fontSize: 11, color: "#d97706", fontWeight: 600 }}>· terms customized</span>}
+                        </div>
+                        <div style={{ marginTop: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
+                          <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
+                          <div style={{ fontSize: 14, color: "#666" }}>
+                            Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
+                          </div>
+                        </div>
+                        {effNotes && <div style={{ fontSize: 13, color: "#555", marginTop: 8, fontStyle: "italic" }}>{effNotes}</div>}
+                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+                          {effDdTotal && (
+                            <div style={{ fontSize: 14, color: "#555" }}>
+                              Deposit ${effDdTotal.toLocaleString()} in {effWindowDays} days using your regular paycheck
+                            </div>
+                          )}
+                          {!effDdTotal && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
+                            <div style={{ fontSize: 14, color: "#555" }}>
+                              Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
+                            </div>
+                          )}
+                          {!effDdTotal && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
+                            <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
+                          )}
                     {hb.bonus.requirements?.debit_transactions_required && (
                       <div style={{ fontSize: 14, color: "#555" }}>
                         + {hb.bonus.requirements.debit_transactions_required} qualifying transactions required
@@ -1818,6 +1954,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       )}
                     </div>
                   )}
+                  </>)
+                  })()}
                   </>)
                   })()}
                 </div>

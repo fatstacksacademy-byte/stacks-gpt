@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import Link from "next/link"
 import NewsletterCTA from "../blog/components/NewsletterCTA"
 import TrackBonusButton from "../components/TrackBonusButton"
@@ -160,7 +161,9 @@ export default function MasterBonusList() {
         <section id="browse" className="master-section" style={{ marginBottom: 64 }}>
           <h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Browse every offer</h2>
           <p style={{ fontSize: 14, color: "#888", margin: "0 0 18px" }}>Search by bank, filter by state, category, or requirement. {totalBonuses} live offers ready to track.</p>
-          <FilterableCatalog initialItems={normalized} reviewHrefs={reviewHrefs} />
+          <Suspense>
+            <FilterableCatalog initialItems={normalized} reviewHrefs={reviewHrefs} />
+          </Suspense>
         </section>
 
         {/* ── PERSONAL CHECKING (TOP 6 — SEO + CONTEXT) ── */}

@@ -56,7 +56,7 @@ const bankEntries: SearchEntry[] = (bonuses as Array<{
       subtitle: `${productLabel} bonus`,
       searchText:
         `${b.bank_name} ${productLabel} ${b.bonus_amount} ${b.id}`.toLowerCase(),
-      href: "/bank-bonuses-by-state",
+      href: `/bonuses?q=${encodeURIComponent(compactBank(b.bank_name))}`,
       applyHref: `/go/${b.id}`,
     }
   })
