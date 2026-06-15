@@ -252,7 +252,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered offer: $100 at $2,000 DD, $300 at $5,000 DD, $500 at $10,000+ DD in 90 days; open eligible checking online with promo code by 2026-05-31."
+      "other_requirements_text": "Tiered offer: $100 at $2,000 DD, $300 at $5,000 DD, $500 at $10,000+ DD in 90 days; open eligible checking online with promo code by 2026-09-30. (Offer extended from 2026-05-31; verified live Jun 2026.)"
     },
     "fees": {
       "monthly_fee": 4.95,
@@ -515,9 +515,7 @@ export const bonuses: any[] = [
     "bonus_amount": 400,
     "cooldown_months": 12,
     "tiers": [
-      { "bonus": 200, "min_dd_total": 2000 },
-      { "bonus": 400, "min_dd_total": 4000 },
-      { "bonus": 600, "min_dd_total": 8000 }
+      { "bonus": 400, "min_dd_total": 4000 }
     ],
     "requirements": {
       "direct_deposit_required": true,
@@ -530,12 +528,12 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered bonus: $200 for $2,000+ DD, $400 for $4,000+ DD, $600 for $8,000+ DD within 90 days of account opening. Offer refreshed: open by 2026-09-08 (promo code required), keep account in good standing with balance > 0 when paid."
+      "other_requirements_text": "Flat bonus: $400 for $4,000+ in qualifying direct deposits within 90 days of account opening. Open by 2026-09-08 (promo code required), keep account in good standing with balance > 0 when paid. NOTE: $50 early account closure fee if closed within 90 days. (Prior $200/$400/$600 tiers were earlier promos; current live offer is a flat $400 per DoC/bankbonus Jun 2026.)"
     },
     "fees": {
       "monthly_fee": 0,
       "monthly_fee_waiver_text": "Smart Advantage Checking has $0 monthly fee. Smart Money is $5/month (under 25 waived) and Relationship is $25/month.",
-      "early_closure_fee": 0
+      "early_closure_fee": 50
     },
     "screening": {
       "chex_sensitive": null,
@@ -1320,19 +1318,19 @@ export const bonuses: any[] = [
     "bank_name": "Regions Bank",
     "product_type": "checking",
     "bonus_amount": 400,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 60,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open LifeGreen Checking in-branch, make $1,000 in deposits within 60 days, enroll in online banking within 30 days. In-branch only."
+      "other_requirements_text": "Open LifeGreen Checking online with promo code EZV3F2M (or in-branch via personalized voucher), receive $1,000+ in qualifying ACH direct deposits within 90 days, and enroll in online banking. Register by Dec 31, 2026; open by Jan 31, 2027. $50 referral bonus also available."
     },
     "fees": {
       "monthly_fee": 8,
@@ -1350,7 +1348,7 @@ export const bonuses: any[] = [
       "states_allowed": ["AL", "AR", "FL", "GA", "IL", "IN", "IA", "KY", "LA", "MS", "MO", "NC", "SC", "TN", "TX"],
       "states_excluded": [],
       "lifetime_language": false,
-      "eligibility_notes": "YMMV — availability varies. In-branch only. Must not have had Regions checking in past 12 months."
+      "eligibility_notes": "Available online (promo code EZV3F2M) or in-branch. Ineligible if you held a personal Regions checking account within the prior 12 months. Register by Dec 31, 2026; open by Jan 31, 2027."
     },
     "timeline": {
       "bonus_posting_days_est": 60,
@@ -1358,9 +1356,9 @@ export const bonuses: any[] = [
     },
     "source_links": [
       "https://www.regions.com/promo/checking",
-      "https://www.doctorofcredit.com/regions-bank-400-checking-bonus/"
+      "https://www.doctorofcredit.com/regions-bank-400-checking-bonus-50-referral-al-ar-fl-ga-il-in-ia-ky-la-ms-mo-nc-sc-tn-tx-2/"
     ],
-    "raw_excerpt": "Open LifeGreen Checking in-branch, $1,000 deposits in 60 days. $400 bonus. $25 early closure fee if closed within 180 days."
+    "raw_excerpt": "Open LifeGreen Checking online with promo code EZV3F2M or in-branch, $1,000+ ACH direct deposits in 90 days for $400. Register by Dec 31, 2026. $25 early closure fee if closed within 180 days."
   },
   {
     "id": "busey-bank-500-checking-2026",
@@ -5081,7 +5079,7 @@ export const bonuses: any[] = [
       "min_balance": 25000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "TWO SEPARATE OFFERS — choose one based on your deposit capacity: (A) $400 bonus: deposit $2,500 by day 30 AND maintain $2,500 minimum daily collected balance through day 60. (B) $825 bonus: deposit $25,000 by day 30 AND maintain $25,000 minimum daily collected balance through day 60. Product: Initiate Business Checking. Each tier has its own enrollment URL — use the correct one or you'll get no bonus. Expires May 5, 2026."
+      "other_requirements_text": "TWO SEPARATE OFFERS — choose one based on your deposit capacity: (A) $400 bonus: deposit $2,500 by day 30 AND maintain $2,500 minimum daily collected balance through day 60. (B) $825 bonus: deposit $25,000 by day 30 AND maintain $25,000 minimum daily collected balance through day 60. Product: Initiate Business Checking. Each tier has its own enrollment URL — use the correct one or you'll get no bonus. Expires July 7, 2026 (extended from May 5)."
     },
     "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "$10/mo ($15/mo for fee periods starting March 1, 2026). Waived with $500 minimum daily balance OR $1,000 average ledger balance (or ownership of specific Wells Fargo premier accounts).", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification. Effective APY math is very different across the two tiers: $400 on $2,500 held 60 days ≈ 97% annualized; $825 on $25,000 held 60 days ≈ 19.8%. Most churners take the $400." },
@@ -5090,7 +5088,7 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Expires May 5, 2026. New Wells Fargo business checking customers only."
+      "eligibility_notes": "Business checking. Expires July 7, 2026 (extended from May 5). New Wells Fargo business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
     "source_links": [
@@ -5098,48 +5096,49 @@ export const bonuses: any[] = [
       "https://accountoffers.wellsfargo.com/businesscheckinga",
       "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
     ],
-    "raw_excerpt": "Wells Fargo Business Checking: $400 for $2,500 deposit+hold OR $825 for $25,000 deposit+hold. Initiate Business Checking. Two distinct enrollment URLs. Expires May 5, 2026."
+    "raw_excerpt": "Wells Fargo Business Checking: $400 for $2,500 deposit+hold OR $825 for $25,000 deposit+hold. Initiate Business Checking. Two distinct enrollment URLs. Expires July 7, 2026 (extended from May 5)."
   },
   {
     "id": "bmo-business-checking-1000-2026",
     "bank_name": "BMO",
     "product_type": "checking",
     "business": true,
-    "bonus_amount": 750,
+    "bonus_amount": 1500,
     "cooldown_months": 12,
     "tiers": [
       { "bonus": 400, "min_dd_total": 4000 },
       { "bonus": 750, "min_dd_total": 25000 },
-      { "bonus": 1000, "min_dd_total": 50000 }
+      { "bonus": 1000, "min_dd_total": 50000 },
+      { "bonus": 1500, "min_dd_total": 100000 }
     ],
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 14,
+      "deposit_window_days": 90,
       "holding_period_days": 90,
       "min_opening_deposit": null,
-      "min_balance": 50000,
-      "debit_transactions_required": null,
+      "min_balance": 100000,
+      "debit_transactions_required": 10,
       "billpay_required": null,
-      "other_requirements_text": "Deposit in 30 days, maintain 90 days. Expires Apr 30, 2026."
+      "other_requirements_text": "Tiered on average collected balance from day 30 to day 90: $400 at $4,000–$24,999, $750 at $25,000+, $1,000 at $50,000+, $1,500 at $100,000+. Also requires 10 debit-card transactions within 90 days. No direct deposit required. Open by Aug 31, 2026. Promo via bmo.com/businesscheckingoffer."
     },
-    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $5,000 minimum daily balance.", "early_closure_fee": null },
+    "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "Waived with $5,000 minimum daily balance.", "early_closure_fee": 50 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
     "eligibility": {
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Expires Apr 30, 2026. New business checking customers only."
+      "eligibility_notes": "Business checking. Expires Aug 31, 2026 (extended from Apr 30). New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
-      "https://www.bmoharris.com/main/business-banking/bank-accounts/bb-checking-offer/",
-      "https://www.doctorofcredit.com/bmo-1000-business-checking-bonus/"
+      "https://www.bmo.com/en-us/main/business/checking-accounts/",
+      "https://www.doctorofcredit.com/az-fl-il-ks-mo-mn-wi-bmo-harris-200-500-business-checking-bonus/"
     ],
-    "raw_excerpt": "BMO $1,000 business checking bonus. Tiered: $400/$750/$1,000. Deposit in 30 days, maintain 90 days. Expires Apr 30, 2026."
+    "raw_excerpt": "BMO business checking bonus, tiered $400/$750/$1,000/$1,500 on average collected balance (day 30–90) of $4k/$25k/$50k/$100k, plus 10 debit transactions in 90 days. No DD required. Expires Aug 31, 2026."
   },
   {
     "id": "citi-business-checking-2000-2026",
@@ -5348,36 +5347,35 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "business": true,
     "bonus_amount": 500,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
-      "holding_period_days": null,
-      "min_opening_deposit": null,
-      "min_balance": null,
+      "deposit_window_days": 30,
+      "holding_period_days": 90,
+      "min_opening_deposit": 25,
+      "min_balance": 5000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Business checking bonus. See KeyBank for full details."
+      "other_requirements_text": "TARGETED: requires a personalized $500 Business Banking offer letter from KeyBank, opened in-branch/by appointment (no online application). Open Basic Business Checking or Key Business Reward Checking, deposit $5,000+ within 30 days, and maintain a $5,000+ minimum daily balance for the first 90 days. No direct deposit required. Bonus posts within 60 days. Expires Aug 21, 2026."
     },
-    "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "fees": { "monthly_fee": 5, "monthly_fee_waiver_text": "$5/month waived with $1,000+ average balance or $10,000+ combined KeyBank business balances.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
     "eligibility": {
       "state_restricted": true,
       "states_allowed": ["AK", "CO", "CT", "ID", "IN", "MA", "ME", "MI", "NY", "OH", "OR", "PA", "UT", "VT", "WA"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. State restricted. New business checking customers only."
+      "eligibility_notes": "Business checking. State restricted. Targeted offer (personalized letter required); in-branch/by-appointment only. Cannot have had a KeyBank business checking/savings in the past 12 months. New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": 180 },
     "source_links": [
       "https://www.key.com/small-business/small-business-checking/small-business-checking.jsp",
-      "https://www.doctorofcredit.com/keybank-500-business-checking-bonus/"
+      "https://www.doctorofcredit.com/ak-co-ct-id-in-ma-me-mi-ny-oh-or-pa-ut-vt-or-wa-in-branch-keybank-500-business-checking-bonus/"
     ],
-    "raw_excerpt": "KeyBank $500 business checking bonus. In-branch only. State restricted: AK, CO, CT, ID, IN, MA, ME, MI, NY, OH, OR, PA, UT, VT, WA.",
-    "expired": true
+    "raw_excerpt": "KeyBank $500 business checking bonus (targeted letter, in-branch only). Deposit $5,000 within 30 days + maintain $5,000 daily balance for 90 days. State restricted: AK, CO, CT, ID, IN, MA, ME, MI, NY, OH, OR, PA, UT, VT, WA. Expires Aug 21, 2026."
   },
   {
     "id": "central-bank-business-500-2026",
@@ -5831,18 +5829,23 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": null,
+    "tiers": [
+      { "bonus": 200, "min_dd_total": 1000 },
+      { "bonus": 300, "min_dd_total": 3000 },
+      { "bonus": 500, "min_dd_total": 5000 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 5000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "Open Flex or Flex Plus Checking with promo code DD500SPRING2026 and receive payroll/pension/government direct deposits within 90 days: $1,000–$2,999 = $200, $3,000–$4,999 = $300, $5,000+ = $500. Promo window Feb 12–June 30, 2026; bonus credited to primary savings 90 days after opening."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5858,7 +5861,7 @@ export const bonuses: any[] = [
       "https://www.visionsfcu.org/",
       "https://www.doctorofcredit.com/ny-pa-nj-visions-federal-credit-union-200-checking-bonus/"
     ],
-    "raw_excerpt": "Visions Federal Credit Union $500 checking bonus. NY, PA, NJ only. Direct deposit required."
+    "raw_excerpt": "Visions Federal Credit Union tiered checking bonus ($200/$300/$500 for $1k/$3k/$5k+ DD within 90 days). NY, PA, NJ only. Promo code DD500SPRING2026. Promo window Feb 12–June 30, 2026."
   },
   {
     "id": "metro-cu-500-checking-2026",
@@ -6217,19 +6220,19 @@ export const bonuses: any[] = [
     "bank_name": "Grow Financial FCU",
     "product_type": "checking",
     "bonus_amount": 300,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
-      "direct_deposit_required": false,
-      "min_direct_deposit_total": null,
-      "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
-      "deposit_window_days": null,
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 1000,
+      "min_direct_deposit_per_deposit": 500,
+      "dd_count_required": 2,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Military also eligible."
+      "other_requirements_text": "Open a Grow checking account and establish two (2) newly qualified direct deposits totaling $500 each ($1,000 total) within 90 days, set up online + mobile banking, and open a Basic Savings ($1 min). One per member per calendar year. FL/SC field of membership; active/retired military also eligible."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6245,7 +6248,7 @@ export const bonuses: any[] = [
       "https://www.growfinancial.org/checking300/",
       "https://www.doctorofcredit.com/fl-sc-grow-financial-federal-credit-union-300-checking-bonus/"
     ],
-    "raw_excerpt": "Grow Financial FCU $300 checking bonus. FL, SC. Military also eligible."
+    "raw_excerpt": "Grow Financial FCU $300 checking bonus. FL, SC + military. Requires two $500 direct deposits ($1,000 total) within 90 days."
   },
   {
     "id": "berkshire-bank-300-checking-2026",

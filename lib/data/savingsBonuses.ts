@@ -97,7 +97,7 @@ export const savingsBonuses: SavingsBonus[] = [
     id: "capital-one-360-savings-2026",
     bank_name: "Capital One",
     product_type: "savings",
-    base_apy: 0.034,
+    base_apy: 0.03,
     funding_window_days: 15,
     maintenance_days: 90,
     total_hold_days: 105,
@@ -388,7 +388,7 @@ export const savingsBonuses: SavingsBonus[] = [
     bank_name: "TD Bank",
     product_type: "savings",
     base_apy: 0.02,
-    funding_window_days: 30,
+    funding_window_days: 20,
     maintenance_days: 90,
     total_hold_days: 120,
     tiers: [
@@ -400,12 +400,12 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: true,
       states_allowed: ["CT","DC","DE","FL","MA","MD","ME","NC","NH","NJ","NY","PA","RI","SC","VT","VA"],
       lifetime_language: false,
-      eligibility_notes: "New TD savings customers only. East Coast states. Expires April 30, 2026."
+      eligibility_notes: "New TD savings customers only (no TD personal savings/MMA held or closed in prior 12 months, and no prior TD savings bonus ever). East Coast states. Deposit $10,000 within 20 days of opening and hold 90 days. Expires July 30, 2026."
     },
-    source_links: ["https://www.td.com/us/en/personal-banking/savings-accounts/",
+    source_links: ["https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
       "https://www.doctorofcredit.com/targeted-td-bank-300-checking-200-savings-bonus/"
     ],
-    raw_excerpt: "TD Bank $200 savings bonus for $10k deposit. East Coast 16 states. Expires April 30, 2026.",
+    raw_excerpt: "TD Bank $200 savings bonus for $10k deposit within 20 days, held 90 days. East Coast 16 states. Expires July 30, 2026.",
   },
   {
     id: "wintrust-savings-2026",
@@ -675,6 +675,7 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 30,
     total_hold_days: 30,
     tiers: [
+      { min_deposit: 100, bonus_amount: 50 },
       { min_deposit: 100, bonus_amount: 150 },
     ],
     cooldown_months: null,
@@ -683,13 +684,13 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: true,
-      eligibility_notes: "New SoFi Active Investing customers, via Rakuten/Swagbucks shopping portal. Deposit $100, trade $50, hold 30 days. (SoFi's own native offer is now 'up to $1,000 in stock' — a probabilistic grant that typically pays $3–$20 in practice, not a flat bonus.)"
+      eligibility_notes: "New SoFi Active Investing customers, via Rakuten/Swagbucks shopping portal. Deposit $100, make a $50 trade, hold 30 days. Portal amount fluctuates $50–$150 — check before applying. SoFi also gives all new brokerage customers a free stock worth up to $1,000 (probabilistic; typically $3–$20 in practice)."
     },
     source_links: ["https://www.sofi.com/invest/",
       "https://www.doctorofcredit.com/swagbucks-signup-for-sofi-invest-get-75-bonus-100-deposit-required/"
     ],
-    raw_excerpt: "SoFi Invest $150 (15,000 MR / Rakuten cash) for $100 deposit + $50 trade, 30-day hold. Portal amount fluctuates $50–$200.",
-    notes: "Brokerage account. $150 via Rakuten/Swagbucks portal ($100 deposit + $50 trade) — far better than SoFi's native 'up to $1,000 in stock' offer, which typically pays $3–$20 in practice."
+    raw_excerpt: "SoFi Invest portal bonus fluctuates $50–$150 (Rakuten/Swagbucks) for $100 deposit + $50 trade, 30-day hold. Plus free stock up to $1,000 from SoFi native offer (typically $3–$20).",
+    notes: "Brokerage account. Portal bonus via Rakuten/Swagbucks ($100 deposit + $50 trade, 30-day hold) — amount changes day-to-day, $50–$150 range. SoFi also awards a probabilistic free stock up to $1,000 to all new customers (typically $3–$20)."
   },
   {
     id: "jpmorgan-self-directed-brokerage-2026",
@@ -1113,7 +1114,7 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 30,
     total_hold_days: 120,
     tiers: [
-      { min_deposit: 10000, bonus_amount: 250 },
+      { min_deposit: 10000, bonus_amount: 350 },
       { min_deposit: 20000, bonus_amount: 500 },
       { min_deposit: 100000, bonus_amount: 1000 },
     ],
@@ -1124,13 +1125,13 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: false,
-      eligibility_notes: "Rho business checking. Real business required — sole proprietorships explicitly excluded; LLC is the minimum entity type. Tiered: $10k held 90d → $250, $20k held 30 consecutive days within the 90-day window → $500, $100k held 30 consecutive days → $1,000. Articles of incorporation upload required during onboarding. New customers only. Bonus posts 30 days after qualification.",
+      eligibility_notes: "Rho business checking. Real business required — sole proprietorships explicitly excluded; LLC is the minimum entity type. Tiered: $10k held 90d → $350, $20k held 30 consecutive days within the 90-day window → $500, $100k held 30 consecutive days → $1,000. Articles of incorporation upload required during onboarding. New customers only. Bonus posts 30 days after qualification.",
     },
     source_links: [
-      "https://www.rho.co/",
+      "https://www.doctorofcredit.com/rho-business-checking-350-1000-bonus-requires-10000-100000-balance/",
       "https://www.profitablecontent.com/rho-1000-business-checking-bonus/",
     ],
-    raw_excerpt: "Rho business checking tiered bonus: $250 ($10k), $500 ($20k), $1,000 ($100k). 90-day window, 30-day hold. LLC+ only (no sole prop). Nationwide.",
+    raw_excerpt: "Rho business checking tiered bonus: $350 ($10k), $500 ($20k), $1,000 ($100k). 90-day window, 30-day hold. LLC+ only (no sole prop). Nationwide.",
     notes: "Sole-prop excluded — this restricts most solo bank-bonus chasers from claiming.",
   },
 

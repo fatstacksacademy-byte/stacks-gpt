@@ -83,11 +83,12 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
 
   const savings = getSavingsBonusById(p.bonusId)
   if (savings) {
-    const t = savings.tiers[savings.tiers.length - 1]
+    const maxTier = savings.tiers[savings.tiers.length - 1]
+    const minTier = savings.tiers[0]
     const holdDays = practicalHoldDays(savings)
-    const interest = t.min_deposit * savings.base_apy * (holdDays / 365)
+    const interest = minTier.min_deposit * savings.base_apy * (holdDays / 365)
     const effApy = (
-      ((t.bonus_amount + interest) / t.min_deposit) *
+      ((minTier.bonus_amount + interest) / minTier.min_deposit) *
       (365 / holdDays) *
       100
     ).toFixed(1)
@@ -96,8 +97,8 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       rank,
       bankShort: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
       articleTitle,
-      bonusAmount: t.bonus_amount,
-      minDeposit: t.min_deposit,
+      bonusAmount: maxTier.bonus_amount,
+      minDeposit: maxTier.min_deposit,
       holdDays,
       effApy,
       takeaway: p.takeaway,
