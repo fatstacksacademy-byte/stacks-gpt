@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import SiteHeader from "../../components/SiteHeader"
 import { blogPosts, getCheckingBonusById } from "../../../lib/data/blogPosts"
 import { blogContent } from "../../../lib/data/blogContent"
 import AffiliateDisclosure from "../components/AffiliateDisclosure"
@@ -70,17 +71,7 @@ export default function BestCheckingBonuses() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none" }}>Fat Stacks Academy</Link>
-          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best Checking</Link>
-            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Blog</Link>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 60px" }}>
         <div style={{ fontSize: 13, color: "#bbb", marginBottom: 24 }}>

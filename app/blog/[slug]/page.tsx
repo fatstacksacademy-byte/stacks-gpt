@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import SiteHeader from "../../components/SiteHeader"
 import { blogPosts, getPostBySlug, getCheckingBonusById, getSavingsBonusById, getCardById } from "../../../lib/data/blogPosts"
 import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
@@ -386,7 +387,7 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
       {/* Eligibility */}
       <Section title="Eligibility">
         <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px" }}>
-          <InfoRow label="Availability" value={elig.states_allowed?.[0] || "See terms"} />
+          <InfoRow label="Availability" value={elig.state_restricted === false ? "Nationwide" : elig.states_allowed?.[0] || "See terms"} />
           <InfoRow label="Lifetime Limit" value={elig.lifetime_language ? "Yes" : "No"} />
           {elig.eligibility_notes && (
             <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{elig.eligibility_notes}</p>
@@ -469,7 +470,7 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
       {/* Eligibility */}
       <Section title="Eligibility">
         <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px" }}>
-          <InfoRow label="Availability" value={elig.states_allowed?.[0] || "See terms"} />
+          <InfoRow label="Availability" value={elig.state_restricted === false ? "Nationwide" : elig.states_allowed?.[0] || "See terms"} />
           <InfoRow label="Lifetime Limit" value={elig.lifetime_language ? "Yes" : "No"} />
           {elig.eligibility_notes && (
             <p style={{ fontSize: 13, color: "#777", lineHeight: 1.6, margin: "12px 0 0" }}>{elig.eligibility_notes}</p>
@@ -692,20 +693,7 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* Header */}
-      <header style={{ borderBottom: "1px solid #f0f0f0", padding: "16px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Link href="/" style={{ fontSize: 20, fontWeight: 800, color: "#111", textDecoration: "none", letterSpacing: "-0.02em" }}>
-            Fat Stacks Academy
-          </Link>
-          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <Link href="/blog/best-checking-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Checking</Link>
-            <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Best Savings</Link>
-            <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>Blog</Link>
-            <a href={YT} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#ff0000", textDecoration: "none", fontWeight: 600 }}>YouTube</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Article */}
       <article style={{ maxWidth: 700, margin: "0 auto", padding: "48px 24px 60px" }}>

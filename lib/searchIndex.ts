@@ -3,6 +3,14 @@ import { savingsBonuses } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
 import { resolveTransfers } from "./data/transferPartners"
 import { findTransferProgram } from "./data/catalogTaxonomy"
+import { blogPosts } from "./data/blogPosts"
+
+// Pre-build a bonusId → review slug map so search results go directly
+// to the review page when one exists.
+const reviewSlugByBonusId: Record<string, string> = {}
+for (const p of blogPosts) {
+  if (p.bonusId) reviewSlugByBonusId[p.bonusId] = p.slug
+}
 
 /**
  * Lightweight search index over the three public catalogs.
@@ -56,7 +64,7 @@ const bankEntries: SearchEntry[] = (bonuses as Array<{
       subtitle: `${productLabel} bonus`,
       searchText:
         `${b.bank_name} ${productLabel} ${b.bonus_amount} ${b.id}`.toLowerCase(),
-      href: `/bonuses?q=${encodeURIComponent(compactBank(b.bank_name))}`,
+      href: reviewSlugByBonusId[b.id] ? `/blog/${reviewSlugByBonusId[b.id]}` : `/bonuses?q=${encodeURIComponent(compactBank(b.bank_name))}`,
       applyHref: `/go/${b.id}`,
     }
   })
@@ -73,7 +81,7 @@ const savingsEntries: SearchEntry[] = savingsBonuses
       label: `${bank} — $${amount} Savings`,
       subtitle: `Savings · ${(s.base_apy * 100).toFixed(2)}% APY`,
       searchText: `${s.bank_name} savings ${amount} ${s.id}`.toLowerCase(),
-      href: "/savings",
+      href: reviewSlugByBonusId[s.id] ? `/blog/${reviewSlugByBonusId[s.id]}` : "/savings",
       applyHref: `/go/${s.id}`,
     }
   })
@@ -145,7 +153,7 @@ const cardEntries: SearchEntry[] = creditCardBonuses
       subtitle,
       searchText:
         `${c.card_name} ${c.issuer} ${c.bonus_amount} ${c.id} ${introAprTags.join(" ")} ${featureTags.join(" ")}`.toLowerCase(),
-      href: "/spending",
+      href: reviewSlugByBonusId[c.id] ? `/blog/${reviewSlugByBonusId[c.id]}` : "/spending",
       applyHref: `/go/${c.id}`,
     }
   })

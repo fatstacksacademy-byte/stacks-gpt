@@ -5897,7 +5897,7 @@ export const bonuses: any[] = [
     "id": "fidelity-bank-pa-500-checking-2026",
     "bank_name": "Fidelity Bank (PA)",
     "product_type": "checking",
-    "bonus_amount": 500,
+    "bonus_amount": 400,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": false,
@@ -5923,9 +5923,10 @@ export const bonuses: any[] = [
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
-      "https://www.bankatfidelity.com/moneymarket/"
+      "https://www.bankatfidelity.com/moneymarket/",
+      "https://www.doctorofcredit.com/northeastern-pa-only-fidelity-bank-400-checking/"
     ],
-    "raw_excerpt": "Fidelity Bank (PA) $500 checking bonus. Northeastern PA only."
+    "raw_excerpt": "Fidelity Bank (PA) $400 checking bonus. Northeastern PA only."
   },
   {
     "id": "travis-cu-475-checking-2026",
