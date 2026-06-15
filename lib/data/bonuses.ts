@@ -5273,8 +5273,8 @@ export const bonuses: any[] = [
     "business": true,
     "bonus_amount": 1000,
     "tiers": [
-      { "bonus": 400, "min_balance": 30000 },
-      { "bonus": 1000, "min_balance": 100000 }
+      { "bonus": 400, "min_balance": 2000 },
+      { "bonus": 1000, "min_balance": 30000 }
     ],
     "cooldown_months": null,
     "requirements": {
@@ -5285,10 +5285,10 @@ export const bonuses: any[] = [
       "deposit_window_days": null,
       "holding_period_days": null,
       "min_opening_deposit": null,
-      "min_balance": 30000,
+      "min_balance": 2000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $30,000–$99,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $100,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
+      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $2,000–$29,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $30,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
     },
     "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5303,7 +5303,7 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html"
     ],
-    "raw_excerpt": "Tiered PNC Business Checking Plus bonus: $400 for $30,000–$99,999 average ledger balance or $1,000 for $100,000+ average balance, each maintained across the first 3 statement cycles. No direct deposit required. Open by June 30, 2026.",
+    "raw_excerpt": "Tiered PNC Business Checking Plus bonus: $400 for $2,000–$29,999 average ledger balance or $1,000 for $30,000+ average balance, each maintained across the first 3 statement cycles. No direct deposit required. Open by June 30, 2026.",
     "verified_at": "2026-06-14"
   },
   {
