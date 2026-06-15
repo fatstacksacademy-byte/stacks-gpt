@@ -958,8 +958,10 @@ export const savingsBonuses: SavingsBonus[] = [
     cooldown_months: 12,
     fees: { monthly_fee: 15, early_closure_fee: 0 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business checking. $2,500 ending balance on days 30 and 60." },
-    source_links: ["https://accountoffers.wellsfargo.com/businesscheckingb",
-      "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
+    source_links: [
+      "https://accountoffers.wellsfargo.com/businesscheckinga",
+      "https://accountoffers.wellsfargo.com/businesscheckingb",
+      "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/",
     ],
     raw_excerpt: "Wells Fargo Business $400/$825. $2,500 ending balance days 30 and 60.",
   },
@@ -1207,6 +1209,7 @@ export const savingsBonuses: SavingsBonus[] = [
     },
     "source_links": [
       "https://us.etrade.com/promo/savings",
+      "https://www.doctorofcredit.com/etrade-250-savings-bonus-requires-20k-deposit-4-intro-rate/",
       "https://www.profitablecontent.com/etrade-250-savings-bonus/"
     ],
     "raw_excerpt": "E*TRADE Premium Savings Account offers $400 bonus for depositing $20k within 30 days and maintaining balance for 45 additional days. Account also earns 4% APY for 6 months.",
