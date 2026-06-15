@@ -456,7 +456,7 @@ export const bonuses: any[] = [
     "id": "wells-fargo-400-everyday-checking-2026",
     "bank_name": "Wells Fargo",
     "product_type": "checking",
-    "bonus_amount": 325,
+    "bonus_amount": 400,
     "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
@@ -1240,8 +1240,8 @@ export const bonuses: any[] = [
       "other_requirements_text": "$400 for Perks Checking with $500+ qualifying direct deposits in 90 days. $600 for Platinum Perks with $25,000 in new-money deposits in 90 days. Keep the account open 90 days."
     },
     "fees": {
-      "monthly_fee": 25,
-      "monthly_fee_waiver_text": "Perks Checking: $10 waived with $1,000+ monthly deposits or $5,000+ total relationship balance. Platinum Perks: $25 waived with $25,000+ total relationship balance.",
+      "monthly_fee": 10,
+      "monthly_fee_waiver_text": "Perks Checking: $10/mo waived with $1,000+ monthly deposits or $5,000+ total relationship balance. Platinum Perks: $25/mo waived with $25,000+ total relationship balance.",
       "early_closure_fee": 0
     },
     "screening": {
@@ -5504,7 +5504,7 @@ export const bonuses: any[] = [
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 500,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": 60,
@@ -5865,13 +5865,13 @@ export const bonuses: any[] = [
     "id": "metro-cu-500-checking-2026",
     "bank_name": "Metro Credit Union",
     "product_type": "checking",
-    "bonus_amount": 400,
-    "offer_verified_at": "2026-06-12",
+    "bonus_amount": 500,
+    "offer_verified_at": "2026-06-14",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": null,
-      "min_direct_deposit_per_deposit": null,
+      "min_direct_deposit_per_deposit": 500,
       "dd_count_required": 1,
       "deposit_window_days": 60,
       "holding_period_days": null,
@@ -5879,7 +5879,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open an eligible checking account, enroll in eStatements, and establish one monthly recurring qualifying direct deposit within 60 days. The public offer does not state a minimum direct-deposit amount."
+      "other_requirements_text": "Open an eligible checking account, enroll in eStatements, and establish one monthly recurring qualifying direct deposit of $500+ within 60 days."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly maintenance fee on the eligible account.", "early_closure_fee": 15 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5895,7 +5895,7 @@ export const bonuses: any[] = [
       "https://www.doctorofcredit.com/ma-only-metro-credit-union-300-checking-bonus/",
       "https://www.metrocu.org/"
     ],
-    "raw_excerpt": "Metro Credit Union $400 checking bonus: establish one monthly recurring direct deposit and enroll in eStatements within 60 days. No minimum direct-deposit amount is stated."
+    "raw_excerpt": "Metro Credit Union $500 checking bonus: establish one monthly recurring direct deposit of $500+ and enroll in eStatements within 60 days."
   },
   {
     "id": "fidelity-bank-pa-500-checking-2026",
@@ -6012,10 +6012,10 @@ export const bonuses: any[] = [
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
@@ -6303,7 +6303,7 @@ export const bonuses: any[] = [
       "billpay_required": null,
       "other_requirements_text": "Direct deposit required."
     },
-    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 5, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
     "eligibility": {
       "state_restricted": true,
