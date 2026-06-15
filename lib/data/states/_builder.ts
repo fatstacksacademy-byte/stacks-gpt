@@ -62,6 +62,8 @@ export type StateCardSeed<EKey extends string = string> = {
   annual_fee?: number
   annual_fee_waived_first_year?: boolean
   statement_credits_year1?: number
+  /** Mark a once-verified offer as no longer live (defaults to false). */
+  expired?: boolean
   is_hotel_card?: boolean
   military_only?: boolean
   rewards?: CreditCardBonus["rewards"]

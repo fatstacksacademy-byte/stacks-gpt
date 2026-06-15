@@ -64,6 +64,8 @@ type Seed = {
   earlyClose?: number
   /** ISO yyyy-mm-dd; omit when the official page states no deadline. */
   exp?: string
+  /** Mark a once-verified offer as dead/removed (offer_dead signal). */
+  expired?: boolean
   payout?: number
   reqText: string
   notes: string
@@ -118,6 +120,7 @@ function build(s: Seed): StateCheckingRow {
     },
     timeline: { bonus_posting_days_est: s.payout ?? null, must_remain_open_days: s.mustOpen ?? null },
     ...(s.exp ? { expiration_date: s.exp } : {}),
+    ...(s.expired ? { expired: true } : {}),
     source_links: s.src,
     raw_excerpt: s.excerpt,
     offer_verified_at: VERIFIED_AT,
@@ -279,7 +282,6 @@ const SEEDS: Seed[] = [
     notes: "Membership: Utah field of membership (formerly UFirst/University FCU). The prior $400 promo has expired; the current page offers $150 with a new direct deposit. Exact DD amount/deadline not stated on the official page.",
     excerpt: "This offer has expired, but you can still get $150 with a new direct deposit!",
     src: ["https://www.canyonviewcu.com/services-benefits/400-new-member-promo.html"],
-  ,
     expired: true,
   },
   {
@@ -410,7 +412,6 @@ const SEEDS: Seed[] = [
     notes: "Membership: Royal CU field of membership (WI/MN). Open window 5/4/2026–6/12/2026 (closes today). Ineligible if you had a Royal checking account in the last 12 months; one per member. Account must stay open 6 months. Paid within 10 days of the 2nd deposit.",
     excerpt: "Open a new checking account by June 12 ... receive two payroll direct deposits of $400 or more, and we'll put $400 in your savings account.",
     src: ["https://www.rcu.org/promos/checking/spring-2026-incentive-checking"],
-  ,
     expired: true,
   },
   {
@@ -617,7 +618,6 @@ const SEEDS: Seed[] = [
     notes: "Membership: Florida community charter. Paid within 90 days of meeting the criteria. (The separate $400 business-checking promo ended 12/31/2025.) Deadline not stated on the official page.",
     excerpt: "$50 ... recurring direct deposit aggregate of $500 or more per month on a new checking account.",
     src: ["https://www.achievacu.com/Promo/CheckingOffer"],
-  ,
     expired: true,
   },
   {
@@ -727,7 +727,6 @@ const SEEDS: Seed[] = [
     notes: "Membership: Citadel field of membership (SE Pennsylvania). Qualified new checking customers; no Citadel checking closed in the last 12 months and no prior checking bonus; no business accounts. Paid within 10 business days after 90 days. Expires June 30, 2026.",
     excerpt: "The new account cash bonus offer expires June 30, 2026.",
     src: ["https://www.citadelbanking.com/campaigns/digital-media/checking-300-ppc"],
-  ,
     expired: true,
   },
   {
