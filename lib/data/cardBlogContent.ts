@@ -2860,9 +2860,9 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-capital-one-venture-x-business-rwp": {
-    summary: "The Capital One Venture X Business is currently offering 150,000 miles after $20,000 in purchases within 3 months. It carries a $395 annual fee, with no first-year credits to soften it. Estimated net year-one value: $355 based on a 0.5¢ per-point valuation.",
-    strategy: "To hit the $20,000 requirement in 3 months, you need about $6,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Venture X Business until you've earned the 150,000 miles bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $6,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
+    summary: "The Capital One Venture X Business is currently offering 150,000 miles after $30,000 in purchases within 3 months. It carries a $395 annual fee, with no first-year credits to soften it. Estimated net year-one value: $355 based on a conservative 0.5¢ per-point valuation (Capital One miles are worth meaningfully more transferred to airline partners).",
+    strategy: "To hit the $30,000 requirement in 3 months, you need about $10,000 per month in organic spend on this card — a heavy lift, so this is best for businesses with real volume. Route predictable business expenses through the Capital One Venture X Business until you've earned the 150,000 miles bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Self-employed or business users with at least $10,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "150,000 miles sign-up bonus",
       "10x on car_rentals_(portal), hotels_(portal)",
@@ -2871,13 +2871,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     cons: [
       "$395 annual fee",
-      "High $20,000 minimum spend can be hard to hit organically",
+      "Very high $30,000 minimum spend — only realistic for higher-volume businesses",
     ],
-    comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Venture X Business is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Capital One's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Venture X Business is the right pick when you have heavy business spend and want premium travel benefits plus transferable miles.",
     faqs: [
-      { q: "What's the current Capital One Venture X Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 150,000 miles after spending $20,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture X Business sign-up bonus?", a: "150,000 miles after spending $30,000 on purchases within the first 3 months. Confirm the live terms on Capital One's site before applying." },
       { q: "What's the Capital One Venture X Business annual fee?", a: "The annual fee is $395." },
-      { q: "How long does the Capital One Venture X Business sign-up bonus take to post?", a: "Once you cross the $20,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Capital One Venture X Business sign-up bonus take to post?", a: "Once you cross the $30,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
     relatedSlugs: ["capital-one-venture-75000-capital-one-miles","capital-one-spark-cash-select-750-cash","capital-one-venture-x-75000-capital-one-miles"],
     verifiedAt: "2026-06-12T07:01:08.331Z",
@@ -3837,26 +3837,26 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-chase-sapphire-reserve-business-rwp": {
-    summary: "The Chase Sapphire Reserve Business is currently offering 150,000 Ultimate Rewards after $20,000 in purchases within 6 months. It carries a $795 annual fee, with no first-year credits to soften it. Estimated net year-one value: $705 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $20,000 requirement in 6 months, you need about $3,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Sapphire Reserve Business until you've earned the 150,000 Ultimate Rewards bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $3,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
+    summary: "The Chase Sapphire Reserve Business is currently offering 200,000 Ultimate Rewards after $30,000 in purchases within 6 months (elevated offer that returned June 2026). It carries a $795 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1,205 based on a conservative 1¢ per-point valuation.",
+    strategy: "To hit the $30,000 requirement in 6 months, you need about $5,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Sapphire Reserve Business until you've earned the 200,000 Ultimate Rewards bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Self-employed or sole-proprietor users with at least $5,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
-      "150,000 Ultimate Rewards sign-up bonus",
+      "200,000 Ultimate Rewards sign-up bonus",
       "8x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal), travel_(portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
     cons: [
       "$795 annual fee",
-      "High $20,000 minimum spend can be hard to hit organically",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "High $30,000 minimum spend can be hard to hit organically",
+      "Counts against Chase 5/24 for approval (but doesn't add to your 5/24 count)",
     ],
-    comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Chase Sapphire Reserve Business is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Chase Sapphire Reserve Business is the right pick when you can absorb the high spend and want a large transferable-points haul.",
     faqs: [
-      { q: "What's the current Chase Sapphire Reserve Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 150,000 Ultimate Rewards after spending $20,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Chase Sapphire Reserve Business sign-up bonus?", a: "200,000 Ultimate Rewards after spending $30,000 on purchases within the first 6 months — an elevated offer that returned in June 2026. Confirm the live terms on Chase's site before applying." },
       { q: "What's the Chase Sapphire Reserve Business annual fee?", a: "The annual fee is $795." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
-      { q: "How long does the Chase Sapphire Reserve Business sign-up bonus take to post?", a: "Once you cross the $20,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Chase Sapphire Reserve Business sign-up bonus take to post?", a: "Once you cross the $30,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
     relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points"],
     verifiedAt: "2026-06-12T06:31:51.259Z",
@@ -4316,24 +4316,24 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-sapphire-preferred-75k": {
-    summary: "The Chase Sapphire Preferred is currently offering 75,000 Ultimate Rewards after $5,000 in purchases within 3 months. It carries a $95 annual fee, offset by roughly $50 in year-one statement credits. Estimated net year-one value: $705 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Sapphire Preferred until you've earned the 75,000 Ultimate Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Use the year-one credits early — they often expire on a calendar cycle, not 12 months from account opening.",
-    bestFor: "Cardholders who can fully use the 75,000 Ultimate Rewards bonus, the $50 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    summary: "The Chase Sapphire Preferred is currently offering a best-ever 100,000 Ultimate Rewards after $5,000 in purchases within 3 months (limited-time offer launched June 15, 2026 alongside a card refresh). It carries a $95 annual fee, offset by roughly $50 in year-one statement credits. Estimated net year-one value: $955 based on a conservative 1¢ per-point valuation — and meaningfully more if you transfer to partners like Hyatt.",
+    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Sapphire Preferred until you've earned the 100,000 Ultimate Rewards bonus. This is the highest public CSP offer ever, so it's a strong time to apply. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Use the year-one credits early — they often expire on a calendar cycle, not 12 months from account opening.",
+    bestFor: "Cardholders who can fully use the 100,000 Ultimate Rewards bonus, the $50 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
-      "75,000 Ultimate Rewards sign-up bonus",
+      "100,000 Ultimate Rewards sign-up bonus (best-ever, limited time)",
       "$50 in year-one statement credits",
-      "5x on chase_travel_portal",
-      "$50 annual hotel credit (book via Chase Travel)",
-      "Anniversary points (10% of prior-year spend)",
+      "Points transfer to Hyatt, United, Southwest and more",
+      "5x on Chase Travel portal bookings",
+      "Trip protection + primary rental car CDW",
     ],
     cons: [
       "$95 annual fee",
       "High $5,000 minimum spend can be hard to hit organically",
       "Subject to Chase 5/24 — counts against your personal card velocity",
     ],
-    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Sapphire Preferred is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Sapphire Preferred is the right pick when you value premium benefits, transfer partners, and credits over a no-fee structure — and at 100k it's the strongest welcome offer Chase has run on it.",
     faqs: [
-      { q: "What's the current Chase Sapphire Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Ultimate Rewards after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Sapphire Preferred sign-up bonus?", a: "100,000 Ultimate Rewards after spending $5,000 on purchases within the first 3 months — a best-ever public offer that launched June 15, 2026. Confirm the live amount on Chase's site before applying, since limited-time offers can end without notice." },
       { q: "What's the Chase Sapphire Preferred annual fee?", a: "The annual fee is $95. It is partially offset by approximately $50 in year-one statement credits." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Sapphire Preferred sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -5083,53 +5083,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "",
   },
 
-  "citi-costco-anywhere-business-rwp": {
-    summary: "The Costco Anywhere Business is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Costco Anywhere Business until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on special",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's business lineup, the closest comparison is the American Airlines AAdvantage Platinum Select Business (50,000 miles after $0/4mo, $99 AF). The Costco Anywhere Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Costco Anywhere Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Costco Anywhere Business annual fee?", a: "There is no annual fee on the Costco Anywhere Business." },
-      { q: "How long does the Costco Anywhere Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.260Z",
-    verifiedUrl: "https://www.citi.com/credit-cards/costco-anywhere-visa-business-card?category=rewards-credit-cards&afc=162&pdp=new_cob",
-  },
 
-  "citi-costco-anywhere-rwp": {
-    summary: "The Costco Anywhere is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Costco Anywhere until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on special",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Costco Anywhere is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Costco Anywhere sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Costco Anywhere annual fee?", a: "There is no annual fee on the Costco Anywhere." },
-      { q: "How long does the Costco Anywhere sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.600Z",
-    verifiedUrl: "https://www.citi.com/credit-cards/costco-anywhere-visa-card?category=rewards-credit-cards&afc=162&pdp=new_coc",
-  },
 
   "citi-custom-cash-200": {
     summary: "The Citi Custom Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
@@ -8084,28 +8038,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.navyfederal.org/loans-cards/credit-cards/more-rewards.html",
   },
 
-  "paypal-paypal-debit-rwp": {
-    summary: "The Paypal Debit is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Paypal Debit until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on monthly_categories",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Paypal personal cards in our catalog, the Paypal Debit is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Paypal Debit sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Paypal Debit annual fee?", a: "There is no annual fee on the Paypal Debit." },
-      { q: "How long does the Paypal Debit sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:40.066Z",
-    verifiedUrl: "https://www.paypal.com/us/digital-wallet/manage-money/paypal-debit-card",
-  },
 
   "penfed-penfed-pathfinder-rewards-rwp": {
     summary: "The PenFed Pathfinder Rewards is currently offering 50,000 Points after $3,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $355 based on a 0.9¢ per-point valuation.",
