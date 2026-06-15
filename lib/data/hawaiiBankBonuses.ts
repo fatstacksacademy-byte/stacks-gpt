@@ -363,7 +363,7 @@ export const hawaiiCheckingBonuses: HawaiiCheckingRow[] = [
       min_direct_deposit_total: null,
       min_direct_deposit_per_deposit: null,
       dd_count_required: null,
-      deposit_window_days: 60,
+      deposit_window_days: 90,
       holding_period_days: null,
       min_opening_deposit: null,
       min_balance: null,

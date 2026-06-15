@@ -171,7 +171,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "gesa-cu-250-checking-2026", bank: "Gesa Credit Union", amount: 250, states: ["WA", "OR", "ID"],
-    dd: 500, ddWindow: 75, open: 25, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 250, ddWindow: 75, open: 25, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
     reqText: "Open a personal checking account (promo code SMARTS), receive 2 recurring direct deposits of $250+ from an employer/government within 75 days, and enroll in eStatements within 60 days. A member savings account is required.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Serves WA, OR, and ID. 18+; must not have had a Gesa checking account in the last 24 months. Bonus to savings within 60 days of completing requirements. 'For a limited time' — no fixed end date stated.",
@@ -727,6 +727,8 @@ const SEEDS: Seed[] = [
     notes: "Membership: Citadel field of membership (SE Pennsylvania). Qualified new checking customers; no Citadel checking closed in the last 12 months and no prior checking bonus; no business accounts. Paid within 10 business days after 90 days. Expires June 30, 2026.",
     excerpt: "The new account cash bonus offer expires June 30, 2026.",
     src: ["https://www.citadelbanking.com/campaigns/digital-media/checking-300-ppc"],
+  ,
+    expired: true,
   },
   {
     id: "penn-community-bank-475-checking-2026", bank: "Penn Community Bank", amount: 475, states: ["PA"],
