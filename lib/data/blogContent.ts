@@ -3147,7 +3147,7 @@ export const blogContent: Record<string, BlogContent> = {
     pros: [
       "$400 tier only requires $2,000 — one of the lowest capital bars of any business bonus",
       "No direct deposit required — just hold a balance",
-      "$25/month fee auto-waived by the qualifying balance",
+      "$12/mo fee (Business Checking) or $25/mo (Business Checking Plus) — both waived by the qualifying balance you're holding anyway",
       "Nationwide availability",
       "No hard pull on business credit",
     ],
@@ -3161,7 +3161,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "What is the average ledger balance requirement?", a: "PNC uses average ledger balance — the average of all end-of-day balances during a statement cycle. If you deposit $2,000 on day 1 and maintain it all month, you hit the $2k average. Withdrawing mid-cycle lowers your average and could drop you below a tier threshold." },
       { q: "Is there a direct deposit requirement?", a: "No. This is a pure balance-hold bonus. No direct deposit, transaction, or bill-pay requirement — just maintain the average balance for 3 statement cycles." },
       { q: "Is this a lifetime limit?", a: "The terms say 'new PNC business checking customers only.' The cooldown after earning is unconfirmed — it may be 24 months or there may be no formal repeat policy. Verify with PNC before a second attempt." },
-      { q: "How do I avoid the $25/month fee?", a: "The fee is waived when you maintain the qualifying balance — which you need to do anyway for the bonus. While you're holding $2k+ for 3 cycles, the fee waiver kicks in automatically." },
+      { q: "What is the monthly fee?", a: "PNC offers two account options: Business Checking at $12/mo and Business Checking Plus at $25/mo. Both are waivable when you maintain the qualifying balance — which you're doing anyway for the bonus. Either account is eligible for the tiered reward." },
       { q: "When does the bonus post?", a: "PNC credits the reward within 90 days after you've met the 3-cycle balance requirement. Budget roughly 3 months to qualify plus up to 3 more months for posting — about 180 days total from account opening." },
     ],
     relatedSlugs: ["chase-500-business-checking-bonus", "fulton-bank-500-business-savings-bonus"],

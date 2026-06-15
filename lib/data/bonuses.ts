@@ -5287,9 +5287,9 @@ export const bonuses: any[] = [
       "min_balance": 2000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open PNC Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $2,000–$29,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $30,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
+      "other_requirements_text": "Open PNC Business Checking or Business Checking Plus by June 30, 2026. Tier 1: maintain average ledger balance of $2,000–$29,999 for each of the first 3 statement cycles ($400 reward). Tier 2: maintain average ledger balance of $30,000+ for each of the first 3 statement cycles ($1,000 reward). Reward credited within 90 days after qualifying conditions met. No direct deposit required."
     },
-    "fees": { "monthly_fee": 25, "monthly_fee_waiver_text": "Waived with qualifying balance.", "early_closure_fee": null },
+    "fees": { "monthly_fee": 12, "monthly_fee_waiver_text": "Business Checking: $12/mo (waivable with qualifying balance). Business Checking Plus: $25/mo (waivable with qualifying balance). Bonus applies to both account types.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
     "eligibility": {
       "state_restricted": false,
