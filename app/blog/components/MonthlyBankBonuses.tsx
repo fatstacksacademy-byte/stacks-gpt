@@ -21,7 +21,7 @@ function money(n: number): string {
 
 type ResolvedPick =
   | {
-      kind: "checking"
+      kind: "checking" | "business-checking"
       rank: number
       bankShort: string
       bonusAmount: number
@@ -50,16 +50,23 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
     | {
         bank_name: string
         product_name?: string
+        business?: boolean
         bonus_amount: number
         requirements?: { min_direct_deposit_total?: number; deposit_window_days?: number }
         fees?: { monthly_fee?: number }
       }
     | undefined
   if (checking) {
+    const baseName = checking.product_name ?? checking.bank_name.split("(")[0].trim()
+    const isBusiness = !!checking.business
+    const displayName =
+      isBusiness && !baseName.toLowerCase().includes("business")
+        ? `${baseName} Business`
+        : baseName
     return {
-      kind: "checking",
+      kind: isBusiness ? "business-checking" : "checking",
       rank,
-      bankShort: checking.product_name ?? checking.bank_name.split("(")[0].trim(),
+      bankShort: displayName,
       bonusAmount: checking.bonus_amount,
       ddRequired: checking.requirements?.min_direct_deposit_total ?? null,
       windowDays: checking.requirements?.deposit_window_days ?? null,
@@ -350,7 +357,7 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                       marginBottom: 6,
                     }}
                   >
-                    {r.kind === "checking" ? "Checking bonus" : "Savings bonus"}
+                    {r.kind === "business-checking" ? "Business checking bonus" : r.kind === "checking" ? "Checking bonus" : "Savings bonus"}
                   </div>
                   <h2
                     style={{
@@ -391,7 +398,7 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
               </div>
 
               <div style={{ padding: "0 28px 18px", display: "flex", gap: 28, flexWrap: "wrap" }}>
-                {r.kind === "checking" ? (
+                {r.kind !== "savings" ? (
                   <>
                     <Stat
                       label="Direct deposit"
