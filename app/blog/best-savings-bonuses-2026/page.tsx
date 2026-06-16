@@ -11,7 +11,7 @@ const YT = "https://www.youtube.com/@nathanielbooth"
 
 export const metadata: Metadata = {
   title: "Best Savings Account Bonuses of 2026 - Ranked by Effective APY",
-  description: "The best savings account bonuses available right now, ranked by effective APY. Chase $600 (16.2% APY), Capital One $1,500, Ally $100 (easiest), and more. Updated April 2026.",
+  description: "The best savings account bonuses available right now, ranked by effective APY. Chase $600 (16.2% APY), Capital One $1,500, Ally $100 (easiest), and more — with tax and early-withdrawal notes. Updated June 2026.",
   alternates: { canonical: `${BASE}/blog/best-savings-bonuses-2026` },
   openGraph: {
     type: "article",
@@ -47,6 +47,33 @@ export default function BestSavingsBonuses() {
       return bEff - aEff
     })
 
+  const faqs = [
+    {
+      q: "Are savings account bonuses taxable?",
+      a: "Yes. The bank reports the bonus as interest on a 1099-INT (issued once you cross $10), and it's taxed as ordinary income — owed even if no form arrives. Plan to set aside roughly 20–30% of each bonus.",
+    },
+    {
+      q: "What is 'effective APY' and why rank by it?",
+      a: "Effective APY combines the cash bonus with the account's base interest rate, annualized over the holding period. It's the only fair way to compare a big bonus with a long hold against a smaller bonus with a short hold — because money freed up sooner can go straight into the next bonus. A $600 bonus on $15,000 held 90 days works out to roughly 16% annualized.",
+    },
+    {
+      q: "Do savings bonuses require a direct deposit?",
+      a: "Usually not. Unlike checking bonuses, most savings offers just require parking a lump sum for a set period (commonly 90–180 days) — no payroll direct deposit needed. A few do require a small recurring deposit, so check each offer's terms.",
+    },
+    {
+      q: "Can I work on more than one savings bonus at a time?",
+      a: "Yes, if you have enough capital to meet each minimum deposit. If you don't, rotate the same pool of cash through bonuses one after another — that's 'capital rotation,' and it's how a single chunk of savings earns several bonuses a year.",
+    },
+    {
+      q: "What happens if I withdraw the money early?",
+      a: "Most banks forfeit the bonus if you close or drop below the minimum before the holding period ends, and some add an early-closure fee. Leave the funds untouched until both the hold completes and the bonus actually posts.",
+    },
+    {
+      q: "How is a savings bonus different from a high-yield savings account?",
+      a: "A bonus is a one-time payout that spikes your effective return for the holding period; a high-yield savings account (HYSA) is an ongoing rate. They aren't mutually exclusive — the best approach is to chase bonuses with idle cash and keep your emergency fund in a top HYSA.",
+    },
+  ]
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -56,7 +83,7 @@ export default function BestSavingsBonuses() {
         description: "Comprehensive ranked list of the best savings account bonuses available in 2026, ranked by effective APY.",
         url: `${BASE}/blog/best-savings-bonuses-2026`,
         datePublished: "2026-04-10",
-        dateModified: "2026-04-10",
+        dateModified: "2026-06-15",
         author: { "@type": "Person", name: "Nathaniel Booth", url: YT },
         publisher: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
       },
@@ -75,6 +102,14 @@ export default function BestSavingsBonuses() {
           position: i + 1,
           name: x.post.title,
           url: `${BASE}/blog/${x.post.slug}`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
       },
     ],
@@ -97,7 +132,7 @@ export default function BestSavingsBonuses() {
           Best Savings Account Bonuses of 2026
         </h1>
         <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated June 15, 2026
         </p>
 
         <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
@@ -172,6 +207,27 @@ export default function BestSavingsBonuses() {
             <p style={{ margin: 0 }}>
               <strong style={{ color: "#111" }}>Don{"'"}t forget about the Ally referral.</strong> At just $60 in total deposits for a $100 bonus, the Ally savings referral is the easiest bonus on this list. Set it up in the background while you work on larger bonuses.
             </p>
+          </div>
+        </div>
+
+        {/* Taxes */}
+        <div style={{ marginTop: 40, padding: "20px 24px", background: "#fafaf8", border: "1px solid #eee", borderRadius: 12 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111", margin: "0 0 10px" }}>Are savings bonuses taxable?</h2>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>
+            Yes — the bank reports them as interest on a 1099-INT (issued once you cross $10), taxed as ordinary income whether or not a form arrives. The base interest you earn during the hold is taxable too. Set aside roughly 20–30% per bonus, and see the full <Link href="/blog/bank-bonus-tax-guide-2026" style={{ color: "#0d7c5f", textDecoration: "none" }}>bank bonus tax guide</Link> for reporting details.
+          </p>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ marginTop: 40 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>Frequently Asked Questions</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: "0 0 6px" }}>{f.q}</h3>
+                <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>{f.a}</p>
+              </div>
+            ))}
           </div>
         </div>
 

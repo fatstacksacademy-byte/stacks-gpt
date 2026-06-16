@@ -11,7 +11,7 @@ const YT = "https://www.youtube.com/@nathanielbooth"
 
 export const metadata: Metadata = {
   title: "Best Bank Account Bonuses of 2026 (Complete List) - Fat Stacks Academy",
-  description: "The complete list of the best bank account bonuses available in April 2026. Checking bonuses up to $600, savings bonuses with 16%+ effective APY. Requirements, eligibility, and strategy for every offer.",
+  description: "The complete list of the best bank account bonuses available in June 2026. Top checking bonuses plus savings bonuses with 16%+ effective APY. Requirements, eligibility, credit-pull, and tax notes for every offer.",
   alternates: { canonical: `${BASE}/blog/best-bank-account-bonuses-2026` },
   keywords: [
     "best bank account bonuses", "best bank bonuses 2026", "bank account bonus",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "article",
     title: "Best Bank Account Bonuses of 2026 (Complete List)",
-    description: "The complete list of the best bank account bonuses for April 2026. Every offer reviewed with requirements, eligibility, and strategy.",
+    description: "The complete list of the best bank account bonuses for June 2026. Every offer reviewed with requirements, eligibility, and strategy.",
     url: `${BASE}/blog/best-bank-account-bonuses-2026`,
     siteName: "Fat Stacks Academy",
   },
@@ -60,6 +60,14 @@ export default function BestBankBonuses() {
   const totalChecking = checkingSorted.reduce((s, x) => s + (x.bonus!.bonus_amount || 0), 0)
   const totalCount = checkingSorted.length + savingsSorted.length
 
+  // Derive "best/highest" claims from live data so they never go stale.
+  const topChecking = checkingSorted[0]?.bonus
+  const topSavingsBonus = savingsSorted[0]?.bonus?.tiers[0]?.bonus_amount ?? 0
+  const highestBonus = Math.max(topChecking?.bonus_amount ?? 0, topSavingsBonus)
+  const topCheckingLabel = topChecking
+    ? `${topChecking.bank_name.split("(")[0].trim()} at ${money(topChecking.bonus_amount)}`
+    : "—"
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -86,7 +94,7 @@ export default function BestBankBonuses() {
           { "@type": "Question", name: "How much can you make from bank bonuses in 2026?", acceptedAnswer: { "@type": "Answer", text: "An active bonus churner can realistically earn $3,000-$5,000+ per year from checking and savings account bonuses. The amount depends on your paycheck size, available savings capital, and how many bonuses you pursue simultaneously." } },
           { "@type": "Question", name: "Do bank bonuses affect your credit score?", acceptedAnswer: { "@type": "Answer", text: "Most checking and savings account bonuses do NOT affect your credit score. Banks typically perform a soft pull or ChexSystems inquiry, neither of which impacts your FICO score. A few banks may do a hard pull — these are flagged in our reviews." } },
           { "@type": "Question", name: "Are bank bonuses taxable?", acceptedAnswer: { "@type": "Answer", text: "Yes. Bank bonuses are considered taxable income and are typically reported on a 1099-INT or 1099-MISC form. The bank will send you the form if your bonus exceeds $10 in a calendar year. You should report this income on your tax return." } },
-          { "@type": "Question", name: "What is the best bank bonus right now?", acceptedAnswer: { "@type": "Answer", text: "As of April 2026, the best checking bonus is BMO at $600 (for $8,000 in direct deposits) and the best savings bonus is Chase at $600 on a $15,000 deposit (16.2% effective APY). For beginners, Chase Total Checking ($400 with just $1,000 DD) is the best starting point." } },
+          { "@type": "Question", name: "What is the best bank bonus right now?", acceptedAnswer: { "@type": "Answer", text: `As of June 2026, the highest checking bonus on this list is ${topCheckingLabel}, and the best savings bonus is Chase at $600 on a $15,000 deposit (16.2% effective APY). For beginners, Chase Total Checking ($400 with just $1,000 DD) is the best starting point thanks to its low requirement and fast payout.` } },
           { "@type": "Question", name: "How many bank bonuses can you do at once?", acceptedAnswer: { "@type": "Answer", text: "There is no legal limit. Most people work on 2-4 bonuses simultaneously by splitting their direct deposit across multiple banks. The main constraint is your paycheck size and the direct deposit requirements of each bonus." } },
         ],
       },
@@ -122,7 +130,7 @@ export default function BestBankBonuses() {
           Best Bank Account Bonuses of 2026
         </h1>
         <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Last updated April 10, 2026
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Last updated June 15, 2026
         </p>
 
         <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "16px 0", maxWidth: 700 }}>
@@ -137,7 +145,7 @@ export default function BestBankBonuses() {
             { label: "Total Bonuses", value: String(totalCount) },
             { label: "Checking Offers", value: String(checkingSorted.length) },
             { label: "Savings Offers", value: String(savingsSorted.length) },
-            { label: "Highest Bonus", value: "$600" },
+            { label: "Highest Bonus", value: money(highestBonus) },
           ].map((s, i) => (
             <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "16px", textAlign: "center" }}>
               <div style={{ fontSize: 24, fontWeight: 800, color: "#0d7c5f" }}>{s.value}</div>
@@ -282,8 +290,11 @@ export default function BestBankBonuses() {
             <p style={{ margin: "0 0 16px" }}>
               <strong style={{ color: "#111" }}>Most bonuses don{"'"}t affect your credit score.</strong> Banks typically perform a soft pull or ChexSystems inquiry when you open a checking/savings account. Neither impacts your FICO score. We flag the rare exceptions in each review.
             </p>
+            <p style={{ margin: "0 0 16px" }}>
+              <strong style={{ color: "#111" }}>Bank bonuses are taxable income.</strong> Banks report bonuses over $10 on a 1099-INT or 1099-MISC form. You{"'"}ll owe income tax on the bonus amount at your marginal rate. A $400 bonus might net you $280-$340 after taxes, depending on your bracket. See the full <Link href="/blog/bank-bonus-tax-guide-2026" style={{ color: "#0d7c5f", textDecoration: "none" }}>bank bonus tax guide</Link> for how to report them.
+            </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#111" }}>Bank bonuses are taxable income.</strong> Banks report bonuses over $10 on a 1099-INT or 1099-MISC form. You{"'"}ll owe income tax on the bonus amount at your marginal rate. A $400 bonus might net you $280-$340 after taxes, depending on your bracket.
+              <strong style={{ color: "#111" }}>Don{"'"}t overlook business bonuses.</strong> If you have a sole proprietorship or LLC (even a side hustle counts), business checking bonuses from Bank of America, Wells Fargo, Chase, BMO, and others routinely run $300-$1,000+ — often higher than personal offers, and they don{"'"}t touch Chase 5/24. They typically need an EIN and a larger qualifying deposit or debit-activity requirement.
             </p>
           </div>
         </div>
@@ -333,7 +344,7 @@ export default function BestBankBonuses() {
             { q: "How much can you make from bank bonuses in 2026?", a: "An active bonus churner can realistically earn $3,000-$5,000+ per year from checking and savings account bonuses. The amount depends on your paycheck size, available savings capital, and how many bonuses you pursue simultaneously. Some power users report $10,000-$15,000+ annually." },
             { q: "Do bank bonuses affect your credit score?", a: "Most checking and savings account bonuses do NOT affect your credit score. Banks typically perform a soft pull or ChexSystems inquiry, neither of which impacts your FICO score. A few banks may do a hard pull — these are flagged in our individual reviews." },
             { q: "Are bank bonuses taxable?", a: "Yes. Bank bonuses are considered taxable income and are typically reported on a 1099-INT or 1099-MISC form. The bank will send you the form if your bonus exceeds $10 in a calendar year. You should report this income on your federal and state tax return." },
-            { q: "What is the best bank bonus right now?", a: "As of April 2026, the best checking bonus by amount is BMO at $600 (for $8,000 in direct deposits). For beginners, Chase Total Checking ($400 with just $1,000 DD) is the best starting point due to simple requirements and fast payout. For savings, Chase offers $600 on a $15,000 deposit with a 16.2% effective APY." },
+            { q: "What is the best bank bonus right now?", a: `As of June 2026, the highest checking bonus on this list is ${topCheckingLabel}. For beginners, Chase Total Checking ($400 with just $1,000 DD) is the best starting point due to simple requirements and fast payout. For savings, Chase offers $600 on a $15,000 deposit with a 16.2% effective APY.` },
             { q: "How many bank bonuses can you do at once?", a: "There is no legal limit. Most people work on 2-4 checking bonuses simultaneously by splitting their direct deposit across multiple banks. For savings bonuses, you can run as many as your available capital allows — each requires a separate deposit." },
             { q: "Will opening multiple bank accounts hurt my credit?", a: "Generally no. Most banks do a soft pull or ChexSystems check for checking/savings accounts, which doesn't affect your credit score. However, opening many accounts in a short period may flag your ChexSystems report, which some banks check. Spacing out applications (2-3 per month) is a safe approach." },
             { q: "What is ChexSystems?", a: "ChexSystems is a consumer reporting agency that tracks your banking history — similar to how credit bureaus track your credit history. Banks check your ChexSystems report when you apply for a new account. Having negative items (unpaid overdrafts, closed accounts with balances owed) can lead to denials. Normal bonus churning activity does not create negative ChexSystems records." },
