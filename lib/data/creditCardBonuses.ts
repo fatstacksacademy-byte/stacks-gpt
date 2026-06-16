@@ -126,6 +126,8 @@ export type CreditCardBonus = {
   offer_verified_at?: string
   /** Restricted to military-affiliated users (USAA, Navy Federal, AAFES). Hidden unless user_profiles.military_affiliated is true. */
   military_only?: boolean
+  /** Welcome offer is Cashback Match (Discover) — no fixed $ SUB. Lets the blog generate a page despite bonus_amount=0. */
+  cashback_match?: boolean
   /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
   rewards?: RewardsTier[]
   /** Introductory 0% APR terms. Optional — absent until researched per card. */
@@ -1778,6 +1780,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     issuer: "discover",
     card_type: "personal",
     bonus_amount: 0,
+    cashback_match: true,
     bonus_currency: "cash",
     is_hotel_card: false,
     cpp_value: 0.01,

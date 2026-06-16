@@ -94,8 +94,12 @@ const savingsPosts: BlogPost[] = savingsBonuses
   })
 
 // Generate credit card posts from creditCardBonuses.ts (active only).
+// Only cards with a real welcome offer get a "Sign-Up Bonus" page — skip $0-bonus
+// cards (no-SUB everyday/store/secured cards) so they don't render broken "$0 after $0"
+// stubs. Discover Cashback Match cards have bonus_amount=0 but a real offer, so they
+// opt in via the cashback_match flag.
 const cardPosts: BlogPost[] = creditCardBonuses
-  .filter(c => !c.expired)
+  .filter(c => !c.expired && ((c.bonus_amount ?? 0) > 0 || c.cashback_match))
   .map(c => {
     const tags: string[] = ["Credit Card", c.issuer.charAt(0).toUpperCase() + c.issuer.slice(1)]
     if (c.card_type === "business") tags.push("Business")
