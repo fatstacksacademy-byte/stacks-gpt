@@ -42,22 +42,22 @@ export const monthlyCardPicks: MonthlyCardPicks[] = [
       {
         cardId: "chase-sapphire-preferred-75k",
         takeaway:
-          "TODO: Why CSP earns the top slot — 75K UR points, $95 annual fee, and UR points are the most flexible transferable currency for most people.",
+          "The Sapphire Preferred is an easy #1 right now — Chase just pushed it to a best-ever 100,000 Ultimate Rewards points for the same $95 fee, and UR is the most flexible transferable currency for most people (Hyatt, United, and cash all in play).",
       },
       {
         cardId: "amex-gold-100k",
         takeaway:
-          "TODO: One-line pitch for Amex Gold — 100K MR points, dining/grocery earning, but watch the $325 annual fee and Amex approval rules.",
+          "The Amex Gold pairs a 100,000 Membership Rewards bonus with the best everyday dining and grocery earning of any card — just run the $325 annual fee math against the credits and remember Amex's once-per-lifetime bonus rule before you apply.",
       },
       {
         cardId: "capital-one-venture-x-75k",
         takeaway:
-          "TODO: Venture X pitch — 75K miles, lounge access, annual travel credit that more than offsets the $395 fee.",
+          "Venture X is the premium pick that pays for itself: 75,000 miles plus Priority Pass and Capital One lounge access, and a $300 annual travel credit that — with the 10,000 anniversary miles — more than covers the $395 fee.",
       },
       {
         cardId: "chase-ink-business-preferred-100k",
         takeaway:
-          "TODO: Ink Preferred pitch — 100K UR points for business spend, doesn't count toward 5/24 on personal side.",
+          "Ink Business Preferred is the 5/24 cheat code — 100,000 Ultimate Rewards for business spend that won't add to your personal 5/24 count, so you can run it right alongside a personal-card chase.",
       },
     ],
   },

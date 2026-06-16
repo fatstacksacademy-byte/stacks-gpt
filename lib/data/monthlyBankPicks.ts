@@ -42,22 +42,22 @@ export const monthlyBankPicks: MonthlyBankPicks[] = [
       {
         bonusId: "bank-of-america-500-tiered-checking-2026",
         takeaway:
-          "TODO: Why Bank of America's tiered $500 earned the top slot — easy DD, available nationwide, low ChexSystems sensitivity.",
+          "Bank of America takes the top slot because it's the rare big-bank bonus that's genuinely easy: available nationwide, a straightforward direct-deposit requirement, and among the least ChexSystems-sensitive of the major banks — the safest first bonus if you're just getting started.",
       },
       {
         bonusId: "wintrust-500-checking-2026",
         takeaway:
-          "TODO: One-line pitch for Wintrust — best value for the deposit requirement, but watch the state restrictions.",
+          "Wintrust is the best dollar-for-dollar value on this list — a full $500 for a modest deposit requirement — but it's Midwest-regional, so confirm your state is eligible before you get attached to it.",
       },
       {
         bonusId: "us-bank-smartly-checking-450-2026",
         takeaway:
-          "TODO: One-line pitch for US Bank Smartly — clean DD requirement and the bonus posts fast.",
+          "US Bank Smartly has the cleanest direct-deposit requirement of the group and the bonus posts fast — but move quickly, because it's one of the first offers in this batch to expire.",
       },
       {
         bonusId: "chase-total-checking-400-2026",
         takeaway:
-          "TODO: Why Chase is still the best starter bonus — $1,000 DD, fast payout, no monthly fee with light activity.",
+          "Chase is still the best starter bonus for most people: a single $1,000 direct deposit clears it, the payout is fast, and the monthly fee waives with light activity — the lowest-friction way to bank your first $400.",
       },
     ],
   },

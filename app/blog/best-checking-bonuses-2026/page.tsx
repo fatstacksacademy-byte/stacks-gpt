@@ -10,12 +10,12 @@ const YT = "https://www.youtube.com/@nathanielbooth"
 
 export const metadata: Metadata = {
   title: "Best Checking Account Bonuses of 2026 - Ranked by Value",
-  description: "The best checking account bonuses available right now, ranked by bonus value and ease of requirements. Chase $400, Wells Fargo $400, BMO $600, and more. Updated April 2026.",
+  description: "The best checking account bonuses available right now, ranked by bonus value and ease of requirements. Chase $400, Wells Fargo $400, BMO $400, and more — with credit-pull, ChexSystems, cooldown, and tax notes. Updated June 2026.",
   alternates: { canonical: `${BASE}/blog/best-checking-bonuses-2026` },
   openGraph: {
     type: "article",
     title: "Best Checking Account Bonuses of 2026 - Ranked by Value",
-    description: "The best checking account bonuses available right now, ranked by bonus value and ease of requirements. Updated April 2026.",
+    description: "The best checking account bonuses available right now, ranked by bonus value and ease of requirements. Updated June 2026.",
     url: `${BASE}/blog/best-checking-bonuses-2026`,
     siteName: "Fat Stacks Academy",
   },
@@ -34,6 +34,33 @@ export default function BestCheckingBonuses() {
     .filter(x => x.bonus)
     .sort((a, b) => (b.bonus!.bonus_amount || 0) - (a.bonus!.bonus_amount || 0))
 
+  const faqs = [
+    {
+      q: "Are checking account bonuses taxable?",
+      a: "Yes. Banks report account bonuses as interest income on a 1099-INT (issued once you cross $10), and the IRS treats them as ordinary income — taxable even if the bank never sends you a form. A good rule of thumb is to set aside 20–30% of each bonus for taxes.",
+    },
+    {
+      q: "Do checking bonuses require a hard credit pull?",
+      a: "Usually not. Most checking bonuses use a soft pull or no credit pull at all and instead check ChexSystems, a banking-history report. Chase, Wells Fargo, and Capital One are typically soft-pull; a handful of banks (Citi and US Bank among them) can do a hard pull, so check each offer before applying.",
+    },
+    {
+      q: "What is ChexSystems and will it stop me from getting approved?",
+      a: "ChexSystems is a report of your past banking behavior — closed accounts, overdrafts, and recent new-account inquiries. Most banks check it, and some are sensitive to a high volume of recent inquiries. If you've opened several accounts in a short window, space new ones out or start with banks that don't use ChexSystems, like Chime and SoFi.",
+    },
+    {
+      q: "How many checking bonuses can I work on at once?",
+      a: "As many as you can satisfy the direct-deposit requirements for. Most employers let you split your direct deposit across multiple accounts, so you can run several bonuses in parallel — just track each deadline so a qualifying deposit doesn't slip.",
+    },
+    {
+      q: "How long does it take for a checking bonus to post?",
+      a: "It ranges from about 15 days (Chase) to a few months at slower banks. Most bonuses post within one to two statement cycles after you've met the direct-deposit and any debit-transaction requirements.",
+    },
+    {
+      q: "Can I earn the same bank's bonus more than once?",
+      a: "Often yes, but only after a cooldown — commonly 12 to 24 months since your last bonus or account closure at that bank. Always check the specific offer's fine print, since repeat eligibility is where most people accidentally disqualify themselves.",
+    },
+  ]
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -43,7 +70,7 @@ export default function BestCheckingBonuses() {
         description: "Comprehensive ranked list of the best checking account bonuses available in 2026.",
         url: `${BASE}/blog/best-checking-bonuses-2026`,
         datePublished: "2026-04-10",
-        dateModified: "2026-04-10",
+        dateModified: "2026-06-15",
         author: { "@type": "Person", name: "Nathaniel Booth", url: YT },
         publisher: { "@type": "Organization", name: "Fat Stacks Academy", url: BASE },
       },
@@ -62,6 +89,14 @@ export default function BestCheckingBonuses() {
           position: i + 1,
           name: x.post.title,
           url: `${BASE}/blog/${x.post.slug}`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
       },
     ],
@@ -84,7 +119,7 @@ export default function BestCheckingBonuses() {
           Best Checking Account Bonuses of 2026
         </h1>
         <p style={{ fontSize: 13, color: "#bbb", marginBottom: 8 }}>
-          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated April 10, 2026
+          By <a href={YT} target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", textDecoration: "none" }}>Nathaniel Booth</a> | Updated June 15, 2026
         </p>
 
         <p style={{ fontSize: 16, color: "#555", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 650 }}>
@@ -154,6 +189,46 @@ export default function BestCheckingBonuses() {
             <p style={{ margin: 0 }}>
               <strong style={{ color: "#111" }}>Track your bonuses.</strong> Use <Link href="/stacksos" style={{ color: "#0d7c5f", textDecoration: "none" }}>Stacks OS</Link> to keep track of which bonuses you{"'"}re working on, what{"'"}s next, and your total earnings.
             </p>
+          </div>
+        </div>
+
+        {/* What to know before you start */}
+        <div style={{ marginTop: 40 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>What to Know Before You Start</h2>
+          <div style={{ fontSize: 14, color: "#666", lineHeight: 1.8 }}>
+            <p style={{ margin: "0 0 12px" }}>
+              <strong style={{ color: "#111" }}>Credit pull.</strong> Most checking bonuses are soft-pull or no-pull — they won{"'"}t ding your credit score. The gatekeeper is usually <Link href="/blog/chexsystems-guide-bank-bonuses" style={{ color: "#0d7c5f", textDecoration: "none" }}>ChexSystems</Link>, a banking-history report, not your FICO. A few banks (notably Citi and US Bank) can hard-pull, so confirm before you apply if you{"'"}re rate-shopping for a loan.
+            </p>
+            <p style={{ margin: "0 0 12px" }}>
+              <strong style={{ color: "#111" }}>ChexSystems sensitivity.</strong> If you{"'"}ve opened a lot of accounts recently, some banks will decline you for inquiry volume alone. Space out applications, or start with banks that skip ChexSystems entirely (Chime, SoFi) to build momentum.
+            </p>
+            <p style={{ margin: "0 0 12px" }}>
+              <strong style={{ color: "#111" }}>Cooldowns.</strong> Most banks let you re-earn a bonus only after a waiting period since your last bonus or account closure — commonly 12 to 24 months. The cooldown for each offer is shown in the ranked list above and on every full review.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: "#111" }}>Direct deposit.</strong> Each bank defines a {`"`}qualifying{`"`} direct deposit differently — some accept ACH pushes from brokerages like Fidelity, others require true payroll. Check our <Link href="/blog/what-counts-as-direct-deposit" style={{ color: "#0d7c5f", textDecoration: "none" }}>what counts as direct deposit</Link> guide before you route a deposit you{"'"}re counting on.
+            </p>
+          </div>
+        </div>
+
+        {/* Taxes */}
+        <div style={{ marginTop: 40, padding: "20px 24px", background: "#fafaf8", border: "1px solid #eee", borderRadius: 12 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111", margin: "0 0 10px" }}>Are these bonuses taxable?</h2>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>
+            Yes. Banks report account bonuses as interest on a 1099-INT (issued once you cross $10), and they{"'"}re taxed as ordinary income — owed even if no form arrives. Set aside roughly 20–30% per bonus, and see the full <Link href="/blog/bank-bonus-tax-guide-2026" style={{ color: "#0d7c5f", textDecoration: "none" }}>bank bonus tax guide</Link> for how to report them.
+          </p>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ marginTop: 40 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", margin: "0 0 16px" }}>Frequently Asked Questions</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: "0 0 6px" }}>{f.q}</h3>
+                <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: 0 }}>{f.a}</p>
+              </div>
+            ))}
           </div>
         </div>
 
