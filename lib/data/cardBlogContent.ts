@@ -1085,29 +1085,31 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-marriott-bonvoy-business-rwp": {
-    summary: "The Marriott Bonvoy Business is currently offering 0 Marriott Bonvoy after $0 in purchases within 3 months. It carries a $125 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-125 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Marriott Bonvoy Business until you've earned the 0 Marriott Bonvoy bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
+    summary: "The Marriott Bonvoy Business is currently offering 150,000 Marriott Bonvoy after $8,000 in purchases within 6 months. It carries a $125 annual fee, offset by roughly $125 in year-one statement credits. Estimated net year-one value: $1,500 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $8,000 requirement in 6 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Marriott Bonvoy Business until you've earned the 150,000 Marriott Bonvoy bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Use the year-one credits early — they often expire on a calendar cycle, not 12 months from account opening.",
+    bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
-      "0 Marriott Bonvoy sign-up bonus",
+      "150,000 Marriott Bonvoy sign-up bonus",
+      "$125 in year-one statement credits",
       "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
     cons: [
       "$125 annual fee",
+      "High $8,000 minimum spend can be hard to hit organically",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
       "Lifetime once-per-card SUB rule — one shot at this bonus",
     ],
-    comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Marriott Bonvoy Business is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Amex's business lineup, the closest comparison is the Amex Business Platinum (200,000 Membership Rewards after $20,000/3mo, $895 AF). The Marriott Bonvoy Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Business sign-up bonus?", a: "The current bonus is 0 Marriott Bonvoy after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Marriott Bonvoy Business annual fee?", a: "The annual fee is $125." },
+      { q: "What's the current Marriott Bonvoy Business sign-up bonus?", a: "The current bonus is 150,000 Marriott Bonvoy after spending $8,000 on purchases within 6 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
+      { q: "What's the Marriott Bonvoy Business annual fee?", a: "The annual fee is $125. It is partially offset by approximately $125 in year-one statement credits." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the Marriott Bonvoy Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Marriott Bonvoy Business sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["american-express-business-green-rewards-15000-membership-rewards","american-express-gold-100000-membership-rewards","capital-one-spark-miles-for-business-50000-capital-one-miles"],
-    verifiedAt: "2026-06-12T07:01:08.332Z",
+    relatedSlugs: ["american-express-gold-100000-membership-rewards","american-express-platinum-80000-membership-rewards","citi-strata-premier-60000-thankyou-points"],
+    verifiedAt: "2026-06-16T00:00:00.000Z",
     verifiedUrl: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/?intlink=US-Acq-GCP-BusinessCards-ViewAllCards-horizontal-tile-Marriott",
   },
 
@@ -7463,5 +7465,53 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["wells-fargo-active-cash-200-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
     verifiedAt: "2026-04-19T22:02:59.386Z",
     verifiedUrl: "https://creditcards.wellsfargo.com/autograph-journey-visa-credit-card/?sub_channel=WEB&vendor_code=WF&lp_cx_nm=CXNAME_CSMPD_CG",
+  },
+
+  "regions-regions-cash-rewards-rwp": {
+    summary: "The Regions Cash Rewards is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Regions Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$200 sign-up bonus",
+      "$0 annual fee",
+      "1.5% on all other purchases",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Regions's personal lineup, the closest comparison is the Regions Prestige ($200 after $1,000/3mo, $0 AF). The Regions Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current Regions Cash Rewards sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
+      { q: "What's the Regions Cash Rewards annual fee?", a: "There is no annual fee on the Regions Cash Rewards." },
+      { q: "How long does the Regions Cash Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["regions-prestige-200-cash","capital-one-savor-250-cash"],
+    verifiedAt: "2026-06-16T00:00:00.000Z",
+    verifiedUrl: "https://www.regions.com/personal-banking/rewards/cash-rewards",
+  },
+
+  "usaa-bank-usaa-bank-cashback-rewards-plus-rwp": {
+    summary: "The USAA Bank Cashback Rewards Plus is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the USAA Bank Cashback Rewards Plus until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    pros: [
+      "$200 sign-up bonus",
+      "$0 annual fee",
+      "5% on gas stations, select purchases",
+      "No Foreign Transaction Fees",
+    ],
+    cons: [
+      "Issuer may change SUB or requirements at any time — verify before applying",
+    ],
+    comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Eagle Navigator (30,000 Points after $3,000/3mo, $95 AF). The USAA Bank Cashback Rewards Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    faqs: [
+      { q: "What's the current USAA Bank Cashback Rewards Plus sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
+      { q: "What's the USAA Bank Cashback Rewards Plus annual fee?", a: "There is no annual fee on the USAA Bank Cashback Rewards Plus." },
+      { q: "How long does the USAA Bank Cashback Rewards Plus sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+    ],
+    relatedSlugs: ["usaa-bank-eagle-navigator-30000-points","usaa-eagle-adapt-200-cash","capital-one-savor-250-cash"],
+    verifiedAt: "2026-06-16T00:00:00.000Z",
+    verifiedUrl: "https://www.usaa.com/banking/credit-cards-public/cash-back/rewards-plus/",
   },
 }
