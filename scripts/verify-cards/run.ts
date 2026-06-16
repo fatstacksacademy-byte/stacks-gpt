@@ -609,6 +609,25 @@ async function main() {
     `Verifying ${targets.length} credit card bonuses (cache=${USE_CACHE ? "on" : "off"}, escalate=${ESCALATE ? "on" : "off"})`,
   )
 
+  // Hard per-card timeout — same pattern as verify-bonuses. A single hung
+  // page (slow stream, third-party embed) has blocked the whole run for hours.
+  const CARD_TIMEOUT_MS = 120_000
+  function verifyCardWithTimeout(c: CreditCardBonus): Promise<CardResult> {
+    return Promise.race([
+      verifyCard(c),
+      new Promise<CardResult>((resolve) =>
+        setTimeout(() => resolve({
+          id: c.id, card_name: c.card_name, issuer: c.issuer,
+          url: c.offer_link ?? "", finalUrl: "", status: 0,
+          pageSignal: "fetch_error" as CardPageSignal,
+          error: `verify timeout after ${CARD_TIMEOUT_MS}ms`,
+          fields: [], extracted: null, escalations: [],
+          cacheHit: false, verifiedAt: new Date().toISOString(),
+        }), CARD_TIMEOUT_MS)
+      ),
+    ])
+  }
+
   const limit = pLimit(CONCURRENCY)
   const results: CardResult[] = []
   let done = 0
@@ -616,7 +635,7 @@ async function main() {
   await Promise.all(
     targets.map((c) =>
       limit(async () => {
-        const r = await verifyCard(c)
+        const r = await verifyCardWithTimeout(c)
         results.push(r)
         done++
         const tag =
