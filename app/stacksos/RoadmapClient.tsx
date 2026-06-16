@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useMemo } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { checkingBonusStep, customBonusStep, URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { updateBonusStep } from "../../lib/completedBonuses"
@@ -738,58 +738,92 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     return { ...c, days_remaining: daysLeft, available_date: cooldownEnd.toISOString().split("T")[0] }
   })
 
-  const allIncomeSources = buildIncomeSources()
-  const extraSources = allIncomeSources.slice(1)
+  // Memoized so the whole catalog isn't re-scored on every unrelated UI toggle
+  // (combo mode, "transactions met", expanded cards, notes, etc.). Recompute only
+  // when an income source actually changes.
+  const allIncomeSources = useMemo(
+    () => buildIncomeSources(),
+    [
+      profile.pay_frequency,
+      profile.paycheck_amount,
+      (profile as any).income_2_frequency,
+      (profile as any).income_2_amount,
+      (profile as any).income_3_frequency,
+      (profile as any).income_3_amount,
+    ]
+  )
+  const extraSources = useMemo(() => allIncomeSources.slice(1), [allIncomeSources])
 
-  const bonusesWithMeta = mounted
-    ? allBonuses.map((b) => ({
-        bonus: b,
-        ...computeVelocity(b, profile.pay_frequency, profile.paycheck_amount, extraSources),
-        churnStatus: getChurnStatus(b.id, (b as any).cooldown_months ?? null, completedRecords),
-      }))
-    : allBonuses.map((b) => ({
-        bonus: b, velocity: null, weeksToComplete: null, feasible: true, reason: undefined,
-        churnStatus: { status: "available" } as ChurnStatus,
-      }))
+  // The expensive pass: velocity + churn status across the entire catalog.
+  // getChurnStatus scans completedRecords per bonus, so this is the hot loop —
+  // memoize it against the inputs it actually reads.
+  const bonusesWithMeta = useMemo(
+    () =>
+      mounted
+        ? allBonuses.map((b) => ({
+            bonus: b,
+            ...computeVelocity(b, profile.pay_frequency, profile.paycheck_amount, extraSources),
+            churnStatus: getChurnStatus(b.id, (b as any).cooldown_months ?? null, completedRecords),
+          }))
+        : allBonuses.map((b) => ({
+            bonus: b, velocity: null, weeksToComplete: null, feasible: true, reason: undefined,
+            churnStatus: { status: "available" } as ChurnStatus,
+          })),
+    [mounted, profile.pay_frequency, profile.paycheck_amount, extraSources, completedRecords]
+  )
 
-  const inProgress = bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress")
-  const available = bonusesWithMeta
-    .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id) && !(b.bonus as any).expired)
-    .filter(b => {
-      // Business filter
-      if ((b.bonus as any).business && !showBusinessBonuses) return false
-      if (!(b.bonus as any).business && false) return false // personal always shown
-      return true
-    })
-    .filter(b => {
-      if (!profile.state || !b.bonus.eligibility?.state_restricted) return true
-      const allowed = b.bonus.eligibility.states_allowed ?? []
-      return allowed.length === 0 || allowed.includes(profile.state)
-    })
-    .filter(b => {
-      // Military-only offers (USAA, Navy Federal, AAFES Military Star, etc.)
-      // — hide for users who aren't military-affiliated.
-      const isMilitaryOnly = (b.bonus as any).eligibility?.military_only === true
-      if (!isMilitaryOnly) return true
-      return profile.military_affiliated === true
-    })
-    .filter(b => {
-      // "Sensitive ChexSystems" toggle — when on, only show chex-friendly bonuses.
-      if (!onlyLowChex) return true
-      return (b.bonus as any).screening?.chex_sensitive === "low"
-    })
-    .sort((a, b) => {
-      if (a.feasible && !b.feasible) return -1
-      if (!a.feasible && b.feasible) return 1
-      return (b.velocity ?? 0) - (a.velocity ?? 0)
-    })
-  const skippedBonuses = bonusesWithMeta.filter(b => b.churnStatus.status === "available" && skippedIds.includes(b.bonus.id))
-  const inCooldown = bonusesWithMeta.filter(b => b.churnStatus.status === "in_cooldown")
-    .sort((a, b) => {
-      const ad = a.churnStatus.status === "in_cooldown" ? a.churnStatus.days_remaining : 0
-      const bd = b.churnStatus.status === "in_cooldown" ? b.churnStatus.days_remaining : 0
-      return ad - bd
-    })
+  const inProgress = useMemo(
+    () => bonusesWithMeta.filter(b => b.churnStatus.status === "in_progress"),
+    [bonusesWithMeta]
+  )
+  const available = useMemo(
+    () =>
+      bonusesWithMeta
+        .filter(b => b.churnStatus.status === "available" && !skippedIds.includes(b.bonus.id) && !(b.bonus as any).expired)
+        .filter(b => {
+          // Business filter
+          if ((b.bonus as any).business && !showBusinessBonuses) return false
+          if (!(b.bonus as any).business && false) return false // personal always shown
+          return true
+        })
+        .filter(b => {
+          if (!profile.state || !b.bonus.eligibility?.state_restricted) return true
+          const allowed = b.bonus.eligibility.states_allowed ?? []
+          return allowed.length === 0 || allowed.includes(profile.state)
+        })
+        .filter(b => {
+          // Military-only offers (USAA, Navy Federal, AAFES Military Star, etc.)
+          // — hide for users who aren't military-affiliated.
+          const isMilitaryOnly = (b.bonus as any).eligibility?.military_only === true
+          if (!isMilitaryOnly) return true
+          return profile.military_affiliated === true
+        })
+        .filter(b => {
+          // "Sensitive ChexSystems" toggle — when on, only show chex-friendly bonuses.
+          if (!onlyLowChex) return true
+          return (b.bonus as any).screening?.chex_sensitive === "low"
+        })
+        .sort((a, b) => {
+          if (a.feasible && !b.feasible) return -1
+          if (!a.feasible && b.feasible) return 1
+          return (b.velocity ?? 0) - (a.velocity ?? 0)
+        }),
+    [bonusesWithMeta, skippedIds, showBusinessBonuses, profile.state, profile.military_affiliated, onlyLowChex]
+  )
+  const skippedBonuses = useMemo(
+    () => bonusesWithMeta.filter(b => b.churnStatus.status === "available" && skippedIds.includes(b.bonus.id)),
+    [bonusesWithMeta, skippedIds]
+  )
+  const inCooldown = useMemo(
+    () =>
+      bonusesWithMeta.filter(b => b.churnStatus.status === "in_cooldown")
+        .sort((a, b) => {
+          const ad = a.churnStatus.status === "in_cooldown" ? a.churnStatus.days_remaining : 0
+          const bd = b.churnStatus.status === "in_cooldown" ? b.churnStatus.days_remaining : 0
+          return ad - bd
+        }),
+    [bonusesWithMeta]
+  )
 
   const allEarned = completedRecords.filter(r => r.bonus_received)
   const allClosed = completedRecords.filter(r => r.bonus_received && r.closed_date)
@@ -887,19 +921,23 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   type AvailableItem =
     | { kind: "standard"; bonus: typeof available[number]["bonus"]; weeksToComplete: number | null; velocity: number | null; feasible: boolean }
     | { kind: "custom"; bonus: typeof pendingCustom[number]; weeksToComplete: number | null; velocity: number | null; feasible: boolean }
-  const allAvailable: AvailableItem[] = [
-    ...available.map((b): AvailableItem => ({
-      kind: "standard", bonus: b.bonus, weeksToComplete: b.weeksToComplete, velocity: b.velocity, feasible: b.feasible,
-    })),
-    ...pendingCustom.map((c): AvailableItem => {
-      const cv = computeCustomVelocity(c, profile.pay_frequency, profile.paycheck_amount, extraSources)
-      return { kind: "custom", bonus: c, velocity: cv.velocity, weeksToComplete: cv.weeksToComplete, feasible: cv.feasible }
-    }),
-  ].sort((a, b) => {
-    if (!a.feasible && b.feasible) return 1
-    if (a.feasible && !b.feasible) return -1
-    return (b.velocity ?? 0) - (a.velocity ?? 0)
-  })
+  const allAvailable = useMemo<AvailableItem[]>(
+    () =>
+      [
+        ...available.map((b): AvailableItem => ({
+          kind: "standard", bonus: b.bonus, weeksToComplete: b.weeksToComplete, velocity: b.velocity, feasible: b.feasible,
+        })),
+        ...pendingCustom.map((c): AvailableItem => {
+          const cv = computeCustomVelocity(c, profile.pay_frequency, profile.paycheck_amount, extraSources)
+          return { kind: "custom", bonus: c, velocity: cv.velocity, weeksToComplete: cv.weeksToComplete, feasible: cv.feasible }
+        }),
+      ].sort((a, b) => {
+        if (!a.feasible && b.feasible) return 1
+        if (a.feasible && !b.feasible) return -1
+        return (b.velocity ?? 0) - (a.velocity ?? 0)
+      }),
+    [available, pendingCustom, profile.pay_frequency, profile.paycheck_amount, extraSources]
+  )
 
   const heroBonuses = allAvailable.slice(0, openSlots)
   const currentBonus = workingBonuses[0] ?? available[0] ?? null
