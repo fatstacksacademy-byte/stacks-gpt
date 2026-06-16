@@ -37,30 +37,6 @@ export type CardBlogContent = {
 }
 
 export const cardBlogContent: Record<string, CardBlogContent> = {
-  "abound-fcu-abound-fcu-platinum-rwp": {
-    summary: "The Abound FCU Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Abound FCU Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on gas stations",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Abound-fcu personal cards in our catalog, the Abound FCU Platinum is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Abound FCU Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Abound FCU Platinum annual fee?", a: "There is no annual fee on the Abound FCU Platinum." },
-      { q: "How long does the Abound FCU Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
-    verifiedAt: "2026-06-12T04:03:01.015Z",
-    verifiedUrl: "https://www.aboundcu.com/cards/credit-cards/visa-credit-cards/platinum-credit-card",
-  },
-
   "affinity-fcu-affinity-fcu-cash-rewards-rwp": {
     summary: "The Affinity FCU Cash Rewards is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Affinity FCU Cash Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -107,152 +83,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["affinity-fcu-cash-rewards-150-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
     verifiedAt: "2026-06-12T04:03:01.019Z",
     verifiedUrl: "https://www.affinityfcu.com/personal-banking/banking/credit-card/pure-rewards-visa",
-  },
-
-  "alliant-alliant-rwp": {
-    summary: "The Alliant is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Alliant until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Alliant personal cards in our catalog, the Alliant is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Alliant sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Alliant annual fee?", a: "There is no annual fee on the Alliant." },
-      { q: "How long does the Alliant sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:38.454Z",
-    verifiedUrl: "https://secure.alliantcreditunion.org/credit-cards",
-  },
-
-  "ally-ally-everyday-cash-back-rwp": {
-    summary: "The Ally Everyday Cash Back is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ally Everyday Cash Back until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on drug stores, gas stations, groceries",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Ally's personal lineup, the closest comparison is the Ally Unlimited Cash Back ($0 after $0/3mo, $0 AF). The Ally Everyday Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Ally Everyday Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Ally Everyday Cash Back annual fee?", a: "There is no annual fee on the Ally Everyday Cash Back." },
-      { q: "How long does the Ally Everyday Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["ally-unlimited-cash-back-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.323Z",
-    verifiedUrl: "",
-  },
-
-  "ally-ally-unlimited-cash-back-rwp": {
-    summary: "The Ally Unlimited Cash Back is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ally Unlimited Cash Back until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Ally's personal lineup, the closest comparison is the Ally Everyday Cash Back ($0 after $0/3mo, $0 AF). The Ally Unlimited Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Ally Unlimited Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Ally Unlimited Cash Back annual fee?", a: "There is no annual fee on the Ally Unlimited Cash Back." },
-      { q: "How long does the Ally Unlimited Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["ally-everyday-cash-back-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:38.455Z",
-    verifiedUrl: "https://www.ally.com/go/credit-card-update/",
-  },
-
-  "aloha-pacific-platinum-cashback": {
-    summary: "The Aloha Pacific FCU Visa Platinum Cashback is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aloha Pacific FCU Visa Platinum Cashback until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1% on all other purchases",
-      "1% cash back",
-      "No annual, balance-transfer, cash-advance, or foreign transaction fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Preferred ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aloha Pacific FCU Visa Platinum Cashback annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Cashback." },
-      { q: "How long does the Aloha Pacific FCU Visa Platinum Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aloha-pacific-fcu-visa-platinum-preferred-0-cash","aloha-pacific-fcu-visa-platinum-rewards-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://alohapacific.com/credit-cards/credit-card-comparison/",
-  },
-
-  "aloha-pacific-platinum-preferred": {
-    summary: "The Aloha Pacific FCU Visa Platinum Preferred is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aloha Pacific FCU Visa Platinum Preferred until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "11.24% APR",
-      "No annual, balance-transfer, cash-advance, or foreign transaction fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Rewards ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Preferred sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aloha Pacific FCU Visa Platinum Preferred annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Preferred." },
-      { q: "How long does the Aloha Pacific FCU Visa Platinum Preferred sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aloha-pacific-fcu-visa-platinum-rewards-0-cash","aloha-pacific-fcu-visa-platinum-cashback-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://alohapacific.com/credit-cards/credit-card-comparison/",
-  },
-
-  "aloha-pacific-platinum-rewards": {
-    summary: "The Aloha Pacific FCU Visa Platinum Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aloha Pacific FCU Visa Platinum Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 rewards point per $1",
-      "13.24% APR",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Preferred ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aloha Pacific FCU Visa Platinum Rewards annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Rewards." },
-      { q: "How long does the Aloha Pacific FCU Visa Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aloha-pacific-fcu-visa-platinum-preferred-0-cash","aloha-pacific-fcu-visa-platinum-cashback-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://alohapacific.com/credit-cards/credit-card-comparison/",
   },
 
   "amex-amazon-business-rwp": {
@@ -472,30 +302,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["american-express-business-green-rewards-15000-membership-rewards","american-express-gold-100000-membership-rewards"],
     verifiedAt: "2026-06-12T06:31:51.252Z",
     verifiedUrl: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/?inav=en_us_menu_cards_business_credit_cards_business_platinum_card",
-  },
-
-  "amex-american-express-business-plum-rwp": {
-    summary: "The American Express Business Plum is currently offering $0 after $0 in purchases within 3 months. It carries a $250 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-250 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Business Plum until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "$250 annual fee",
-      "Lifetime once-per-card SUB rule — one shot at this bonus",
-    ],
-    comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Business Plum is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current American Express Business Plum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the American Express Business Plum annual fee?", a: "The annual fee is $250." },
-      { q: "How long does the American Express Business Plum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["american-express-business-green-rewards-15000-membership-rewards","american-express-gold-100000-membership-rewards","avianca-lifemiles-elite-100000-miles"],
-    verifiedAt: "2026-06-12T07:01:08.330Z",
-    verifiedUrl: "",
   },
 
   "amex-american-express-centurion-business-rwp": {
@@ -1434,30 +1240,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.rakuten.com/american-express-card",
   },
 
-  "aod-fcu-aod-fcu-rwp": {
-    summary: "The AOD FCU is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the AOD FCU until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Aod-fcu personal cards in our catalog, the AOD FCU is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current AOD FCU sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the AOD FCU annual fee?", a: "There is no annual fee on the AOD FCU." },
-      { q: "How long does the AOD FCU sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.324Z",
-    verifiedUrl: "https://www.aodfcu.com/credit-cards/",
-  },
-
   "asb-smart-business-rewards-20k": {
     summary: "The American Savings Bank Smart Business Rewards Visa is currently offering 20,000 points after $500 in purchases within 3 months. There's no annual fee, which makes the 20,000 points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 1¢ per-point valuation.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Savings Bank Smart Business Rewards Visa until you've earned the 20,000 points bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -1822,31 +1604,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://cards.barclaycardus.com/banking/cards/jetblue-business-card/",
   },
 
-  "barclays-priceline-vip-rewards-rwp": {
-    summary: "The Priceline VIP Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Priceline VIP Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal)",
-      "No Foreign Transaction Fees",
-      "Travel Portal Redemption",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Priceline VIP Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Priceline VIP Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Priceline VIP Rewards annual fee?", a: "There is no annual fee on the Priceline VIP Rewards." },
-      { q: "How long does the Priceline VIP Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["barclays-jetblue-plus-75000-jetblue-trueblue","barclays-upromise-300-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.330Z",
-    verifiedUrl: "https://help.priceline.com/priceline-rewards-visa-card-SkA69k8p_",
-  },
-
   "barclays-upromise-300": {
     summary: "This $300 Barclays Upromise offer is expired. The current public offer is $100 after $500 in purchases within 90 days, with no annual fee.",
     strategy: "Do not apply expecting the former $300 offer. Verify the live Barclays page; the current public terms require $500 of purchases within 90 days for a $100 bonus.",
@@ -1996,54 +1753,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T06:32:16.622Z",
     verifiedUrl: "https://www.becu.org/everyday-banking/credit-card",
-  },
-
-  "big-island-visa-classic": {
-    summary: "The Big Island FCU Visa Classic is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Big Island FCU Visa Classic until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "Fixed APR",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Big-island-fcu's personal lineup, the closest comparison is the Big Island FCU Visa Gold ($0 after $0/3mo, $0 AF). The Big Island FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Big Island FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Big Island FCU Visa Classic annual fee?", a: "There is no annual fee on the Big Island FCU Visa Classic." },
-      { q: "How long does the Big Island FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["big-island-fcu-visa-gold-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.bigislandfcu.com/visa-credit-cards",
-  },
-
-  "big-island-visa-gold": {
-    summary: "The Big Island FCU Visa Gold is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Big Island FCU Visa Gold until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "Fixed APR",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Big-island-fcu's personal lineup, the closest comparison is the Big Island FCU Visa Classic ($0 after $0/3mo, $0 AF). The Big Island FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Big Island FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Big Island FCU Visa Gold annual fee?", a: "There is no annual fee on the Big Island FCU Visa Gold." },
-      { q: "How long does the Big Island FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["big-island-fcu-visa-classic-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.bigislandfcu.com/visa-credit-cards",
   },
 
   "bilt-mastercard": {
@@ -2960,77 +2669,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "",
   },
 
-  "capital-one-kohl-s-rewards-rwp": {
-    summary: "The Kohl's Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Kohl's Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "7.5x on select stores",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Kohl's Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Kohl's Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Kohl's Rewards annual fee?", a: "There is no annual fee on the Kohl's Rewards." },
-      { q: "How long does the Kohl's Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-venture-75000-capital-one-miles","capital-one-spark-cash-select-750-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.614Z",
-    verifiedUrl: "https://www.capitalone.com/credit-cards/kohls/",
-  },
-
-  "capital-one-platinum-mastercard": {
-    summary: "The Capital One Platinum is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Platinum until you've earned the $0 bonus. Mind your issuer rules: Capital One typically allows only one new personal card every 6 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "No annual fee credit-builder card",
-      "Auto credit-line review at 6 months",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Capital One Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
-      { q: "What's the Capital One Platinum annual fee?", a: "There is no annual fee on the Capital One Platinum." },
-      { q: "How long does the Capital One Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash","capital-one-spark-miles-for-business-50000-capital-one-miles","chase-amazon-prime-visa-200-cash"],
-    verifiedAt: "2026-06-12T06:31:21.064Z",
-    verifiedUrl: "https://www.capitalone.com/credit-cards/platinum/",
-  },
-
-  "capital-one-quicksilverone-cash-rewards": {
-    summary: "The Capital One QuicksilverOne is currently offering $0 after $0 in purchases within 0 months. It carries a $39 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-39 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One QuicksilverOne until you've earned the $0 bonus. Mind your issuer rules: Capital One typically allows only one new personal card every 6 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $39 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "5x on hotels booked via Capital One Travel, rental cars via Capital One Travel",
-      "Unlimited 1.5% cash back on every purchase",
-      "5% on hotels & rental cars via Capital One Travel",
-    ],
-    cons: [
-      "$39 annual fee",
-    ],
-    comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One QuicksilverOne is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current Capital One QuicksilverOne sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
-      { q: "What's the Capital One QuicksilverOne annual fee?", a: "The annual fee is $39." },
-      { q: "How long does the Capital One QuicksilverOne sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash","capital-one-spark-miles-for-business-50000-capital-one-miles","chase-amazon-prime-visa-200-cash"],
-    verifiedAt: "2026-06-12T07:01:08.322Z",
-    verifiedUrl: "https://www.capitalone.com/credit-cards/quicksilver-one/",
-  },
-
   "capital-one-rei-co-op-rwp": {
     summary: "The REI Co-op is currently offering $100 after $0 in purchases within 2 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 2 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the REI Co-op until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -3154,30 +2792,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["capital-one-savor-30000-cash","capital-one-quicksilverone-0-cash","citi-strata-premier-75000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:01.785Z",
     verifiedUrl: "https://www.capitalone.com/small-business/credit-cards/travel-and-miles/",
-  },
-
-  "capital-one-t-mobile-rwp": {
-    summary: "The T-Mobile is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the T-Mobile until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on select purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The T-Mobile is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current T-Mobile sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the T-Mobile annual fee?", a: "There is no annual fee on the T-Mobile." },
-      { q: "How long does the T-Mobile sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-venture-75000-capital-one-miles","capital-one-spark-cash-select-750-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.215Z",
-    verifiedUrl: "https://www.capitalone.com/credit-cards/t-mobile/",
   },
 
   "capital-one-venture-75k": {
@@ -5041,53 +4655,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "",
   },
 
-  "citi-citizens-bank-summit-reserve-rwp": {
-    summary: "The Citizens Bank Summit Reserve is currently offering $0 after $0 in purchases within 3 months. It carries a $295 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-295 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citizens Bank Summit Reserve until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $295 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "3x on dining, groceries, movie theaters, select live entertainment, streaming services",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "$295 annual fee",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citizens Bank Summit Reserve is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current Citizens Bank Summit Reserve sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Citizens Bank Summit Reserve annual fee?", a: "The annual fee is $295." },
-      { q: "How long does the Citizens Bank Summit Reserve sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","american-express-gold-100000-membership-rewards"],
-    verifiedAt: "2026-06-12T07:01:08.325Z",
-    verifiedUrl: "",
-  },
-
-  "citi-citizens-bank-summit-rwp": {
-    summary: "The Citizens Bank Summit is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citizens Bank Summit until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on dining, groceries",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citizens Bank Summit is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Citizens Bank Summit sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Citizens Bank Summit annual fee?", a: "There is no annual fee on the Citizens Bank Summit." },
-      { q: "How long does the Citizens Bank Summit sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.325Z",
-    verifiedUrl: "",
-  },
-
 
 
   "citi-custom-cash-200": {
@@ -5114,30 +4681,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.citi.com/credit-cards/citi-custom-cash-credit-card?pdp=new_cc",
   },
 
-  "citi-diamond-preferred-0apr": {
-    summary: "The Citi Diamond Preferred is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Diamond Preferred until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "21 months 0% intro APR on balance transfers (one of the longest in market)",
-      "12 months 0% intro APR on purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi Diamond Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Citi Diamond Preferred sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
-      { q: "What's the Citi Diamond Preferred annual fee?", a: "There is no annual fee on the Citi Diamond Preferred." },
-      { q: "How long does the Citi Diamond Preferred sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:23.801Z",
-    verifiedUrl: "https://www.citi.com/credit-cards/citi-diamond-preferred-credit-card?pdp=old_dp",
-  },
-
   "citi-double-cash-200": {
     summary: "The Citi Double Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Double Cash until you've earned the $200 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -5160,30 +4703,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["citi-strata-elite-100000-thankyou-points","citi-custom-cash-200-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
     verifiedAt: "2026-04-19T22:02:48.101Z",
     verifiedUrl: "https://www.citi.com/credit-cards/citi-double-cash-credit-card",
-  },
-
-  "citi-my-best-buy-rwp": {
-    summary: "The My Best Buy is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the My Best Buy until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on select stores",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The My Best Buy is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current My Best Buy sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the My Best Buy annual fee?", a: "There is no annual fee on the My Best Buy." },
-      { q: "How long does the My Best Buy sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-premier-75000-thankyou-points","citi-aadvantage-platinum-select-80000-aadvantage-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.619Z",
-    verifiedUrl: "https://citiretailservices.citibankonline.com/RSauth/signon?pageName=signon&siteId=PLCN_BESTBUY&langId=en_US",
   },
 
   "citi-strata-elite-100k": {
@@ -5260,218 +4779,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://citiretailservices.citibankonline.com/RSauth/signon?pageName=signon&siteId=PLCN_TRACTORSUPPLY&langId=en_US",
   },
 
-  "city-national-city-national-cash-back-rwp": {
-    summary: "The City National Cash Back is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the City National Cash Back until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within City-national's personal lineup, the closest comparison is the City National Crystal ($0 after $0/3mo, $400 AF). The City National Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current City National Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the City National Cash Back annual fee?", a: "There is no annual fee on the City National Cash Back." },
-      { q: "How long does the City National Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["city-national-crystal-0-cash","city-national-flex-rewards-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.325Z",
-    verifiedUrl: "",
-  },
-
-  "city-national-city-national-crystal-rwp": {
-    summary: "The City National Crystal is currently offering $0 after $0 in purchases within 3 months. It carries a $400 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-400 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the City National Crystal until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $400 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), dining, hotels, hotels (travel portal), ridesharing, transit",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "$400 annual fee",
-    ],
-    comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Crystal is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current City National Crystal sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the City National Crystal annual fee?", a: "The annual fee is $400." },
-      { q: "How long does the City National Crystal sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["city-national-cash-back-0-cash","city-national-flex-rewards-0-cash","capital-one-venture-x-75000-capital-one-miles"],
-    verifiedAt: "2026-06-12T07:01:08.325Z",
-    verifiedUrl: "",
-  },
-
-  "city-national-city-national-flex-rewards-rwp": {
-    summary: "The City National Flex Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the City National Flex Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on gas stations",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Flex Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current City National Flex Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the City National Flex Rewards annual fee?", a: "There is no annual fee on the City National Flex Rewards." },
-      { q: "How long does the City National Flex Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["city-national-cash-back-0-cash","city-national-crystal-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.326Z",
-    verifiedUrl: "",
-  },
-
-  "city-national-city-national-now-rwp": {
-    summary: "The City National Now is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the City National Now until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Now is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current City National Now sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the City National Now annual fee?", a: "There is no annual fee on the City National Now." },
-      { q: "How long does the City National Now sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["city-national-cash-back-0-cash","city-national-crystal-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.326Z",
-    verifiedUrl: "",
-  },
-
-  "coastal-aven-gas-option-rwp": {
-    summary: "The Aven (Gas Option) is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aven (Gas Option) until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "6x on gas stations",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Aven (Gas Option) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aven (Gas Option) sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aven (Gas Option) annual fee?", a: "There is no annual fee on the Aven (Gas Option)." },
-      { q: "How long does the Aven (Gas Option) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aven-0-cash","aven-groceries-option-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.324Z",
-    verifiedUrl: "https://www.aven.com/rewards-card",
-  },
-
-  "coastal-aven-groceries-option-rwp": {
-    summary: "The Aven (Groceries Option) is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aven (Groceries Option) until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "6x on groceries",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Aven (Groceries Option) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aven (Groceries Option) sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aven (Groceries Option) annual fee?", a: "There is no annual fee on the Aven (Groceries Option)." },
-      { q: "How long does the Aven (Groceries Option) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aven-0-cash","aven-gas-option-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.324Z",
-    verifiedUrl: "https://www.aven.com/flex",
-  },
-
-  "coastal-aven-rwp": {
-    summary: "The Aven is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Aven until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Coastal's personal lineup, the closest comparison is the Aven (Groceries Option) ($0 after $0/3mo, $0 AF). The Aven is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Aven sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Aven annual fee?", a: "There is no annual fee on the Aven." },
-      { q: "How long does the Aven sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aven-groceries-option-0-cash","aven-gas-option-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.324Z",
-    verifiedUrl: "https://www.aven.com/rewards-card",
-  },
-
-  "coastal-robinhood-gold-rwp": {
-    summary: "The Robinhood Gold is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Robinhood Gold until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Robinhood Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Robinhood Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Robinhood Gold annual fee?", a: "There is no annual fee on the Robinhood Gold." },
-      { q: "How long does the Robinhood Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aven-0-cash","aven-groceries-option-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.198Z",
-    verifiedUrl: "https://robinhood.com/creditcard/",
-  },
-
-  "coastal-robinhood-platinum-rwp": {
-    summary: "The Robinhood Platinum is currently offering $0 after $0 in purchases within 3 months. It carries a $645 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-645 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Robinhood Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $645 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "10x on car rentals (travel portal), hotels (travel portal)",
-      "No Foreign Transaction Fees",
-      "Travel Portal Redemption",
-    ],
-    cons: [
-      "$645 annual fee",
-    ],
-    comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Robinhood Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current Robinhood Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Robinhood Platinum annual fee?", a: "The annual fee is $645." },
-      { q: "How long does the Robinhood Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aven-0-cash","aven-groceries-option-0-cash","amex-marriott-bonvoy-brilliant-200000-marriott-bonvoy"],
-    verifiedAt: "2026-06-12T06:31:51.201Z",
-    verifiedUrl: "https://robinhood.com/us/en/creditcard/platinum/",
-  },
-
   "coastal-walmart-onepay-cashrewards-rwp": {
     summary: "The Walmart OnePay CashRewards is currently offering $35 after $75 in purchases within 1 months. There's no annual fee, which makes the $35 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $35 — the bonus is cash back, valued at face.",
     strategy: "To hit the $75 requirement in 1 months, you need about $75 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Walmart OnePay CashRewards until you've earned the $35 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -5544,54 +4851,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://d.comenity.net/ac/traveladvantagesig/public/home",
   },
 
-  "comenity-bread-cashback-rwp": {
-    summary: "The Bread Cashback is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bread Cashback until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Bread Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Bread Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Bread Cashback annual fee?", a: "There is no annual fee on the Bread Cashback." },
-      { q: "How long does the Bread Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aaa-daily-advantage-100-cash","aaa-travel-advantage-100-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:38.590Z",
-    verifiedUrl: "https://www.breadfinancial.com/en/bread-financial-cashback-card.html",
-  },
-
-  "comenity-bread-rewards-rwp": {
-    summary: "The Bread Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bread Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on dining, gas stations, groceries, utilities",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Bread Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Bread Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Bread Rewards annual fee?", a: "There is no annual fee on the Bread Rewards." },
-      { q: "How long does the Bread Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["aaa-daily-advantage-100-cash","aaa-travel-advantage-100-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:38.589Z",
-    verifiedUrl: "https://www.breadfinancial.com/en/bread-rewards-credit-card.html",
-  },
-
   "comenity-caesars-rewards-rwp": {
     summary: "The Caesars Rewards is currently offering 10,000 Points after $1,000 in purchases within 3 months. There's no annual fee, which makes the 10,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 based on a 0.5¢ per-point valuation.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Caesars Rewards until you've earned the 10,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -5661,29 +4920,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T06:32:41.554Z",
     verifiedUrl: "https://www.communityamerica.com/personal/borrow/loans-and-credit-cards/credit-cards/credit-card-overview",
-  },
-
-  "continental-bank-novo-business-rwp": {
-    summary: "The Novo Business is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Novo Business until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Continental-bank business cards in our catalog, the Novo Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Novo Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Novo Business annual fee?", a: "There is no annual fee on the Novo Business." },
-      { q: "How long does the Novo Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.332Z",
-    verifiedUrl: "",
   },
 
   "cpb-business-cash-preferred-25": {
@@ -5786,31 +5022,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://cpb.bank/business-banking/business-credit-cards",
   },
 
-  "cpb-max-cash-secured": {
-    summary: "The Central Pacific Bank Max Cash Secured is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Central Pacific Bank Max Cash Secured until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5% on select categories",
-      "5% in two selected categories on the first $2,000 per quarter",
-      "2% in one everyday category",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Max Cash Secured is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Central Pacific Bank Max Cash Secured sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Central Pacific Bank Max Cash Secured annual fee?", a: "There is no annual fee on the Central Pacific Bank Max Cash Secured." },
-      { q: "How long does the Central Pacific Bank Max Cash Secured sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["central-pacific-bank-everyday-rewards-15000-points","central-pacific-bank-max-cash-preferred-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.334Z",
-    verifiedUrl: "https://cpb.bank/business-banking/business-credit-cards",
-  },
-
   "cpb-reserve-rewards-50k": {
     summary: "The Central Pacific Bank Reserve Rewards+ is currently offering 50,000 points after $4,500 in purchases within 3 months. It carries a $390 annual fee, with no first-year credits to soften it. Estimated net year-one value: $110 based on a 1¢ per-point valuation.",
     strategy: "To hit the $4,500 requirement in 3 months, you need about $1,500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Central Pacific Bank Reserve Rewards+ until you've earned the 50,000 points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -5833,30 +5044,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     relatedSlugs: ["central-pacific-bank-everyday-rewards-15000-points","central-pacific-bank-max-cash-preferred-150-cash","capital-one-venture-x-75000-capital-one-miles"],
     verifiedAt: "2026-06-12T07:01:08.333Z",
-    verifiedUrl: "https://cpb.bank/business-banking/business-credit-cards",
-  },
-
-  "cpb-secured": {
-    summary: "The Central Pacific Bank Secured is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Central Pacific Bank Secured until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Designed to establish or rebuild credit",
-      "Free credit-score access",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Secured is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Central Pacific Bank Secured sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Central Pacific Bank Secured annual fee?", a: "There is no annual fee on the Central Pacific Bank Secured." },
-      { q: "How long does the Central Pacific Bank Secured sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["central-pacific-bank-everyday-rewards-15000-points","central-pacific-bank-max-cash-preferred-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.334Z",
     verifiedUrl: "https://cpb.bank/business-banking/business-credit-cards",
   },
 
@@ -5908,126 +5095,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.upgrade.com/upgrade-card/triple-cash/",
   },
 
-  "cu-hawaii-mastercard-platinum": {
-    summary: "The CU Hawaii Mastercard Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the CU Hawaii Mastercard Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards with no earning limit or expiration",
-      "Fixed rate",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Cu-hawaii personal cards in our catalog, the CU Hawaii Mastercard Platinum is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current CU Hawaii Mastercard Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the CU Hawaii Mastercard Platinum annual fee?", a: "There is no annual fee on the CU Hawaii Mastercard Platinum." },
-      { q: "How long does the CU Hawaii Mastercard Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.cuhawaii.com/personal/personal-loans/credit-cards.html",
-  },
-
-  "discover-discover-chrome-auto": {
-    summary: "The Discover Chrome is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Chrome until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2% on gas",
-      "2% gas",
-      "1% everything_else",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Chrome is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover Chrome sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover Chrome annual fee?", a: "There is no annual fee on the Discover Chrome." },
-      { q: "How long does the Discover Chrome sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:11.890Z",
-    verifiedUrl: "https://www.discover.com/credit-cards/cash-back/chrome/?ICMPGN=SUBNAV_CCP_IT_CHROME",
-  },
-
-  "discover-discover-chrome-student-auto": {
-    summary: "The Discover Chrome Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Chrome Student until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2% on gas",
-      "2% gas",
-      "1% everything_else",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Chrome Student is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover Chrome Student sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover Chrome Student annual fee?", a: "There is no annual fee on the Discover Chrome Student." },
-      { q: "How long does the Discover Chrome Student sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:09.772Z",
-    verifiedUrl: "https://www.discover.com/credit-cards/student-credit-card/chrome-card/?ICMPGN=SUBNAV_CCP_STUDENT_CHROME",
-  },
-
-  "discover-discover-it-auto": {
-    summary: "The Discover it is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover it until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover it is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover it sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover it annual fee?", a: "There is no annual fee on the Discover it." },
-      { q: "How long does the Discover it sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:07.207Z",
-    verifiedUrl: "https://www.discover.com/credit-cards/cash-back/it-card/?ICMPGN=SUBNAV_CCP_IT",
-  },
-
-  "discover-discover-it-chrome-gas-restaurant-rwp": {
-    summary: "The Discover It Chrome Gas & Restaurant is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover It Chrome Gas & Restaurant until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on dining, gas stations",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover It Chrome Gas & Restaurant is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover It Chrome Gas & Restaurant sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover It Chrome Gas & Restaurant annual fee?", a: "There is no annual fee on the Discover It Chrome Gas & Restaurant." },
-      { q: "How long does the Discover It Chrome Gas & Restaurant sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.326Z",
-    verifiedUrl: "",
-  },
-
   "discover-discover-it-miles-rwp": {
     summary: "The Discover It Miles is currently offering 0 miles after $0 in purchases within 3 months. There's no annual fee, which makes the 0 miles bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover It Miles until you've earned the 0 miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -6050,54 +5117,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-chrome-gas-restaurant-0-cash","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T07:01:08.326Z",
     verifiedUrl: "",
-  },
-
-  "discover-discover-it-student-auto": {
-    summary: "The Discover it Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover it Student until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1% on all other purchases",
-      "1% everything_else",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover it Student is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover it Student sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover it Student annual fee?", a: "There is no annual fee on the Discover it Student." },
-      { q: "How long does the Discover it Student sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:09.714Z",
-    verifiedUrl: "https://www.discover.com/credit-cards/student-credit-card/it-card/?ICMPGN=SUBNAV_CCP_STUDENT_IT",
-  },
-
-  "discover-discover-nhl-auto": {
-    summary: "The Discover Nhl is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Nhl until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1% on all other purchases",
-      "1% everything_else",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Nhl is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Discover Nhl sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Discover Nhl annual fee?", a: "There is no annual fee on the Discover Nhl." },
-      { q: "How long does the Discover Nhl sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["discover-it-cash-back-0-cash","discover-it-miles-0-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:11.825Z",
-    verifiedUrl: "https://www.discover.com/credit-cards/cash-back/nhl-card/?ICMPGN=SUBNAV_CCP_NHL",
   },
 
   "discover-it-100-double": {
@@ -6225,30 +5244,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-travel-rewards-credit-card",
   },
 
-  "elan-financial-services-fidelity-rewards-rwp": {
-    summary: "The Fidelity Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fidelity Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (15,000 Points after $500/3mo, $0 AF). The Fidelity Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Fidelity Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Fidelity Rewards annual fee?", a: "There is no annual fee on the Fidelity Rewards." },
-      { q: "How long does the Fidelity Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["associated-bank-everyday-rewards-15000-points","associated-bank-max-cash-preferred-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.327Z",
-    verifiedUrl: "",
-  },
-
   "ent-business-rewards-visa-300": {
     summary: "The Ent Business Rewards Visa is currently offering $300 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ent Business Rewards Visa until you've earned the $300 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -6348,102 +5343,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.ent.com/personal/loans/credit-cards/",
   },
 
-  "ewa-fcu-visa-classic": {
-    summary: "The Ewa FCU Visa Classic is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ewa FCU Visa Classic until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Ewa-fcu's personal lineup, the closest comparison is the Ewa FCU Visa Platinum ($0 after $0/3mo, $0 AF). The Ewa FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Ewa FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Ewa FCU Visa Classic annual fee?", a: "There is no annual fee on the Ewa FCU Visa Classic." },
-      { q: "How long does the Ewa FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["ewa-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.ewafcu.com/products-and-services",
-  },
-
-  "ewa-fcu-visa-platinum": {
-    summary: "The Ewa FCU Visa Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ewa FCU Visa Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Ewa-fcu's personal lineup, the closest comparison is the Ewa FCU Visa Classic ($0 after $0/3mo, $0 AF). The Ewa FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Ewa FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Ewa FCU Visa Platinum annual fee?", a: "There is no annual fee on the Ewa FCU Visa Platinum." },
-      { q: "How long does the Ewa FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["ewa-fcu-visa-classic-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.338Z",
-    verifiedUrl: "https://www.ewafcu.com/products-and-services",
-  },
-
-  "exchange-credit-program-aafes-military-star-rwp": {
-    summary: "The AAFES Military Star is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the AAFES Military Star until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Exchange-credit-program personal cards in our catalog, the AAFES Military Star is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current AAFES Military Star sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the AAFES Military Star annual fee?", a: "There is no annual fee on the AAFES Military Star." },
-      { q: "How long does the AAFES Military Star sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
-    verifiedAt: "2026-06-12T04:03:01.016Z",
-    verifiedUrl: "https://militarytimecharts.com/star-card-guide/",
-  },
-
-  "fairwinds-cu-fairwinds-cu-preferred-cash-back-rwp": {
-    summary: "The Fairwinds CU Preferred Cash Back is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fairwinds CU Preferred Cash Back until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Fairwinds-cu's personal lineup, the closest comparison is the Fairwinds CU Visa Signature (60,000 Points after $5,000/3mo, $95 AF). The Fairwinds CU Preferred Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Fairwinds CU Preferred Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Fairwinds CU Preferred Cash Back annual fee?", a: "There is no annual fee on the Fairwinds CU Preferred Cash Back." },
-      { q: "How long does the Fairwinds CU Preferred Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["fairwinds-cu-visa-signature-60000-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.327Z",
-    verifiedUrl: "",
-  },
-
   "fairwinds-cu-fairwinds-cu-visa-signature-rwp": {
     summary: "The Fairwinds CU Visa Signature is currently offering 60,000 Points after $5,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $505 based on a 1¢ per-point valuation.",
     strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fairwinds CU Visa Signature until you've earned the 60,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -6467,30 +5366,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["fairwinds-cu-preferred-cash-back-0-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
     verifiedAt: "2026-06-12T07:01:08.327Z",
     verifiedUrl: "",
-  },
-
-  "fhb-heritage": {
-    summary: "The First Hawaiian Bank Heritage is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the First Hawaiian Bank Heritage until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Designed for building credit or consolidating balances",
-      "Low introductory purchase and balance-transfer rates",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within First-hawaiian-bank's personal lineup, the closest comparison is the First Hawaiian Bank Priority Unlimited Cash Back ($150 after $1,500/3mo, $0 AF). The First Hawaiian Bank Heritage is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current First Hawaiian Bank Heritage sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the First Hawaiian Bank Heritage annual fee?", a: "There is no annual fee on the First Hawaiian Bank Heritage." },
-      { q: "How long does the First Hawaiian Bank Heritage sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["first-hawaiian-bank-priority-unlimited-cash-back-150-cash","first-hawaiian-bank-priority-destinations-world-elite-50000-priority-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.333Z",
-    verifiedUrl: "https://www.fhb.com/en/personal/credit-cards/heritage-credit-card",
   },
 
   "fhb-priority-destinations-50k": {
@@ -6566,31 +5441,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["first-hawaiian-bank-priority-unlimited-cash-back-150-cash","first-hawaiian-bank-priority-destinations-world-elite-50000-priority-miles","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T07:01:08.333Z",
     verifiedUrl: "https://www.fhb.com/en/personal/credit-cards/priority-rewards-credit-card",
-  },
-
-  "fhb-priority-rewards-business": {
-    summary: "The First Hawaiian Bank Priority Rewards Business is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the First Hawaiian Bank Priority Rewards Business until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on office supplies",
-      "3x CashPoints at office-supply stores",
-      "1x on other eligible purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within First-hawaiian-bank's business lineup, the closest comparison is the First Hawaiian Bank Priority Destinations World Elite Business (25,000 Priority Miles after $3,000/3mo, $75 AF). The First Hawaiian Bank Priority Rewards Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Rewards Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the First Hawaiian Bank Priority Rewards Business annual fee?", a: "There is no annual fee on the First Hawaiian Bank Priority Rewards Business." },
-      { q: "How long does the First Hawaiian Bank Priority Rewards Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["first-hawaiian-bank-priority-unlimited-cash-back-150-cash","first-hawaiian-bank-priority-destinations-world-elite-50000-priority-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.333Z",
-    verifiedUrl: "https://www.fhb.com/en/business/credit-cards",
   },
 
   "fhb-priority-unlimited-150": {
@@ -6690,54 +5540,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["coinbase-one-0-cash","heb-0-cash","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T06:31:38.589Z",
     verifiedUrl: "https://www.booking.com/co_brand_card.html",
-  },
-
-  "first-electronic-bank-coinbase-one-rwp": {
-    summary: "The Coinbase One is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Coinbase One until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within First-electronic-bank's personal lineup, the closest comparison is the Booking.com Genius Rewards ($150 after $1,500/3mo, $0 AF). The Coinbase One is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Coinbase One sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Coinbase One annual fee?", a: "There is no annual fee on the Coinbase One." },
-      { q: "How long does the Coinbase One sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["booking-com-genius-rewards-150-cash","heb-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.326Z",
-    verifiedUrl: "",
-  },
-
-  "first-electronic-bank-heb-rwp": {
-    summary: "The HEB is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HEB until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on select stores",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within First-electronic-bank's personal lineup, the closest comparison is the Booking.com Genius Rewards ($150 after $1,500/3mo, $0 AF). The HEB is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current HEB sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the HEB annual fee?", a: "There is no annual fee on the HEB." },
-      { q: "How long does the HEB sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["booking-com-genius-rewards-150-cash","coinbase-one-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.328Z",
-    verifiedUrl: "",
   },
 
   "first-tech-federal-first-tech-federal-choice-rewards-rwp": {
@@ -6860,29 +5662,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.card.fnbo.com/amtrakguestrewards/apply",
   },
 
-  "fnbo-ducks-unlimited-rewards-rwp": {
-    summary: "The Ducks Unlimited Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ducks Unlimited Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on select stores",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The Ducks Unlimited Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Ducks Unlimited Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Ducks Unlimited Rewards annual fee?", a: "There is no annual fee on the Ducks Unlimited Rewards." },
-      { q: "How long does the Ducks Unlimited Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amtrak-guest-rewards-12000-points","amtrak-guest-rewards-preferred-20000-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.326Z",
-    verifiedUrl: "",
-  },
-
   "fnbo-fnbo-evergreen-business-rwp": {
     summary: "The FNBO Evergreen Business is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the FNBO Evergreen Business until you've earned the $200 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -6980,394 +5759,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.card.fnbo.com/mgmrewards",
   },
 
-  "fnbo-scheel-s-rwp": {
-    summary: "The Scheel's is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Scheel's until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on select stores",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The Scheel's is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Scheel's sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Scheel's annual fee?", a: "There is no annual fee on the Scheel's." },
-      { q: "How long does the Scheel's sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amtrak-guest-rewards-12000-points","amtrak-guest-rewards-preferred-20000-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.207Z",
-    verifiedUrl: "https://www.card.fnbo.com/scheels",
-  },
-
-  "garden-island-visa-classic": {
-    summary: "The Garden Island FCU Visa Classic is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Garden Island FCU Visa Classic until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "CURewards points",
-      "No annual or balance-transfer fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Garden-island-fcu's personal lineup, the closest comparison is the Garden Island FCU Visa Gold ($0 after $0/3mo, $0 AF). The Garden Island FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Garden Island FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Garden Island FCU Visa Classic annual fee?", a: "There is no annual fee on the Garden Island FCU Visa Classic." },
-      { q: "How long does the Garden Island FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["garden-island-fcu-visa-gold-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.gardenislandfcu.com/credit-cards",
-  },
-
-  "garden-island-visa-gold": {
-    summary: "The Garden Island FCU Visa Gold is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Garden Island FCU Visa Gold until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "CURewards points",
-      "No annual or balance-transfer fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Garden-island-fcu's personal lineup, the closest comparison is the Garden Island FCU Visa Classic ($0 after $0/3mo, $0 AF). The Garden Island FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Garden Island FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Garden Island FCU Visa Gold annual fee?", a: "There is no annual fee on the Garden Island FCU Visa Gold." },
-      { q: "How long does the Garden Island FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["garden-island-fcu-visa-classic-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.gardenislandfcu.com/credit-cards",
-  },
-
-  "gather-classic-visa": {
-    summary: "The Gather FCU Classic Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Gather FCU Classic Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "11.99% APR",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Gather-fcu's personal lineup, the closest comparison is the Gather FCU Signature Visa ($0 after $0/3mo, $0 AF). The Gather FCU Classic Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Gather FCU Classic Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Gather FCU Classic Visa annual fee?", a: "There is no annual fee on the Gather FCU Classic Visa." },
-      { q: "How long does the Gather FCU Classic Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["gather-fcu-signature-visa-0-cash","gather-fcu-platinum-visa-business-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://gatherfcu.org/personal/credit-cards",
-  },
-
-  "gather-platinum-business-visa": {
-    summary: "The Gather FCU Platinum Visa Business is currently offering $0 after $0 in purchases within 3 months. It carries a $25 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-25 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Gather FCU Platinum Visa Business until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "1x on all other purchases",
-      "1 rewards point per $1",
-      "Rates starting at 9.50%",
-    ],
-    cons: [
-      "$25 annual fee",
-    ],
-    comparison: "Among Gather-fcu business cards in our catalog, the Gather FCU Platinum Visa Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Gather FCU Platinum Visa Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Gather FCU Platinum Visa Business annual fee?", a: "The annual fee is $25." },
-      { q: "How long does the Gather FCU Platinum Visa Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["gather-fcu-signature-visa-0-cash","gather-fcu-classic-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://gatherfcu.org/business/credit-card",
-  },
-
-  "gather-signature-visa": {
-    summary: "The Gather FCU Signature Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Gather FCU Signature Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2% on all other purchases",
-      "2% cash back",
-      "No annual or foreign transaction fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Gather-fcu's personal lineup, the closest comparison is the Gather FCU Classic Visa ($0 after $0/3mo, $0 AF). The Gather FCU Signature Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Gather FCU Signature Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Gather FCU Signature Visa annual fee?", a: "There is no annual fee on the Gather FCU Signature Visa." },
-      { q: "How long does the Gather FCU Signature Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["gather-fcu-classic-visa-0-cash","gather-fcu-platinum-visa-business-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://gatherfcu.org/personal/credit-cards",
-  },
-
-  "goldman-sachs-apple-card-rwp": {
-    summary: "The Apple Card is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Apple Card until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on apple, drug stores, gas stations, home improvement stores, select stores, uber",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Goldman-sachs personal cards in our catalog, the Apple Card is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Apple Card sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Apple Card annual fee?", a: "There is no annual fee on the Apple Card." },
-      { q: "How long does the Apple Card sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:38.577Z",
-    verifiedUrl: "https://card.apple.com/apply/start",
-  },
-
-  "hawaii-central-visa-platinum-cash-rewards": {
-    summary: "The Hawaii Central FCU Visa Platinum Cash Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Central FCU Visa Platinum Cash Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5% on all other purchases",
-      "5% total cash back for the first 6 months on up to $7,500 monthly",
-      "1% cash back after the promotional period",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Hawaii-central-fcu personal cards in our catalog, the Hawaii Central FCU Visa Platinum Cash Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Hawaii Central FCU Visa Platinum Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Central FCU Visa Platinum Cash Rewards annual fee?", a: "There is no annual fee on the Hawaii Central FCU Visa Platinum Cash Rewards." },
-      { q: "How long does the Hawaii Central FCU Visa Platinum Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://hawaiicentral.org/personal/credit-card/",
-  },
-
-  "hawaii-community-classic": {
-    summary: "The Hawaii Community FCU Classic Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Community FCU Classic Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Earns rewards on eligible purchases",
-      "No annual or cash-advance fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Gold Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Classic Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaii Community FCU Classic Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Community FCU Classic Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Classic Visa." },
-      { q: "How long does the Hawaii Community FCU Classic Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaii-community-fcu-gold-visa-0-cash","hawaii-community-fcu-platinum-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hicommfcu.com/loans-credit/credit/visa-credit-cards",
-  },
-
-  "hawaii-community-gold": {
-    summary: "The Hawaii Community FCU Gold Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Community FCU Gold Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Earns rewards on eligible purchases",
-      "No annual or cash-advance fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Classic Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Gold Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaii Community FCU Gold Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Community FCU Gold Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Gold Visa." },
-      { q: "How long does the Hawaii Community FCU Gold Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaii-community-fcu-classic-visa-0-cash","hawaii-community-fcu-platinum-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hicommfcu.com/loans-credit/credit/visa-credit-cards",
-  },
-
-  "hawaii-community-platinum": {
-    summary: "The Hawaii Community FCU Platinum Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Community FCU Platinum Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Earns rewards on eligible purchases",
-      "No annual or cash-advance fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Classic Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Platinum Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaii Community FCU Platinum Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Community FCU Platinum Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Platinum Visa." },
-      { q: "How long does the Hawaii Community FCU Platinum Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaii-community-fcu-classic-visa-0-cash","hawaii-community-fcu-gold-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hicommfcu.com/loans-credit/credit/visa-credit-cards",
-  },
-
-  "hawaii-schools-visa-platinum-plus": {
-    summary: "The Hawaii Schools FCU Visa Platinum Plus is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Schools FCU Visa Platinum Plus until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "No annual fee",
-      "Minimum credit line of $5,000",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Hawaii-schools-fcu personal cards in our catalog, the Hawaii Schools FCU Visa Platinum Plus is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Hawaii Schools FCU Visa Platinum Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Schools FCU Visa Platinum Plus annual fee?", a: "There is no annual fee on the Hawaii Schools FCU Visa Platinum Plus." },
-      { q: "How long does the Hawaii Schools FCU Visa Platinum Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.338Z",
-    verifiedUrl: "https://www.hawaiischoolsfcu.org/credit-cards",
-  },
-
-  "hawaiiusa-1-percent-cash-back": {
-    summary: "The HawaiiUSA FCU 1% Cash Back Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HawaiiUSA FCU 1% Cash Back Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1% on all other purchases",
-      "Unlimited 1% cash back",
-      "Local Hawaii credit-union card",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 2% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU 1% Cash Back Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current HawaiiUSA FCU 1% Cash Back Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the HawaiiUSA FCU 1% Cash Back Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU 1% Cash Back Visa." },
-      { q: "How long does the HawaiiUSA FCU 1% Cash Back Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiiusa-fcu-2-cash-back-visa-0-cash","hawaiiusa-fcu-share-secured-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hawaiiusafcu.com/personal/borrow/credit-cards",
-  },
-
-  "hawaiiusa-2-percent-cash-back": {
-    summary: "The HawaiiUSA FCU 2% Cash Back Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HawaiiUSA FCU 2% Cash Back Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2% on all other purchases",
-      "Unlimited 2% cash back",
-      "Local Hawaii credit-union card",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 1% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU 2% Cash Back Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current HawaiiUSA FCU 2% Cash Back Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the HawaiiUSA FCU 2% Cash Back Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU 2% Cash Back Visa." },
-      { q: "How long does the HawaiiUSA FCU 2% Cash Back Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiiusa-fcu-1-cash-back-visa-0-cash","hawaiiusa-fcu-share-secured-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hawaiiusafcu.com/personal/borrow/credit-cards",
-  },
-
-  "hawaiiusa-share-secured": {
-    summary: "The HawaiiUSA FCU Share Secured Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HawaiiUSA FCU Share Secured Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Secured card for building or rebuilding credit",
-      "Local Hawaii credit-union card",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 1% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU Share Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current HawaiiUSA FCU Share Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the HawaiiUSA FCU Share Secured Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU Share Secured Visa." },
-      { q: "How long does the HawaiiUSA FCU Share Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiiusa-fcu-1-cash-back-visa-0-cash","hawaiiusa-fcu-2-cash-back-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hawaiiusafcu.com/personal/borrow/credit-cards",
-  },
-
-  "hfs-visa-platinum": {
-    summary: "The HFS FCU Visa Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HFS FCU Visa Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 CURewards point per $1",
-      "Low variable rate",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hfs-fcu's personal lineup, the closest comparison is the HFS FCU Visa Signature (30,000 CURewards points after $3,000/3mo, $0 AF). The HFS FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current HFS FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the HFS FCU Visa Platinum annual fee?", a: "There is no annual fee on the HFS FCU Visa Platinum." },
-      { q: "How long does the HFS FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hfs-fcu-visa-signature-30000-curewards-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.334Z",
-    verifiedUrl: "https://hfsfcu.org/visa-credit-card/",
-  },
-
   "hfs-visa-signature-30k": {
     summary: "The HFS FCU Visa Signature is currently offering 30,000 CURewards points after $3,000 in purchases within 3 months. There's no annual fee, which makes the 30,000 CURewards points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 1¢ per-point valuation.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the HFS FCU Visa Signature until you've earned the 30,000 CURewards points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -7391,105 +5782,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["hfs-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T07:01:08.334Z",
     verifiedUrl: "https://hfsfcu.org/visa-credit-card/signature-card/",
-  },
-
-  "hificu-visa-classic": {
-    summary: "The Hawaiian Financial FCU Visa Classic is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaiian Financial FCU Visa Classic until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 CURewards point per $1",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Gold ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaiian Financial FCU Visa Classic annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Classic." },
-      { q: "How long does the Hawaiian Financial FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiian-financial-fcu-visa-gold-0-cash","hawaiian-financial-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hificu.com/loans/credit/visa-credit-card",
-  },
-
-  "hificu-visa-gold": {
-    summary: "The Hawaiian Financial FCU Visa Gold is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaiian Financial FCU Visa Gold until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 CURewards point per $1",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Classic ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaiian Financial FCU Visa Gold annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Gold." },
-      { q: "How long does the Hawaiian Financial FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiian-financial-fcu-visa-classic-0-cash","hawaiian-financial-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hificu.com/loans/credit/visa-credit-card",
-  },
-
-  "hificu-visa-platinum": {
-    summary: "The Hawaiian Financial FCU Visa Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaiian Financial FCU Visa Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 CURewards point per $1",
-      "No annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Classic ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaiian Financial FCU Visa Platinum annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Platinum." },
-      { q: "How long does the Hawaiian Financial FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaiian-financial-fcu-visa-classic-0-cash","hawaiian-financial-fcu-visa-gold-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.hificu.com/loans/credit/visa-credit-card",
-  },
-
-  "hlefcu-platinum-mastercard": {
-    summary: "The Hawaii Law Enforcement FCU Platinum Mastercard is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii Law Enforcement FCU Platinum Mastercard until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "CURewards points",
-      "No annual, balance-transfer, or cash-advance fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Hawaii-law-enforcement-fcu personal cards in our catalog, the Hawaii Law Enforcement FCU Platinum Mastercard is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Hawaii Law Enforcement FCU Platinum Mastercard sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii Law Enforcement FCU Platinum Mastercard annual fee?", a: "There is no annual fee on the Hawaii Law Enforcement FCU Platinum Mastercard." },
-      { q: "How long does the Hawaii Law Enforcement FCU Platinum Mastercard sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://www.hlefcu.com/loans/credit-cards.html",
   },
 
   "hsbc-bank-hsbc-bank-elite-rwp": {
@@ -7542,31 +5834,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.bankcheckingsavings.com/hsbc-premier-checking-bonus/",
   },
 
-  "hsfcu-always-cash": {
-    summary: "The Hawaii State FCU Always Cash Visa Signature is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii State FCU Always Cash Visa Signature until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2.5% on all other purchases",
-      "2.5% cash back on the first $5,000 each billing cycle",
-      "1.25% thereafter",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Hawaii-state-fcu's personal lineup, the closest comparison is the Hawaii State FCU Visa Platinum Rewards (5,000 CURewards points after $1,000/3mo, $0 AF). The Hawaii State FCU Always Cash Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Hawaii State FCU Always Cash Visa Signature sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Hawaii State FCU Always Cash Visa Signature annual fee?", a: "There is no annual fee on the Hawaii State FCU Always Cash Visa Signature." },
-      { q: "How long does the Hawaii State FCU Always Cash Visa Signature sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["hawaii-state-fcu-visa-platinum-rewards-5000-curewards-points","hawaii-state-fcu-share-secured-visa-platinum-rewards-5000-curewards-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.334Z",
-    verifiedUrl: "https://hawaiistatefcu.com/personal/cards/credit-cards/always-cash-credit-card/",
-  },
-
   "hsfcu-platinum-rewards-5k": {
     summary: "The Hawaii State FCU Visa Platinum Rewards is currently offering 5,000 CURewards points after $1,000 in purchases within 3 months. There's no annual fee, which makes the 5,000 CURewards points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 based on a 1¢ per-point valuation.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Hawaii State FCU Visa Platinum Rewards until you've earned the 5,000 CURewards points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -7613,317 +5880,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["hawaii-state-fcu-always-cash-visa-signature-0-cash","hawaii-state-fcu-visa-platinum-rewards-5000-curewards-points","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T07:01:08.334Z",
     verifiedUrl: "https://hawaiistatefcu.com/personal/cards/credit-cards/share-secured-visa/",
-  },
-
-  "huntington-huntington-business-voice-rwp": {
-    summary: "The Huntington Business Voice is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Huntington Business Voice until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "4x on rotating quarterly categories",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Huntington business cards in our catalog, the Huntington Business Voice is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Huntington Business Voice sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Huntington Business Voice annual fee?", a: "There is no annual fee on the Huntington Business Voice." },
-      { q: "How long does the Huntington Business Voice sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["huntington-voice-rewards-0-cash","huntington-cashback-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.332Z",
-    verifiedUrl: "",
-  },
-
-  "huntington-huntington-cashback-rwp": {
-    summary: "The Huntington Cashback is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Huntington Cashback until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Huntington's personal lineup, the closest comparison is the Huntington Voice Rewards ($0 after $0/3mo, $0 AF). The Huntington Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Huntington Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Huntington Cashback annual fee?", a: "There is no annual fee on the Huntington Cashback." },
-      { q: "How long does the Huntington Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["huntington-voice-rewards-0-cash","huntington-business-voice-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.609Z",
-    verifiedUrl: "https://www.huntington.com/Personal/credit-card/cash-back-card",
-  },
-
-  "huntington-huntington-voice-rewards-rwp": {
-    summary: "The Huntington Voice Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Huntington Voice Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on rotating quarterly categories",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Huntington's personal lineup, the closest comparison is the Huntington Cashback ($0 after $0/3mo, $0 AF). The Huntington Voice Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Huntington Voice Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Huntington Voice Rewards annual fee?", a: "There is no annual fee on the Huntington Voice Rewards." },
-      { q: "How long does the Huntington Voice Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["huntington-cashback-0-cash","huntington-business-voice-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.608Z",
-    verifiedUrl: "https://www.huntington.com/Personal/credit-card/voice-rewards-credit-card",
-  },
-
-  "kauai-fcu-visa": {
-    summary: "The Kauai FCU Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Kauai FCU Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "9.99%–14.99% APR",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Kauai-fcu personal cards in our catalog, the Kauai FCU Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Kauai FCU Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Kauai FCU Visa annual fee?", a: "There is no annual fee on the Kauai FCU Visa." },
-      { q: "How long does the Kauai FCU Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://kauaicreditunion.org/credit-cards/",
-  },
-
-  "koolau-secured-visa": {
-    summary: "The Koolau FCU Secured Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Koolau FCU Secured Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Secured card for building credit",
-      "No annual or balance-transfer fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Visa Classic ($0 after $0/3mo, $10 AF). The Koolau FCU Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Koolau FCU Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Koolau FCU Secured Visa annual fee?", a: "There is no annual fee on the Koolau FCU Secured Visa." },
-      { q: "How long does the Koolau FCU Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["koolau-fcu-visa-classic-0-cash","koolau-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://koolaufcu.org/credit-cards",
-  },
-
-  "koolau-visa-classic": {
-    summary: "The Koolau FCU Visa Classic is currently offering $0 after $0 in purchases within 3 months. It carries a $10 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-10 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Koolau FCU Visa Classic until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $10 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "Low-rate local card",
-      "No balance-transfer fee",
-    ],
-    cons: [
-      "$10 annual fee",
-    ],
-    comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Secured Visa ($0 after $0/3mo, $0 AF). The Koolau FCU Visa Classic is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current Koolau FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Koolau FCU Visa Classic annual fee?", a: "The annual fee is $10." },
-      { q: "How long does the Koolau FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["koolau-fcu-secured-visa-0-cash","koolau-fcu-visa-platinum-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://koolaufcu.org/credit-cards",
-  },
-
-  "koolau-visa-platinum": {
-    summary: "The Koolau FCU Visa Platinum is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Koolau FCU Visa Platinum until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 rewards point per $1",
-      "No annual or balance-transfer fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Secured Visa ($0 after $0/3mo, $0 AF). The Koolau FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Koolau FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Koolau FCU Visa Platinum annual fee?", a: "There is no annual fee on the Koolau FCU Visa Platinum." },
-      { q: "How long does the Koolau FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["koolau-fcu-secured-visa-0-cash","koolau-fcu-visa-classic-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.337Z",
-    verifiedUrl: "https://koolaufcu.org/credit-cards",
-  },
-
-  "langley-fcu-langley-fcu-signature-cash-back-rwp": {
-    summary: "The Langley FCU Signature Cash Back is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Langley FCU Signature Cash Back until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on monthly bonus categories",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Langley-fcu personal cards in our catalog, the Langley FCU Signature Cash Back is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Langley FCU Signature Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Langley FCU Signature Cash Back annual fee?", a: "There is no annual fee on the Langley FCU Signature Cash Back." },
-      { q: "How long does the Langley FCU Signature Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:39.615Z",
-    verifiedUrl: "https://www.langleyfcu.org/personal-credit-cards/signature-cashback",
-  },
-
-  "lead-bank-nibbles-pet-rewards-rwp": {
-    summary: "The Nibbles Pet Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Nibbles Pet Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on pet care",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Lead-bank personal cards in our catalog, the Nibbles Pet Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Nibbles Pet Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Nibbles Pet Rewards annual fee?", a: "There is no annual fee on the Nibbles Pet Rewards." },
-      { q: "How long does the Nibbles Pet Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:40.064Z",
-    verifiedUrl: "https://nibbles.com/card-rewards/",
-  },
-
-  "lokahi-reward-mastercard": {
-    summary: "The Lokahi FCU Reward Mastercard is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Lokahi FCU Reward Mastercard until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Rewards on eligible purchases",
-      "No annual, balance-transfer, or cash-advance fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Lokahi-fcu personal cards in our catalog, the Lokahi FCU Reward Mastercard is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Lokahi FCU Reward Mastercard sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Lokahi FCU Reward Mastercard annual fee?", a: "There is no annual fee on the Lokahi FCU Reward Mastercard." },
-      { q: "How long does the Lokahi FCU Reward Mastercard sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.336Z",
-    verifiedUrl: "https://www.lokahifcu.com/borrow/credit-cards/credit-cards",
-  },
-
-  "maui-county-fcu-platinum": {
-    summary: "The Maui County FCU Platinum Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Maui County FCU Platinum Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Low-rate card",
-      "0% balance-transfer APR for 18 months with a 3% fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Rewards Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Platinum Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Maui County FCU Platinum Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Maui County FCU Platinum Visa annual fee?", a: "There is no annual fee on the Maui County FCU Platinum Visa." },
-      { q: "How long does the Maui County FCU Platinum Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["maui-county-fcu-rewards-visa-0-cash","maui-county-fcu-secured-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://www.mauicountyfcu.org/borrow/credit-card/",
-  },
-
-  "maui-county-fcu-rewards": {
-    summary: "The Maui County FCU Rewards Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Maui County FCU Rewards Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Points redeemable for cash back, travel, gift cards, and merchandise",
-      "0% balance-transfer APR for 18 months with a 3% fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Platinum Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Rewards Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Maui County FCU Rewards Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Maui County FCU Rewards Visa annual fee?", a: "There is no annual fee on the Maui County FCU Rewards Visa." },
-      { q: "How long does the Maui County FCU Rewards Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["maui-county-fcu-platinum-visa-0-cash","maui-county-fcu-secured-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://www.mauicountyfcu.org/borrow/credit-card/",
-  },
-
-  "maui-county-fcu-secured": {
-    summary: "The Maui County FCU Secured Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Maui County FCU Secured Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "Secured card for building credit",
-      "0% balance-transfer APR for 18 months with a 3% fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Rewards Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Maui County FCU Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Maui County FCU Secured Visa annual fee?", a: "There is no annual fee on the Maui County FCU Secured Visa." },
-      { q: "How long does the Maui County FCU Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["maui-county-fcu-rewards-visa-0-cash","maui-county-fcu-platinum-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://www.mauicountyfcu.org/borrow/credit-card/",
   },
 
   "navy-federal-navy-federal-cashrewards-plus-rwp": {
@@ -8242,30 +6198,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://redstone.bank/personal-banking/credit-cards/",
   },
 
-  "regions-regions-cash-rewards-rwp": {
-    summary: "The Regions Cash Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Regions Cash Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Regions's personal lineup, the closest comparison is the Regions Prestige ($200 after $1,000/3mo, $0 AF). The Regions Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Regions Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Regions Cash Rewards annual fee?", a: "There is no annual fee on the Regions Cash Rewards." },
-      { q: "How long does the Regions Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["regions-prestige-200-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.192Z",
-    verifiedUrl: "https://www.regions.com/personal-banking/rewards/cash-rewards",
-  },
-
   "regions-regions-prestige-rwp": {
     summary: "The Regions Prestige is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Regions Prestige until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -8290,30 +6222,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.regions.com/personal-banking/credit-cards/prestige-credit-card",
   },
 
-  "signature-fcu-signature-fcu-visa-signature-rwp": {
-    summary: "The Signature FCU Visa Signature is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Signature FCU Visa Signature until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "6x on streaming services",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Signature-fcu personal cards in our catalog, the Signature FCU Visa Signature is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Signature FCU Visa Signature sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Signature FCU Visa Signature annual fee?", a: "There is no annual fee on the Signature FCU Visa Signature." },
-      { q: "How long does the Signature FCU Visa Signature sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.208Z",
-    verifiedUrl: "https://www.signaturefcu.org/Products/Credit-Cards/Visa-Signature.aspx",
-  },
-
   "sofi-credit-card-200": {
     summary: "The SoFi Credit Card is currently offering $200 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the SoFi Credit Card until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -8336,101 +6244,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["amex-hilton-honors-no-fee-70000-hilton-honors"],
     verifiedAt: "2026-04-19T22:03:13.373Z",
     verifiedUrl: "https://www.sofi.com/credit-card/",
-  },
-
-  "sofi-sofi-everyday-cash-rewards-rwp": {
-    summary: "The SoFi Everyday Cash Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the SoFi Everyday Cash Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on airfare (travel portal), car rentals (travel portal), dining, hotels (travel portal)",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Sofi's personal lineup, the closest comparison is the SoFi Credit Card ($200 after $1,500/3mo, $0 AF). The SoFi Everyday Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current SoFi Everyday Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the SoFi Everyday Cash Rewards annual fee?", a: "There is no annual fee on the SoFi Everyday Cash Rewards." },
-      { q: "How long does the SoFi Everyday Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["sofi-credit-card-200-cash","sofi-unlimited-2-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.209Z",
-    verifiedUrl: "https://www.sofi.com/credit-card/everyday-cash/",
-  },
-
-  "sofi-sofi-unlimited-2-rwp": {
-    summary: "The SoFi Unlimited 2% is currently offering $0 after $0 in purchases within 3 months. It carries a $120 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-120 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the SoFi Unlimited 2% until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $120 annual fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "3x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "$120 annual fee",
-    ],
-    comparison: "Within Sofi's personal lineup, the closest comparison is the SoFi Credit Card ($200 after $1,500/3mo, $0 AF). The SoFi Unlimited 2% is the right pick when you value premium benefits and credits over a no-fee structure.",
-    faqs: [
-      { q: "What's the current SoFi Unlimited 2% sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the SoFi Unlimited 2% annual fee?", a: "The annual fee is $120." },
-      { q: "How long does the SoFi Unlimited 2% sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["sofi-credit-card-200-cash","sofi-everyday-cash-rewards-0-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
-    verifiedAt: "2026-06-12T06:31:51.209Z",
-    verifiedUrl: "https://www.sofi.com/credit-card/",
-  },
-
-  "star-one-star-one-rwp": {
-    summary: "The Star One is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Star One until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Star-one personal cards in our catalog, the Star One is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Star One sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Star One annual fee?", a: "There is no annual fee on the Star One." },
-      { q: "How long does the Star One sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.212Z",
-    verifiedUrl: "https://www.starone.org/borrow/credit-cards",
-  },
-
-  "sutton-bank-fold-bitcoin-rewards-rwp": {
-    summary: "The Fold Bitcoin Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fold Bitcoin Rewards until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Sutton-bank personal cards in our catalog, the Fold Bitcoin Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Fold Bitcoin Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Fold Bitcoin Rewards annual fee?", a: "There is no annual fee on the Fold Bitcoin Rewards." },
-      { q: "How long does the Fold Bitcoin Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.328Z",
-    verifiedUrl: "",
   },
 
   "synchrony-amazon-prime-store-card-rwp": {
@@ -8481,29 +6294,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "",
   },
 
-  "synchrony-mercury-io-business-rwp": {
-    summary: "The Mercury IO Business is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Mercury IO Business until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.5x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Synchrony business cards in our catalog, the Mercury IO Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Mercury IO Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Mercury IO Business annual fee?", a: "There is no annual fee on the Mercury IO Business." },
-      { q: "How long does the Mercury IO Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.332Z",
-    verifiedUrl: "",
-  },
-
   "synchrony-mywalgreens-rwp": {
     summary: "The myWalgreens is currently offering $50 after $0 in purchases within 2 months. There's no annual fee, which makes the $50 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 2 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the myWalgreens until you've earned the $50 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -8525,124 +6315,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T07:01:08.329Z",
     verifiedUrl: "https://www.synchrony.com/downloads/walgreens-launches-first-mywalgreens-credit-card.pdf",
-  },
-
-  "synchrony-paypal-cashback-rwp": {
-    summary: "The Paypal Cashback is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Paypal Cashback until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on online retail, paypal, walmart",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Paypal Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Paypal Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Paypal Cashback annual fee?", a: "There is no annual fee on the Paypal Cashback." },
-      { q: "How long does the Paypal Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:40.065Z",
-    verifiedUrl: "https://www.paypal.com/us/digital-wallet/manage-money/paypal-cashback-mastercard",
-  },
-
-  "synchrony-sam-s-club-plus-rwp": {
-    summary: "The Sam's Club Plus is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Sam's Club Plus until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on gas stations",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Sam's Club Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Sam's Club Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Sam's Club Plus annual fee?", a: "There is no annual fee on the Sam's Club Plus." },
-      { q: "How long does the Sam's Club Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.206Z",
-    verifiedUrl: "https://www.synchrony.com/partner/sams-club",
-  },
-
-  "synchrony-sam-s-club-rwp": {
-    summary: "The Sam's Club is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Sam's Club until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on gas stations",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Sam's Club is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Sam's Club sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Sam's Club annual fee?", a: "There is no annual fee on the Sam's Club." },
-      { q: "How long does the Sam's Club sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.330Z",
-    verifiedUrl: "https://www.synchrony.com/accounts/?client=sams&clientId=sams",
-  },
-
-  "synchrony-synchrony-premier-rwp": {
-    summary: "The Synchrony Premier is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Synchrony Premier until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Synchrony Premier is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Synchrony Premier sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Synchrony Premier annual fee?", a: "There is no annual fee on the Synchrony Premier." },
-      { q: "How long does the Synchrony Premier sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.214Z",
-    verifiedUrl: "https://www.synchrony.com/financing/synchrony-mastercards",
-  },
-
-  "synchrony-venmo-rwp": {
-    summary: "The Venmo is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Venmo until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on 1st highest spend category",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Venmo is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Venmo sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Venmo annual fee?", a: "There is no annual fee on the Venmo." },
-      { q: "How long does the Venmo sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.239Z",
-    verifiedUrl: "https://venmo.com/about/creditcard",
   },
 
   "synchrony-verizon-rwp": {
@@ -8692,30 +6364,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:51.241Z",
     verifiedUrl: "https://www.virginatlantic.com/en-US/flying-club/credit-card",
-  },
-
-  "td-bank-target-circle-rwp": {
-    summary: "The Target Circle is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Target Circle until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on target",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Td-bank's personal lineup, the closest comparison is the TD Bank Cash ($150 after $1,000/3mo, $0 AF). The Target Circle is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Target Circle sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Target Circle annual fee?", a: "There is no annual fee on the Target Circle." },
-      { q: "How long does the Target Circle sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["td-bank-cash-150-cash","td-bank-first-class-25000-points","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.216Z",
-    verifiedUrl: "https://www.target.com/circlecard",
   },
 
   "td-bank-td-bank-cash-rwp": {
@@ -8986,56 +6634,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.ubs.com/us/en/wealth-management/our-solutions/banking/cards/personal.html",
   },
 
-  "uhfcu-cash-wave": {
-    summary: "The UHFCU Cash Wave Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the UHFCU Cash Wave Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1.75% on all other purchases",
-      "Unlimited 1.75% cash back",
-      "No annual, balance-transfer, or foreign transaction fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within University-of-hawaii-fcu's personal lineup, the closest comparison is the UHFCU Platinum Plus Visa ($0 after $0/3mo, $0 AF). The UHFCU Cash Wave Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current UHFCU Cash Wave Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the UHFCU Cash Wave Visa annual fee?", a: "There is no annual fee on the UHFCU Cash Wave Visa." },
-      { q: "How long does the UHFCU Cash Wave Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["uhfcu-platinum-plus-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://www.uhfcu.com/visa-credit-card/",
-  },
-
-  "uhfcu-platinum-plus": {
-    summary: "The UHFCU Platinum Plus Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the UHFCU Platinum Plus Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "1x on all other purchases",
-      "1 rewards point per $1",
-      "Fixed 9.99% APR",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within University-of-hawaii-fcu's personal lineup, the closest comparison is the UHFCU Cash Wave Visa ($0 after $0/3mo, $0 AF). The UHFCU Platinum Plus Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current UHFCU Platinum Plus Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the UHFCU Platinum Plus Visa annual fee?", a: "There is no annual fee on the UHFCU Platinum Plus Visa." },
-      { q: "How long does the UHFCU Platinum Plus Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["uhfcu-cash-wave-visa-0-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.335Z",
-    verifiedUrl: "https://www.uhfcu.com/visa-credit-card/",
-  },
-
   "unfcu-unfcu-azure-rwp": {
     summary: "The UNFCU Azure is currently offering 10,000 Points after $2,000 in purchases within 3 months. There's no annual fee, which makes the 10,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 1¢ per-point valuation.",
     strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the UNFCU Azure until you've earned the 10,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -9231,30 +6829,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://www.krogermastercard.com/credit/aboutOnlineBanking.do",
   },
 
-  "us-bank-state-farm-business-card-rewards-rwp": {
-    summary: "The State Farm Business Card Rewards is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the State Farm Business Card Rewards until you've earned the $0 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "3x on cell phone carriers, dining, EV charging, gas stations, insurance, office supplies",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The State Farm Business Card Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current State Farm Business Card Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the State Farm Business Card Rewards annual fee?", a: "There is no annual fee on the State Farm Business Card Rewards." },
-      { q: "How long does the State Farm Business Card Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["u-s-bank-altitude-connect-20000-cash","u-s-bank-cash-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.332Z",
-    verifiedUrl: "",
-  },
-
   "us-bank-state-farm-premier-cash-rewards-rwp": {
     summary: "The State Farm Premier Cash Rewards is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the State Farm Premier Cash Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -9350,29 +6924,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "",
   },
 
-  "us-bank-us-bank-shield-rwp": {
-    summary: "The US Bank Shield is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Shield until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "4x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Shield is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current US Bank Shield sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the US Bank Shield annual fee?", a: "There is no annual fee on the US Bank Shield." },
-      { q: "How long does the US Bank Shield sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["u-s-bank-altitude-connect-20000-cash","u-s-bank-cash-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.230Z",
-    verifiedUrl: "https://www.usbank.com/credit-cards/shield-visa-credit-card.html",
-  },
-
   "us-bank-us-bank-shopper-cash-rewards-rwp": {
     summary: "The US Bank Shopper Cash Rewards is currently offering $250 after $2,000 in purchases within 4 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 4 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Shopper Cash Rewards until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -9393,29 +6944,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["u-s-bank-altitude-connect-20000-cash","u-s-bank-cash-150-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
     verifiedAt: "2026-06-12T06:31:51.234Z",
     verifiedUrl: "https://www.usbank.com/credit-cards/shopper-cash-rewards-visa-signature-credit-card.html",
-  },
-
-  "us-bank-us-bank-smartly-rwp": {
-    summary: "The US Bank Smartly is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Smartly until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "2x on all other purchases",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Smartly is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current US Bank Smartly sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the US Bank Smartly annual fee?", a: "There is no annual fee on the US Bank Smartly." },
-      { q: "How long does the US Bank Smartly sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["u-s-bank-altitude-connect-20000-cash","u-s-bank-cash-150-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.235Z",
-    verifiedUrl: "https://www.usbank.com/credit-cards/bank-smartly-visa-signature-credit-card.html",
   },
 
   "us-bank-us-bank-triple-cash-rewards-business-rwp": {
@@ -9490,30 +7018,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["usaa-bank-cashback-rewards-plus-0-cash","usaa-bank-eagle-navigator-30000-points","capital-one-savor-30000-cash"],
     verifiedAt: "2026-06-12T06:31:51.236Z",
     verifiedUrl: "https://www.usaa.com/banking/credit-cards-public/cash-back/eagle-adapt",
-  },
-
-  "usaa-bank-usaa-bank-cashback-rewards-plus-rwp": {
-    summary: "The USAA Bank Cashback Rewards Plus is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the USAA Bank Cashback Rewards Plus until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "5x on gas stations, select purchases",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Eagle Navigator (30,000 Points after $3,000/3mo, $95 AF). The USAA Bank Cashback Rewards Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current USAA Bank Cashback Rewards Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the USAA Bank Cashback Rewards Plus annual fee?", a: "There is no annual fee on the USAA Bank Cashback Rewards Plus." },
-      { q: "How long does the USAA Bank Cashback Rewards Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["usaa-bank-eagle-navigator-30000-points","usaa-eagle-adapt-200-cash","capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:31:51.232Z",
-    verifiedUrl: "https://www.usaa.com/banking/credit-cards-public/cash-back/rewards-plus/?akredirect=true",
   },
 
   "usaa-bank-usaa-bank-eagle-navigator-rwp": {
@@ -9759,30 +7263,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     verifiedUrl: "https://vystarcu.org/personal/borrow/credit-cards/visa-signature-rewards",
   },
 
-  "webbank-gemini-rwp": {
-    summary: "The Gemini is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Gemini until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-      "4x on EV charging, gas stations, ridesharing, transit",
-      "No Foreign Transaction Fees",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Webbank personal cards in our catalog, the Gemini is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Gemini sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Gemini annual fee?", a: "There is no annual fee on the Gemini." },
-      { q: "How long does the Gemini sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T07:01:08.328Z",
-    verifiedUrl: "",
-  },
-
   "wells-fargo-choice-privileges-rwp": {
     summary: "The Choice Privileges is currently offering 40,000 Points after $1,000 in purchases within 3 months. There's no annual fee, which makes the 40,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $240 based on a 0.6¢ per-point valuation.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Choice Privileges until you've earned the 40,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
@@ -9933,28 +7413,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     relatedSlugs: ["wells-fargo-autograph-journey-60000-wells-fargo-rewards","wells-fargo-active-cash-200-cash","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:51.244Z",
     verifiedUrl: "https://creditcards.wellsfargo.com/autograph-visa-credit-card/?sub_channel=WEB&vendor_code=WF",
-  },
-
-  "wells-fargo-wells-fargo-reflect-visa-auto": {
-    summary: "The Wells Fargo Reflect Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Reflect Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$0 sign-up bonus",
-      "$0 annual fee",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Among Wells fargo personal cards in our catalog, the Wells Fargo Reflect Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
-    faqs: [
-      { q: "What's the current Wells Fargo Reflect Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
-      { q: "What's the Wells Fargo Reflect Visa annual fee?", a: "There is no annual fee on the Wells Fargo Reflect Visa." },
-      { q: "How long does the Wells Fargo Reflect Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["capital-one-savor-30000-cash"],
-    verifiedAt: "2026-06-12T06:32:14.823Z",
-    verifiedUrl: "https://creditcards.wellsfargo.com/reflect-visa-credit-card/?FPID=013000IGF80000&product_code=CC&subproduct_code=VV&cx_nm=CXNAME_CSMPD_MC_carousel&sub_channel=WEB&vendor_code=WF",
   },
 
   "wells-fargo-wells-fargo-signify-business-cash-rwp": {

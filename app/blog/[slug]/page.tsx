@@ -543,6 +543,8 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
 }
 
 function CardArticle({ card, content }: { card: any; content?: CardBlogContent }) {
+  const hasBonus = (card.bonus_amount ?? 0) > 0
+  const isCashbackMatch = !!card.cashback_match
   const bonusLabel = card.bonus_currency === "cash"
     ? `$${card.bonus_amount.toLocaleString()}`
     : `${card.bonus_amount.toLocaleString()} ${card.bonus_currency}`
@@ -550,16 +552,29 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
     ? card.bonus_amount
     : Math.round(card.bonus_amount * (card.cpp_value ?? 0.01))
   const netYear1 = subValue + (card.statement_credits_year1 ?? 0) - (card.annual_fee ?? 0)
+  // Headline: real bonus, Cashback Match, or no current bonus (review-only)
+  const headline = hasBonus ? bonusLabel : isCashbackMatch ? "Cashback Match" : "No current sign-up bonus"
+  const headlineColor = hasBonus || isCashbackMatch ? "#0d7c5f" : "#666"
 
   return (
     <>
-      {/* Offer card */}
+      {/* Offer / review card */}
       <div style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "24px", marginBottom: 32 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>The Offer</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: "#0d7c5f", letterSpacing: "-0.02em", marginTop: 4 }}>{bonusLabel}</div>
-            <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>after ${card.min_spend.toLocaleString()} spend in {card.spend_months} months</div>
+            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+              {hasBonus ? "The Offer" : isCashbackMatch ? "Welcome Offer" : "Card Review"}
+            </div>
+            <div style={{ fontSize: hasBonus || isCashbackMatch ? 28 : 20, fontWeight: 800, color: headlineColor, letterSpacing: "-0.02em", marginTop: 4 }}>{headline}</div>
+            {hasBonus && (
+              <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>after ${card.min_spend.toLocaleString()} spend in {card.spend_months} months</div>
+            )}
+            {isCashbackMatch && (
+              <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>Discover doubles all the cash back you earn in your first year — unlimited, no minimum spend.</div>
+            )}
+            {!hasBonus && !isCashbackMatch && (
+              <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>This card has no current welcome bonus — here&apos;s how it earns and who it&apos;s for.</div>
+            )}
           </div>
           {card.offer_link && (
             <a href={applyUrl(card.id)} target="_blank" rel="noopener noreferrer"
@@ -574,8 +589,8 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
         {card.statement_credits_year1 > 0 && (
           <InfoRow label="Year-1 statement credits" value={`$${card.statement_credits_year1.toLocaleString()}`} accent />
         )}
-        <InfoRow label="Estimated SUB value" value={`$${subValue.toLocaleString()}`} accent />
-        <InfoRow label="Net year-1 value" value={`$${netYear1.toLocaleString()}`} accent />
+        {hasBonus && <InfoRow label="Estimated SUB value" value={`$${subValue.toLocaleString()}`} accent />}
+        {hasBonus && <InfoRow label="Net year-1 value" value={`$${netYear1.toLocaleString()}`} accent />}
         {card.offer_link && <AffiliateDisclosure variant="inline" />}
       </div>
 

@@ -94,12 +94,11 @@ const savingsPosts: BlogPost[] = savingsBonuses
   })
 
 // Generate credit card posts from creditCardBonuses.ts (active only).
-// Only cards with a real welcome offer get a "Sign-Up Bonus" page — skip $0-bonus
-// cards (no-SUB everyday/store/secured cards) so they don't render broken "$0 after $0"
-// stubs. Discover Cashback Match cards have bonus_amount=0 but a real offer, so they
-// opt in via the cashback_match flag.
+// Every active card gets a page — cards WITH a welcome offer render as a sign-up-bonus
+// review; cards with no current bonus render as a plain card review (rewards/fees/who-
+// it's-for). Cashback Match cards (bonus_amount=0) are flagged and titled accordingly.
 const cardPosts: BlogPost[] = creditCardBonuses
-  .filter(c => !c.expired && ((c.bonus_amount ?? 0) > 0 || c.cashback_match))
+  .filter(c => !c.expired)
   .map(c => {
     const tags: string[] = ["Credit Card", c.issuer.charAt(0).toUpperCase() + c.issuer.slice(1)]
     if (c.card_type === "business") tags.push("Business")
@@ -107,13 +106,22 @@ const cardPosts: BlogPost[] = creditCardBonuses
     if ((c.annual_fee ?? 0) === 0) tags.push("No Annual Fee")
     if ((c.statement_credits_year1 ?? 0) > 0) tags.push("Statement Credits")
     if (c.is_hotel_card) tags.push("Hotel")
+    const hasBonus = (c.bonus_amount ?? 0) > 0
     const bonusLabel = c.bonus_currency === "cash"
       ? `$${c.bonus_amount.toLocaleString()}`
       : `${c.bonus_amount.toLocaleString()} ${c.bonus_currency}`
+    const title = hasBonus
+      ? `${c.card_name} — ${bonusLabel} Sign-Up Bonus (2026 Review)`
+      : c.cashback_match
+        ? `${c.card_name} — Cashback Match & 2026 Review`
+        : `${c.card_name} — Rewards, Fees & 2026 Review`
+    const excerpt = hasBonus
+      ? (c.key_benefits?.[0] || `Earn ${bonusLabel} after $${c.min_spend.toLocaleString()} in ${c.spend_months} months.`)
+      : (c.key_benefits?.[0] || `A full review of the ${c.card_name}: rewards, fees, and who it's for.`)
     return {
       slug: slugify(`${c.card_name}-${c.bonus_amount}-${c.bonus_currency}`),
-      title: `${c.card_name} — ${bonusLabel} Sign-Up Bonus (2026 Review)`,
-      excerpt: c.key_benefits?.[0] || `Earn ${bonusLabel} after $${c.min_spend.toLocaleString()} in ${c.spend_months} months.`,
+      title,
+      excerpt,
       category: "Credit Cards" as const,
       tags,
       date: "2026-04-19",
