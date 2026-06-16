@@ -252,11 +252,11 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Tiered offer: $100 at $2,000 DD, $300 at $5,000 DD, $500 at $10,000+ DD in 90 days; open eligible checking online with promo code by 2026-09-30. (Offer extended from 2026-05-31; verified live Jun 2026.)"
+      "other_requirements_text": "Tiered offer: $100 at $2,000 DD, $300 at $5,000 DD, $500 at $10,000+ DD in 90 days. ACCOUNT TYPE CAPS THE TIER: the $4.95 Advantage SafeBalance account qualifies for the $100 tier ONLY — the $300 and $500 tiers require a higher-tier account (Advantage Plus or Advantage Relationship). Open eligible checking online with promo code by 2026-09-30. (Offer extended from 2026-05-31; verified live Jun 2026.)"
     },
     "fees": {
       "monthly_fee": 4.95,
-      "monthly_fee_waiver_text": "Advantage SafeBalance is $4.95/month and can be waived (under 25, $500 daily balance, or Preferred Rewards). Other eligible account types may have $12 or $25 monthly fees.",
+      "monthly_fee_waiver_text": "Account type gates the bonus tier. Advantage SafeBalance ($4.95/mo, waivable if under 25, $500+ daily balance, or Preferred Rewards) qualifies for the $100 tier ONLY. To earn $300 or $500 you must open a higher-tier account — Advantage Plus ($12/mo) or Advantage Relationship ($25/mo), each waivable with balance/activity or Preferred Rewards.",
       "early_closure_fee": null
     },
     "screening": {
