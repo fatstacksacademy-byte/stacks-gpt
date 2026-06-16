@@ -44,7 +44,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on gas_stations",
+      "5x on gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -52,7 +52,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Abound-fcu personal cards in our catalog, the Abound FCU Platinum is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Abound FCU Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Abound FCU Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Abound FCU Platinum annual fee?", a: "There is no annual fee on the Abound FCU Platinum." },
       { q: "How long does the Abound FCU Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -62,7 +62,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "affinity-fcu-affinity-fcu-cash-rewards-rwp": {
-    summary: "The Affinity FCU Cash Rewards is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Affinity FCU Cash Rewards is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Affinity FCU Cash Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -76,7 +76,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Affinity-fcu's personal lineup, the closest comparison is the Affinity FCU Pure Rewards (5,000 Points after $0/3mo, $0 AF). The Affinity FCU Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Affinity FCU Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Affinity FCU Cash Rewards sign-up bonus?", a: "The current bonus is $150 after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Affinity FCU Cash Rewards annual fee?", a: "There is no annual fee on the Affinity FCU Cash Rewards." },
       { q: "How long does the Affinity FCU Cash Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -92,7 +92,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "5,000 Points sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -100,7 +100,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Affinity-fcu's personal lineup, the closest comparison is the Affinity FCU Cash Rewards ($150 after $3,000/3mo, $0 AF). The Affinity FCU Pure Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Affinity FCU Pure Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 5,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Affinity FCU Pure Rewards sign-up bonus?", a: "The current bonus is 5,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Affinity FCU Pure Rewards annual fee?", a: "There is no annual fee on the Affinity FCU Pure Rewards." },
       { q: "How long does the Affinity FCU Pure Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -116,7 +116,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -124,7 +124,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Alliant personal cards in our catalog, the Alliant is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Alliant sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Alliant sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Alliant annual fee?", a: "There is no annual fee on the Alliant." },
       { q: "How long does the Alliant sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -140,7 +140,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on drug_stores, gas_stations, groceries",
+      "3x on drug stores, gas stations, groceries",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -148,7 +148,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ally's personal lineup, the closest comparison is the Ally Unlimited Cash Back ($0 after $0/3mo, $0 AF). The Ally Everyday Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ally Everyday Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Ally Everyday Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Ally Everyday Cash Back annual fee?", a: "There is no annual fee on the Ally Everyday Cash Back." },
       { q: "How long does the Ally Everyday Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -164,7 +164,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -172,7 +172,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ally's personal lineup, the closest comparison is the Ally Everyday Cash Back ($0 after $0/3mo, $0 AF). The Ally Unlimited Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ally Unlimited Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Ally Unlimited Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Ally Unlimited Cash Back annual fee?", a: "There is no annual fee on the Ally Unlimited Cash Back." },
       { q: "How long does the Ally Unlimited Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -188,7 +188,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1% on everything_else",
+      "1% on all other purchases",
       "1% cash back",
       "No annual, balance-transfer, cash-advance, or foreign transaction fee",
     ],
@@ -197,7 +197,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Preferred ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Cashback sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aloha Pacific FCU Visa Platinum Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aloha Pacific FCU Visa Platinum Cashback annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Cashback." },
       { q: "How long does the Aloha Pacific FCU Visa Platinum Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -221,7 +221,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Rewards ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aloha Pacific FCU Visa Platinum Preferred sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aloha Pacific FCU Visa Platinum Preferred annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Preferred." },
       { q: "How long does the Aloha Pacific FCU Visa Platinum Preferred sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -237,7 +237,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 rewards point per $1",
       "13.24% APR",
     ],
@@ -246,7 +246,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Aloha-pacific-fcu's personal lineup, the closest comparison is the Aloha Pacific FCU Visa Platinum Preferred ($0 after $0/3mo, $0 AF). The Aloha Pacific FCU Visa Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aloha Pacific FCU Visa Platinum Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aloha Pacific FCU Visa Platinum Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aloha Pacific FCU Visa Platinum Rewards annual fee?", a: "There is no annual fee on the Aloha Pacific FCU Visa Platinum Rewards." },
       { q: "How long does the Aloha Pacific FCU Visa Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -256,7 +256,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-amazon-business-rwp": {
-    summary: "The Amazon Business is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Amazon Business is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amazon Business until you've earned the $100 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
@@ -270,7 +270,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Amazon Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amazon Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Amazon Business sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Amazon Business annual fee?", a: "There is no annual fee on the Amazon Business." },
       { q: "How long does the Amazon Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -280,7 +280,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-amazon-prime-business-rwp": {
-    summary: "The Amazon Prime Business is currently offering $125 after $0 in purchases within 3 months. There's no annual fee, which makes the $125 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $125 based on a 100.0¢ per-point valuation.",
+    summary: "The Amazon Prime Business is currently offering $125 after $0 in purchases within 3 months. There's no annual fee, which makes the $125 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $125 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amazon Prime Business until you've earned the $125 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
@@ -294,7 +294,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Amazon Prime Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amazon Prime Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $125 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Amazon Prime Business sign-up bonus?", a: "The current bonus is $125 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Amazon Prime Business annual fee?", a: "There is no annual fee on the Amazon Prime Business." },
       { q: "How long does the Amazon Prime Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -304,20 +304,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-american-express-blue-business-cash-rwp": {
-    summary: "The American Express Blue Business Cash is currently offering $250 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 100.0¢ per-point valuation.",
+    summary: "The American Express Blue Business Cash is currently offering $250 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Blue Business Cash until you've earned the $250 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$250 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
     ],
     cons: [
       "Lifetime once-per-card SUB rule — one shot at this bonus",
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Blue Business Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current American Express Blue Business Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Blue Business Cash sign-up bonus?", a: "The current bonus is $250 after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Blue Business Cash annual fee?", a: "There is no annual fee on the American Express Blue Business Cash." },
       { q: "How long does the American Express Blue Business Cash sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -333,7 +333,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "15,000 Membership Rewards sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "Transfer Partners Available",
       "Travel Portal Redemption",
     ],
@@ -342,7 +342,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Blue Business Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current American Express Blue Business Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Blue Business Plus sign-up bonus?", a: "The current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Blue Business Plus annual fee?", a: "There is no annual fee on the American Express Blue Business Plus." },
       { q: "How long does the American Express Blue Business Plus sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -352,20 +352,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-american-express-blue-cash-everyday-rwp": {
-    summary: "The American Express Blue Cash EveryDay is currently offering $200 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The American Express Blue Cash EveryDay is currently offering $200 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 6 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Blue Cash EveryDay until you've earned the $200 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "USAA-eligible applicants who want a $250 bonus and simple unlimited 1.5% cash back with no annual fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3x on gas_stations, groceries, online_retail",
+      "3x on gas stations, groceries, online retail",
     ],
     cons: [
       "Lifetime once-per-card SUB rule — one shot at this bonus",
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Blue Cash EveryDay is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current American Express Blue Cash EveryDay sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $2,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Blue Cash EveryDay sign-up bonus?", a: "The current bonus is $200 after spending $2,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Blue Cash EveryDay annual fee?", a: "There is no annual fee on the American Express Blue Cash EveryDay." },
       { q: "How long does the American Express Blue Cash EveryDay sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -375,12 +375,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-american-express-blue-cash-preferred-rwp": {
-    summary: "The American Express Blue Cash Preferred is currently offering $250 after $3,000 in purchases within 6 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 based on a 100.0¢ per-point valuation.",
+    summary: "The American Express Blue Cash Preferred is currently offering $250 after $3,000 in purchases within 6 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 6 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Blue Cash Preferred until you've earned the $250 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $250 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "$250 sign-up bonus",
-      "6x on groceries, streaming_services",
+      "6x on groceries, streaming services",
     ],
     cons: [
       "$95 annual fee",
@@ -388,7 +388,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Blue Cash Preferred is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Blue Cash Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Blue Cash Preferred sign-up bonus?", a: "The current bonus is $250 after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Blue Cash Preferred annual fee?", a: "The annual fee is $95." },
       { q: "How long does the American Express Blue Cash Preferred sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -403,7 +403,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $3,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "70,000 Membership Rewards sign-up bonus",
-      "4x on 1st_highest_spend_category",
+      "4x on 1st highest spend category",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -414,7 +414,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Business Gold is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Business Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Membership Rewards after spending $10,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Business Gold sign-up bonus?", a: "The current bonus is 70,000 Membership Rewards after spending $10,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Business Gold annual fee?", a: "The annual fee is $375." },
       { q: "How long does the American Express Business Gold sign-up bonus take to post?", a: "Once you cross the $10,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -429,7 +429,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "15,000 Membership Rewards sign-up bonus",
-      "2x on airfare_(portal), hotels_(portal)",
+      "2x on airfare (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -439,7 +439,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Business Green Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Business Green Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Business Green Rewards sign-up bonus?", a: "The current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Business Green Rewards annual fee?", a: "The annual fee is $95." },
       { q: "How long does the American Express Business Green Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -454,7 +454,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $6,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "200,000 Membership Rewards sign-up bonus",
-      "5x on airfare_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -465,7 +465,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Business Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Business Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 200,000 Membership Rewards after spending $20,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Business Platinum sign-up bonus?", a: "The current bonus is 200,000 Membership Rewards after spending $20,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Business Platinum annual fee?", a: "The annual fee is $895." },
       { q: "How long does the American Express Business Platinum sign-up bonus take to post?", a: "Once you cross the $20,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -480,7 +480,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$0 sign-up bonus",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -489,7 +489,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Business Plum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Business Plum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Business Plum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the American Express Business Plum annual fee?", a: "The annual fee is $250." },
       { q: "How long does the American Express Business Plum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -504,7 +504,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "0 Membership Rewards sign-up bonus",
-      "1.5x on large_purchases",
+      "1.5x on large purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -514,7 +514,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Centurion Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Centurion Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Membership Rewards after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Centurion Business sign-up bonus?", a: "The current bonus is 0 Membership Rewards after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the American Express Centurion Business annual fee?", a: "The annual fee is $5000." },
       { q: "How long does the American Express Centurion Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -529,7 +529,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 0 Membership Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $5000 annual fee.",
     pros: [
       "0 Membership Rewards sign-up bonus",
-      "1.5x on large_purchases",
+      "1.5x on large purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -539,7 +539,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Centurion is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Centurion sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Membership Rewards after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Centurion sign-up bonus?", a: "The current bonus is 0 Membership Rewards after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the American Express Centurion annual fee?", a: "The annual fee is $5000." },
       { q: "How long does the American Express Centurion sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -565,7 +565,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Gold is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Membership Rewards after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Gold sign-up bonus?", a: "The current bonus is 60,000 Membership Rewards after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Gold annual fee?", a: "The annual fee is $325." },
       { q: "How long does the American Express Gold sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -575,12 +575,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-american-express-graphite-business-cash-unlimited-rwp": {
-    summary: "The American Express Graphite Business Cash Unlimited is currently offering $1,500 after $50,000 in purchases within 6 months. It carries a $250 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1,250 based on a 100.0¢ per-point valuation.",
+    summary: "The American Express Graphite Business Cash Unlimited is currently offering $1,500 after $50,000 in purchases within 6 months. It carries a $250 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1,250 — the bonus is cash back, valued at face.",
     strategy: "To hit the $50,000 requirement in 6 months, you need about $8,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the American Express Graphite Business Cash Unlimited until you've earned the $1,500 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $8,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$1,500 sign-up bonus",
-      "5x on airfare_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -590,7 +590,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The American Express Graphite Business Cash Unlimited is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Graphite Business Cash Unlimited sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $1,500 after spending $50,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Graphite Business Cash Unlimited sign-up bonus?", a: "The current bonus is $1,500 after spending $50,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Graphite Business Cash Unlimited annual fee?", a: "The annual fee is $250." },
       { q: "How long does the American Express Graphite Business Cash Unlimited sign-up bonus take to post?", a: "Once you cross the $50,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -605,7 +605,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 40,000 Membership Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
     pros: [
       "40,000 Membership Rewards sign-up bonus",
-      "3x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, dining, hotels, hotels_(portal), parking, ridesharing, toll_fees, transit, travel",
+      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, dining, hotels, hotels (travel portal), parking, ridesharing, tolls, transit, travel",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -615,7 +615,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Green is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Green sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 Membership Rewards after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Green sign-up bonus?", a: "The current bonus is 40,000 Membership Rewards after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Green annual fee?", a: "The annual fee is $150." },
       { q: "How long does the American Express Green sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -630,7 +630,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 80,000 Membership Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $895 annual fee.",
     pros: [
       "80,000 Membership Rewards sign-up bonus",
-      "5x on airfare, hotels_(portal)",
+      "5x on airfare, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -641,7 +641,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Platinum: Charles Schwab is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Platinum: Charles Schwab sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 Membership Rewards after spending $8,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Platinum: Charles Schwab sign-up bonus?", a: "The current bonus is 80,000 Membership Rewards after spending $8,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Platinum: Charles Schwab annual fee?", a: "The annual fee is $895." },
       { q: "How long does the American Express Platinum: Charles Schwab sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -651,7 +651,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-blue-cash-everyday-250": {
-    summary: "The Amex Blue Cash Everyday is currently offering $250 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 100.0¢ per-point valuation.",
+    summary: "The Amex Blue Cash Everyday is currently offering $250 after $2,000 in purchases within 6 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 6 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amex Blue Cash Everyday until you've earned the $250 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -665,7 +665,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Platinum (175,000 Membership Rewards after $8,000/6mo, $895 AF). The Amex Blue Cash Everyday is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amex Blue Cash Everyday sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $2,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Blue Cash Everyday sign-up bonus?", a: "The current bonus is $250 after spending $2,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Blue Cash Everyday annual fee?", a: "There is no annual fee on the Amex Blue Cash Everyday." },
       { q: "How long does the Amex Blue Cash Everyday sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -681,7 +681,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "15,000 Membership Rewards sign-up bonus",
       "Year-one annual fee waived ($95 thereafter)",
-      "2x on everything_else",
+      "2x on all other purchases",
       "2x on every U.S. purchase (no category caps)",
       "Charge card — no preset spending limit (pay in full each month)",
     ],
@@ -691,7 +691,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the Amex Business Platinum (200,000 Membership Rewards after $20,000/3mo, $895 AF). The American Express Business Green Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Business Green Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current American Express Business Green Rewards sign-up bonus?", a: "The current bonus is 15,000 Membership Rewards after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the American Express Business Green Rewards annual fee?", a: "The annual fee is $95, waived for the first year." },
       { q: "How long does the American Express Business Green Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -717,7 +717,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the Amex Hilton Business (175,000 Hilton Honors after $8,000/6mo, $195 AF). The Amex Business Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Business Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 200,000 Membership Rewards after spending $20,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Amex Business Platinum sign-up bonus?", a: "The current bonus is 200,000 Membership Rewards after spending $20,000 on purchases within 3 months of account opening." },
       { q: "What's the Amex Business Platinum annual fee?", a: "The annual fee is $895. It is partially offset by approximately $800 in year-one statement credits." },
       { q: "How long does the Amex Business Platinum sign-up bonus take to post?", a: "Once you cross the $20,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -727,20 +727,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-charles-schwab-investor-card-rwp": {
-    summary: "The Charles Schwab Investor Card is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Charles Schwab Investor Card is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Charles Schwab Investor Card until you've earned the $200 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Lifetime once-per-card SUB rule — one shot at this bonus",
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Charles Schwab Investor Card is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Charles Schwab Investor Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Charles Schwab Investor Card sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Charles Schwab Investor Card annual fee?", a: "There is no annual fee on the Charles Schwab Investor Card." },
       { q: "How long does the Charles Schwab Investor Card sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -756,7 +756,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 miles sign-up bonus",
       "$0 annual fee",
-      "2x on airfare_(portal), dining",
+      "2x on airfare (travel portal), dining",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -765,7 +765,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Delta SkyMiles Blue is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Blue sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 miles after spending $1,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Blue sign-up bonus?", a: "The current bonus is 10,000 miles after spending $1,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Blue annual fee?", a: "There is no annual fee on the Delta SkyMiles Blue." },
       { q: "How long does the Delta SkyMiles Blue sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -780,7 +780,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 miles sign-up bonus",
-      "2x on airfare_(portal)",
+      "2x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -791,7 +791,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Delta SkyMiles Gold Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Gold Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Gold Business sign-up bonus?", a: "The current bonus is 60,000 miles after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Gold Business annual fee?", a: "The annual fee is $150." },
       { q: "How long does the Delta SkyMiles Gold Business sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -806,7 +806,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 40,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
     pros: [
       "40,000 miles sign-up bonus",
-      "2x on airfare_(portal), dining, groceries",
+      "2x on airfare (travel portal), dining, groceries",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -816,7 +816,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Delta SkyMiles Gold is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 miles after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Gold sign-up bonus?", a: "The current bonus is 40,000 miles after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Gold annual fee?", a: "The annual fee is $150." },
       { q: "How long does the Delta SkyMiles Gold sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -831,7 +831,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -842,7 +842,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Delta SkyMiles Platinum Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Platinum Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $8,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Platinum Business sign-up bonus?", a: "The current bonus is 60,000 miles after spending $8,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Platinum Business annual fee?", a: "The annual fee is $350." },
       { q: "How long does the Delta SkyMiles Platinum Business sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -857,7 +857,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $350 annual fee.",
     pros: [
       "50,000 miles sign-up bonus",
-      "3x on airfare_(portal), hotels, hotels_(portal)",
+      "3x on airfare (travel portal), hotels, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -867,7 +867,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Delta SkyMiles Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 miles after spending $0 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Platinum sign-up bonus?", a: "The current bonus is 50,000 miles after spending $0 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Platinum annual fee?", a: "The annual fee is $350." },
       { q: "How long does the Delta SkyMiles Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -882,7 +882,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $2,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "70,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -893,7 +893,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Delta SkyMiles Reserve Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Reserve Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 miles after spending $12,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Reserve Business sign-up bonus?", a: "The current bonus is 70,000 miles after spending $12,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Reserve Business annual fee?", a: "The annual fee is $650." },
       { q: "How long does the Delta SkyMiles Reserve Business sign-up bonus take to post?", a: "Once you cross the $12,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -908,7 +908,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $650 annual fee.",
     pros: [
       "60,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -919,7 +919,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Delta SkyMiles Reserve is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Delta SkyMiles Reserve sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Delta SkyMiles Reserve sign-up bonus?", a: "The current bonus is 60,000 miles after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the Delta SkyMiles Reserve annual fee?", a: "The annual fee is $650." },
       { q: "How long does the Delta SkyMiles Reserve sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -946,7 +946,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Green (60,000 Membership Rewards after $3,000/6mo, $150 AF). The American Express Gold is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Membership Rewards after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Gold sign-up bonus?", a: "The current bonus is 100,000 Membership Rewards after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Gold annual fee?", a: "The annual fee is $325. It is partially offset by approximately $424 in year-one statement credits." },
       { q: "How long does the American Express Gold sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -972,7 +972,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The American Express Green is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Green sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Membership Rewards after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Green sign-up bonus?", a: "The current bonus is 60,000 Membership Rewards after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Green annual fee?", a: "The annual fee is $150. It is partially offset by approximately $299 in year-one statement credits." },
       { q: "How long does the American Express Green sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -999,7 +999,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Amex Hilton Aspire is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Hilton Aspire sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 175,000 Hilton Honors after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Hilton Aspire sign-up bonus?", a: "The current bonus is 175,000 Hilton Honors after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Hilton Aspire annual fee?", a: "The annual fee is $550. It is partially offset by approximately $400 in year-one statement credits." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Hilton Aspire sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1026,7 +1026,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Amex Hilton Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Hilton Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 175,000 Hilton Honors after spending $8,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Hilton Business sign-up bonus?", a: "The current bonus is 175,000 Hilton Honors after spending $8,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Hilton Business annual fee?", a: "The annual fee is $195." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Hilton Business sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1052,7 +1052,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Platinum (175,000 Membership Rewards after $8,000/6mo, $895 AF). The Amex Hilton Honors (No Fee) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amex Hilton Honors (No Fee) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Hilton Honors after spending $2,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Hilton Honors (No Fee) sign-up bonus?", a: "The current bonus is 70,000 Hilton Honors after spending $2,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Hilton Honors (No Fee) annual fee?", a: "There is no annual fee on the Amex Hilton Honors (No Fee)." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Hilton Honors (No Fee) sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1068,7 +1068,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 150,000 Hilton Honors bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $550 annual fee.",
     pros: [
       "150,000 Hilton Honors sign-up bonus",
-      "14x on hotels_(portal)",
+      "14x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1080,7 +1080,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Hilton Honors Aspire is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Hilton Honors Aspire sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 150,000 Hilton Honors after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Hilton Honors Aspire sign-up bonus?", a: "The current bonus is 150,000 Hilton Honors after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the Hilton Honors Aspire annual fee?", a: "The annual fee is $550." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Hilton Honors Aspire sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1096,7 +1096,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "130,000 Hilton Honors sign-up bonus",
-      "12x on hotels_(portal)",
+      "12x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1107,7 +1107,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Hilton Honors Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Hilton Honors Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Hilton Honors Business sign-up bonus?", a: "The current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Hilton Honors Business annual fee?", a: "The annual fee is $195." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Hilton Honors Business sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1124,7 +1124,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "70,000 Hilton Honors sign-up bonus",
       "$0 annual fee",
-      "7x on hotels_(portal)",
+      "7x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1134,7 +1134,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Hilton Honors is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hilton Honors sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Hilton Honors after spending $2,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Hilton Honors sign-up bonus?", a: "The current bonus is 70,000 Hilton Honors after spending $2,000 on purchases within 6 months of account opening." },
       { q: "What's the Hilton Honors annual fee?", a: "There is no annual fee on the Hilton Honors." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Hilton Honors sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1150,7 +1150,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 130,000 Hilton Honors bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
     pros: [
       "130,000 Hilton Honors sign-up bonus",
-      "12x on hotels_(portal)",
+      "12x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1161,7 +1161,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Hilton Honors Surpass is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Hilton Honors Surpass sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Hilton Honors Surpass sign-up bonus?", a: "The current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the Hilton Honors Surpass annual fee?", a: "The annual fee is $150." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Hilton Honors Surpass sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1187,7 +1187,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Amex Hilton Surpass is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Hilton Surpass sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Hilton Surpass sign-up bonus?", a: "The current bonus is 130,000 Hilton Honors after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Hilton Surpass annual fee?", a: "The annual fee is $150." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Hilton Surpass sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1214,7 +1214,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Platinum (175,000 Membership Rewards after $8,000/6mo, $895 AF). The Amex Marriott Bonvoy Bevy is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Marriott Bonvoy Bevy sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 175,000 Marriott Bonvoy after spending $5,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Marriott Bonvoy Bevy sign-up bonus?", a: "The current bonus is 175,000 Marriott Bonvoy after spending $5,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Marriott Bonvoy Bevy annual fee?", a: "The annual fee is $250." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Marriott Bonvoy Bevy sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1230,7 +1230,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 85,000 Marriott Bonvoy bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $250 annual fee.",
     pros: [
       "85,000 Marriott Bonvoy sign-up bonus",
-      "6x on hotels_(portal)",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -1241,7 +1241,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Marriott Bonvoy Bevy is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Bevy sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 85,000 Marriott Bonvoy after spending $0 on purchases within 6 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Bevy sign-up bonus?", a: "The current bonus is 85,000 Marriott Bonvoy after spending $0 on purchases within 6 months of account opening." },
       { q: "What's the Marriott Bonvoy Bevy annual fee?", a: "The annual fee is $250." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Marriott Bonvoy Bevy sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1284,7 +1284,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "0 Marriott Bonvoy sign-up bonus",
-      "6x on hotels_(portal)",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -1295,7 +1295,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the American Express Business Green Rewards (15,000 Membership Rewards after $3,000/3mo, $95 AF). The Marriott Bonvoy Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Marriott Bonvoy after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Business sign-up bonus?", a: "The current bonus is 0 Marriott Bonvoy after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Marriott Bonvoy Business annual fee?", a: "The annual fee is $125." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Marriott Bonvoy Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1323,7 +1323,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Platinum (175,000 Membership Rewards after $8,000/6mo, $895 AF). The Amex Marriott Bonvoy Brilliant is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Marriott Bonvoy Brilliant sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 200,000 Marriott Bonvoy after spending $6,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Marriott Bonvoy Brilliant sign-up bonus?", a: "The current bonus is 200,000 Marriott Bonvoy after spending $6,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Marriott Bonvoy Brilliant annual fee?", a: "The annual fee is $650. It is partially offset by approximately $300 in year-one statement credits." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Marriott Bonvoy Brilliant sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1350,7 +1350,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's business lineup, the closest comparison is the Amex Business Platinum (200,000 Membership Rewards after $20,000/3mo, $895 AF). The Amex Marriott Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amex Marriott Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 250,000 Marriott Bonvoy after spending $9,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Amex Marriott Business sign-up bonus?", a: "The current bonus is 250,000 Marriott Bonvoy after spending $9,000 on purchases within 6 months of account opening." },
       { q: "What's the Amex Marriott Business annual fee?", a: "The annual fee is $125." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Amex Marriott Business sign-up bonus take to post?", a: "Once you cross the $9,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1361,12 +1361,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-morgan-stanley-blue-cash-preferred-rwp": {
-    summary: "The Morgan Stanley Blue Cash Preferred is currently offering $250 after $3,000 in purchases within 6 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 based on a 100.0¢ per-point valuation.",
+    summary: "The Morgan Stanley Blue Cash Preferred is currently offering $250 after $3,000 in purchases within 6 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 6 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Morgan Stanley Blue Cash Preferred until you've earned the $250 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $250 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "$250 sign-up bonus",
-      "6x on groceries, streaming_services",
+      "6x on groceries, streaming services",
     ],
     cons: [
       "$95 annual fee",
@@ -1374,7 +1374,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Morgan Stanley Blue Cash Preferred is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Morgan Stanley Blue Cash Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $3,000 on purchases within 6 months of account opening." },
+      { q: "What's the current Morgan Stanley Blue Cash Preferred sign-up bonus?", a: "The current bonus is $250 after spending $3,000 on purchases within 6 months of account opening." },
       { q: "What's the Morgan Stanley Blue Cash Preferred annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Morgan Stanley Blue Cash Preferred sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1400,7 +1400,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the Amex Hilton Honors (No Fee) (70,000 Hilton Honors after $2,000/6mo, $0 AF). The American Express Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Express Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 175,000 Membership Rewards after spending $8,000 on purchases within 6 months of account opening." },
+      { q: "What's the current American Express Platinum sign-up bonus?", a: "The current bonus is 175,000 Membership Rewards after spending $8,000 on purchases within 6 months of account opening." },
       { q: "What's the American Express Platinum annual fee?", a: "The annual fee is $895. It is partially offset by approximately $1,200 in year-one statement credits." },
       { q: "How long does the American Express Platinum sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1410,13 +1410,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "amex-rakuten-rwp": {
-    summary: "The Rakuten is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Rakuten is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Rakuten until you've earned the $100 bonus. Mind your issuer rules: Amex limits each card to one lifetime sign-up bonus per cardholder. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "10x on specified_store(s)",
+      "10x on select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -1424,7 +1424,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Amex's personal lineup, the closest comparison is the American Express Gold (100,000 Membership Rewards after $6,000/6mo, $325 AF). The Rakuten is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Rakuten sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Rakuten sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Rakuten annual fee?", a: "There is no annual fee on the Rakuten." },
       { q: "How long does the Rakuten sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1440,7 +1440,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on all_other",
+      "3x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -1448,7 +1448,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Aod-fcu personal cards in our catalog, the AOD FCU is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current AOD FCU sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current AOD FCU sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the AOD FCU annual fee?", a: "There is no annual fee on the AOD FCU." },
       { q: "How long does the AOD FCU sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1472,7 +1472,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among American-savings-bank-hawaii business cards in our catalog, the American Savings Bank Smart Business Rewards Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current American Savings Bank Smart Business Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 points after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current American Savings Bank Smart Business Rewards Visa sign-up bonus?", a: "The current bonus is 20,000 points after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the American Savings Bank Smart Business Rewards Visa annual fee?", a: "There is no annual fee on the American Savings Bank Smart Business Rewards Visa." },
       { q: "How long does the American Savings Bank Smart Business Rewards Visa sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1497,7 +1497,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Bank-fund-fcu personal cards in our catalog, the Bank-Fund FCU BEYOND is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Bank-Fund FCU BEYOND sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank-Fund FCU BEYOND sign-up bonus?", a: "The current bonus is 20,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Bank-Fund FCU BEYOND annual fee?", a: "There is no annual fee on the Bank-Fund FCU BEYOND." },
       { q: "How long does the Bank-Fund FCU BEYOND sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1512,7 +1512,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 0 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $699 annual fee.",
     pros: [
       "0 Points sign-up bonus",
-      "3x on airfare_(portal), hotels_(portal)",
+      "3x on airfare (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1521,7 +1521,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Barclays Bank Luxury Black Card is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Barclays Bank Luxury Black Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Barclays Bank Luxury Black Card sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Barclays Bank Luxury Black Card annual fee?", a: "The annual fee is $699." },
       { q: "How long does the Barclays Bank Luxury Black Card sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1537,7 +1537,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on cruises_(portal)",
+      "2x on cruises (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -1546,7 +1546,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Carnival is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Carnival sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Carnival sign-up bonus?", a: "The current bonus is 30,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Carnival annual fee?", a: "There is no annual fee on the Carnival." },
       { q: "How long does the Carnival sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1556,25 +1556,25 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-emirates-skywards-premium-rwp": {
-    summary: "The Emirates Skywards Premium is currently offering 50,000 Points after $0 in purchases within 3 months. It carries a $499 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Emirates Skywards Premium until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Emirates Skywards Premium is currently offering 50,000 Points after $3,000 in purchases within 3 months. It carries a $499 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Emirates Skywards Premium until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $499 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$499 annual fee",
     ],
-    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Emirates Skywards Premium is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (60,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Emirates Skywards Premium is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Emirates Skywards Premium sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Emirates Skywards Premium sign-up bonus?", a: "The current bonus is 50,000 Points after spending $3,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Emirates Skywards Premium annual fee?", a: "The annual fee is $499." },
-      { q: "How long does the Emirates Skywards Premium sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Emirates Skywards Premium sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["barclays-jetblue-plus-75000-jetblue-trueblue","barclays-upromise-300-cash","bilt-palladium-50000-points"],
+    relatedSlugs: ["barclays-jetblue-plus-60000-jetblue-trueblue","barclays-bank-luxury-black-card-0-points","bilt-palladium-50000-points"],
     verifiedAt: "2026-06-12T06:31:39.603Z",
     verifiedUrl: "https://cards.barclaycardus.com/banking/cards/emirates-skywards-premium-world-elite-mastercard/",
   },
@@ -1585,7 +1585,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 40,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "40,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1594,7 +1594,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Emirates Skywards Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Emirates Skywards Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Emirates Skywards Rewards sign-up bonus?", a: "The current bonus is 40,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Emirates Skywards Rewards annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Emirates Skywards Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1609,7 +1609,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $89 annual fee.",
     pros: [
       "60,000 miles sign-up bonus",
-      "5x on airfare_(portal)",
+      "5x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1618,7 +1618,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Frontier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Frontier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Frontier sign-up bonus?", a: "The current bonus is 60,000 miles after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Frontier annual fee?", a: "The annual fee is $89." },
       { q: "How long does the Frontier sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1634,14 +1634,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 Points sign-up bonus",
       "$0 annual fee",
-      "10x on auto_parts_&_service",
+      "10x on auto parts & service",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The GM Rewards Mastercard is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current GM Rewards Mastercard sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current GM Rewards Mastercard sign-up bonus?", a: "The current bonus is 30,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the GM Rewards Mastercard annual fee?", a: "There is no annual fee on the GM Rewards Mastercard." },
       { q: "How long does the GM Rewards Mastercard sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1656,7 +1656,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "50,000 Points sign-up bonus",
-      "2x on dining, gas_stations, office_supplies",
+      "2x on dining, gas stations, office supplies",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1666,7 +1666,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's business lineup, the closest comparison is the JetBlue Business (60,000 Points after $4,000/3mo, $99 AF). The Hawaiian Airlines Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Hawaiian Airlines Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaiian Airlines Business sign-up bonus?", a: "The current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Hawaiian Airlines Business annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Hawaiian Airlines Business sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1681,7 +1681,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 70,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "70,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1690,7 +1690,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Hawaiian Airlines is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Hawaiian Airlines sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaiian Airlines sign-up bonus?", a: "The current bonus is 70,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the Hawaiian Airlines annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Hawaiian Airlines sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1705,7 +1705,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "50,000-point sign-up bonus",
-      "6x on airfare_(portal)",
+      "6x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1725,24 +1725,24 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-jetblue-plus-75k": {
-    summary: "The Barclays JetBlue Plus is currently offering 75,000 JetBlue TrueBlue after $1,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $651 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Barclays JetBlue Plus until you've earned the 75,000 JetBlue TrueBlue bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 75,000 JetBlue TrueBlue bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The Barclays JetBlue Plus is currently offering 60,000 JetBlue TrueBlue after $1,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $501 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Barclays JetBlue Plus until you've earned the 60,000 JetBlue TrueBlue bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 60,000 JetBlue TrueBlue bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "75,000 JetBlue TrueBlue sign-up bonus",
+      "60,000 JetBlue TrueBlue sign-up bonus",
       "Lowest min spend for a premium bonus ($1,000)",
       "6x on JetBlue purchases",
     ],
     cons: [
       "$99 annual fee",
     ],
-    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays Upromise ($300 after $1,000/3mo, $0 AF). The Barclays JetBlue Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays Bank Luxury Black Card (0 Points after $0/3mo, $699 AF). The Barclays JetBlue Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Barclays JetBlue Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 JetBlue TrueBlue after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Barclays JetBlue Plus sign-up bonus?", a: "The current bonus is 60,000 JetBlue TrueBlue after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Barclays JetBlue Plus annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Barclays JetBlue Plus sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["barclays-upromise-300-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
+    relatedSlugs: ["barclays-bank-luxury-black-card-0-points","carnival-30000-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-04-19T22:03:07.546Z",
     verifiedUrl: "https://cards.barclaycardus.com/banking/cards/jetblue-plus-card/",
   },
@@ -1753,7 +1753,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "6x on airfare_(portal)",
+      "6x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1762,7 +1762,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The JetBlue Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current JetBlue Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current JetBlue Plus sign-up bonus?", a: "The current bonus is 50,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the JetBlue Plus annual fee?", a: "The annual fee is $99." },
       { q: "How long does the JetBlue Plus sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1772,12 +1772,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-jetblue-premier-rwp": {
-    summary: "The JetBlue Premier is currently offering 80,000 Points after $5,000 in purchases within 3 months. It carries a $499 annual fee, with no first-year credits to soften it. Estimated net year-one value: $301 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the JetBlue Premier until you've earned the 80,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 80,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $499 annual fee.",
+    summary: "The JetBlue Premier is currently offering 100,000 Points after $5,000 in purchases within 3 months. It carries a $499 annual fee, with no first-year credits to soften it. Estimated net year-one value: $501 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the JetBlue Premier until you've earned the 100,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 100,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $499 annual fee.",
     pros: [
-      "80,000 Points sign-up bonus",
-      "6x on airfare_(portal)",
+      "100,000 Points sign-up bonus",
+      "6x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1785,13 +1785,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
       "$499 annual fee",
       "High $5,000 minimum spend can be hard to hit organically",
     ],
-    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The JetBlue Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (60,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The JetBlue Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current JetBlue Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current JetBlue Premier sign-up bonus?", a: "The current bonus is 100,000 Points after spending $5,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the JetBlue Premier annual fee?", a: "The annual fee is $499." },
       { q: "How long does the JetBlue Premier sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["barclays-jetblue-plus-75000-jetblue-trueblue","barclays-upromise-300-cash","bilt-palladium-50000-points"],
+    relatedSlugs: ["barclays-jetblue-plus-60000-jetblue-trueblue","barclays-bank-luxury-black-card-0-points","bilt-palladium-50000-points"],
     verifiedAt: "2026-06-12T06:31:39.612Z",
     verifiedUrl: "https://cards.barclaycardus.com/banking/cards/jetblue-premier-card/",
   },
@@ -1803,7 +1803,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 Points sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1812,7 +1812,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The JetBlue is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current JetBlue sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current JetBlue sign-up bonus?", a: "The current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the JetBlue annual fee?", a: "There is no annual fee on the JetBlue." },
       { q: "How long does the JetBlue sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1828,7 +1828,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1837,7 +1837,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Priceline VIP Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Priceline VIP Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Priceline VIP Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Priceline VIP Rewards annual fee?", a: "There is no annual fee on the Priceline VIP Rewards." },
       { q: "How long does the Priceline VIP Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1871,7 +1871,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-upromise-rwp": {
-    summary: "The UPromise is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The UPromise is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the UPromise until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -1885,7 +1885,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The UPromise is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current UPromise sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current UPromise sign-up bonus?", a: "The current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the UPromise annual fee?", a: "There is no annual fee on the UPromise." },
       { q: "How long does the UPromise sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -1900,7 +1900,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "45,000 Points sign-up bonus",
-      "8x on gas_stations, hotels_(portal)",
+      "8x on gas stations, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1910,7 +1910,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's business lineup, the closest comparison is the Hawaiian Airlines Business (50,000 Points after $4,000/3mo, $99 AF). The Wyndham Earner Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Wyndham Earner Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 45,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Wyndham Earner Business sign-up bonus?", a: "The current bonus is 45,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Wyndham Earner Business annual fee?", a: "The annual fee is $95." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Wyndham Earner Business sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1926,7 +1926,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 45,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $75 annual fee.",
     pros: [
       "45,000 Points sign-up bonus",
-      "5x on gas_stations, hotels_(portal)",
+      "5x on gas stations, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1936,7 +1936,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Wyndham Earner is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Wyndham Earner sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 45,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Wyndham Earner sign-up bonus?", a: "The current bonus is 45,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Wyndham Earner annual fee?", a: "The annual fee is $75." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Wyndham Earner sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -1947,12 +1947,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "barclays-wyndham-earner-rwp-2": {
-    summary: "The Wyndham Earner+ is currently offering 45,000 Points after $0 in purchases within 3 months. It carries a $75 annual fee, with no first-year credits to soften it. Estimated net year-one value: $330 based on a 0.9¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wyndham Earner+ until you've earned the 45,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Wyndham Earner+ is currently offering 45,000 Points after $1,000 in purchases within 3 months. It carries a $75 annual fee, with no first-year credits to soften it. Estimated net year-one value: $330 based on a 0.9¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wyndham Earner+ until you've earned the 45,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the 45,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $75 annual fee.",
     pros: [
       "45,000 Points sign-up bonus",
-      "6x on gas_stations, hotels_(portal)",
+      "6x on gas stations, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -1960,26 +1960,26 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
       "$75 annual fee",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
     ],
-    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (75,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Wyndham Earner+ is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Barclays's personal lineup, the closest comparison is the Barclays JetBlue Plus (60,000 JetBlue TrueBlue after $1,000/3mo, $99 AF). The Wyndham Earner+ is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Wyndham Earner+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 45,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Wyndham Earner+ sign-up bonus?", a: "The current bonus is 45,000 Points after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Wyndham Earner+ annual fee?", a: "The annual fee is $75." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the Wyndham Earner+ sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Wyndham Earner+ sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["barclays-jetblue-plus-75000-jetblue-trueblue","barclays-upromise-300-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["barclays-jetblue-plus-60000-jetblue-trueblue","barclays-bank-luxury-black-card-0-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:51.246Z",
     verifiedUrl: "https://www.wyndhamrewardscreditcard.com/earner-plus-card/",
   },
 
   "becu-cash-back-visa-200": {
-    summary: "The BECU Cash Back Visa is currently offering $200 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The BECU Cash Back Visa is currently offering $200 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the BECU Cash Back Visa until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "1.5% on everything_else",
+      "1.5% on all other purchases",
       "$200 after $2,000 in purchases within 3 months",
       "Unlimited 1.5% cash back",
     ],
@@ -1988,7 +1988,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Becu personal cards in our catalog, the BECU Cash Back Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current BECU Cash Back Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current BECU Cash Back Visa sign-up bonus?", a: "The current bonus is $200 after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the BECU Cash Back Visa annual fee?", a: "There is no annual fee on the BECU Cash Back Visa." },
       { q: "How long does the BECU Cash Back Visa sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2012,7 +2012,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Big-island-fcu's personal lineup, the closest comparison is the Big Island FCU Visa Gold ($0 after $0/3mo, $0 AF). The Big Island FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Big Island FCU Visa Classic sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Big Island FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Big Island FCU Visa Classic annual fee?", a: "There is no annual fee on the Big Island FCU Visa Classic." },
       { q: "How long does the Big Island FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2036,7 +2036,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Big-island-fcu's personal lineup, the closest comparison is the Big Island FCU Visa Classic ($0 after $0/3mo, $0 AF). The Big Island FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Big Island FCU Visa Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Big Island FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Big Island FCU Visa Gold annual fee?", a: "There is no annual fee on the Big Island FCU Visa Gold." },
       { q: "How long does the Big Island FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2061,7 +2061,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Bilt personal cards in our catalog, the Bilt Mastercard is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Bilt Mastercard sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Bilt Points after spending $0 on purchases within 0 months of account opening." },
+      { q: "What's the current Bilt Mastercard sign-up bonus?", a: "The current bonus is 0 Bilt Points after spending $0 on purchases within 0 months of account opening." },
       { q: "What's the Bilt Mastercard annual fee?", a: "There is no annual fee on the Bilt Mastercard." },
       { q: "How long does the Bilt Mastercard sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2076,7 +2076,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $89 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "3x on airfare_(portal), dining",
+      "3x on airfare (travel portal), dining",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2085,7 +2085,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Air France KLM is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Air France KLM sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Air France KLM sign-up bonus?", a: "The current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Air France KLM annual fee?", a: "The annual fee is $89." },
       { q: "How long does the Air France KLM sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2095,12 +2095,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-alaska-airlines-atmos-rewards-ascent-rwp": {
-    summary: "The Alaska Airlines Atmos Rewards Ascent is currently offering 60,000 Points after $3,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $505 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Alaska Airlines Atmos Rewards Ascent until you've earned the 60,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    summary: "The Alaska Airlines Atmos Rewards Ascent is currently offering 50,000 Points after $2,000 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $405 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Alaska Airlines Atmos Rewards Ascent until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
-      "60,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "50,000 Points sign-up bonus",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2109,11 +2109,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Alaska Airlines Atmos Rewards Ascent is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Alaska Airlines Atmos Rewards Ascent sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Alaska Airlines Atmos Rewards Ascent sign-up bonus?", a: "The current bonus is 50,000 Points after spending $2,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Alaska Airlines Atmos Rewards Ascent annual fee?", a: "The annual fee is $95." },
-      { q: "How long does the Alaska Airlines Atmos Rewards Ascent sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Alaska Airlines Atmos Rewards Ascent sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:38.448Z",
     verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
   },
@@ -2124,7 +2124,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2134,7 +2134,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's business lineup, the closest comparison is the Bank of America Business Advantage Customized Cash Rewards ($300 after $0/3mo, $0 AF). The Alaska Airlines Atmos Rewards Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Alaska Airlines Atmos Rewards Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Alaska Airlines Atmos Rewards Business sign-up bonus?", a: "The current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Alaska Airlines Atmos Rewards Business annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Alaska Airlines Atmos Rewards Business sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2144,37 +2144,37 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-alaska-airlines-atmos-rewards-summit-rwp": {
-    summary: "The Alaska Airlines Atmos Rewards Summit is currently offering 80,000 Points after $4,000 in purchases within 3 months. It carries a $395 annual fee, with no first-year credits to soften it. Estimated net year-one value: $405 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Alaska Airlines Atmos Rewards Summit until you've earned the 80,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 80,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $395 annual fee.",
+    summary: "The Alaska Airlines Atmos Rewards Summit is currently offering 100,000 Points after $6,500 in purchases within 3 months. It carries a $395 annual fee, with no first-year credits to soften it. Estimated net year-one value: $605 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $6,500 requirement in 3 months, you need about $2,167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Alaska Airlines Atmos Rewards Summit until you've earned the 100,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 100,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $395 annual fee.",
     pros: [
-      "80,000 Points sign-up bonus",
-      "3x on airfare_(portal), dining, foreign_purchases",
+      "100,000 Points sign-up bonus",
+      "3x on airfare (travel portal), dining, foreign purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
     cons: [
       "$395 annual fee",
-      "High $4,000 minimum spend can be hard to hit organically",
+      "High $6,500 minimum spend can be hard to hit organically",
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Alaska Airlines Atmos Rewards Summit is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Alaska Airlines Atmos Rewards Summit sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Alaska Airlines Atmos Rewards Summit sign-up bonus?", a: "The current bonus is 100,000 Points after spending $6,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Alaska Airlines Atmos Rewards Summit annual fee?", a: "The annual fee is $395." },
-      { q: "How long does the Alaska Airlines Atmos Rewards Summit sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Alaska Airlines Atmos Rewards Summit sign-up bonus take to post?", a: "Once you cross the $6,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","capital-one-venture-x-100000-capital-one-miles"],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","capital-one-spark-miles-for-business-150000-capital-one-miles"],
     verifiedAt: "2026-06-12T06:31:38.451Z",
     verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/",
   },
 
   "bofa-allegiant-allways-rewards-rwp": {
-    summary: "The Allegiant Allways Rewards is currently offering 25,000 Points after $0 in purchases within 3 months. It carries a $59 annual fee, with no first-year credits to soften it. Estimated net year-one value: $191 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Allegiant Allways Rewards until you've earned the 25,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 25,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $59 annual fee.",
+    summary: "The Allegiant Allways Rewards is currently offering 30,000 Points after $0 in purchases within 3 months. It carries a $59 annual fee, with no first-year credits to soften it. Estimated net year-one value: $241 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Allegiant Allways Rewards until you've earned the 30,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 30,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $59 annual fee.",
     pros: [
-      "25,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "30,000 Points sign-up bonus",
+      "3x on airfare (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -2182,11 +2182,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Allegiant Allways Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Allegiant Allways Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Allegiant Allways Rewards sign-up bonus?", a: "The current bonus is 30,000 Points after spending $0 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Allegiant Allways Rewards annual fee?", a: "The annual fee is $59." },
       { q: "How long does the Allegiant Allways Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","chase-ink-business-preferred-100000-ultimate-rewards"],
+    relatedSlugs: ["bofa-premium-rewards-60000-bofa-points","bofa-unlimited-cash-rewards-200-cash","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T04:03:01.019Z",
     verifiedUrl: "https://www.bankofamerica.com/credit-cards/products/allegiant-credit-card/",
   },
@@ -2203,7 +2203,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Alaska Airlines is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bank of America Alaska Airlines sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Alaska Airlines sign-up bonus?", a: "The current bonus is 50,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Alaska Airlines annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Bank of America Alaska Airlines sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2225,7 +2225,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Alaska Airlines Infinite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bank of America Alaska Airlines Infinite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Points after spending $6,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Alaska Airlines Infinite sign-up bonus?", a: "The current bonus is 100,000 Points after spending $6,500 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Alaska Airlines Infinite annual fee?", a: "The annual fee is $395." },
       { q: "How long does the Bank of America Alaska Airlines Infinite sign-up bonus take to post?", a: "Once you cross the $6,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2235,20 +2235,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-bank-of-america-business-advantage-customized-cash-rewards-rwp": {
-    summary: "The Bank of America Business Advantage Customized Cash Rewards is currently offering $300 after $0 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
+    summary: "The Bank of America Business Advantage Customized Cash Rewards is currently offering $300 after $0 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Business Advantage Customized Cash Rewards until you've earned the $300 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$300 sign-up bonus",
       "$0 annual fee",
-      "3x on monthly_categories",
+      "3x on monthly bonus categories",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Bofa's business lineup, the closest comparison is the Alaska Airlines Atmos Rewards Business (60,000 Points after $4,000/3mo, $95 AF). The Bank of America Business Advantage Customized Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Business Advantage Customized Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Business Advantage Customized Cash Rewards sign-up bonus?", a: "The current bonus is $300 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Business Advantage Customized Cash Rewards annual fee?", a: "There is no annual fee on the Bank of America Business Advantage Customized Cash Rewards." },
       { q: "How long does the Bank of America Business Advantage Customized Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2264,7 +2264,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 Points sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), car_rentals, hotels_(portal)",
+      "3x on airfare (travel portal), car rentals, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2273,7 +2273,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's business lineup, the closest comparison is the Alaska Airlines Atmos Rewards Business (60,000 Points after $4,000/3mo, $95 AF). The Bank of America Business Advantage Travel Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Business Advantage Travel Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Business Advantage Travel Rewards sign-up bonus?", a: "The current bonus is 30,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Business Advantage Travel Rewards annual fee?", a: "There is no annual fee on the Bank of America Business Advantage Travel Rewards." },
       { q: "How long does the Bank of America Business Advantage Travel Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2283,20 +2283,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-bank-of-america-business-advantage-unlimited-cash-rewards-rwp": {
-    summary: "The Bank of America Business Advantage Unlimited Cash Rewards is currently offering $300 after $0 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
+    summary: "The Bank of America Business Advantage Unlimited Cash Rewards is currently offering $300 after $0 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Business Advantage Unlimited Cash Rewards until you've earned the $300 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$300 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Bofa's business lineup, the closest comparison is the Alaska Airlines Atmos Rewards Business (60,000 Points after $4,000/3mo, $95 AF). The Bank of America Business Advantage Unlimited Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Business Advantage Unlimited Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Business Advantage Unlimited Cash Rewards sign-up bonus?", a: "The current bonus is $300 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Business Advantage Unlimited Cash Rewards annual fee?", a: "There is no annual fee on the Bank of America Business Advantage Unlimited Cash Rewards." },
       { q: "How long does the Bank of America Business Advantage Unlimited Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2306,20 +2306,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-bank-of-america-customized-cash-rewards-rwp": {
-    summary: "The Bank of America Customized Cash Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Bank of America Customized Cash Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Customized Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3x on monthly_categories",
+      "3x on monthly bonus categories",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Customized Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Customized Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Customized Cash Rewards sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Customized Cash Rewards annual fee?", a: "There is no annual fee on the Bank of America Customized Cash Rewards." },
       { q: "How long does the Bank of America Customized Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2334,7 +2334,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $550 annual fee.",
     pros: [
       "75,000 Points sign-up bonus",
-      "2x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, dining, hotels, hotels_(portal), parking, toll_fees, transit, travel",
+      "2x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, dining, hotels, hotels (travel portal), parking, tolls, transit, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2343,7 +2343,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Premium Rewards Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bank of America Premium Rewards Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Premium Rewards Elite sign-up bonus?", a: "The current bonus is 75,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Premium Rewards Elite annual fee?", a: "The annual fee is $550." },
       { q: "How long does the Bank of America Premium Rewards Elite sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2358,7 +2358,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 Points sign-up bonus",
-      "2x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, dining, hotels, hotels_(portal), parking, toll_fees, transit, travel",
+      "2x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, dining, hotels, hotels (travel portal), parking, tolls, transit, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2367,7 +2367,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Premium Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bank of America Premium Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Premium Rewards sign-up bonus?", a: "The current bonus is 60,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Premium Rewards annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Bank of America Premium Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2389,7 +2389,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Royal One is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Royal One sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 45,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Royal One sign-up bonus?", a: "The current bonus is 45,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Royal One annual fee?", a: "There is no annual fee on the Bank of America Royal One." },
       { q: "How long does the Bank of America Royal One sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2410,7 +2410,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Royal One Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bank of America Royal One Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Royal One Plus sign-up bonus?", a: "The current bonus is 70,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Royal One Plus annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Bank of America Royal One Plus sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2426,7 +2426,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "25,000 Points sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "3x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2435,7 +2435,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Travel Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Travel Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Travel Rewards sign-up bonus?", a: "The current bonus is 25,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Travel Rewards annual fee?", a: "There is no annual fee on the Bank of America Travel Rewards." },
       { q: "How long does the Bank of America Travel Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2445,20 +2445,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-bank-of-america-unlimited-cash-rewards-rwp": {
-    summary: "The Bank of America Unlimited Cash Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Bank of America Unlimited Cash Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bank of America Unlimited Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Bank of America Unlimited Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bank of America Unlimited Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bank of America Unlimited Cash Rewards sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bank of America Unlimited Cash Rewards annual fee?", a: "There is no annual fee on the Bank of America Unlimited Cash Rewards." },
       { q: "How long does the Bank of America Unlimited Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2474,7 +2474,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on cruises_(portal)",
+      "2x on cruises (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2483,7 +2483,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Celebrity Cruises is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Celebrity Cruises sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Celebrity Cruises sign-up bonus?", a: "The current bonus is 30,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Celebrity Cruises annual fee?", a: "There is no annual fee on the Celebrity Cruises." },
       { q: "How long does the Celebrity Cruises sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2498,7 +2498,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $79 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -2506,7 +2506,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Free Spirit Travel More is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Free Spirit Travel More sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Free Spirit Travel More sign-up bonus?", a: "The current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Free Spirit Travel More annual fee?", a: "The annual fee is $79." },
       { q: "How long does the Free Spirit Travel More sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2522,7 +2522,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on airfare_(portal)",
+      "2x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2531,7 +2531,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Free Spirit Travel is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Free Spirit Travel sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Free Spirit Travel sign-up bonus?", a: "The current bonus is 10,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Free Spirit Travel annual fee?", a: "There is no annual fee on the Free Spirit Travel." },
       { q: "How long does the Free Spirit Travel sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2547,7 +2547,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 Points sign-up bonus",
       "$0 annual fee",
-      "3x on cruises_(portal)",
+      "3x on cruises (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -2556,7 +2556,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The Norwegian Cruise Line is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Norwegian Cruise Line sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Norwegian Cruise Line sign-up bonus?", a: "The current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Norwegian Cruise Line annual fee?", a: "There is no annual fee on the Norwegian Cruise Line." },
       { q: "How long does the Norwegian Cruise Line sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2581,7 +2581,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Unlimited Cash Rewards ($200 after $1,000/3mo, $0 AF). The BofA Premium Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current BofA Premium Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 BofA points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current BofA Premium Rewards sign-up bonus?", a: "The current bonus is 60,000 BofA points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the BofA Premium Rewards annual fee?", a: "The annual fee is $95. It is partially offset by approximately $100 in year-one statement credits." },
       { q: "How long does the BofA Premium Rewards sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2591,7 +2591,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "bofa-unlimited-cash-200": {
-    summary: "The BofA Unlimited Cash Rewards is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The BofA Unlimited Cash Rewards is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the BofA Unlimited Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -2605,7 +2605,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Bofa's personal lineup, the closest comparison is the BofA Premium Rewards (60,000 BofA points after $4,000/3mo, $95 AF). The BofA Unlimited Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current BofA Unlimited Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current BofA Unlimited Cash Rewards sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the BofA Unlimited Cash Rewards annual fee?", a: "There is no annual fee on the BofA Unlimited Cash Rewards." },
       { q: "How long does the BofA Unlimited Cash Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2615,13 +2615,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-bass-pro-shops-cabela-s-club-rwp": {
-    summary: "The Bass Pro Shops / Cabela's CLUB is currently offering $60 after $0 in purchases within 1 months. There's no annual fee, which makes the $60 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $60 based on a 100.0¢ per-point valuation.",
+    summary: "The Bass Pro Shops / Cabela's CLUB is currently offering $60 after $0 in purchases within 1 months. There's no annual fee, which makes the $60 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $60 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 1 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bass Pro Shops / Cabela's CLUB until you've earned the $60 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $60 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$60 sign-up bonus",
       "$0 annual fee",
-      "2x on specified_store(s)",
+      "2x on select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -2629,7 +2629,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Bass Pro Shops / Cabela's CLUB is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bass Pro Shops / Cabela's CLUB sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $60 after spending $0 on purchases within 1 months of account opening." },
+      { q: "What's the current Bass Pro Shops / Cabela's CLUB sign-up bonus?", a: "The current bonus is $60 after spending $0 on purchases within 1 months of account opening." },
       { q: "What's the Bass Pro Shops / Cabela's CLUB annual fee?", a: "There is no annual fee on the Bass Pro Shops / Cabela's CLUB." },
       { q: "How long does the Bass Pro Shops / Cabela's CLUB sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2639,13 +2639,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-capital-one-quicksilver-rewards-rwp": {
-    summary: "The Capital One Quicksilver Rewards is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Quicksilver Rewards is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Quicksilver Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
       "Cash to Travel Conversion",
     ],
@@ -2654,7 +2654,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One Quicksilver Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Quicksilver Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Quicksilver Rewards sign-up bonus?", a: "The current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Quicksilver Rewards annual fee?", a: "There is no annual fee on the Capital One Quicksilver Rewards." },
       { q: "How long does the Capital One Quicksilver Rewards sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2669,7 +2669,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 0 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $39 annual fee.",
     pros: [
       "0 miles sign-up bonus",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
       "Cash to Travel Conversion",
     ],
@@ -2678,7 +2678,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One QuicksilverOne Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One QuicksilverOne Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One QuicksilverOne Rewards sign-up bonus?", a: "The current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Capital One QuicksilverOne Rewards annual fee?", a: "The annual fee is $39." },
       { q: "How long does the Capital One QuicksilverOne Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2688,13 +2688,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-capital-one-savor-rewards-rwp": {
-    summary: "The Capital One Savor Rewards is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Savor Rewards is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Savor Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "8x on special",
+      "8x on select purchases",
       "No Foreign Transaction Fees",
       "Cash to Travel Conversion",
     ],
@@ -2703,7 +2703,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One Savor Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Savor Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Savor Rewards sign-up bonus?", a: "The current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Savor Rewards annual fee?", a: "There is no annual fee on the Capital One Savor Rewards." },
       { q: "How long does the Capital One Savor Rewards sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2713,13 +2713,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-capital-one-spark-1-5-cash-select-business-rwp": {
-    summary: "The Capital One Spark 1.5% Cash Select Business is currently offering $750 after $6,000 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Spark 1.5% Cash Select Business is currently offering $750 after $6,000 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 — the bonus is cash back, valued at face.",
     strategy: "To hit the $6,000 requirement in 3 months, you need about $2,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Spark 1.5% Cash Select Business until you've earned the $750 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $2,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$750 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -2727,7 +2727,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Spark 1.5% Cash Select Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Spark 1.5% Cash Select Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $750 after spending $6,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark 1.5% Cash Select Business sign-up bonus?", a: "The current bonus is $750 after spending $6,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark 1.5% Cash Select Business annual fee?", a: "There is no annual fee on the Capital One Spark 1.5% Cash Select Business." },
       { q: "How long does the Capital One Spark 1.5% Cash Select Business sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2737,13 +2737,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-capital-one-spark-2-cash-business-rwp": {
-    summary: "The Capital One Spark 2% Cash Business is currently offering $750 after $7,500 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Spark 2% Cash Business is currently offering $750 after $7,500 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 — the bonus is cash back, valued at face.",
     strategy: "To hit the $7,500 requirement in 3 months, you need about $2,500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Spark 2% Cash Business until you've earned the $750 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $2,500/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$750 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -2751,7 +2751,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Spark 2% Cash Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Spark 2% Cash Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $750 after spending $7,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark 2% Cash Business sign-up bonus?", a: "The current bonus is $750 after spending $7,500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark 2% Cash Business annual fee?", a: "There is no annual fee on the Capital One Spark 2% Cash Business." },
       { q: "How long does the Capital One Spark 2% Cash Business sign-up bonus take to post?", a: "Once you cross the $7,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2766,7 +2766,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $10,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "2,000 Points sign-up bonus",
-      "5x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -2775,7 +2775,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Spark 2% Cash Plus Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Spark 2% Cash Plus Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 2,000 Points after spending $30,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark 2% Cash Plus Business sign-up bonus?", a: "The current bonus is 2,000 Points after spending $30,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark 2% Cash Plus Business annual fee?", a: "The annual fee is $150." },
       { q: "How long does the Capital One Spark 2% Cash Plus Business sign-up bonus take to post?", a: "Once you cross the $30,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2791,7 +2791,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 miles sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
       "No Foreign Transaction Fees",
       "Cash to Travel Conversion",
     ],
@@ -2800,7 +2800,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Spark Classic Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Spark Classic Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark Classic Business sign-up bonus?", a: "The current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark Classic Business annual fee?", a: "There is no annual fee on the Capital One Spark Classic Business." },
       { q: "How long does the Capital One Spark Classic Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2815,7 +2815,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,500/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "50,000 miles sign-up bonus",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2825,7 +2825,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Venture Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Venture Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 miles after spending $4,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture Business sign-up bonus?", a: "The current bonus is 50,000 miles after spending $4,500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture Business annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Capital One Venture Business sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2840,7 +2840,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "75,000 miles sign-up bonus",
-      "5x on car_rentals_(portal), hotels_(portal), travel_(portal)",
+      "5x on car rentals (travel portal), hotels (travel portal), travel (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2850,7 +2850,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One Venture Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Venture Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture Rewards sign-up bonus?", a: "The current bonus is 75,000 miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture Rewards annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Capital One Venture Rewards sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2865,7 +2865,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or business users with at least $10,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "150,000 miles sign-up bonus",
-      "10x on car_rentals_(portal), hotels_(portal)",
+      "10x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2890,7 +2890,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $395 annual fee.",
     pros: [
       "75,000 miles sign-up bonus",
-      "10x on car_rentals_(portal), hotels_(portal)",
+      "10x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2900,7 +2900,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One Venture X is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Venture X sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture X sign-up bonus?", a: "The current bonus is 75,000 miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture X annual fee?", a: "The annual fee is $395." },
       { q: "How long does the Capital One Venture X sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2916,7 +2916,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "50,000 miles sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2925,7 +2925,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One VentureOne Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One VentureOne Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 miles after spending $4,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One VentureOne Business sign-up bonus?", a: "The current bonus is 50,000 miles after spending $4,500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One VentureOne Business annual fee?", a: "There is no annual fee on the Capital One VentureOne Business." },
       { q: "How long does the Capital One VentureOne Business sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2941,7 +2941,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 miles sign-up bonus",
       "$0 annual fee",
-      "5x on car_rentals_(portal), hotels_(portal), travel_(portal)",
+      "5x on car rentals (travel portal), hotels (travel portal), travel (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -2950,7 +2950,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Capital One VentureOne Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One VentureOne Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 miles after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One VentureOne Rewards sign-up bonus?", a: "The current bonus is 20,000 miles after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One VentureOne Rewards annual fee?", a: "There is no annual fee on the Capital One VentureOne Rewards." },
       { q: "How long does the Capital One VentureOne Rewards sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2966,14 +2966,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "7.5x on specified_store(s)",
+      "7.5x on select stores",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The Kohl's Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Kohl's Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Kohl's Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Kohl's Rewards annual fee?", a: "There is no annual fee on the Kohl's Rewards." },
       { q: "How long does the Kohl's Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -2983,7 +2983,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-platinum-mastercard": {
-    summary: "The Capital One Platinum is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Platinum is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Platinum until you've earned the $0 bonus. Mind your issuer rules: Capital One typically allows only one new personal card every 6 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -2997,7 +2997,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
+      { q: "What's the current Capital One Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
       { q: "What's the Capital One Platinum annual fee?", a: "There is no annual fee on the Capital One Platinum." },
       { q: "How long does the Capital One Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3007,12 +3007,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-quicksilverone-cash-rewards": {
-    summary: "The Capital One QuicksilverOne is currently offering $0 after $0 in purchases within 0 months. It carries a $39 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-39 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One QuicksilverOne is currently offering $0 after $0 in purchases within 0 months. It carries a $39 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-39 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One QuicksilverOne until you've earned the $0 bonus. Mind your issuer rules: Capital One typically allows only one new personal card every 6 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $39 annual fee.",
     pros: [
       "$0 sign-up bonus",
-      "5x on capital_one_travel_hotels, capital_one_travel_rental_cars",
+      "5x on hotels booked via Capital One Travel, rental cars via Capital One Travel",
       "Unlimited 1.5% cash back on every purchase",
       "5% on hotels & rental cars via Capital One Travel",
     ],
@@ -3021,7 +3021,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One QuicksilverOne is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One QuicksilverOne sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
+      { q: "What's the current Capital One QuicksilverOne sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
       { q: "What's the Capital One QuicksilverOne annual fee?", a: "The annual fee is $39." },
       { q: "How long does the Capital One QuicksilverOne sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3031,13 +3031,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-rei-co-op-rwp": {
-    summary: "The REI Co-op is currently offering $100 after $0 in purchases within 2 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The REI Co-op is currently offering $100 after $0 in purchases within 2 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 2 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the REI Co-op until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "5x on specified_store(s)",
+      "5x on select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3045,7 +3045,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The REI Co-op is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current REI Co-op sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 2 months of account opening." },
+      { q: "What's the current REI Co-op sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 2 months of account opening." },
       { q: "What's the REI Co-op annual fee?", a: "There is no annual fee on the REI Co-op." },
       { q: "How long does the REI Co-op sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3055,13 +3055,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-savor-90k": {
-    summary: "The Capital One Savor is currently offering $30,000 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $30,000 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $30,000 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Savor is currently offering $30,000 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $30,000 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $30,000 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Savor until you've earned the $30,000 bonus. Mind your issuer rules: Capital One typically allows only one new personal card every 6 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $30,000 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$30,000 sign-up bonus",
       "$0 annual fee",
-      "8x on capital_one_entertainment",
+      "8x on capital one entertainment",
       "3% cash back on dining, entertainment, streaming, groceries",
       "5% on hotels & rental cars via Capital One Travel",
     ],
@@ -3070,7 +3070,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One QuicksilverOne ($0 after $0/0mo, $39 AF). The Capital One Savor is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Savor sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $30,000 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Savor sign-up bonus?", a: "The current bonus is $30,000 after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Savor annual fee?", a: "There is no annual fee on the Capital One Savor." },
       { q: "How long does the Capital One Savor sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3080,7 +3080,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-spark-cash-1000": {
-    summary: "The Capital One Spark Cash is currently offering $1,000 after $10,000 in purchases within 3 months. It carries a $95 annual fee (waived in year one), with no first-year credits to soften it. Estimated net year-one value: $905 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Spark Cash is currently offering $1,000 after $10,000 in purchases within 3 months. It carries a $95 annual fee (waived in year one), with no first-year credits to soften it. Estimated net year-one value: $905 — the bonus is cash back, valued at face.",
     strategy: "To hit the $10,000 requirement in 3 months, you need about $3,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Spark Cash until you've earned the $1,000 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $3,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
@@ -3095,7 +3095,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash Select ($750 after $6,000/3mo, $0 AF). The Capital One Spark Cash is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Spark Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $1,000 after spending $10,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark Cash sign-up bonus?", a: "The current bonus is $1,000 after spending $10,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark Cash annual fee?", a: "The annual fee is $95, waived for the first year." },
       { q: "How long does the Capital One Spark Cash sign-up bonus take to post?", a: "Once you cross the $10,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3105,7 +3105,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "capital-one-spark-cash-select-750": {
-    summary: "The Capital One Spark Cash Select is currently offering $750 after $6,000 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 based on a 100.0¢ per-point valuation.",
+    summary: "The Capital One Spark Cash Select is currently offering $750 after $6,000 in purchases within 3 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 — the bonus is cash back, valued at face.",
     strategy: "To hit the $6,000 requirement in 3 months, you need about $2,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Capital One Spark Cash Select until you've earned the $750 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $2,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
@@ -3119,7 +3119,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's business lineup, the closest comparison is the Capital One Spark Cash ($1,000 after $10,000/3mo, $95 AF). The Capital One Spark Cash Select is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Capital One Spark Cash Select sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $750 after spending $6,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark Cash Select sign-up bonus?", a: "The current bonus is $750 after spending $6,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark Cash Select annual fee?", a: "There is no annual fee on the Capital One Spark Cash Select." },
       { q: "How long does the Capital One Spark Cash Select sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3136,7 +3136,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
       "50,000 Capital One miles sign-up bonus",
       "Year-one annual fee waived ($95 thereafter)",
       "$120 in year-one statement credits",
-      "5x on capital_one_travel_hotels, capital_one_travel_rental_cars",
+      "5x on hotels booked via Capital One Travel, rental cars via Capital One Travel",
       "2x miles on every purchase",
       "5x on hotels & rental cars via Capital One Travel",
     ],
@@ -3146,7 +3146,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Capital one business cards in our catalog, the Capital One Spark Miles for Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Capital One Spark Miles for Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Capital One miles after spending $4,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Spark Miles for Business sign-up bonus?", a: "The current bonus is 50,000 Capital One miles after spending $4,500 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Spark Miles for Business annual fee?", a: "The annual fee is $95, waived for the first year. It is partially offset by approximately $120 in year-one statement credits." },
       { q: "How long does the Capital One Spark Miles for Business sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3162,7 +3162,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on special",
+      "5x on select purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3170,7 +3170,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital-one's personal lineup, the closest comparison is the Capital One Venture (75,000 Capital One miles after $4,000/3mo, $95 AF). The T-Mobile is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current T-Mobile sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current T-Mobile sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the T-Mobile annual fee?", a: "There is no annual fee on the T-Mobile." },
       { q: "How long does the T-Mobile sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3196,7 +3196,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Capital-one personal cards in our catalog, the Capital One Venture is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Capital One Venture sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture sign-up bonus?", a: "The current bonus is 75,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture annual fee?", a: "The annual fee is $95. The current offer no longer includes the year-one travel credit that earlier promotions bundled in." },
       { q: "How long does the Capital One Venture sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3212,7 +3212,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "100,000 Capital One miles sign-up bonus",
       "$400 in year-one statement credits",
-      "10x on capital_one_travel_hotels",
+      "10x on hotels booked via Capital One Travel",
       "$300 annual Capital One Travel credit",
       "10,000-mile anniversary bonus (~$180 value)",
     ],
@@ -3222,7 +3222,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One Venture X is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Venture X sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture X sign-up bonus?", a: "The current bonus is 100,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture X annual fee?", a: "The annual fee is $395. It is partially offset by approximately $400 in year-one statement credits." },
       { q: "How long does the Capital One Venture X sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3238,7 +3238,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "75,000 Capital One miles sign-up bonus",
       "$400 in year-one statement credits",
-      "10x on capital_one_travel_hotels",
+      "10x on hotels booked via Capital One Travel",
       "$300 annual Capital One Travel credit",
       "10,000-mile anniversary bonus (~$180 value)",
     ],
@@ -3248,7 +3248,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Capital one's personal lineup, the closest comparison is the Capital One Savor ($30,000 after $3,000/3mo, $0 AF). The Capital One Venture X is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Capital One Venture X sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Capital One Venture X sign-up bonus?", a: "The current bonus is 75,000 Capital One miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Capital One Venture X annual fee?", a: "The annual fee is $395. It is partially offset by approximately $400 in year-one statement credits." },
       { q: "How long does the Capital One Venture X sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3258,23 +3258,24 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cardless-avianca-lifemiles-elite-rwp": {
-    summary: "The Avianca LifeMiles Elite is currently offering 100,000 miles after $0 in purchases within 3 months. It carries a $249 annual fee, with no first-year credits to soften it. Estimated net year-one value: $751 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Avianca LifeMiles Elite until you've earned the 100,000 miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Avianca LifeMiles Elite is currently offering 100,000 miles after $4,500 in purchases within 3 months. It carries a $249 annual fee, with no first-year credits to soften it. Estimated net year-one value: $751 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $4,500 requirement in 3 months, you need about $1,500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Avianca LifeMiles Elite until you've earned the 100,000 miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the 100,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $249 annual fee.",
     pros: [
       "100,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$249 annual fee",
+      "High $4,500 minimum spend can be hard to hit organically",
     ],
-    comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Avianca LifeMiles Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $3,000/3mo, $99 AF). The Avianca LifeMiles Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Avianca LifeMiles Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Avianca LifeMiles Elite sign-up bonus?", a: "The current bonus is 100,000 miles after spending $4,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Avianca LifeMiles Elite annual fee?", a: "The annual fee is $249." },
-      { q: "How long does the Avianca LifeMiles Elite sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Avianca LifeMiles Elite sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
     relatedSlugs: ["avianca-lifemiles-40000-miles","bilt-blue-100-cash","amex-marriott-bonvoy-bevy-175000-marriott-bonvoy"],
     verifiedAt: "2026-06-12T06:31:38.583Z",
@@ -3282,37 +3283,37 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cardless-avianca-lifemiles-rwp": {
-    summary: "The Avianca LifeMiles is currently offering 40,000 miles after $0 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $301 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Avianca LifeMiles until you've earned the 40,000 miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Avianca LifeMiles is currently offering 40,000 miles after $3,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $301 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Avianca LifeMiles until you've earned the 40,000 miles bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the 40,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "40,000 miles sign-up bonus",
-      "2x on airfare_(portal), dining, groceries",
+      "2x on airfare (travel portal), dining, groceries",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$99 annual fee",
     ],
-    comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles Elite (100,000 miles after $0/3mo, $249 AF). The Avianca LifeMiles is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles Elite (100,000 miles after $4,500/3mo, $249 AF). The Avianca LifeMiles is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Avianca LifeMiles sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Avianca LifeMiles sign-up bonus?", a: "The current bonus is 40,000 miles after spending $3,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Avianca LifeMiles annual fee?", a: "The annual fee is $99." },
-      { q: "How long does the Avianca LifeMiles sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Avianca LifeMiles sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["avianca-lifemiles-elite-100000-miles","bilt-blue-100-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["avianca-lifemiles-elite-100000-miles","bilt-blue-100-cash","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:38.582Z",
     verifiedUrl: "https://www.cardless.com/cards/avianca/lifemiles",
   },
 
   "cardless-bilt-blue-rwp": {
-    summary: "The Bilt Blue is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Bilt Blue is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bilt Blue until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "1x on all_other, rent/mortgage",
+      "1x on all other purchases, rent/mortgage",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -3321,7 +3322,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Bilt Blue is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bilt Blue sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bilt Blue sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bilt Blue annual fee?", a: "There is no annual fee on the Bilt Blue." },
       { q: "How long does the Bilt Blue sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3331,12 +3332,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cardless-bilt-obsidian-rwp": {
-    summary: "The Bilt Obsidian is currently offering $200 after $0 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $105 based on a 100.0¢ per-point valuation.",
+    summary: "The Bilt Obsidian is currently offering $200 after $0 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $105 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Bilt Obsidian until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $200 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "$200 sign-up bonus",
-      "3x on monthly_categories",
+      "3x on monthly bonus categories",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -3345,7 +3346,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Bilt Obsidian is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bilt Obsidian sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bilt Obsidian sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bilt Obsidian annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Bilt Obsidian sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3360,7 +3361,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $495 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -3370,7 +3371,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Bilt Palladium is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Bilt Palladium sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Bilt Palladium sign-up bonus?", a: "The current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Bilt Palladium annual fee?", a: "The annual fee is $495." },
       { q: "How long does the Bilt Palladium sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3385,7 +3386,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $499 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "5x on airfare_(portal)",
+      "5x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3395,7 +3396,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Qatar Airways Privilege Club Infinite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Qatar Airways Privilege Club Infinite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Qatar Airways Privilege Club Infinite sign-up bonus?", a: "The current bonus is 50,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Qatar Airways Privilege Club Infinite annual fee?", a: "The annual fee is $499." },
       { q: "How long does the Qatar Airways Privilege Club Infinite sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3410,7 +3411,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 40,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "40,000 Points sign-up bonus",
-      "4x on airfare_(portal)",
+      "4x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3419,7 +3420,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Cardless's personal lineup, the closest comparison is the Avianca LifeMiles (40,000 miles after $0/3mo, $99 AF). The Qatar Airways Privilege Club Signature is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Qatar Airways Privilege Club Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Qatar Airways Privilege Club Signature sign-up bonus?", a: "The current bonus is 40,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Qatar Airways Privilege Club Signature annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Qatar Airways Privilege Club Signature sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3435,7 +3436,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 Points sign-up bonus",
       "$0 annual fee",
-      "1.25x on all_other",
+      "1.25x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3443,7 +3444,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Celtic-bank personal cards in our catalog, the Rocket Card is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Rocket Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Rocket Card sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Rocket Card annual fee?", a: "There is no annual fee on the Rocket Card." },
       { q: "How long does the Rocket Card sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -3458,7 +3459,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "75,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3469,7 +3470,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Reserve (125,000 Ultimate Rewards after $6,000/3mo, $795 AF). The Aer Lingus is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Aer Lingus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Aer Lingus sign-up bonus?", a: "The current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Aer Lingus annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Aer Lingus sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3485,7 +3486,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 Points sign-up bonus",
-      "3x on airfare_(portal), dining, groceries, walmart",
+      "3x on airfare (travel portal), dining, groceries, walmart",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3495,7 +3496,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Reserve (125,000 Ultimate Rewards after $6,000/3mo, $795 AF). The Aeroplan is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Aeroplan sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Aeroplan sign-up bonus?", a: "The current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Aeroplan annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Aeroplan sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3506,13 +3507,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-amazon-prime-rewards-rwp": {
-    summary: "The Amazon Prime Rewards is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Amazon Prime Rewards is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amazon Prime Rewards until you've earned the $100 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), amazon, car_rentals_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), amazon, car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3520,7 +3521,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Amazon Prime Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amazon Prime Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Amazon Prime Rewards sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Amazon Prime Rewards annual fee?", a: "There is no annual fee on the Amazon Prime Rewards." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Amazon Prime Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3531,13 +3532,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-amazon-prime-visa": {
-    summary: "The Chase Amazon Prime Visa is currently offering $200 after $0 in purchases within 0 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Chase Amazon Prime Visa is currently offering $200 after $0 in purchases within 0 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Amazon Prime Visa until you've earned the $200 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "5x on amazon, whole_foods",
+      "5x on amazon, whole foods",
       "5% back at Amazon & Whole Foods (requires Prime membership)",
       "2% at restaurants, gas, drugstores",
     ],
@@ -3546,7 +3547,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Preferred (75,000 Ultimate Rewards after $5,000/3mo, $95 AF). The Chase Amazon Prime Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Amazon Prime Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $0 on purchases within 0 months of account opening." },
+      { q: "What's the current Chase Amazon Prime Visa sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 0 months of account opening." },
       { q: "What's the Chase Amazon Prime Visa annual fee?", a: "There is no annual fee on the Chase Amazon Prime Visa." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Amazon Prime Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3557,13 +3558,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-amazon-rwp": {
-    summary: "The Amazon is currently offering $50 after $0 in purchases within 3 months. There's no annual fee, which makes the $50 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 based on a 100.0¢ per-point valuation.",
+    summary: "The Amazon is currently offering $50 after $0 in purchases within 3 months. There's no annual fee, which makes the $50 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amazon until you've earned the $50 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $50 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$50 sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), amazon, car_rentals_(portal), hotels_(portal)",
+      "3x on airfare (travel portal), amazon, car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3571,7 +3572,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Amazon is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amazon sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $50 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Amazon sign-up bonus?", a: "The current bonus is $50 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Amazon annual fee?", a: "There is no annual fee on the Amazon." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Amazon sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3587,7 +3588,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "75,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3598,7 +3599,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The British Airways is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current British Airways sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current British Airways sign-up bonus?", a: "The current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the British Airways annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the British Airways sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3622,7 +3623,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Aer Lingus Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Aer Lingus Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Aer Lingus Visa Signature sign-up bonus?", a: "The current bonus is 75,000 points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Aer Lingus Visa Signature annual fee?", a: "There is no annual fee on the Chase Aer Lingus Visa Signature." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Aer Lingus Visa Signature sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3633,13 +3634,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-chase-freedom-flex-rwp": {
-    summary: "The Chase Freedom Flex is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Chase Freedom Flex is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Freedom Flex until you've earned the $200 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal), quarterly_categories, travel_(portal), travel_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal), rotating quarterly categories, travel (travel portal), travel (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -3647,7 +3648,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Freedom Flex is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Freedom Flex sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Freedom Flex sign-up bonus?", a: "The current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Chase Freedom Flex annual fee?", a: "There is no annual fee on the Chase Freedom Flex." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Freedom Flex sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3658,13 +3659,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-chase-freedom-unlimited-rwp": {
-    summary: "The Chase Freedom Unlimited is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Chase Freedom Unlimited is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Freedom Unlimited until you've earned the $200 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal), travel_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal), travel (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -3672,7 +3673,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Freedom Unlimited is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Freedom Unlimited sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Freedom Unlimited sign-up bonus?", a: "The current bonus is $200 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Chase Freedom Unlimited annual fee?", a: "There is no annual fee on the Chase Freedom Unlimited." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Freedom Unlimited sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3696,7 +3697,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Iberia Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Iberia Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Iberia Visa Signature sign-up bonus?", a: "The current bonus is 75,000 points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Iberia Visa Signature annual fee?", a: "There is no annual fee on the Chase Iberia Visa Signature." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Iberia Visa Signature sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3713,7 +3714,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "100,000 Ultimate Rewards sign-up bonus",
       "$0 annual fee",
-      "5x on cell_phone_carriers, internet_and_cable, office_supplies, streaming_services",
+      "5x on cell phone carriers, internet and cable, office supplies, streaming services",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -3722,7 +3723,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Chase Ink Business Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Ink Business Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 4 months of account opening." },
+      { q: "What's the current Chase Ink Business Cash sign-up bonus?", a: "The current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 4 months of account opening." },
       { q: "What's the Chase Ink Business Cash annual fee?", a: "There is no annual fee on the Chase Ink Business Cash." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Chase Ink Business Cash sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3733,12 +3734,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-chase-ink-business-premier-rwp": {
-    summary: "The Chase Ink Business Premier is currently offering $1,000 after $10,000 in purchases within 3 months. It carries a $195 annual fee, with no first-year credits to soften it. Estimated net year-one value: $805 based on a 100.0¢ per-point valuation.",
+    summary: "The Chase Ink Business Premier is currently offering $1,000 after $10,000 in purchases within 3 months. It carries a $195 annual fee, with no first-year credits to soften it. Estimated net year-one value: $805 — the bonus is cash back, valued at face.",
     strategy: "To hit the $10,000 requirement in 3 months, you need about $3,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Ink Business Premier until you've earned the $1,000 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $3,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$1,000 sign-up bonus",
-      "2.5x on large_purchases",
+      "2.5x on large purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -3749,7 +3750,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Chase Ink Business Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase Ink Business Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $1,000 after spending $10,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Ink Business Premier sign-up bonus?", a: "The current bonus is $1,000 after spending $10,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Ink Business Premier annual fee?", a: "The annual fee is $195." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Chase Ink Business Premier sign-up bonus take to post?", a: "Once you cross the $10,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3766,7 +3767,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "100,000 Ultimate Rewards sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -3775,7 +3776,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Chase Ink Business Unlimited is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Ink Business Unlimited sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 4 months of account opening." },
+      { q: "What's the current Chase Ink Business Unlimited sign-up bonus?", a: "The current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 4 months of account opening." },
       { q: "What's the Chase Ink Business Unlimited annual fee?", a: "There is no annual fee on the Chase Ink Business Unlimited." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Chase Ink Business Unlimited sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3786,20 +3787,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-chase-rise-rwp": {
-    summary: "The Chase Rise is currently offering $25 after $0 in purchases within 3 months. There's no annual fee, which makes the $25 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $25 based on a 100.0¢ per-point valuation.",
+    summary: "The Chase Rise is currently offering $25 after $0 in purchases within 3 months. There's no annual fee, which makes the $25 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $25 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase Rise until you've earned the $25 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $25 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$25 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Subject to Chase 5/24 — counts against your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Rise is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase Rise sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $25 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Rise sign-up bonus?", a: "The current bonus is $25 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Chase Rise annual fee?", a: "There is no annual fee on the Chase Rise." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Rise sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3815,7 +3816,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 Ultimate Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 Ultimate Rewards sign-up bonus",
-      "5x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal), lyft, special, travel_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal), lyft, select purchases, travel (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -3826,7 +3827,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase Sapphire Preferred is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase Sapphire Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Ultimate Rewards after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Sapphire Preferred sign-up bonus?", a: "The current bonus is 60,000 Ultimate Rewards after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Sapphire Preferred annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Sapphire Preferred sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3842,7 +3843,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $5,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "200,000 Ultimate Rewards sign-up bonus",
-      "8x on airfare_(portal), car_rentals_(portal), cruises_(portal), hotels_(portal), travel_(portal)",
+      "8x on airfare (travel portal), car rentals (travel portal), cruises (travel portal), hotels (travel portal), travel (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -3870,7 +3871,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "90,000 Miles sign-up bonus",
       "$0 annual fee",
-      "5x on everything_else",
+      "5x on all other purchases",
       "5x everything_else",
       "2x travel",
     ],
@@ -3880,7 +3881,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase United ClubSM is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase United ClubSM sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 90,000 Miles after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase United ClubSM sign-up bonus?", a: "The current bonus is 90,000 Miles after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase United ClubSM annual fee?", a: "There is no annual fee on the Chase United ClubSM." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase United ClubSM sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3905,7 +3906,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase UnitedSM Explorer is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Chase UnitedSM Explorer sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Miles after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase UnitedSM Explorer sign-up bonus?", a: "The current bonus is 60,000 Miles after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase UnitedSM Explorer annual fee?", a: "There is no annual fee on the Chase UnitedSM Explorer." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase UnitedSM Explorer sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3916,12 +3917,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-disney-inspire-rwp": {
-    summary: "The Disney Inspire is currently offering $300 after $1,000 in purchases within 3 months. It carries a $149 annual fee, with no first-year credits to soften it. Estimated net year-one value: $151 based on a 100.0¢ per-point valuation.",
+    summary: "The Disney Inspire is currently offering $300 after $1,000 in purchases within 3 months. It carries a $149 annual fee, with no first-year credits to soften it. Estimated net year-one value: $151 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Disney Inspire until you've earned the $300 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $300 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $149 annual fee.",
     pros: [
       "$300 sign-up bonus",
-      "10x on special",
+      "10x on select purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -3930,7 +3931,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Disney Inspire is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Disney Inspire sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Disney Inspire sign-up bonus?", a: "The current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Disney Inspire annual fee?", a: "The annual fee is $149." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Disney Inspire sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3941,12 +3942,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-disney-premier-rwp": {
-    summary: "The Disney Premier is currently offering $300 after $1,000 in purchases within 3 months. It carries a $49 annual fee, with no first-year credits to soften it. Estimated net year-one value: $251 based on a 100.0¢ per-point valuation.",
+    summary: "The Disney Premier is currently offering $300 after $1,000 in purchases within 3 months. It carries a $49 annual fee, with no first-year credits to soften it. Estimated net year-one value: $251 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Disney Premier until you've earned the $300 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $300 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $49 annual fee.",
     pros: [
       "$300 sign-up bonus",
-      "10x on specified_store(s)",
+      "10x on select stores",
     ],
     cons: [
       "$49 annual fee",
@@ -3954,7 +3955,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Disney Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Disney Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Disney Premier sign-up bonus?", a: "The current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Disney Premier annual fee?", a: "The annual fee is $49." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Disney Premier sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3965,20 +3966,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-disney-rwp": {
-    summary: "The Disney is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Disney is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Disney until you've earned the $150 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "10x on specified_store(s)",
+      "10x on select stores",
     ],
     cons: [
       "Subject to Chase 5/24 — counts against your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Disney is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Disney sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Disney sign-up bonus?", a: "The current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Disney annual fee?", a: "There is no annual fee on the Disney." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Disney sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -3989,20 +3990,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-doordash-rewards-rwp": {
-    summary: "The DoorDash Rewards is currently offering $96 after $0 in purchases within 3 months. There's no annual fee, which makes the $96 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $96 based on a 100.0¢ per-point valuation.",
+    summary: "The DoorDash Rewards is currently offering $96 after $0 in purchases within 3 months. There's no annual fee, which makes the $96 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $96 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the DoorDash Rewards until you've earned the $96 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $96 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$96 sign-up bonus",
       "$0 annual fee",
-      "4x on specified_store(s)",
+      "4x on select stores",
     ],
     cons: [
       "Subject to Chase 5/24 — counts against your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The DoorDash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current DoorDash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $96 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current DoorDash Rewards sign-up bonus?", a: "The current bonus is $96 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the DoorDash Rewards annual fee?", a: "There is no annual fee on the DoorDash Rewards." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the DoorDash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4018,7 +4019,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 75,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "75,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4029,7 +4030,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Iberia is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Iberia sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Iberia sign-up bonus?", a: "The current bonus is 75,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Iberia annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Iberia sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4045,7 +4046,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "140,000 IHG One Rewards sign-up bonus",
-      "10x on hotels_(portal)",
+      "10x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4056,7 +4057,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The IHG One Rewards Premier Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current IHG One Rewards Premier Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 140,000 IHG One Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current IHG One Rewards Premier Business sign-up bonus?", a: "The current bonus is 140,000 IHG One Rewards after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the IHG One Rewards Premier Business annual fee?", a: "The annual fee is $99." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4068,84 +4069,87 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-ihg-one-rewards-premier-rwp": {
-    summary: "The IHG One Rewards Premier is currently offering 140,000 IHG One Rewards after $3,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $741 based on a 0.6¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the IHG One Rewards Premier until you've earned the 140,000 IHG One Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 140,000 IHG One Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The IHG One Rewards Premier is currently offering 185,000 IHG One Rewards after $6,000 in purchases within 6 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1,011 based on a 0.6¢ per-point valuation.",
+    strategy: "To hit the $6,000 requirement in 6 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the IHG One Rewards Premier until you've earned the 185,000 IHG One Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 185,000 IHG One Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "140,000 IHG One Rewards sign-up bonus",
-      "10x on hotels_(portal)",
+      "185,000 IHG One Rewards sign-up bonus",
+      "10x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$99 annual fee",
+      "High $6,000 minimum spend can be hard to hit organically",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The IHG One Rewards Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current IHG One Rewards Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 140,000 IHG One Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current IHG One Rewards Premier sign-up bonus?", a: "The current bonus is 185,000 IHG One Rewards after spending $6,000 on purchases within 6 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the IHG One Rewards Premier annual fee?", a: "The annual fee is $99." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the IHG One Rewards Premier sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the IHG One Rewards Premier sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:39.610Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/premier?iCELL=61FY",
   },
 
   "chase-ihg-one-rewards-traveler-rwp": {
-    summary: "The IHG One Rewards Traveler is currently offering 80,000 IHG One Rewards after $2,000 in purchases within 3 months. There's no annual fee, which makes the 80,000 IHG One Rewards bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $480 based on a 0.6¢ per-point valuation.",
-    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the IHG One Rewards Traveler until you've earned the 80,000 IHG One Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 80,000 IHG One Rewards bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The IHG One Rewards Traveler is currently offering 125,000 IHG One Rewards after $4,000 in purchases within 6 months. There's no annual fee, which makes the 125,000 IHG One Rewards bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 based on a 0.6¢ per-point valuation.",
+    strategy: "To hit the $4,000 requirement in 6 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the IHG One Rewards Traveler until you've earned the 125,000 IHG One Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a 125,000 IHG One Rewards bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "80,000 IHG One Rewards sign-up bonus",
+      "125,000 IHG One Rewards sign-up bonus",
       "$0 annual fee",
-      "5x on hotels_(portal)",
+      "5x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
+      "High $4,000 minimum spend can be hard to hit organically",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The IHG One Rewards Traveler is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current IHG One Rewards Traveler sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 IHG One Rewards after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current IHG One Rewards Traveler sign-up bonus?", a: "The current bonus is 125,000 IHG One Rewards after spending $4,000 on purchases within 6 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the IHG One Rewards Traveler annual fee?", a: "There is no annual fee on the IHG One Rewards Traveler." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the IHG One Rewards Traveler sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the IHG One Rewards Traveler sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-savor-30000-cash"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:39.611Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/traveler?iCELL=61FY",
   },
 
   "chase-ihg-premier-175k": {
-    summary: "The Chase IHG Rewards Premier is currently offering 140,000 IHG Rewards after $3,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $601 based on a 0.5¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase IHG Rewards Premier until you've earned the 140,000 IHG Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 140,000 IHG Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The Chase IHG Rewards Premier is currently offering 185,000 IHG Rewards after $6,000 in purchases within 6 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $826 based on a 0.5¢ per-point valuation.",
+    strategy: "To hit the $6,000 requirement in 6 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase IHG Rewards Premier until you've earned the 185,000 IHG Rewards bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 185,000 IHG Rewards bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "140,000 IHG Rewards sign-up bonus",
+      "185,000 IHG Rewards sign-up bonus",
       "Free night certificate on anniversary (up to 40k points)",
       "Platinum Elite status",
     ],
     cons: [
       "$99 annual fee",
+      "High $6,000 minimum spend can be hard to hit organically",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase IHG Rewards Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase IHG Rewards Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 140,000 IHG Rewards after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase IHG Rewards Premier sign-up bonus?", a: "The current bonus is 185,000 IHG Rewards after spending $6,000 on purchases within 6 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Chase IHG Rewards Premier annual fee?", a: "The annual fee is $99." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
-      { q: "How long does the Chase IHG Rewards Premier sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Chase IHG Rewards Premier sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T07:01:08.323Z",
     verifiedUrl: "https://creditcards.chase.com/a1/ihg/PremierQ203NAEP",
   },
@@ -4156,7 +4160,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "140,000 IHG One Rewards points sign-up bonus",
-      "10x on ihg_hotels",
+      "10x on ihg hotels",
       "Anniversary free-night certificate (up to 40K points)",
       "Platinum Elite status while account is open",
     ],
@@ -4168,7 +4172,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase Ink Business Preferred (100,000 Ultimate Rewards after $8,000/3mo, $95 AF). The Chase IHG One Rewards Premier Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase IHG One Rewards Premier Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 140,000 IHG One Rewards points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase IHG One Rewards Premier Business sign-up bonus?", a: "The current bonus is 140,000 IHG One Rewards points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase IHG One Rewards Premier Business annual fee?", a: "The annual fee is $99." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4195,7 +4199,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Chase business cards in our catalog, the Chase Ink Business Preferred is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Chase Ink Business Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Ink Business Preferred sign-up bonus?", a: "The current bonus is 100,000 Ultimate Rewards after spending $8,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Ink Business Preferred annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Chase Ink Business Preferred sign-up bonus take to post?", a: "Once you cross the $8,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4206,13 +4210,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-instacart-rwp": {
-    summary: "The Instacart is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Instacart is currently offering $100 after $0 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Instacart until you've earned the $100 bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), specified_store(s)",
+      "5x on airfare (travel portal), car rentals (travel portal), select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -4220,7 +4224,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Instacart is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Instacart sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Instacart sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Instacart annual fee?", a: "There is no annual fee on the Instacart." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Instacart sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4237,7 +4241,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 Marriott Bonvoy sign-up bonus",
       "$0 annual fee",
-      "3x on hotels_(portal)",
+      "3x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -4247,7 +4251,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Marriott Bonvoy Bold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Bold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Marriott Bonvoy after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Bold sign-up bonus?", a: "The current bonus is 30,000 Marriott Bonvoy after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Marriott Bonvoy Bold annual fee?", a: "There is no annual fee on the Marriott Bonvoy Bold." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4259,29 +4263,29 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-marriott-bonvoy-boundless-rwp": {
-    summary: "The Marriott Bonvoy Boundless is currently offering 0 Marriott Bonvoy after $0 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $-95 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Marriott Bonvoy Boundless until you've earned the 0 Marriott Bonvoy bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 0 Marriott Bonvoy bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
+    summary: "The Marriott Bonvoy Boundless is currently offering 125,000 Marriott Bonvoy after $0 in purchases within 3 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $1,155 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Marriott Bonvoy Boundless until you've earned the 125,000 Marriott Bonvoy bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 125,000 Marriott Bonvoy bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
-      "0 Marriott Bonvoy sign-up bonus",
-      "6x on hotels_(portal)",
+      "125,000 Marriott Bonvoy sign-up bonus",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
     cons: [
       "$95 annual fee",
       "Hotel-loyalty points typically valued near 0.5¢, lower than transferable currencies",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Marriott Bonvoy Boundless is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Boundless sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Marriott Bonvoy after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Boundless sign-up bonus?", a: "The current bonus is 125,000 Marriott Bonvoy after spending $0 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Marriott Bonvoy Boundless annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Marriott Bonvoy Boundless sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:39.616Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/boundless?iCELL=61FY",
   },
@@ -4292,7 +4296,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 85,000 Marriott Bonvoy bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $250 annual fee.",
     pros: [
       "85,000 Marriott Bonvoy sign-up bonus",
-      "6x on hotels_(portal)",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -4304,7 +4308,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Marriott Bonvoy Bountiful is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Marriott Bonvoy Bountiful sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 85,000 Marriott Bonvoy after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Marriott Bonvoy Bountiful sign-up bonus?", a: "The current bonus is 85,000 Marriott Bonvoy after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Marriott Bonvoy Bountiful annual fee?", a: "The annual fee is $250." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4360,7 +4364,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase IHG Rewards Premier (175,000 IHG Rewards after $5,000/3mo, $99 AF). The Chase Sapphire Reserve is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase Sapphire Reserve sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 125,000 Ultimate Rewards after spending $6,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase Sapphire Reserve sign-up bonus?", a: "The current bonus is 125,000 Ultimate Rewards after spending $6,000 on purchases within 3 months of account opening." },
       { q: "What's the Chase Sapphire Reserve annual fee?", a: "The annual fee is $795. It is partially offset by approximately $300 in year-one statement credits." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase Sapphire Reserve sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4376,7 +4380,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "80,000 Points sign-up bonus",
-      "4x on airfare_(portal)",
+      "4x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4387,7 +4391,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Southwest Rapid Rewards Performance Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Southwest Rapid Rewards Performance Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Southwest Rapid Rewards Performance Business sign-up bonus?", a: "The current bonus is 80,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Southwest Rapid Rewards Performance Business annual fee?", a: "The annual fee is $299." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Southwest Rapid Rewards Performance Business sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4398,26 +4402,26 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-southwest-rapid-rewards-plus-rwp": {
-    summary: "The Southwest Rapid Rewards Plus is currently offering 50,000 Points after $1,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $401 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Plus until you've earned the 50,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The Southwest Rapid Rewards Plus is currently offering 80,000 Points after $1,500 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $701 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Plus until you've earned the 80,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 80,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "50,000 Points sign-up bonus",
-      "2x on airfare_(portal), car_rentals_(portal), cell_phone_carriers, gas_stations, groceries, hotels_(portal), internet_and_cable, ridesharing, streaming_services, transit",
+      "80,000 Points sign-up bonus",
+      "2x on airfare (travel portal), car rentals (travel portal), cell phone carriers, gas stations, groceries, hotels (travel portal), internet and cable, ridesharing, streaming services, transit",
       "Travel Portal Redemption",
     ],
     cons: [
       "$99 annual fee",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Southwest Rapid Rewards Plus is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Southwest Rapid Rewards Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Southwest Rapid Rewards Plus sign-up bonus?", a: "The current bonus is 80,000 Points after spending $1,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Southwest Rapid Rewards Plus annual fee?", a: "The annual fee is $99." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
-      { q: "How long does the Southwest Rapid Rewards Plus sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Southwest Rapid Rewards Plus sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:51.210Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/southwest/plus?iCELL=61FY",
   },
@@ -4428,7 +4432,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -4437,7 +4441,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The Southwest Rapid Rewards Premier Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Southwest Rapid Rewards Premier Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Southwest Rapid Rewards Premier Business sign-up bonus?", a: "The current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Southwest Rapid Rewards Premier Business annual fee?", a: "The annual fee is $149." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the Southwest Rapid Rewards Premier Business sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4448,51 +4452,51 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-southwest-rapid-rewards-premier-rwp": {
-    summary: "The Southwest Rapid Rewards Premier is currently offering 55,000 Points after $1,500 in purchases within 3 months. It carries a $149 annual fee, with no first-year credits to soften it. Estimated net year-one value: $401 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Premier until you've earned the 55,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 55,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $149 annual fee.",
+    summary: "The Southwest Rapid Rewards Premier is currently offering 85,000 Points after $2,000 in purchases within 3 months. It carries a $149 annual fee, with no first-year credits to soften it. Estimated net year-one value: $701 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Premier until you've earned the 85,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 85,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $149 annual fee.",
     pros: [
-      "55,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "85,000 Points sign-up bonus",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$149 annual fee",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Southwest Rapid Rewards Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Southwest Rapid Rewards Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 55,000 Points after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Southwest Rapid Rewards Premier sign-up bonus?", a: "The current bonus is 85,000 Points after spending $2,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Southwest Rapid Rewards Premier annual fee?", a: "The annual fee is $149." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
-      { q: "How long does the Southwest Rapid Rewards Premier sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Southwest Rapid Rewards Premier sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","american-express-green-60000-membership-rewards"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","amex-hilton-surpass-130000-hilton-honors"],
     verifiedAt: "2026-06-12T06:31:51.211Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/southwest/premier?iCELL=61FY",
   },
 
   "chase-southwest-rapid-rewards-priority-rwp": {
-    summary: "The Southwest Rapid Rewards Priority is currently offering 60,000 Points after $2,000 in purchases within 3 months. It carries a $229 annual fee, with no first-year credits to soften it. Estimated net year-one value: $371 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Priority until you've earned the 60,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $229 annual fee.",
+    summary: "The Southwest Rapid Rewards Priority is currently offering 90,000 Points after $3,000 in purchases within 3 months. It carries a $229 annual fee, with no first-year credits to soften it. Estimated net year-one value: $671 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Southwest Rapid Rewards Priority until you've earned the 90,000 Points bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 90,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $229 annual fee.",
     pros: [
-      "60,000 Points sign-up bonus",
-      "3x on airfare_(portal)",
+      "90,000 Points sign-up bonus",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$229 annual fee",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Southwest Rapid Rewards Priority is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Southwest Rapid Rewards Priority sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Southwest Rapid Rewards Priority sign-up bonus?", a: "The current bonus is 90,000 Points after spending $3,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Southwest Rapid Rewards Priority annual fee?", a: "The annual fee is $229." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
-      { q: "How long does the Southwest Rapid Rewards Priority sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Southwest Rapid Rewards Priority sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
     relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","amex-hilton-business-175000-hilton-honors"],
     verifiedAt: "2026-06-12T06:31:51.211Z",
@@ -4500,50 +4504,50 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-united-business-rwp": {
-    summary: "The United Business is currently offering 75,000 United MileagePlus after $5,000 in purchases within 3 months. It carries a $150 annual fee, with no first-year credits to soften it. Estimated net year-one value: $600 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Business until you've earned the 75,000 United MileagePlus bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The United Business is currently offering 110,000 United MileagePlus after $5,000 in purchases within 3 months. It carries a $150 annual fee, with no first-year credits to soften it. Estimated net year-one value: $950 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Business until you've earned the 110,000 United MileagePlus bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
-      "75,000 United MileagePlus sign-up bonus",
-      "2x on airfare_(portal), dining, gas_stations, office_supplies, ridesharing, transit",
+      "110,000 United MileagePlus sign-up bonus",
+      "2x on airfare (travel portal), dining, gas stations, office supplies, ridesharing, transit",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$150 annual fee",
       "High $5,000 minimum spend can be hard to hit organically",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Chase 5/24 applies to approval (you'll be denied if over 5/24) — but once approved it does not add to your 5/24 count",
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The United Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current United Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current United Business sign-up bonus?", a: "The current bonus is 110,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the United Business annual fee?", a: "The annual fee is $150." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the United Business sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","american-express-green-60000-membership-rewards"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","amex-hilton-surpass-130000-hilton-honors"],
     verifiedAt: "2026-06-12T06:31:51.263Z",
     verifiedUrl: "https://creditcards.chase.com/business-credit-cards/united/united-club-business?iCELL=61FY",
   },
 
   "chase-united-club-business-rwp": {
-    summary: "The United Club Business is currently offering 80,000 United MileagePlus after $5,000 in purchases within 3 months. It carries a $695 annual fee, with no first-year credits to soften it. Estimated net year-one value: $105 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Club Business until you've earned the 80,000 United MileagePlus bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The United Club Business is currently offering 110,000 United MileagePlus after $5,000 in purchases within 3 months. It carries a $695 annual fee, with no first-year credits to soften it. Estimated net year-one value: $405 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Club Business until you've earned the 110,000 United MileagePlus bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
-      "80,000 United MileagePlus sign-up bonus",
-      "5x on hotels_(portal)",
+      "110,000 United MileagePlus sign-up bonus",
+      "5x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$695 annual fee",
       "High $5,000 minimum spend can be hard to hit organically",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Chase 5/24 applies to approval (you'll be denied if over 5/24) — but once approved it does not add to your 5/24 count",
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The United Club Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current United Club Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current United Club Business sign-up bonus?", a: "The current bonus is 110,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the United Club Business annual fee?", a: "The annual fee is $695." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How long does the United Club Business sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4559,7 +4563,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 90,000 United MileagePlus bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $695 annual fee.",
     pros: [
       "90,000 United MileagePlus sign-up bonus",
-      "5x on hotels_(portal)",
+      "5x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4570,7 +4574,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The United Club is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current United Club sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 90,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current United Club sign-up bonus?", a: "The current bonus is 90,000 United MileagePlus after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the United Club annual fee?", a: "The annual fee is $695." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the United Club sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4581,27 +4585,27 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-united-explorer-85k": {
-    summary: "The Chase United Explorer is currently offering 85,000 United MileagePlus after $3,000 in purchases within 3 months. It carries a $150 annual fee (waived in year one), with no first-year credits to soften it. Estimated net year-one value: $700 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase United Explorer until you've earned the 85,000 United MileagePlus bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 85,000 United MileagePlus bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
+    summary: "The Chase United Explorer is currently offering 60,000 United MileagePlus after $3,000 in purchases within 3 months. It carries a $150 annual fee (waived in year one), with no first-year credits to soften it. Estimated net year-one value: $450 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Chase United Explorer until you've earned the 60,000 United MileagePlus bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 60,000 United MileagePlus bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $150 annual fee.",
     pros: [
-      "85,000 United MileagePlus sign-up bonus",
+      "60,000 United MileagePlus sign-up bonus",
       "Year-one annual fee waived ($150 thereafter)",
       "Annual fee waived first year",
       "$120 Global Entry/TSA PreCheck credit",
     ],
     cons: [
       "$150 annual fee from year two onward",
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
-    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Sapphire Reserve (125,000 Ultimate Rewards after $6,000/3mo, $795 AF). The Chase United Explorer is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The Chase United Explorer is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Chase United Explorer sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 85,000 United MileagePlus after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Chase United Explorer sign-up bonus?", a: "The current bonus is 60,000 United MileagePlus after spending $3,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Chase United Explorer annual fee?", a: "The annual fee is $150, waived for the first year." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the Chase United Explorer sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-sapphire-reserve-125000-ultimate-rewards","chase-ink-business-preferred-100000-ultimate-rewards","amex-hilton-surpass-130000-hilton-honors"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","amex-hilton-surpass-130000-hilton-honors"],
     verifiedAt: "2026-04-19T22:02:01.962Z",
     verifiedUrl: "https://www.theexplorercard.com/united-rewards-cards/explorer-card",
   },
@@ -4612,7 +4616,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "United flyers who can meet the $3,000 spend requirement and use the checked-bag and United Club pass benefits while the first-year annual fee is waived.",
     pros: [
       "50,000 miles after $3,000, plus 10,000 for adding an authorized user",
-      "2x on airfare_(portal), dining, hotels, hotels_(portal)",
+      "2x on airfare (travel portal), dining, hotels, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4633,27 +4637,27 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "chase-united-gateway-rwp": {
-    summary: "The United Gateway is currently offering 30,000 United MileagePlus after $1,000 in purchases within 3 months. There's no annual fee, which makes the 30,000 United MileagePlus bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Gateway until you've earned the 30,000 United MileagePlus bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 30,000 United MileagePlus bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The United Gateway is currently offering 40,000 United MileagePlus after $1,000 in purchases within 3 months. There's no annual fee, which makes the 40,000 United MileagePlus bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $400 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the United Gateway until you've earned the 40,000 United MileagePlus bonus. Mind your issuer rules: Chase will deny this if you've opened 5+ personal cards in the last 24 months. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a 40,000 United MileagePlus bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "30,000 United MileagePlus sign-up bonus",
+      "40,000 United MileagePlus sign-up bonus",
       "$0 annual fee",
-      "2x on airfare_(portal), gas_stations, ridesharing, toll_fees, transit",
+      "2x on airfare (travel portal), gas stations, ridesharing, tolls, transit",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
-      "Subject to Chase 5/24 — counts against your personal card velocity",
+      "Subject to Chase 5/24 — both counts against and adds to your personal card velocity",
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The United Gateway is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current United Gateway sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 United MileagePlus after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current United Gateway sign-up bonus?", a: "The current bonus is 40,000 United MileagePlus after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the United Gateway annual fee?", a: "There is no annual fee on the United Gateway." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the United Gateway sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-savor-30000-cash"],
+    relatedSlugs: ["chase-amazon-prime-visa-200-cash","chase-ihg-one-rewards-premier-business-140000-ihg-one-rewards-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:51.225Z",
     verifiedUrl: "https://creditcards.chase.com/travel-credit-cards/united/united-gateway",
   },
@@ -4664,7 +4668,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 70,000 United MileagePlus bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $350 annual fee.",
     pros: [
       "70,000 United MileagePlus sign-up bonus",
-      "5x on hotels_(portal)",
+      "5x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4675,7 +4679,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The United Quest is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current United Quest sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 United MileagePlus after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current United Quest sign-up bonus?", a: "The current bonus is 70,000 United MileagePlus after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the United Quest annual fee?", a: "The annual fee is $350." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How long does the United Quest sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -4691,7 +4695,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 World of Hyatt sign-up bonus",
-      "4x on hotels_(portal)",
+      "4x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4703,7 +4707,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's business lineup, the closest comparison is the Chase IHG One Rewards Premier Business (140,000 IHG One Rewards points after $4,000/3mo, $99 AF). The World of Hyatt Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current World of Hyatt Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 World of Hyatt after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current World of Hyatt Business sign-up bonus?", a: "The current bonus is 60,000 World of Hyatt after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the World of Hyatt Business annual fee?", a: "The annual fee is $199." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Chase business cards count *against* 5/24 (i.e. they will deny you if you're over 5/24), but they do not *add to* your 5/24 count once approved. So a successful approval here doesn't burn a personal-card slot." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4720,7 +4724,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 World of Hyatt bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 World of Hyatt sign-up bonus",
-      "4x on hotels_(portal)",
+      "4x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4731,7 +4735,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Chase's personal lineup, the closest comparison is the Chase Amazon Prime Visa ($200 after $0/0mo, $0 AF). The World of Hyatt is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current World of Hyatt sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 World of Hyatt after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current World of Hyatt sign-up bonus?", a: "The current bonus is 60,000 World of Hyatt after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the World of Hyatt annual fee?", a: "The annual fee is $95." },
       { q: "Does the Chase 5/24 rule apply to this card?", a: "Yes. If you've opened five or more personal credit cards in the last 24 months, Chase will auto-deny this application regardless of credit score." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
@@ -4749,7 +4753,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "70,000 AAdvantage miles sign-up bonus",
       "$100 in year-one statement credits",
-      "10x on aa_com_hotels, aa_com_rental_cars",
+      "10x on aa com hotels, aa com rental cars",
       "Admirals Club membership (~$850 value)",
       "Free first checked bag on AA",
     ],
@@ -4759,7 +4763,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi AAdvantage Executive World Elite Mastercard is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citi AAdvantage Executive World Elite Mastercard sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 70,000 AAdvantage miles after spending $7,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi AAdvantage Executive World Elite Mastercard sign-up bonus?", a: "The current bonus is 70,000 AAdvantage miles after spending $7,000 on purchases within 3 months of account opening." },
       { q: "What's the Citi AAdvantage Executive World Elite Mastercard annual fee?", a: "The annual fee is $595. It is partially offset by approximately $100 in year-one statement credits." },
       { q: "How long does the Citi AAdvantage Executive World Elite Mastercard sign-up bonus take to post?", a: "Once you cross the $7,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4776,7 +4780,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
       "80,000 AAdvantage miles sign-up bonus",
       "Year-one annual fee waived ($99 thereafter)",
       "$50 in year-one statement credits",
-      "2x on american_airlines, dining, gas",
+      "2x on american airlines, dining, gas",
       "Free first checked bag on American Airlines",
       "Preferred boarding (Group 5)",
     ],
@@ -4785,7 +4789,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi AAdvantage Platinum Select is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citi AAdvantage Platinum Select sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 80,000 AAdvantage miles after spending $3,500 on purchases within 4 months of account opening." },
+      { q: "What's the current Citi AAdvantage Platinum Select sign-up bonus?", a: "The current bonus is 80,000 AAdvantage miles after spending $3,500 on purchases within 4 months of account opening." },
       { q: "What's the Citi AAdvantage Platinum Select annual fee?", a: "The annual fee is $99, waived for the first year. It is partially offset by approximately $50 in year-one statement credits." },
       { q: "How long does the Citi AAdvantage Platinum Select sign-up bonus take to post?", a: "Once you cross the $3,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4800,7 +4804,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "65,000 Points sign-up bonus",
-      "2x on airfare_(portal), car_rentals, cell_phone_carriers, gas_stations, internet_and_cable",
+      "2x on airfare (travel portal), car rentals, cell phone carriers, gas stations, internet and cable",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4810,7 +4814,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's business lineup, the closest comparison is the American Airlines AAdvantage Platinum Select Business (50,000 miles after $0/4mo, $99 AF). The American Airlines AAdvantage Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 65,000 Points after spending $4,000 on purchases within 4 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage Business sign-up bonus?", a: "The current bonus is 65,000 Points after spending $4,000 on purchases within 4 months of account opening." },
       { q: "What's the American Airlines AAdvantage Business annual fee?", a: "The annual fee is $99." },
       { q: "How long does the American Airlines AAdvantage Business sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4825,7 +4829,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 70,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $595 annual fee.",
     pros: [
       "70,000 miles sign-up bonus",
-      "10x on car_rentals_(portal), hotels_(portal)",
+      "10x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Admirals Club membership",
     ],
@@ -4849,7 +4853,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $350 annual fee.",
     pros: [
       "60,000 miles sign-up bonus",
-      "6x on hotels_(portal)",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4858,7 +4862,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The American Airlines AAdvantage Globe is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage Globe sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $0 on purchases within 4 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage Globe sign-up bonus?", a: "The current bonus is 60,000 miles after spending $0 on purchases within 4 months of account opening." },
       { q: "What's the American Airlines AAdvantage Globe annual fee?", a: "The annual fee is $350." },
       { q: "How long does the American Airlines AAdvantage Globe sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4874,7 +4878,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "15,000 miles sign-up bonus",
       "$0 annual fee",
-      "2x on airfare_(portal), groceries, walmart",
+      "2x on airfare (travel portal), groceries, walmart",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4883,7 +4887,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The American Airlines AAdvantage MileUp is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage MileUp sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage MileUp sign-up bonus?", a: "The current bonus is 15,000 miles after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the American Airlines AAdvantage MileUp annual fee?", a: "There is no annual fee on the American Airlines AAdvantage MileUp." },
       { q: "How long does the American Airlines AAdvantage MileUp sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4898,7 +4902,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "50,000 miles sign-up bonus",
-      "2x on airfare_(portal), car_rentals, car_rentals_(portal), cell_phone_carriers, gas_stations, internet_and_cable",
+      "2x on airfare (travel portal), car rentals, car rentals (travel portal), cell phone carriers, gas stations, internet and cable",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4907,7 +4911,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's business lineup, the closest comparison is the American Airlines AAdvantage Business (65,000 Points after $4,000/4mo, $99 AF). The American Airlines AAdvantage Platinum Select Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage Platinum Select Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 miles after spending $0 on purchases within 4 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage Platinum Select Business sign-up bonus?", a: "The current bonus is 50,000 miles after spending $0 on purchases within 4 months of account opening." },
       { q: "What's the American Airlines AAdvantage Platinum Select Business annual fee?", a: "The annual fee is $99." },
       { q: "How long does the American Airlines AAdvantage Platinum Select Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4922,7 +4926,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 65,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "65,000 miles sign-up bonus",
-      "2x on airfare_(portal), dining, gas_stations",
+      "2x on airfare (travel portal), dining, gas stations",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -4931,7 +4935,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The American Airlines AAdvantage Platinum Select is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current American Airlines AAdvantage Platinum Select sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 65,000 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current American Airlines AAdvantage Platinum Select sign-up bonus?", a: "The current bonus is 65,000 miles after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the American Airlines AAdvantage Platinum Select annual fee?", a: "The annual fee is $99." },
       { q: "How long does the American Airlines AAdvantage Platinum Select sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4947,7 +4951,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 ThankYou sign-up bonus",
       "$0 annual fee",
-      "3x on ev_charging, gas_stations",
+      "3x on EV charging, gas stations",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -4955,7 +4959,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The AT&T Points Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current AT&T Points Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 ThankYou after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current AT&T Points Plus sign-up bonus?", a: "The current bonus is 0 ThankYou after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the AT&T Points Plus annual fee?", a: "There is no annual fee on the AT&T Points Plus." },
       { q: "How long does the AT&T Points Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4970,7 +4974,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 ThankYou bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 ThankYou sign-up bonus",
-      "10x on car_rentals_(portal), hotels_(portal), travel_(portal)",
+      "10x on car rentals (travel portal), hotels (travel portal), travel (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -4980,7 +4984,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi Strata Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citi Strata Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 ThankYou after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi Strata Premier sign-up bonus?", a: "The current bonus is 60,000 ThankYou after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Citi Strata Premier annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Citi Strata Premier sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -4996,7 +5000,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 ThankYou sign-up bonus",
       "$0 annual fee",
-      "5x on car_rentals_(portal), hotels_(portal), travel_(portal)",
+      "5x on car rentals (travel portal), hotels (travel portal), travel (travel portal)",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -5004,7 +5008,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi Strata is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citi Strata sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 ThankYou after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi Strata sign-up bonus?", a: "The current bonus is 20,000 ThankYou after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Citi Strata annual fee?", a: "There is no annual fee on the Citi Strata." },
       { q: "How long does the Citi Strata sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5020,14 +5024,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 ThankYou sign-up bonus",
       "$0 annual fee",
-      "5x on gas_stations",
+      "5x on gas stations",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi ThankYou is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citi ThankYou sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 ThankYou after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi ThankYou sign-up bonus?", a: "The current bonus is 0 ThankYou after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Citi ThankYou annual fee?", a: "There is no annual fee on the Citi ThankYou." },
       { q: "How long does the Citi ThankYou sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5042,7 +5046,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $295 annual fee.",
     pros: [
       "$0 sign-up bonus",
-      "3x on dining, groceries, movie_theaters, select_live_entertainment, streaming_services",
+      "3x on dining, groceries, movie theaters, select live entertainment, streaming services",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5050,7 +5054,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citizens Bank Summit Reserve is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citizens Bank Summit Reserve sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Citizens Bank Summit Reserve sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Citizens Bank Summit Reserve annual fee?", a: "The annual fee is $295." },
       { q: "How long does the Citizens Bank Summit Reserve sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5074,7 +5078,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citizens Bank Summit is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citizens Bank Summit sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Citizens Bank Summit sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Citizens Bank Summit annual fee?", a: "There is no annual fee on the Citizens Bank Summit." },
       { q: "How long does the Citizens Bank Summit sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5086,7 +5090,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
 
 
   "citi-custom-cash-200": {
-    summary: "The Citi Custom Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Citi Custom Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Custom Cash until you've earned the $200 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5100,7 +5104,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Elite (100,000 ThankYou Points after $6,000/3mo, $595 AF). The Citi Custom Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citi Custom Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
+      { q: "What's the current Citi Custom Cash sign-up bonus?", a: "The current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
       { q: "What's the Citi Custom Cash annual fee?", a: "There is no annual fee on the Citi Custom Cash." },
       { q: "How long does the Citi Custom Cash sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5110,7 +5114,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "citi-diamond-preferred-0apr": {
-    summary: "The Citi Diamond Preferred is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Citi Diamond Preferred is currently offering $0 after $0 in purchases within 0 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 0 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Diamond Preferred until you've earned the $0 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5124,7 +5128,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Citi Diamond Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citi Diamond Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
+      { q: "What's the current Citi Diamond Preferred sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 0 months of account opening." },
       { q: "What's the Citi Diamond Preferred annual fee?", a: "There is no annual fee on the Citi Diamond Preferred." },
       { q: "How long does the Citi Diamond Preferred sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5134,7 +5138,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "citi-double-cash-200": {
-    summary: "The Citi Double Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Citi Double Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Double Cash until you've earned the $200 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5148,7 +5152,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Elite (100,000 ThankYou Points after $6,000/3mo, $595 AF). The Citi Double Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Citi Double Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
+      { q: "What's the current Citi Double Cash sign-up bonus?", a: "The current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
       { q: "What's the Citi Double Cash annual fee?", a: "There is no annual fee on the Citi Double Cash." },
       { q: "How long does the Citi Double Cash sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5164,7 +5168,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on specified_store(s)",
+      "5x on select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5172,7 +5176,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The My Best Buy is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current My Best Buy sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current My Best Buy sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the My Best Buy annual fee?", a: "There is no annual fee on the My Best Buy." },
       { q: "How long does the My Best Buy sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5197,7 +5201,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Double Cash ($200 after $1,500/6mo, $0 AF). The Citi Strata Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citi Strata Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 ThankYou Points after spending $6,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi Strata Elite sign-up bonus?", a: "The current bonus is 100,000 ThankYou Points after spending $6,000 on purchases within 3 months of account opening." },
       { q: "What's the Citi Strata Elite annual fee?", a: "The annual fee is $595. It is partially offset by approximately $500 in year-one statement credits." },
       { q: "How long does the Citi Strata Elite sign-up bonus take to post?", a: "Once you cross the $6,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5213,7 +5217,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "75,000 ThankYou Points sign-up bonus",
       "$100 in year-one statement credits",
-      "10x on citi_travel",
+      "10x on citi travel",
       "$100 annual hotel credit (one $500+ hotel booking via Citi Travel)",
       "3x on air travel, hotels, restaurants, supermarkets, gas",
     ],
@@ -5223,7 +5227,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi AAdvantage Platinum Select (80,000 AAdvantage miles after $3,500/4mo, $99 AF). The Citi Strata Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Citi Strata Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 ThankYou Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Citi Strata Premier sign-up bonus?", a: "The current bonus is 75,000 ThankYou Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Citi Strata Premier annual fee?", a: "The annual fee is $95. It is partially offset by approximately $100 in year-one statement credits." },
       { q: "How long does the Citi Strata Premier sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5239,14 +5243,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "5,000 Points sign-up bonus",
       "$0 annual fee",
-      "5x on specified_store(s)",
+      "5x on select stores",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Premier (75,000 ThankYou Points after $4,000/3mo, $95 AF). The Tractor Supply Co. is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Tractor Supply Co. sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 5,000 Points after spending $50 on purchases within 1 months of account opening." },
+      { q: "What's the current Tractor Supply Co. sign-up bonus?", a: "The current bonus is 5,000 Points after spending $50 on purchases within 1 months of account opening." },
       { q: "What's the Tractor Supply Co. annual fee?", a: "There is no annual fee on the Tractor Supply Co.." },
       { q: "How long does the Tractor Supply Co. sign-up bonus take to post?", a: "Once you cross the $50 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5262,14 +5266,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within City-national's personal lineup, the closest comparison is the City National Crystal ($0 after $0/3mo, $400 AF). The City National Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current City National Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current City National Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the City National Cash Back annual fee?", a: "There is no annual fee on the City National Cash Back." },
       { q: "How long does the City National Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5284,7 +5288,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $400 annual fee.",
     pros: [
       "$0 sign-up bonus",
-      "3x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), dining, hotels, hotels_(portal), ridesharing, transit",
+      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), dining, hotels, hotels (travel portal), ridesharing, transit",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5292,7 +5296,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Crystal is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current City National Crystal sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current City National Crystal sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the City National Crystal annual fee?", a: "The annual fee is $400." },
       { q: "How long does the City National Crystal sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5308,14 +5312,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on gas_stations",
+      "3x on gas stations",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Flex Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current City National Flex Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current City National Flex Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the City National Flex Rewards annual fee?", a: "There is no annual fee on the City National Flex Rewards." },
       { q: "How long does the City National Flex Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5331,14 +5335,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within City-national's personal lineup, the closest comparison is the City National Cash Back ($0 after $0/3mo, $0 AF). The City National Now is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current City National Now sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current City National Now sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the City National Now annual fee?", a: "There is no annual fee on the City National Now." },
       { q: "How long does the City National Now sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5354,7 +5358,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "6x on gas_stations",
+      "6x on gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5362,7 +5366,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Aven (Gas Option) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aven (Gas Option) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aven (Gas Option) sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aven (Gas Option) annual fee?", a: "There is no annual fee on the Aven (Gas Option)." },
       { q: "How long does the Aven (Gas Option) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5386,7 +5390,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Aven (Groceries Option) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aven (Groceries Option) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aven (Groceries Option) sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aven (Groceries Option) annual fee?", a: "There is no annual fee on the Aven (Groceries Option)." },
       { q: "How long does the Aven (Groceries Option) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5402,7 +5406,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on all_other",
+      "3x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5410,7 +5414,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven (Groceries Option) ($0 after $0/3mo, $0 AF). The Aven is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Aven sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Aven sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Aven annual fee?", a: "There is no annual fee on the Aven." },
       { q: "How long does the Aven sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5426,7 +5430,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5434,7 +5438,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Robinhood Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Robinhood Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Robinhood Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Robinhood Gold annual fee?", a: "There is no annual fee on the Robinhood Gold." },
       { q: "How long does the Robinhood Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5449,7 +5453,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $645 annual fee.",
     pros: [
       "$0 sign-up bonus",
-      "10x on car_rentals_(portal), hotels_(portal)",
+      "10x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -5458,7 +5462,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Robinhood Platinum is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Robinhood Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Robinhood Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Robinhood Platinum annual fee?", a: "The annual fee is $645." },
       { q: "How long does the Robinhood Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5468,7 +5472,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "coastal-walmart-onepay-cashrewards-rwp": {
-    summary: "The Walmart OnePay CashRewards is currently offering $35 after $75 in purchases within 1 months. There's no annual fee, which makes the $35 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $35 based on a 100.0¢ per-point valuation.",
+    summary: "The Walmart OnePay CashRewards is currently offering $35 after $75 in purchases within 1 months. There's no annual fee, which makes the $35 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $35 — the bonus is cash back, valued at face.",
     strategy: "To hit the $75 requirement in 1 months, you need about $75 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Walmart OnePay CashRewards until you've earned the $35 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $35 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5482,7 +5486,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Coastal's personal lineup, the closest comparison is the Aven ($0 after $0/3mo, $0 AF). The Walmart OnePay CashRewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Walmart OnePay CashRewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $35 after spending $75 on purchases within 1 months of account opening." },
+      { q: "What's the current Walmart OnePay CashRewards sign-up bonus?", a: "The current bonus is $35 after spending $75 on purchases within 1 months of account opening." },
       { q: "What's the Walmart OnePay CashRewards annual fee?", a: "There is no annual fee on the Walmart OnePay CashRewards." },
       { q: "How long does the Walmart OnePay CashRewards sign-up bonus take to post?", a: "Once you cross the $75 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5492,7 +5496,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "comenity-aaa-daily-advantage-rwp": {
-    summary: "The AAA Daily Advantage is currently offering $100 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The AAA Daily Advantage is currently offering $100 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the AAA Daily Advantage until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5506,7 +5510,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Travel Advantage ($100 after $1,000/3mo, $0 AF). The AAA Daily Advantage is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current AAA Daily Advantage sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current AAA Daily Advantage sign-up bonus?", a: "The current bonus is $100 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the AAA Daily Advantage annual fee?", a: "There is no annual fee on the AAA Daily Advantage." },
       { q: "How long does the AAA Daily Advantage sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5516,13 +5520,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "comenity-aaa-travel-advantage-rwp": {
-    summary: "The AAA Travel Advantage is currently offering $100 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The AAA Travel Advantage is currently offering $100 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the AAA Travel Advantage until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "5x on ev_charging, gas_stations",
+      "5x on EV charging, gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5530,7 +5534,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The AAA Travel Advantage is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current AAA Travel Advantage sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current AAA Travel Advantage sign-up bonus?", a: "The current bonus is $100 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the AAA Travel Advantage annual fee?", a: "There is no annual fee on the AAA Travel Advantage." },
       { q: "How long does the AAA Travel Advantage sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5546,7 +5550,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5554,7 +5558,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Bread Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bread Cashback sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bread Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bread Cashback annual fee?", a: "There is no annual fee on the Bread Cashback." },
       { q: "How long does the Bread Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5570,7 +5574,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on dining, gas_stations, groceries, utilities",
+      "3x on dining, gas stations, groceries, utilities",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -5578,7 +5582,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Bread Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Bread Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Bread Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Bread Rewards annual fee?", a: "There is no annual fee on the Bread Rewards." },
       { q: "How long does the Bread Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5594,14 +5598,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 Points sign-up bonus",
       "$0 annual fee",
-      "5x on hotels_(portal)",
+      "5x on hotels (travel portal)",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Caesars Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Caesars Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Caesars Rewards sign-up bonus?", a: "The current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Caesars Rewards annual fee?", a: "There is no annual fee on the Caesars Rewards." },
       { q: "How long does the Caesars Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5617,14 +5621,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "15,000 Points sign-up bonus",
       "$0 annual fee",
-      "16x on auto_parts_&_service",
+      "16x on auto parts & service",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Comenity's personal lineup, the closest comparison is the AAA Daily Advantage ($100 after $1,000/3mo, $0 AF). The Ford Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ford Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Points after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Ford Rewards sign-up bonus?", a: "The current bonus is 15,000 Points after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Ford Rewards annual fee?", a: "There is no annual fee on the Ford Rewards." },
       { q: "How long does the Ford Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5634,13 +5638,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "communityamerica-visa-signature-150": {
-    summary: "The CommunityAmerica Visa Signature is currently offering $150 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The CommunityAmerica Visa Signature is currently offering $150 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the CommunityAmerica Visa Signature until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "1.5% on everything_else",
+      "1.5% on all other purchases",
       "$150 after $2,000 in purchases within 90 days",
       "Unlimited 1.5% cash back",
     ],
@@ -5649,7 +5653,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Communityamerica personal cards in our catalog, the CommunityAmerica Visa Signature is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current CommunityAmerica Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current CommunityAmerica Visa Signature sign-up bonus?", a: "The current bonus is $150 after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the CommunityAmerica Visa Signature annual fee?", a: "There is no annual fee on the CommunityAmerica Visa Signature." },
       { q: "How long does the CommunityAmerica Visa Signature sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5665,14 +5669,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Among Continental-bank business cards in our catalog, the Novo Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Novo Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Novo Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Novo Business annual fee?", a: "There is no annual fee on the Novo Business." },
       { q: "How long does the Novo Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5682,13 +5686,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cpb-business-cash-preferred-25": {
-    summary: "The Central Pacific Bank Business Cash Preferred is currently offering $25 after $1 in purchases within 3 months. There's no annual fee, which makes the $25 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $25 based on a 100.0¢ per-point valuation.",
+    summary: "The Central Pacific Bank Business Cash Preferred is currently offering $25 after $1 in purchases within 3 months. There's no annual fee, which makes the $25 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $25 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1 requirement in 3 months, you need about $1 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Central Pacific Bank Business Cash Preferred until you've earned the $25 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$25 sign-up bonus",
       "$0 annual fee",
-      "3% on gas_stations, ev_charging, cell_phone, office_supplies, dining",
+      "3% on gas stations, EV charging, cell phone, office supplies, dining",
       "$25 cash back after the first purchase",
       "3% on eligible gas, EV charging, cell phone, office supply, and dining purchases",
     ],
@@ -5697,7 +5701,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Central-pacific-bank business cards in our catalog, the Central Pacific Bank Business Cash Preferred is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Business Cash Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $25 after spending $1 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Business Cash Preferred sign-up bonus?", a: "The current bonus is $25 after spending $1 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Business Cash Preferred annual fee?", a: "There is no annual fee on the Central Pacific Bank Business Cash Preferred." },
       { q: "How long does the Central Pacific Bank Business Cash Preferred sign-up bonus take to post?", a: "Once you cross the $1 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5713,7 +5717,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "2,500 points sign-up bonus",
       "$0 annual fee",
-      "1.5x on everything_else",
+      "1.5x on all other purchases",
       "2,500 points after the first purchase",
       "1.5x on eligible purchases",
     ],
@@ -5722,7 +5726,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank College Real Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Central Pacific Bank College Real Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 2,500 points after spending $1 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank College Real Rewards sign-up bonus?", a: "The current bonus is 2,500 points after spending $1 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank College Real Rewards annual fee?", a: "There is no annual fee on the Central Pacific Bank College Real Rewards." },
       { q: "How long does the Central Pacific Bank College Real Rewards sign-up bonus take to post?", a: "Once you cross the $1 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5747,7 +5751,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Max Cash Preferred ($150 after $500/3mo, $0 AF). The Central Pacific Bank Everyday Rewards+ is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Everyday Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 points after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Everyday Rewards+ sign-up bonus?", a: "The current bonus is 15,000 points after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Everyday Rewards+ annual fee?", a: "There is no annual fee on the Central Pacific Bank Everyday Rewards+." },
       { q: "How long does the Central Pacific Bank Everyday Rewards+ sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5757,13 +5761,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cpb-max-cash-preferred-150": {
-    summary: "The Central Pacific Bank Max Cash Preferred is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Central Pacific Bank Max Cash Preferred is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Central Pacific Bank Max Cash Preferred until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "5% on selected_categories",
+      "5% on select categories",
       "$150 after $500 in 90 days",
       "5% in two selected categories on the first $2,000 per quarter",
     ],
@@ -5772,7 +5776,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Max Cash Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Max Cash Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Max Cash Preferred sign-up bonus?", a: "The current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Max Cash Preferred annual fee?", a: "There is no annual fee on the Central Pacific Bank Max Cash Preferred." },
       { q: "How long does the Central Pacific Bank Max Cash Preferred sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5788,7 +5792,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5% on selected_categories",
+      "5% on select categories",
       "5% in two selected categories on the first $2,000 per quarter",
       "2% in one everyday category",
     ],
@@ -5797,7 +5801,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Max Cash Secured is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Max Cash Secured sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Max Cash Secured sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Max Cash Secured annual fee?", a: "There is no annual fee on the Central Pacific Bank Max Cash Secured." },
       { q: "How long does the Central Pacific Bank Max Cash Secured sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5812,7 +5816,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $390 annual fee.",
     pros: [
       "50,000 points sign-up bonus",
-      "6x on issuer_travel_portal",
+      "6x on issuer travel portal",
       "50,000 points after $4,500 in 90 days",
       "6x prepaid travel through the Rewards Center",
     ],
@@ -5822,7 +5826,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Reserve Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Reserve Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 points after spending $4,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Reserve Rewards+ sign-up bonus?", a: "The current bonus is 50,000 points after spending $4,500 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Reserve Rewards+ annual fee?", a: "The annual fee is $390." },
       { q: "How long does the Central Pacific Bank Reserve Rewards+ sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5846,7 +5850,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Secured is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Secured sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Central Pacific Bank Secured sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Central Pacific Bank Secured annual fee?", a: "There is no annual fee on the Central Pacific Bank Secured." },
       { q: "How long does the Central Pacific Bank Secured sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5862,7 +5866,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "25,000 points sign-up bonus",
       "Year-one annual fee waived ($99 thereafter)",
-      "4x on travel, gas_stations, ev_charging, entertainment, recreation",
+      "4x on travel, gas stations, EV charging, entertainment, recreation",
       "25,000 points after $2,000 in 120 days",
       "4x travel, gas, EV charging, entertainment, and recreation",
     ],
@@ -5871,7 +5875,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Central-pacific-bank's personal lineup, the closest comparison is the Central Pacific Bank Everyday Rewards+ (15,000 points after $500/3mo, $0 AF). The Central Pacific Bank Travel Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Central Pacific Bank Travel Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 points after spending $2,000 on purchases within 4 months of account opening." },
+      { q: "What's the current Central Pacific Bank Travel Rewards+ sign-up bonus?", a: "The current bonus is 25,000 points after spending $2,000 on purchases within 4 months of account opening." },
       { q: "What's the Central Pacific Bank Travel Rewards+ annual fee?", a: "The annual fee is $99, waived for the first year." },
       { q: "How long does the Central Pacific Bank Travel Rewards+ sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5881,20 +5885,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "cross-river-bank-upgrade-triple-rewards-rwp": {
-    summary: "The Upgrade Triple Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Upgrade Triple Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Upgrade Triple Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3x on auto_parts_&_service, drug_stores, home_improvement_stores, self-care_/_spa_services, special, sports_&_recreation",
+      "3x on auto parts & service, drug stores, home improvement stores, self-care / spa services, select purchases, sports & recreation",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Among Cross-river-bank personal cards in our catalog, the Upgrade Triple Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Upgrade Triple Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Upgrade Triple Rewards sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Upgrade Triple Rewards annual fee?", a: "There is no annual fee on the Upgrade Triple Rewards." },
       { q: "How long does the Upgrade Triple Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5918,7 +5922,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Cu-hawaii personal cards in our catalog, the CU Hawaii Mastercard Platinum is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current CU Hawaii Mastercard Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current CU Hawaii Mastercard Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the CU Hawaii Mastercard Platinum annual fee?", a: "There is no annual fee on the CU Hawaii Mastercard Platinum." },
       { q: "How long does the CU Hawaii Mastercard Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5928,7 +5932,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-discover-chrome-auto": {
-    summary: "The Discover Chrome is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover Chrome is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Chrome until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5943,7 +5947,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Chrome is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover Chrome sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover Chrome sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover Chrome annual fee?", a: "There is no annual fee on the Discover Chrome." },
       { q: "How long does the Discover Chrome sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5953,7 +5957,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-discover-chrome-student-auto": {
-    summary: "The Discover Chrome Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover Chrome Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Chrome Student until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5968,7 +5972,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Chrome Student is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover Chrome Student sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover Chrome Student sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover Chrome Student annual fee?", a: "There is no annual fee on the Discover Chrome Student." },
       { q: "How long does the Discover Chrome Student sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -5978,7 +5982,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-discover-it-auto": {
-    summary: "The Discover it is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover it is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover it until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -5990,7 +5994,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover it is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover it sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover it sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover it annual fee?", a: "There is no annual fee on the Discover it." },
       { q: "How long does the Discover it sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6006,7 +6010,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on dining, gas_stations",
+      "2x on dining, gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6014,7 +6018,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover It Chrome Gas & Restaurant is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover It Chrome Gas & Restaurant sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover It Chrome Gas & Restaurant sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover It Chrome Gas & Restaurant annual fee?", a: "There is no annual fee on the Discover It Chrome Gas & Restaurant." },
       { q: "How long does the Discover It Chrome Gas & Restaurant sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6030,7 +6034,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 miles sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6038,7 +6042,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover It Miles is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover It Miles sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover It Miles sign-up bonus?", a: "The current bonus is 0 miles after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover It Miles annual fee?", a: "There is no annual fee on the Discover It Miles." },
       { q: "How long does the Discover It Miles sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6048,13 +6052,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-discover-it-student-auto": {
-    summary: "The Discover it Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover it Student is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover it Student until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1% on everything_else",
+      "1% on all other purchases",
       "1% everything_else",
     ],
     cons: [
@@ -6062,7 +6066,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover it Student is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover it Student sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover it Student sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover it Student annual fee?", a: "There is no annual fee on the Discover it Student." },
       { q: "How long does the Discover it Student sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6072,13 +6076,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-discover-nhl-auto": {
-    summary: "The Discover Nhl is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover Nhl is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover Nhl until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1% on everything_else",
+      "1% on all other purchases",
       "1% everything_else",
     ],
     cons: [
@@ -6086,7 +6090,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Discover's personal lineup, the closest comparison is the Discover it Cash Back ($0 after $0/1mo, $0 AF). The Discover Nhl is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Discover Nhl sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Discover Nhl sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Discover Nhl annual fee?", a: "There is no annual fee on the Discover Nhl." },
       { q: "How long does the Discover Nhl sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6096,7 +6100,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "discover-it-100-double": {
-    summary: "The Discover it Cash Back is currently offering $100 after $0 in purchases within 1 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Discover it Cash Back is currently offering $100 after $0 in purchases within 1 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 1 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Discover it Cash Back until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -6110,7 +6114,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Discover personal cards in our catalog, the Discover it Cash Back is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Discover it Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $0 on purchases within 1 months of account opening." },
+      { q: "What's the current Discover it Cash Back sign-up bonus?", a: "The current bonus is $100 after spending $0 on purchases within 1 months of account opening." },
       { q: "What's the Discover it Cash Back annual fee?", a: "There is no annual fee on the Discover it Cash Back." },
       { q: "How long does the Discover it Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6120,11 +6124,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "elan-financial-services-associated-bank-everyday-rewards-rwp": {
-    summary: "The Associated Bank Everyday Rewards+ is currently offering 15,000 Points after $500 in purchases within 3 months. There's no annual fee, which makes the 15,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Everyday Rewards+ until you've earned the 15,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 15,000 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The Associated Bank Everyday Rewards+ is currently offering 25,000 Points after $1,000 in purchases within 3 months. There's no annual fee, which makes the 25,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Everyday Rewards+ until you've earned the 25,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a 25,000 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "15,000 Points sign-up bonus",
+      "25,000 Points sign-up bonus",
       "$0 annual fee",
       "4x on dining",
       "No Foreign Transaction Fees",
@@ -6135,30 +6139,30 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Max Cash Preferred ($150 after $500/3mo, $0 AF). The Associated Bank Everyday Rewards+ is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Associated Bank Everyday Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Points after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Associated Bank Everyday Rewards+ sign-up bonus?", a: "The current bonus is 25,000 Points after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Associated Bank Everyday Rewards+ annual fee?", a: "There is no annual fee on the Associated Bank Everyday Rewards+." },
-      { q: "How long does the Associated Bank Everyday Rewards+ sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Associated Bank Everyday Rewards+ sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["associated-bank-max-cash-preferred-150-cash","associated-bank-reserve-rewards-50000-points","capital-one-savor-30000-cash"],
+    relatedSlugs: ["associated-bank-max-cash-preferred-150-cash","associated-bank-reserve-rewards-50000-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:38.578Z",
     verifiedUrl: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-rewards-credit-card",
   },
 
   "elan-financial-services-associated-bank-max-cash-preferred-rwp": {
-    summary: "The Associated Bank Max Cash Preferred is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Associated Bank Max Cash Preferred is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Max Cash Preferred until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "5x on quarterly_categories",
+      "5x on rotating quarterly categories",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (15,000 Points after $500/3mo, $0 AF). The Associated Bank Max Cash Preferred is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Associated Bank Max Cash Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Associated Bank Max Cash Preferred sign-up bonus?", a: "The current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Associated Bank Max Cash Preferred annual fee?", a: "There is no annual fee on the Associated Bank Max Cash Preferred." },
       { q: "How long does the Associated Bank Max Cash Preferred sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6168,49 +6172,51 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "elan-financial-services-associated-bank-reserve-rewards-rwp": {
-    summary: "The Associated Bank Reserve Rewards+ is currently offering 50,000 Points after $0 in purchases within 3 months. It carries a $390 annual fee, with no first-year credits to soften it. Estimated net year-one value: $110 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Reserve Rewards+ until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Associated Bank Reserve Rewards+ is currently offering 50,000 Points after $4,500 in purchases within 3 months. It carries a $390 annual fee, with no first-year credits to soften it. Estimated net year-one value: $110 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $4,500 requirement in 3 months, you need about $1,500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Reserve Rewards+ until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $390 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "6x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "6x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$390 annual fee",
+      "High $4,500 minimum spend can be hard to hit organically",
     ],
-    comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (15,000 Points after $500/3mo, $0 AF). The Associated Bank Reserve Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (25,000 Points after $1,000/3mo, $0 AF). The Associated Bank Reserve Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Associated Bank Reserve Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Associated Bank Reserve Rewards+ sign-up bonus?", a: "The current bonus is 50,000 Points after spending $4,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Associated Bank Reserve Rewards+ annual fee?", a: "The annual fee is $390." },
-      { q: "How long does the Associated Bank Reserve Rewards+ sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Associated Bank Reserve Rewards+ sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["associated-bank-everyday-rewards-15000-points","associated-bank-max-cash-preferred-150-cash","capital-one-venture-x-100000-capital-one-miles"],
+    relatedSlugs: ["associated-bank-everyday-rewards-25000-points","associated-bank-max-cash-preferred-150-cash","capital-one-spark-miles-for-business-150000-capital-one-miles"],
     verifiedAt: "2026-06-12T06:31:38.580Z",
     verifiedUrl: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-reserve-rewards-credit-card",
   },
 
   "elan-financial-services-associated-bank-travel-rewards-rwp": {
-    summary: "The Associated Bank Travel Rewards+ is currently offering 25,000 Points after $2,000 in purchases within 4 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $151 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $2,000 requirement in 4 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Travel Rewards+ until you've earned the 25,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 25,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The Associated Bank Travel Rewards+ is currently offering 50,000 Points after $4,500 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $401 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $4,500 requirement in 3 months, you need about $1,500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Associated Bank Travel Rewards+ until you've earned the 50,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "25,000 Points sign-up bonus",
-      "4x on ev_charging, gas_stations, movie_theaters, select_live_entertainment, sports_&_recreation, travel",
+      "50,000 Points sign-up bonus",
+      "4x on EV charging, gas stations, movie theaters, select live entertainment, sports & recreation, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
     cons: [
       "$99 annual fee",
+      "High $4,500 minimum spend can be hard to hit organically",
     ],
-    comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (15,000 Points after $500/3mo, $0 AF). The Associated Bank Travel Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
+    comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (25,000 Points after $1,000/3mo, $0 AF). The Associated Bank Travel Rewards+ is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Associated Bank Travel Rewards+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Points after spending $2,000 on purchases within 4 months of account opening." },
+      { q: "What's the current Associated Bank Travel Rewards+ sign-up bonus?", a: "The current bonus is 50,000 Points after spending $4,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Associated Bank Travel Rewards+ annual fee?", a: "The annual fee is $99." },
-      { q: "How long does the Associated Bank Travel Rewards+ sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Associated Bank Travel Rewards+ sign-up bonus take to post?", a: "Once you cross the $4,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["associated-bank-everyday-rewards-15000-points","associated-bank-max-cash-preferred-150-cash","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["associated-bank-everyday-rewards-25000-points","associated-bank-max-cash-preferred-150-cash","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:38.581Z",
     verifiedUrl: "https://www.associatedbank.com/personal/credit-cards-and-payments/credit-cards/visa-travel-rewards-credit-card",
   },
@@ -6222,7 +6228,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6230,7 +6236,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Elan-financial-services's personal lineup, the closest comparison is the Associated Bank Everyday Rewards+ (15,000 Points after $500/3mo, $0 AF). The Fidelity Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Fidelity Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Fidelity Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Fidelity Rewards annual fee?", a: "There is no annual fee on the Fidelity Rewards." },
       { q: "How long does the Fidelity Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6240,13 +6246,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "ent-business-rewards-visa-300": {
-    summary: "The Ent Business Rewards Visa is currently offering $300 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
+    summary: "The Ent Business Rewards Visa is currently offering $300 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ent Business Rewards Visa until you've earned the $300 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$300 sign-up bonus",
       "$0 annual fee",
-      "2% on everything_else",
+      "2% on all other purchases",
       "$300 after $2,000 in purchases within 90 days",
       "Unlimited 2% cash back",
     ],
@@ -6255,7 +6261,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Ent business cards in our catalog, the Ent Business Rewards Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Ent Business Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Ent Business Rewards Visa sign-up bonus?", a: "The current bonus is $300 after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the Ent Business Rewards Visa annual fee?", a: "There is no annual fee on the Ent Business Rewards Visa." },
       { q: "How long does the Ent Business Rewards Visa sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6265,13 +6271,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "ent-cash-rewards-visa-150": {
-    summary: "The Ent Cash Rewards Visa Signature is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Ent Cash Rewards Visa Signature is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ent Cash Rewards Visa Signature until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "1.5% on everything_else",
+      "1.5% on all other purchases",
       "$150 after $1,000 in purchases within 90 days",
       "Unlimited 1.5% cash back",
     ],
@@ -6280,7 +6286,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ent's personal lineup, the closest comparison is the Ent Essential Visa Platinum ($150 after $1,000/3mo, $0 AF). The Ent Cash Rewards Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ent Cash Rewards Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Ent Cash Rewards Visa Signature sign-up bonus?", a: "The current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Ent Cash Rewards Visa Signature annual fee?", a: "There is no annual fee on the Ent Cash Rewards Visa Signature." },
       { q: "How long does the Ent Cash Rewards Visa Signature sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6290,13 +6296,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "ent-essential-visa-150": {
-    summary: "The Ent Essential Visa Platinum is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Ent Essential Visa Platinum is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Ent Essential Visa Platinum until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "1.5% on everything_else",
+      "1.5% on all other purchases",
       "$150 after $1,000 in purchases within 90 days",
       "Unlimited rewards redeemable for 1.5% cash back",
     ],
@@ -6305,7 +6311,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ent's personal lineup, the closest comparison is the Ent Cash Rewards Visa Signature ($150 after $1,000/3mo, $0 AF). The Ent Essential Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ent Essential Visa Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Ent Essential Visa Platinum sign-up bonus?", a: "The current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Ent Essential Visa Platinum annual fee?", a: "There is no annual fee on the Ent Essential Visa Platinum." },
       { q: "How long does the Ent Essential Visa Platinum sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6329,7 +6335,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ent's personal lineup, the closest comparison is the Ent Essential Visa Platinum ($150 after $1,000/3mo, $0 AF). The Ent Lifestyle Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ent Lifestyle Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Ent Lifestyle Visa Signature sign-up bonus?", a: "The current bonus is 15,000 points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Ent Lifestyle Visa Signature annual fee?", a: "There is no annual fee on the Ent Lifestyle Visa Signature." },
       { q: "How long does the Ent Lifestyle Visa Signature sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6353,7 +6359,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ewa-fcu's personal lineup, the closest comparison is the Ewa FCU Visa Platinum ($0 after $0/3mo, $0 AF). The Ewa FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ewa FCU Visa Classic sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Ewa FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Ewa FCU Visa Classic annual fee?", a: "There is no annual fee on the Ewa FCU Visa Classic." },
       { q: "How long does the Ewa FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6377,7 +6383,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Ewa-fcu's personal lineup, the closest comparison is the Ewa FCU Visa Classic ($0 after $0/3mo, $0 AF). The Ewa FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ewa FCU Visa Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Ewa FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Ewa FCU Visa Platinum annual fee?", a: "There is no annual fee on the Ewa FCU Visa Platinum." },
       { q: "How long does the Ewa FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6393,7 +6399,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6401,7 +6407,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Exchange-credit-program personal cards in our catalog, the AAFES Military Star is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current AAFES Military Star sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current AAFES Military Star sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the AAFES Military Star annual fee?", a: "There is no annual fee on the AAFES Military Star." },
       { q: "How long does the AAFES Military Star sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6417,7 +6423,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6425,7 +6431,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fairwinds-cu's personal lineup, the closest comparison is the Fairwinds CU Visa Signature (60,000 Points after $5,000/3mo, $95 AF). The Fairwinds CU Preferred Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Fairwinds CU Preferred Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Fairwinds CU Preferred Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Fairwinds CU Preferred Cash Back annual fee?", a: "There is no annual fee on the Fairwinds CU Preferred Cash Back." },
       { q: "How long does the Fairwinds CU Preferred Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6440,7 +6446,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 Points sign-up bonus",
-      "5x on toll_fees, travel",
+      "5x on tolls, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -6450,7 +6456,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fairwinds-cu's personal lineup, the closest comparison is the Fairwinds CU Preferred Cash Back ($0 after $0/3mo, $0 AF). The Fairwinds CU Visa Signature is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Fairwinds CU Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Fairwinds CU Visa Signature sign-up bonus?", a: "The current bonus is 60,000 Points after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Fairwinds CU Visa Signature annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Fairwinds CU Visa Signature sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6474,7 +6480,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's personal lineup, the closest comparison is the First Hawaiian Bank Priority Unlimited Cash Back ($150 after $1,500/3mo, $0 AF). The First Hawaiian Bank Heritage is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Heritage sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Heritage sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Heritage annual fee?", a: "There is no annual fee on the First Hawaiian Bank Heritage." },
       { q: "How long does the First Hawaiian Bank Heritage sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6500,7 +6506,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's personal lineup, the closest comparison is the First Hawaiian Bank Priority Unlimited Cash Back ($150 after $1,500/3mo, $0 AF). The First Hawaiian Bank Priority Destinations World Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Destinations World Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Priority Miles after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Priority Destinations World Elite sign-up bonus?", a: "The current bonus is 50,000 Priority Miles after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Priority Destinations World Elite annual fee?", a: "The annual fee is $99, waived for the first year. It is partially offset by approximately $120 in year-one statement credits." },
       { q: "How long does the First Hawaiian Bank Priority Destinations World Elite sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6515,7 +6521,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "25,000 Priority Miles sign-up bonus",
-      "2x on everything_else",
+      "2x on all other purchases",
       "25,000 Priority Miles after $3,000 in 3 months",
       "2x on the first $50,000 in annual purchases, then 1x",
     ],
@@ -6524,7 +6530,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's business lineup, the closest comparison is the First Hawaiian Bank Priority Rewards Business ($0 after $0/3mo, $0 AF). The First Hawaiian Bank Priority Destinations World Elite Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Destinations World Elite Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Priority Miles after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Priority Destinations World Elite Business sign-up bonus?", a: "The current bonus is 25,000 Priority Miles after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Priority Destinations World Elite Business annual fee?", a: "The annual fee is $75." },
       { q: "How long does the First Hawaiian Bank Priority Destinations World Elite Business sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6540,7 +6546,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 CashPoints sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "20,000 CashPoints after $1,500 in 3 months",
       "1x CashPoint on purchases",
     ],
@@ -6549,7 +6555,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's personal lineup, the closest comparison is the First Hawaiian Bank Priority Unlimited Cash Back ($150 after $1,500/3mo, $0 AF). The First Hawaiian Bank Priority Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 CashPoints after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Priority Rewards sign-up bonus?", a: "The current bonus is 20,000 CashPoints after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Priority Rewards annual fee?", a: "There is no annual fee on the First Hawaiian Bank Priority Rewards." },
       { q: "How long does the First Hawaiian Bank Priority Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6565,7 +6571,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on office_supplies",
+      "3x on office supplies",
       "3x CashPoints at office-supply stores",
       "1x on other eligible purchases",
     ],
@@ -6574,7 +6580,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's business lineup, the closest comparison is the First Hawaiian Bank Priority Destinations World Elite Business (25,000 Priority Miles after $3,000/3mo, $75 AF). The First Hawaiian Bank Priority Rewards Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Rewards Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Priority Rewards Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Priority Rewards Business annual fee?", a: "There is no annual fee on the First Hawaiian Bank Priority Rewards Business." },
       { q: "How long does the First Hawaiian Bank Priority Rewards Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6584,13 +6590,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "fhb-priority-unlimited-150": {
-    summary: "The First Hawaiian Bank Priority Unlimited Cash Back is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The First Hawaiian Bank Priority Unlimited Cash Back is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the First Hawaiian Bank Priority Unlimited Cash Back until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "2% on everything_else",
+      "2% on all other purchases",
       "$150 after $1,500 in 3 months",
       "2% cash back with a qualifying FHB relationship; otherwise 1.5%",
     ],
@@ -6599,7 +6605,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-hawaiian-bank's personal lineup, the closest comparison is the First Hawaiian Bank Priority Destinations World Elite (50,000 Priority Miles after $3,000/3mo, $99 AF). The First Hawaiian Bank Priority Unlimited Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Hawaiian Bank Priority Unlimited Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current First Hawaiian Bank Priority Unlimited Cash Back sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the First Hawaiian Bank Priority Unlimited Cash Back annual fee?", a: "There is no annual fee on the First Hawaiian Bank Priority Unlimited Cash Back." },
       { q: "How long does the First Hawaiian Bank Priority Unlimited Cash Back sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6609,7 +6615,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "fidelity-visa-150": {
-    summary: "The Fidelity Rewards Visa is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Fidelity Rewards Visa is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Fidelity Rewards Visa until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -6623,7 +6629,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Fidelity personal cards in our catalog, the Fidelity Rewards Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Fidelity Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Fidelity Rewards Visa sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Fidelity Rewards Visa annual fee?", a: "There is no annual fee on the Fidelity Rewards Visa." },
       { q: "How long does the Fidelity Rewards Visa sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6633,13 +6639,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "first-community-cu-signature-150": {
-    summary: "The First Community CU Signature Visa is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The First Community CU Signature Visa is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the First Community CU Signature Visa until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "1.5% on everything_else",
+      "1.5% on all other purchases",
       "$150 after $1,500 in purchases within 90 days",
       "Unlimited 1.5% cash back",
     ],
@@ -6648,7 +6654,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among First-community-cu personal cards in our catalog, the First Community CU Signature Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current First Community CU Signature Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current First Community CU Signature Visa sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the First Community CU Signature Visa annual fee?", a: "There is no annual fee on the First Community CU Signature Visa." },
       { q: "How long does the First Community CU Signature Visa sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6658,13 +6664,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "first-electronic-bank-booking-com-genius-rewards-rwp": {
-    summary: "The Booking.com Genius Rewards is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Booking.com Genius Rewards is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Booking.com Genius Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "6x on hotels_(portal)",
+      "6x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -6673,7 +6679,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-electronic-bank's personal lineup, the closest comparison is the Coinbase One ($0 after $0/3mo, $0 AF). The Booking.com Genius Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Booking.com Genius Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Booking.com Genius Rewards sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Booking.com Genius Rewards annual fee?", a: "There is no annual fee on the Booking.com Genius Rewards." },
       { q: "How long does the Booking.com Genius Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6689,7 +6695,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6697,7 +6703,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-electronic-bank's personal lineup, the closest comparison is the Booking.com Genius Rewards ($150 after $1,500/3mo, $0 AF). The Coinbase One is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Coinbase One sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Coinbase One sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Coinbase One annual fee?", a: "There is no annual fee on the Coinbase One." },
       { q: "How long does the Coinbase One sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6713,7 +6719,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on specified_store(s)",
+      "5x on select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6721,7 +6727,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-electronic-bank's personal lineup, the closest comparison is the Booking.com Genius Rewards ($150 after $1,500/3mo, $0 AF). The HEB is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HEB sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current HEB sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the HEB annual fee?", a: "There is no annual fee on the HEB." },
       { q: "How long does the HEB sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6737,7 +6743,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on gas_stations, groceries, special",
+      "2x on gas stations, groceries, select purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6745,7 +6751,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-tech-federal's personal lineup, the closest comparison is the First Tech Federal Odyssey Rewards (30,000 Points after $0/3mo, $75 AF). The First Tech Federal Choice Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Tech Federal Choice Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $0 on purchases within 2 months of account opening." },
+      { q: "What's the current First Tech Federal Choice Rewards sign-up bonus?", a: "The current bonus is 20,000 Points after spending $0 on purchases within 2 months of account opening." },
       { q: "What's the First Tech Federal Choice Rewards annual fee?", a: "There is no annual fee on the First Tech Federal Choice Rewards." },
       { q: "How long does the First Tech Federal Choice Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6760,7 +6766,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 30,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $75 annual fee.",
     pros: [
       "30,000 Points sign-up bonus",
-      "3x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, hotels, hotels_(portal), parking, ridesharing, toll_fees, transit, travel",
+      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, hotels, hotels (travel portal), parking, ridesharing, tolls, transit, travel",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6768,7 +6774,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-tech-federal's personal lineup, the closest comparison is the First Tech Federal Choice Rewards (20,000 Points after $0/2mo, $0 AF). The First Tech Federal Odyssey Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current First Tech Federal Odyssey Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current First Tech Federal Odyssey Rewards sign-up bonus?", a: "The current bonus is 30,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the First Tech Federal Odyssey Rewards annual fee?", a: "The annual fee is $75." },
       { q: "How long does the First Tech Federal Odyssey Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6784,7 +6790,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 Points sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6792,7 +6798,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within First-tech-federal's personal lineup, the closest comparison is the First Tech Federal Choice Rewards (20,000 Points after $0/2mo, $0 AF). The First Tech Federal Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current First Tech Federal Platinum Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $2,000 on purchases within 2 months of account opening." },
+      { q: "What's the current First Tech Federal Platinum Rewards sign-up bonus?", a: "The current bonus is 10,000 Points after spending $2,000 on purchases within 2 months of account opening." },
       { q: "What's the First Tech Federal Platinum Rewards annual fee?", a: "There is no annual fee on the First Tech Federal Platinum Rewards." },
       { q: "How long does the First Tech Federal Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6807,7 +6813,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 20,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "20,000 Points sign-up bonus",
-      "3x on special",
+      "3x on select purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -6816,7 +6822,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The Amtrak Guest Rewards Preferred is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Amtrak Guest Rewards Preferred sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Amtrak Guest Rewards Preferred sign-up bonus?", a: "The current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Amtrak Guest Rewards Preferred annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Amtrak Guest Rewards Preferred sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6832,7 +6838,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "12,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on dining, special",
+      "2x on dining, select purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -6841,7 +6847,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards Preferred (20,000 Points after $1,000/3mo, $99 AF). The Amtrak Guest Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amtrak Guest Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 12,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Amtrak Guest Rewards sign-up bonus?", a: "The current bonus is 12,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Amtrak Guest Rewards annual fee?", a: "There is no annual fee on the Amtrak Guest Rewards." },
       { q: "How long does the Amtrak Guest Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6857,14 +6863,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on specified_store(s)",
+      "3x on select stores",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The Ducks Unlimited Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Ducks Unlimited Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Ducks Unlimited Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Ducks Unlimited Rewards annual fee?", a: "There is no annual fee on the Ducks Unlimited Rewards." },
       { q: "How long does the Ducks Unlimited Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6874,13 +6880,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "fnbo-fnbo-evergreen-business-rwp": {
-    summary: "The FNBO Evergreen Business is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The FNBO Evergreen Business is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the FNBO Evergreen Business until you've earned the $200 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $334/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -6888,7 +6894,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Fnbo business cards in our catalog, the FNBO Evergreen Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current FNBO Evergreen Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current FNBO Evergreen Business sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the FNBO Evergreen Business annual fee?", a: "There is no annual fee on the FNBO Evergreen Business." },
       { q: "How long does the FNBO Evergreen Business sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6898,13 +6904,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "fnbo-fnbo-evergreen-rwp": {
-    summary: "The FNBO Evergreen is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The FNBO Evergreen is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the FNBO Evergreen until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -6912,7 +6918,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The FNBO Evergreen is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current FNBO Evergreen sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current FNBO Evergreen sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the FNBO Evergreen annual fee?", a: "There is no annual fee on the FNBO Evergreen." },
       { q: "How long does the FNBO Evergreen sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6928,7 +6934,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 Points sign-up bonus",
       "$0 annual fee",
-      "3x on dining, gas_stations, travel",
+      "3x on dining, gas stations, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -6937,7 +6943,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The FNBO Getaway is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current FNBO Getaway sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current FNBO Getaway sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the FNBO Getaway annual fee?", a: "There is no annual fee on the FNBO Getaway." },
       { q: "How long does the FNBO Getaway sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6953,7 +6959,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 Points sign-up bonus",
       "$0 annual fee",
-      "3x on hotels_(portal)",
+      "3x on hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -6961,7 +6967,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The MGM Resorts Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current MGM Resorts Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current MGM Resorts Rewards sign-up bonus?", a: "The current bonus is 10,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the MGM Resorts Rewards annual fee?", a: "There is no annual fee on the MGM Resorts Rewards." },
       { q: "How long does the MGM Resorts Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -6977,14 +6983,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on specified_store(s)",
+      "3x on select stores",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Fnbo's personal lineup, the closest comparison is the Amtrak Guest Rewards (12,000 Points after $1,000/3mo, $0 AF). The Scheel's is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Scheel's sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Scheel's sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Scheel's annual fee?", a: "There is no annual fee on the Scheel's." },
       { q: "How long does the Scheel's sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7008,7 +7014,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Garden-island-fcu's personal lineup, the closest comparison is the Garden Island FCU Visa Gold ($0 after $0/3mo, $0 AF). The Garden Island FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Garden Island FCU Visa Classic sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Garden Island FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Garden Island FCU Visa Classic annual fee?", a: "There is no annual fee on the Garden Island FCU Visa Classic." },
       { q: "How long does the Garden Island FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7032,7 +7038,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Garden-island-fcu's personal lineup, the closest comparison is the Garden Island FCU Visa Classic ($0 after $0/3mo, $0 AF). The Garden Island FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Garden Island FCU Visa Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Garden Island FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Garden Island FCU Visa Gold annual fee?", a: "There is no annual fee on the Garden Island FCU Visa Gold." },
       { q: "How long does the Garden Island FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7056,7 +7062,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Gather-fcu's personal lineup, the closest comparison is the Gather FCU Signature Visa ($0 after $0/3mo, $0 AF). The Gather FCU Classic Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Gather FCU Classic Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Gather FCU Classic Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Gather FCU Classic Visa annual fee?", a: "There is no annual fee on the Gather FCU Classic Visa." },
       { q: "How long does the Gather FCU Classic Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7071,7 +7077,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$0 sign-up bonus",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 rewards point per $1",
       "Rates starting at 9.50%",
     ],
@@ -7080,7 +7086,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Gather-fcu business cards in our catalog, the Gather FCU Platinum Visa Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Gather FCU Platinum Visa Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Gather FCU Platinum Visa Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Gather FCU Platinum Visa Business annual fee?", a: "The annual fee is $25." },
       { q: "How long does the Gather FCU Platinum Visa Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7096,7 +7102,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2% on everything_else",
+      "2% on all other purchases",
       "2% cash back",
       "No annual or foreign transaction fee",
     ],
@@ -7105,7 +7111,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Gather-fcu's personal lineup, the closest comparison is the Gather FCU Classic Visa ($0 after $0/3mo, $0 AF). The Gather FCU Signature Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Gather FCU Signature Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Gather FCU Signature Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Gather FCU Signature Visa annual fee?", a: "There is no annual fee on the Gather FCU Signature Visa." },
       { q: "How long does the Gather FCU Signature Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7121,7 +7127,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on apple, drug_stores, gas_stations, home_improvement_stores, specified_store(s), uber",
+      "3x on apple, drug stores, gas stations, home improvement stores, select stores, uber",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -7129,7 +7135,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Goldman-sachs personal cards in our catalog, the Apple Card is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Apple Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Apple Card sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Apple Card annual fee?", a: "There is no annual fee on the Apple Card." },
       { q: "How long does the Apple Card sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7145,7 +7151,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5% on everything_else",
+      "5% on all other purchases",
       "5% total cash back for the first 6 months on up to $7,500 monthly",
       "1% cash back after the promotional period",
     ],
@@ -7154,7 +7160,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Hawaii-central-fcu personal cards in our catalog, the Hawaii Central FCU Visa Platinum Cash Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Hawaii Central FCU Visa Platinum Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Central FCU Visa Platinum Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Central FCU Visa Platinum Cash Rewards annual fee?", a: "There is no annual fee on the Hawaii Central FCU Visa Platinum Cash Rewards." },
       { q: "How long does the Hawaii Central FCU Visa Platinum Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7178,7 +7184,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Gold Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Classic Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii Community FCU Classic Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Community FCU Classic Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Community FCU Classic Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Classic Visa." },
       { q: "How long does the Hawaii Community FCU Classic Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7202,7 +7208,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Classic Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Gold Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii Community FCU Gold Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Community FCU Gold Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Community FCU Gold Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Gold Visa." },
       { q: "How long does the Hawaii Community FCU Gold Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7226,7 +7232,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-community-fcu's personal lineup, the closest comparison is the Hawaii Community FCU Classic Visa ($0 after $0/3mo, $0 AF). The Hawaii Community FCU Platinum Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii Community FCU Platinum Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Community FCU Platinum Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Community FCU Platinum Visa annual fee?", a: "There is no annual fee on the Hawaii Community FCU Platinum Visa." },
       { q: "How long does the Hawaii Community FCU Platinum Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7250,7 +7256,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Hawaii-schools-fcu personal cards in our catalog, the Hawaii Schools FCU Visa Platinum Plus is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Hawaii Schools FCU Visa Platinum Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Schools FCU Visa Platinum Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Schools FCU Visa Platinum Plus annual fee?", a: "There is no annual fee on the Hawaii Schools FCU Visa Platinum Plus." },
       { q: "How long does the Hawaii Schools FCU Visa Platinum Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7266,7 +7272,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1% on everything_else",
+      "1% on all other purchases",
       "Unlimited 1% cash back",
       "Local Hawaii credit-union card",
     ],
@@ -7275,7 +7281,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 2% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU 1% Cash Back Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HawaiiUSA FCU 1% Cash Back Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current HawaiiUSA FCU 1% Cash Back Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the HawaiiUSA FCU 1% Cash Back Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU 1% Cash Back Visa." },
       { q: "How long does the HawaiiUSA FCU 1% Cash Back Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7291,7 +7297,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2% on everything_else",
+      "2% on all other purchases",
       "Unlimited 2% cash back",
       "Local Hawaii credit-union card",
     ],
@@ -7300,7 +7306,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 1% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU 2% Cash Back Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HawaiiUSA FCU 2% Cash Back Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current HawaiiUSA FCU 2% Cash Back Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the HawaiiUSA FCU 2% Cash Back Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU 2% Cash Back Visa." },
       { q: "How long does the HawaiiUSA FCU 2% Cash Back Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7324,7 +7330,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiiusa-fcu's personal lineup, the closest comparison is the HawaiiUSA FCU 1% Cash Back Visa ($0 after $0/3mo, $0 AF). The HawaiiUSA FCU Share Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HawaiiUSA FCU Share Secured Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current HawaiiUSA FCU Share Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the HawaiiUSA FCU Share Secured Visa annual fee?", a: "There is no annual fee on the HawaiiUSA FCU Share Secured Visa." },
       { q: "How long does the HawaiiUSA FCU Share Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7340,7 +7346,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 CURewards point per $1",
       "Low variable rate",
     ],
@@ -7349,7 +7355,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hfs-fcu's personal lineup, the closest comparison is the HFS FCU Visa Signature (30,000 CURewards points after $3,000/3mo, $0 AF). The HFS FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HFS FCU Visa Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current HFS FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the HFS FCU Visa Platinum annual fee?", a: "There is no annual fee on the HFS FCU Visa Platinum." },
       { q: "How long does the HFS FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7365,7 +7371,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "30,000 CURewards points sign-up bonus",
       "$0 annual fee",
-      "2x on everything_else",
+      "2x on all other purchases",
       "30,000 points after $3,000 in 90 days",
       "2 points per $1, redeemable for about 2% cash back",
     ],
@@ -7374,7 +7380,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hfs-fcu's personal lineup, the closest comparison is the HFS FCU Visa Platinum ($0 after $0/3mo, $0 AF). The HFS FCU Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current HFS FCU Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 CURewards points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current HFS FCU Visa Signature sign-up bonus?", a: "The current bonus is 30,000 CURewards points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the HFS FCU Visa Signature annual fee?", a: "There is no annual fee on the HFS FCU Visa Signature." },
       { q: "How long does the HFS FCU Visa Signature sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7390,7 +7396,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 CURewards point per $1",
       "No annual fee",
     ],
@@ -7399,7 +7405,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Gold ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Classic is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Classic sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaiian Financial FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaiian Financial FCU Visa Classic annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Classic." },
       { q: "How long does the Hawaiian Financial FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7415,7 +7421,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 CURewards point per $1",
       "No annual fee",
     ],
@@ -7424,7 +7430,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Classic ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Gold is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Gold sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaiian Financial FCU Visa Gold sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaiian Financial FCU Visa Gold annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Gold." },
       { q: "How long does the Hawaiian Financial FCU Visa Gold sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7440,7 +7446,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 CURewards point per $1",
       "No annual fee",
     ],
@@ -7449,7 +7455,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaiian-financial-fcu's personal lineup, the closest comparison is the Hawaiian Financial FCU Visa Classic ($0 after $0/3mo, $0 AF). The Hawaiian Financial FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaiian Financial FCU Visa Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaiian Financial FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaiian Financial FCU Visa Platinum annual fee?", a: "There is no annual fee on the Hawaiian Financial FCU Visa Platinum." },
       { q: "How long does the Hawaiian Financial FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7473,7 +7479,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Hawaii-law-enforcement-fcu personal cards in our catalog, the Hawaii Law Enforcement FCU Platinum Mastercard is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Hawaii Law Enforcement FCU Platinum Mastercard sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii Law Enforcement FCU Platinum Mastercard sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii Law Enforcement FCU Platinum Mastercard annual fee?", a: "There is no annual fee on the Hawaii Law Enforcement FCU Platinum Mastercard." },
       { q: "How long does the Hawaii Law Enforcement FCU Platinum Mastercard sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7498,7 +7504,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hsbc-bank's personal lineup, the closest comparison is the HSBC Bank Premier (50,000 Points after $4,000/3mo, $95 AF). The HSBC Bank Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current HSBC Bank Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current HSBC Bank Elite sign-up bonus?", a: "The current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the HSBC Bank Elite annual fee?", a: "The annual fee is $495." },
       { q: "How long does the HSBC Bank Elite sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7513,7 +7519,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "3x on gas_stations, groceries",
+      "3x on gas stations, groceries",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -7523,7 +7529,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hsbc-bank's personal lineup, the closest comparison is the HSBC Bank Elite (60,000 Points after $4,000/3mo, $495 AF). The HSBC Bank Premier is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current HSBC Bank Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current HSBC Bank Premier sign-up bonus?", a: "The current bonus is 50,000 Points after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the HSBC Bank Premier annual fee?", a: "The annual fee is $95." },
       { q: "How long does the HSBC Bank Premier sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7539,7 +7545,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2.5% on everything_else",
+      "2.5% on all other purchases",
       "2.5% cash back on the first $5,000 each billing cycle",
       "1.25% thereafter",
     ],
@@ -7548,7 +7554,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-state-fcu's personal lineup, the closest comparison is the Hawaii State FCU Visa Platinum Rewards (5,000 CURewards points after $1,000/3mo, $0 AF). The Hawaii State FCU Always Cash Visa Signature is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii State FCU Always Cash Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii State FCU Always Cash Visa Signature sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii State FCU Always Cash Visa Signature annual fee?", a: "There is no annual fee on the Hawaii State FCU Always Cash Visa Signature." },
       { q: "How long does the Hawaii State FCU Always Cash Visa Signature sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7572,7 +7578,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-state-fcu's personal lineup, the closest comparison is the Hawaii State FCU Always Cash Visa Signature ($0 after $0/3mo, $0 AF). The Hawaii State FCU Visa Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii State FCU Visa Platinum Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 5,000 CURewards points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii State FCU Visa Platinum Rewards sign-up bonus?", a: "The current bonus is 5,000 CURewards points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii State FCU Visa Platinum Rewards annual fee?", a: "There is no annual fee on the Hawaii State FCU Visa Platinum Rewards." },
       { q: "How long does the Hawaii State FCU Visa Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7596,7 +7602,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Hawaii-state-fcu's personal lineup, the closest comparison is the Hawaii State FCU Always Cash Visa Signature ($0 after $0/3mo, $0 AF). The Hawaii State FCU Share Secured Visa Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Hawaii State FCU Share Secured Visa Platinum Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 5,000 CURewards points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Hawaii State FCU Share Secured Visa Platinum Rewards sign-up bonus?", a: "The current bonus is 5,000 CURewards points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Hawaii State FCU Share Secured Visa Platinum Rewards annual fee?", a: "There is no annual fee on the Hawaii State FCU Share Secured Visa Platinum Rewards." },
       { q: "How long does the Hawaii State FCU Share Secured Visa Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7612,7 +7618,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "4x on quarterly_categories",
+      "4x on rotating quarterly categories",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -7620,7 +7626,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Huntington business cards in our catalog, the Huntington Business Voice is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Huntington Business Voice sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Huntington Business Voice sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Huntington Business Voice annual fee?", a: "There is no annual fee on the Huntington Business Voice." },
       { q: "How long does the Huntington Business Voice sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7636,7 +7642,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -7644,7 +7650,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Huntington's personal lineup, the closest comparison is the Huntington Voice Rewards ($0 after $0/3mo, $0 AF). The Huntington Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Huntington Cashback sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Huntington Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Huntington Cashback annual fee?", a: "There is no annual fee on the Huntington Cashback." },
       { q: "How long does the Huntington Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7660,14 +7666,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on quarterly_categories",
+      "3x on rotating quarterly categories",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Huntington's personal lineup, the closest comparison is the Huntington Cashback ($0 after $0/3mo, $0 AF). The Huntington Voice Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Huntington Voice Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Huntington Voice Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Huntington Voice Rewards annual fee?", a: "There is no annual fee on the Huntington Voice Rewards." },
       { q: "How long does the Huntington Voice Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7691,7 +7697,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Kauai-fcu personal cards in our catalog, the Kauai FCU Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Kauai FCU Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Kauai FCU Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Kauai FCU Visa annual fee?", a: "There is no annual fee on the Kauai FCU Visa." },
       { q: "How long does the Kauai FCU Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7715,7 +7721,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Visa Classic ($0 after $0/3mo, $10 AF). The Koolau FCU Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Koolau FCU Secured Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Koolau FCU Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Koolau FCU Secured Visa annual fee?", a: "There is no annual fee on the Koolau FCU Secured Visa." },
       { q: "How long does the Koolau FCU Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7738,7 +7744,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Secured Visa ($0 after $0/3mo, $0 AF). The Koolau FCU Visa Classic is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Koolau FCU Visa Classic sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Koolau FCU Visa Classic sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Koolau FCU Visa Classic annual fee?", a: "The annual fee is $10." },
       { q: "How long does the Koolau FCU Visa Classic sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7754,7 +7760,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 rewards point per $1",
       "No annual or balance-transfer fee",
     ],
@@ -7763,7 +7769,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Koolau-fcu's personal lineup, the closest comparison is the Koolau FCU Secured Visa ($0 after $0/3mo, $0 AF). The Koolau FCU Visa Platinum is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Koolau FCU Visa Platinum sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Koolau FCU Visa Platinum sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Koolau FCU Visa Platinum annual fee?", a: "There is no annual fee on the Koolau FCU Visa Platinum." },
       { q: "How long does the Koolau FCU Visa Platinum sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7779,7 +7785,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on monthly_categories",
+      "5x on monthly bonus categories",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -7787,7 +7793,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Langley-fcu personal cards in our catalog, the Langley FCU Signature Cash Back is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Langley FCU Signature Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Langley FCU Signature Cash Back sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Langley FCU Signature Cash Back annual fee?", a: "There is no annual fee on the Langley FCU Signature Cash Back." },
       { q: "How long does the Langley FCU Signature Cash Back sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7803,7 +7809,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on pet_care",
+      "3x on pet care",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -7811,7 +7817,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Lead-bank personal cards in our catalog, the Nibbles Pet Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Nibbles Pet Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Nibbles Pet Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Nibbles Pet Rewards annual fee?", a: "There is no annual fee on the Nibbles Pet Rewards." },
       { q: "How long does the Nibbles Pet Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7835,7 +7841,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Lokahi-fcu personal cards in our catalog, the Lokahi FCU Reward Mastercard is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Lokahi FCU Reward Mastercard sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Lokahi FCU Reward Mastercard sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Lokahi FCU Reward Mastercard annual fee?", a: "There is no annual fee on the Lokahi FCU Reward Mastercard." },
       { q: "How long does the Lokahi FCU Reward Mastercard sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7859,7 +7865,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Rewards Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Platinum Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Maui County FCU Platinum Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Maui County FCU Platinum Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Maui County FCU Platinum Visa annual fee?", a: "There is no annual fee on the Maui County FCU Platinum Visa." },
       { q: "How long does the Maui County FCU Platinum Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7883,7 +7889,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Platinum Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Rewards Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Maui County FCU Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Maui County FCU Rewards Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Maui County FCU Rewards Visa annual fee?", a: "There is no annual fee on the Maui County FCU Rewards Visa." },
       { q: "How long does the Maui County FCU Rewards Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7907,7 +7913,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Maui-county-fcu's personal lineup, the closest comparison is the Maui County FCU Rewards Visa ($0 after $0/3mo, $0 AF). The Maui County FCU Secured Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Maui County FCU Secured Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Maui County FCU Secured Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Maui County FCU Secured Visa annual fee?", a: "There is no annual fee on the Maui County FCU Secured Visa." },
       { q: "How long does the Maui County FCU Secured Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -7917,49 +7923,49 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "navy-federal-navy-federal-cashrewards-plus-rwp": {
-    summary: "The Navy Federal cashRewards Plus is currently offering $200 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Navy Federal cashRewards Plus until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The Navy Federal cashRewards Plus is currently offering $250 after $2,500 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $2,500 requirement in 3 months, you need about $834 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Navy Federal cashRewards Plus until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "$200 sign-up bonus",
+      "$250 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2% on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
-    comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards ($200 after $2,000/3mo, $0 AF). The Navy Federal cashRewards Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards ($250 after $2,500/3mo, $0 AF). The Navy Federal cashRewards Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Navy Federal cashRewards Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Navy Federal cashRewards Plus sign-up bonus?", a: "The current bonus is $250 after spending $2,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Navy Federal cashRewards Plus annual fee?", a: "There is no annual fee on the Navy Federal cashRewards Plus." },
-      { q: "How long does the Navy Federal cashRewards Plus sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Navy Federal cashRewards Plus sign-up bonus take to post?", a: "Once you cross the $2,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["navy-federal-cashrewards-200-cash","navy-federal-flagship-travel-rewards-35000-points","capital-one-savor-30000-cash"],
+    relatedSlugs: ["navy-federal-cashrewards-250-cash","navy-federal-flagship-travel-rewards-35000-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:40.059Z",
     verifiedUrl: "https://www.navyfederal.org/loans-cards/credit-cards/cash-rewards.html",
   },
 
   "navy-federal-navy-federal-cashrewards-rwp": {
-    summary: "The Navy Federal cashRewards is currently offering $200 after $2,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $2,000 requirement in 3 months, you need about $667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Navy Federal cashRewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The Navy Federal cashRewards is currently offering $250 after $2,500 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $2,500 requirement in 3 months, you need about $834 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Navy Federal cashRewards until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "$200 sign-up bonus",
+      "$250 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5% on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
-    comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards Plus ($200 after $2,000/3mo, $0 AF). The Navy Federal cashRewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards Plus ($250 after $2,500/3mo, $0 AF). The Navy Federal cashRewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Navy Federal cashRewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Navy Federal cashRewards sign-up bonus?", a: "The current bonus is $250 after spending $2,500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Navy Federal cashRewards annual fee?", a: "There is no annual fee on the Navy Federal cashRewards." },
-      { q: "How long does the Navy Federal cashRewards sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Navy Federal cashRewards sign-up bonus take to post?", a: "Once you cross the $2,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["navy-federal-cashrewards-plus-200-cash","navy-federal-flagship-travel-rewards-35000-points","capital-one-savor-30000-cash"],
+    relatedSlugs: ["navy-federal-cashrewards-plus-250-cash","navy-federal-flagship-travel-rewards-35000-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T07:01:08.329Z",
     verifiedUrl: "https://employeeinfo.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/cashrewards_brochure.pdf",
   },
@@ -7970,7 +7976,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 35,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $49 annual fee.",
     pros: [
       "35,000 Points sign-up bonus",
-      "3x on airfare, car_rentals, cruises, hotels, ridesharing, transit, travel",
+      "3x on airfare, car rentals, cruises, hotels, ridesharing, transit, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -7979,7 +7985,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards ($200 after $2,000/3mo, $0 AF). The Navy Federal Flagship Travel Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Navy Federal Flagship Travel Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 35,000 Points after spending $3,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Navy Federal Flagship Travel Rewards sign-up bonus?", a: "The current bonus is 35,000 Points after spending $3,500 on purchases within 3 months of account opening." },
       { q: "What's the Navy Federal Flagship Travel Rewards annual fee?", a: "The annual fee is $49." },
       { q: "How long does the Navy Federal Flagship Travel Rewards sign-up bonus take to post?", a: "Once you cross the $3,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8004,7 +8010,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards ($200 after $2,000/3mo, $0 AF). The Navy Federal GO REWARDS is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Navy Federal GO REWARDS sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Navy Federal GO REWARDS sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Navy Federal GO REWARDS annual fee?", a: "There is no annual fee on the Navy Federal GO REWARDS." },
       { q: "How long does the Navy Federal GO REWARDS sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8020,7 +8026,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 Points sign-up bonus",
       "$0 annual fee",
-      "3x on dining, gas_stations, groceries, parking, toll_fees, transit",
+      "3x on dining, gas stations, groceries, parking, tolls, transit",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8029,7 +8035,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Navy-federal's personal lineup, the closest comparison is the Navy Federal cashRewards ($200 after $2,000/3mo, $0 AF). The Navy Federal More Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Navy Federal More Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Navy Federal More Rewards sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Navy Federal More Rewards annual fee?", a: "There is no annual fee on the Navy Federal More Rewards." },
       { q: "How long does the Navy Federal More Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8045,7 +8051,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 50,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "50,000 Points sign-up bonus",
-      "4x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, hotels, hotels_(portal), parking, ridesharing, toll_fees, transit, travel",
+      "4x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, hotels, hotels (travel portal), parking, ridesharing, tolls, transit, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8054,7 +8060,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Penfed's personal lineup, the closest comparison is the PenFed Platinum Rewards (15,000 Points after $1,500/3mo, $0 AF). The PenFed Pathfinder Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current PenFed Pathfinder Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current PenFed Pathfinder Rewards sign-up bonus?", a: "The current bonus is 50,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the PenFed Pathfinder Rewards annual fee?", a: "The annual fee is $95." },
       { q: "How long does the PenFed Pathfinder Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8070,7 +8076,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "15,000 Points sign-up bonus",
       "$0 annual fee",
-      "5x on ev_charging, gas_stations",
+      "5x on EV charging, gas stations",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8079,7 +8085,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Penfed's personal lineup, the closest comparison is the PenFed Pathfinder Rewards (50,000 Points after $3,000/3mo, $95 AF). The PenFed Platinum Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PenFed Platinum Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 15,000 Points after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current PenFed Platinum Rewards sign-up bonus?", a: "The current bonus is 15,000 Points after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the PenFed Platinum Rewards annual fee?", a: "There is no annual fee on the PenFed Platinum Rewards." },
       { q: "How long does the PenFed Platinum Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8089,13 +8095,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "penfed-penfed-power-cash-rewards-rwp": {
-    summary: "The PenFed Power Cash Rewards is currently offering $100 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The PenFed Power Cash Rewards is currently offering $100 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PenFed Power Cash Rewards until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8103,7 +8109,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Penfed's personal lineup, the closest comparison is the PenFed Pathfinder Rewards (50,000 Points after $3,000/3mo, $95 AF). The PenFed Power Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PenFed Power Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current PenFed Power Cash Rewards sign-up bonus?", a: "The current bonus is $100 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the PenFed Power Cash Rewards annual fee?", a: "There is no annual fee on the PenFed Power Cash Rewards." },
       { q: "How long does the PenFed Power Cash Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8113,7 +8119,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "pnc-cash-rewards-200": {
-    summary: "The PNC Cash Rewards Visa is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The PNC Cash Rewards Visa is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PNC Cash Rewards Visa until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -8127,7 +8133,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Pnc's personal lineup, the closest comparison is the PNC Bank Cash Rewards ($250 after $0/3mo, $0 AF). The PNC Cash Rewards Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PNC Cash Rewards Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current PNC Cash Rewards Visa sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the PNC Cash Rewards Visa annual fee?", a: "There is no annual fee on the PNC Cash Rewards Visa." },
       { q: "How long does the PNC Cash Rewards Visa sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8137,36 +8143,36 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "pnc-pnc-bank-cash-rewards-rwp": {
-    summary: "The PNC Bank Cash Rewards is currently offering $250 after $0 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PNC Bank Cash Rewards until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The PNC Bank Cash Rewards is currently offering $200 after $0 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PNC Bank Cash Rewards until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "$250 sign-up bonus",
+      "$200 sign-up bonus",
       "$0 annual fee",
-      "4x on gas_stations",
+      "4% on gas stations",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Pnc's personal lineup, the closest comparison is the PNC Cash Rewards Visa ($200 after $1,000/3mo, $0 AF). The PNC Bank Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PNC Bank Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current PNC Bank Cash Rewards sign-up bonus?", a: "The current bonus is $200 after spending $0 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the PNC Bank Cash Rewards annual fee?", a: "There is no annual fee on the PNC Bank Cash Rewards." },
       { q: "How long does the PNC Bank Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["pnc-cash-rewards-visa-200-cash","pnc-bank-cash-unlimited-250-cash","capital-one-savor-30000-cash"],
+    relatedSlugs: ["pnc-cash-rewards-visa-200-cash","pnc-bank-cash-unlimited-250-cash","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:51.157Z",
     verifiedUrl: "https://www.pnc.com/en/personal-banking/banking/credit-cards/pnc-cash-rewards-visa-credit-card.html",
   },
 
   "pnc-pnc-bank-cash-unlimited-rwp": {
-    summary: "The PNC Bank Cash Unlimited is currently offering $250 after $0 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 based on a 100.0¢ per-point valuation.",
+    summary: "The PNC Bank Cash Unlimited is currently offering $250 after $0 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the PNC Bank Cash Unlimited until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$250 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8175,7 +8181,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Pnc's personal lineup, the closest comparison is the PNC Cash Rewards Visa ($200 after $1,000/3mo, $0 AF). The PNC Bank Cash Unlimited is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PNC Bank Cash Unlimited sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current PNC Bank Cash Unlimited sign-up bonus?", a: "The current bonus is $250 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the PNC Bank Cash Unlimited annual fee?", a: "There is no annual fee on the PNC Bank Cash Unlimited." },
       { q: "How long does the PNC Bank Cash Unlimited sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8191,7 +8197,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "100,000 Points sign-up bonus",
       "$0 annual fee",
-      "4x on all_other",
+      "4x on all other purchases",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -8199,7 +8205,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Pnc's personal lineup, the closest comparison is the PNC Cash Rewards Visa ($200 after $1,000/3mo, $0 AF). The PNC Bank points is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current PNC Bank points sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 100,000 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current PNC Bank points sign-up bonus?", a: "The current bonus is 100,000 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the PNC Bank points annual fee?", a: "There is no annual fee on the PNC Bank points." },
       { q: "How long does the PNC Bank points sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8209,13 +8215,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "redstone-federal-redstone-federal-rwp": {
-    summary: "The Redstone Federal is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Redstone Federal is currently offering $150 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Redstone Federal until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "5x on dining, gas_stations",
+      "5x on dining, gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8223,7 +8229,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Redstone-federal personal cards in our catalog, the Redstone Federal is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Redstone Federal sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Redstone Federal sign-up bonus?", a: "The current bonus is $150 after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Redstone Federal annual fee?", a: "There is no annual fee on the Redstone Federal." },
       { q: "How long does the Redstone Federal sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8239,7 +8245,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8247,7 +8253,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Regions's personal lineup, the closest comparison is the Regions Prestige ($200 after $1,000/3mo, $0 AF). The Regions Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Regions Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Regions Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Regions Cash Rewards annual fee?", a: "There is no annual fee on the Regions Cash Rewards." },
       { q: "How long does the Regions Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8257,13 +8263,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "regions-regions-prestige-rwp": {
-    summary: "The Regions Prestige is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The Regions Prestige is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Regions Prestige until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3x on dining, movie_theaters, select_live_entertainment",
+      "3x on dining, movie theaters, select live entertainment",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8271,7 +8277,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Regions's personal lineup, the closest comparison is the Regions Cash Rewards ($0 after $0/3mo, $0 AF). The Regions Prestige is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Regions Prestige sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Regions Prestige sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Regions Prestige annual fee?", a: "There is no annual fee on the Regions Prestige." },
       { q: "How long does the Regions Prestige sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8287,7 +8293,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "6x on streaming_services",
+      "6x on streaming services",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8295,7 +8301,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Signature-fcu personal cards in our catalog, the Signature FCU Visa Signature is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Signature FCU Visa Signature sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Signature FCU Visa Signature sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Signature FCU Visa Signature annual fee?", a: "There is no annual fee on the Signature FCU Visa Signature." },
       { q: "How long does the Signature FCU Visa Signature sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8305,7 +8311,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "sofi-credit-card-200": {
-    summary: "The SoFi Credit Card is currently offering $200 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
+    summary: "The SoFi Credit Card is currently offering $200 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the SoFi Credit Card until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -8319,7 +8325,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Sofi personal cards in our catalog, the SoFi Credit Card is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current SoFi Credit Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current SoFi Credit Card sign-up bonus?", a: "The current bonus is $200 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the SoFi Credit Card annual fee?", a: "There is no annual fee on the SoFi Credit Card." },
       { q: "How long does the SoFi Credit Card sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8335,7 +8341,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), car_rentals_(portal), dining, hotels_(portal)",
+      "3x on airfare (travel portal), car rentals (travel portal), dining, hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8343,7 +8349,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Sofi's personal lineup, the closest comparison is the SoFi Credit Card ($200 after $1,500/3mo, $0 AF). The SoFi Everyday Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current SoFi Everyday Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current SoFi Everyday Cash Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the SoFi Everyday Cash Rewards annual fee?", a: "There is no annual fee on the SoFi Everyday Cash Rewards." },
       { q: "How long does the SoFi Everyday Cash Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8358,7 +8364,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the $0 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $120 annual fee.",
     pros: [
       "$0 sign-up bonus",
-      "3x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "3x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8366,7 +8372,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Sofi's personal lineup, the closest comparison is the SoFi Credit Card ($200 after $1,500/3mo, $0 AF). The SoFi Unlimited 2% is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current SoFi Unlimited 2% sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current SoFi Unlimited 2% sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the SoFi Unlimited 2% annual fee?", a: "The annual fee is $120." },
       { q: "How long does the SoFi Unlimited 2% sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8382,7 +8388,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8390,7 +8396,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Star-one personal cards in our catalog, the Star One is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Star One sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Star One sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Star One annual fee?", a: "There is no annual fee on the Star One." },
       { q: "How long does the Star One sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8406,7 +8412,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8414,7 +8420,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Sutton-bank personal cards in our catalog, the Fold Bitcoin Rewards is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Fold Bitcoin Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Fold Bitcoin Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Fold Bitcoin Rewards annual fee?", a: "There is no annual fee on the Fold Bitcoin Rewards." },
       { q: "How long does the Fold Bitcoin Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8424,13 +8430,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "synchrony-amazon-prime-store-card-rwp": {
-    summary: "The Amazon Prime Store Card is currently offering $10 after $0 in purchases within 3 months. There's no annual fee, which makes the $10 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $10 based on a 100.0¢ per-point valuation.",
+    summary: "The Amazon Prime Store Card is currently offering $10 after $0 in purchases within 3 months. There's no annual fee, which makes the $10 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $10 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Amazon Prime Store Card until you've earned the $10 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $10 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$10 sign-up bonus",
       "$0 annual fee",
-      "5x on amazon, specified_store(s)",
+      "5x on amazon, select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8438,7 +8444,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Cathay Pacific World Elite (38,000 miles after $3,000/3mo, $99 AF). The Amazon Prime Store Card is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Amazon Prime Store Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $10 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Amazon Prime Store Card sign-up bonus?", a: "The current bonus is $10 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Amazon Prime Store Card annual fee?", a: "There is no annual fee on the Amazon Prime Store Card." },
       { q: "How long does the Amazon Prime Store Card sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8453,7 +8459,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 38,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "38,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8462,7 +8468,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Cathay Pacific World Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Cathay Pacific World Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 38,000 miles after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Cathay Pacific World Elite sign-up bonus?", a: "The current bonus is 38,000 miles after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Cathay Pacific World Elite annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Cathay Pacific World Elite sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8478,14 +8484,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Among Synchrony business cards in our catalog, the Mercury IO Business is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Mercury IO Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Mercury IO Business sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Mercury IO Business annual fee?", a: "There is no annual fee on the Mercury IO Business." },
       { q: "How long does the Mercury IO Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8495,20 +8501,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "synchrony-mywalgreens-rwp": {
-    summary: "The myWalgreens is currently offering $50 after $0 in purchases within 2 months. There's no annual fee, which makes the $50 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 based on a 100.0¢ per-point valuation.",
+    summary: "The myWalgreens is currently offering $50 after $0 in purchases within 2 months. There's no annual fee, which makes the $50 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $50 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 2 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the myWalgreens until you've earned the $50 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $50 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$50 sign-up bonus",
       "$0 annual fee",
-      "10x on specified_store(s)",
+      "10x on select stores",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The myWalgreens is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current myWalgreens sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $50 after spending $0 on purchases within 2 months of account opening." },
+      { q: "What's the current myWalgreens sign-up bonus?", a: "The current bonus is $50 after spending $0 on purchases within 2 months of account opening." },
       { q: "What's the myWalgreens annual fee?", a: "There is no annual fee on the myWalgreens." },
       { q: "How long does the myWalgreens sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8524,7 +8530,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on online_retail, paypal, walmart",
+      "3x on online retail, paypal, walmart",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8532,7 +8538,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Paypal Cashback is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Paypal Cashback sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Paypal Cashback sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Paypal Cashback annual fee?", a: "There is no annual fee on the Paypal Cashback." },
       { q: "How long does the Paypal Cashback sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8548,7 +8554,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on gas_stations",
+      "5x on gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8556,7 +8562,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Sam's Club Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Sam's Club Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Sam's Club Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Sam's Club Plus annual fee?", a: "There is no annual fee on the Sam's Club Plus." },
       { q: "How long does the Sam's Club Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8572,14 +8578,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on gas_stations",
+      "5x on gas stations",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Sam's Club is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Sam's Club sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Sam's Club sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Sam's Club annual fee?", a: "There is no annual fee on the Sam's Club." },
       { q: "How long does the Sam's Club sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8595,14 +8601,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Synchrony Premier is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Synchrony Premier sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Synchrony Premier sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Synchrony Premier annual fee?", a: "There is no annual fee on the Synchrony Premier." },
       { q: "How long does the Synchrony Premier sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8618,7 +8624,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on 1st_highest_spend_category",
+      "3x on 1st highest spend category",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8626,7 +8632,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Venmo is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Venmo sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Venmo sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Venmo annual fee?", a: "There is no annual fee on the Venmo." },
       { q: "How long does the Venmo sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8636,13 +8642,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "synchrony-verizon-rwp": {
-    summary: "The Verizon is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The Verizon is currently offering $150 after $1,500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 3 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Verizon until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "4x on dining, ev_charging, gas_stations, groceries, specified_store(s), walmart",
+      "4x on dining, EV charging, gas stations, groceries, select stores, walmart",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8650,7 +8656,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Verizon is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Verizon sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Verizon sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Verizon annual fee?", a: "There is no annual fee on the Verizon." },
       { q: "How long does the Verizon sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8660,25 +8666,26 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "synchrony-virgin-atlantic-red-rewards-rwp": {
-    summary: "The Virgin Atlantic Red Rewards is currently offering 40,000 Points after $3,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $301 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Virgin Atlantic Red Rewards until you've earned the 40,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Cardholders who can fully use the 40,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
+    summary: "The Virgin Atlantic Red Rewards is currently offering 60,000 Points after $4,000 in purchases within 3 months. It carries a $99 annual fee, with no first-year credits to soften it. Estimated net year-one value: $501 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $4,000 requirement in 3 months, you need about $1,334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Virgin Atlantic Red Rewards until you've earned the 60,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
-      "40,000 Points sign-up bonus",
-      "3x on airfare_(portal), cruises_(portal), hotels_(portal)",
+      "60,000 Points sign-up bonus",
+      "3x on airfare (travel portal), cruises (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
     cons: [
       "$99 annual fee",
+      "High $4,000 minimum spend can be hard to hit organically",
     ],
     comparison: "Within Synchrony's personal lineup, the closest comparison is the Amazon Prime Store Card ($10 after $0/3mo, $0 AF). The Virgin Atlantic Red Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Virgin Atlantic Red Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Virgin Atlantic Red Rewards sign-up bonus?", a: "The current bonus is 60,000 Points after spending $4,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Virgin Atlantic Red Rewards annual fee?", a: "The annual fee is $99." },
-      { q: "How long does the Virgin Atlantic Red Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Virgin Atlantic Red Rewards sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","capital-one-spark-miles-for-business-50000-capital-one-miles"],
+    relatedSlugs: ["amazon-prime-store-card-10-cash","cathay-pacific-world-elite-38000-miles","citi-strata-premier-60000-thankyou-points"],
     verifiedAt: "2026-06-12T06:31:51.241Z",
     verifiedUrl: "https://www.virginatlantic.com/en-US/flying-club/credit-card",
   },
@@ -8698,7 +8705,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Td-bank's personal lineup, the closest comparison is the TD Bank Cash ($150 after $1,000/3mo, $0 AF). The Target Circle is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Target Circle sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Target Circle sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Target Circle annual fee?", a: "There is no annual fee on the Target Circle." },
       { q: "How long does the Target Circle sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8708,20 +8715,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "td-bank-td-bank-cash-rwp": {
-    summary: "The TD Bank Cash is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The TD Bank Cash is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the TD Bank Cash until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "1x on all_other",
+      "1x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Td-bank's personal lineup, the closest comparison is the Target Circle ($0 after $0/3mo, $0 AF). The TD Bank Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current TD Bank Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current TD Bank Cash sign-up bonus?", a: "The current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the TD Bank Cash annual fee?", a: "There is no annual fee on the TD Bank Cash." },
       { q: "How long does the TD Bank Cash sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8731,20 +8738,20 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "td-bank-td-bank-double-up-rwp": {
-    summary: "The TD Bank Double Up is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The TD Bank Double Up is currently offering $150 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the TD Bank Double Up until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Td-bank's personal lineup, the closest comparison is the Target Circle ($0 after $0/3mo, $0 AF). The TD Bank Double Up is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current TD Bank Double Up sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current TD Bank Double Up sign-up bonus?", a: "The current bonus is $150 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the TD Bank Double Up annual fee?", a: "There is no annual fee on the TD Bank Double Up." },
       { q: "How long does the TD Bank Double Up sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8759,7 +8766,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 25,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $89 annual fee.",
     pros: [
       "25,000 Points sign-up bonus",
-      "3x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, dining, hotels, hotels_(portal), travel",
+      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, dining, hotels, hotels (travel portal), travel",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -8767,7 +8774,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Td-bank's personal lineup, the closest comparison is the Target Circle ($0 after $0/3mo, $0 AF). The TD Bank First Class is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current TD Bank First Class sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 25,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current TD Bank First Class sign-up bonus?", a: "The current bonus is 25,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the TD Bank First Class annual fee?", a: "The annual fee is $89." },
       { q: "How long does the TD Bank First Class sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8777,13 +8784,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "truist-truist-business-cash-rewards-rwp": {
-    summary: "The Truist Business Cash Rewards is currently offering $300 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
+    summary: "The Truist Business Cash Rewards is currently offering $300 after $3,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $3,000 requirement in 3 months, you need about $1,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Truist Business Cash Rewards until you've earned the $300 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$300 sign-up bonus",
       "$0 annual fee",
-      "3x on gas_stations",
+      "3x on gas stations",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8792,7 +8799,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's business lineup, the closest comparison is the Truist Business Premium ($1,000 after $15,000/3mo, $299 AF). The Truist Business Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Truist Business Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Business Cash Rewards sign-up bonus?", a: "The current bonus is $300 after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Truist Business Cash Rewards annual fee?", a: "There is no annual fee on the Truist Business Cash Rewards." },
       { q: "How long does the Truist Business Cash Rewards sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8802,12 +8809,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "truist-truist-business-premium-rwp": {
-    summary: "The Truist Business Premium is currently offering $1,000 after $15,000 in purchases within 3 months. It carries a $299 annual fee, with no first-year credits to soften it. Estimated net year-one value: $701 based on a 100.0¢ per-point valuation.",
+    summary: "The Truist Business Premium is currently offering $1,000 after $15,000 in purchases within 3 months. It carries a $299 annual fee, with no first-year credits to soften it. Estimated net year-one value: $701 — the bonus is cash back, valued at face.",
     strategy: "To hit the $15,000 requirement in 3 months, you need about $5,000 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Truist Business Premium until you've earned the $1,000 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $5,000/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$1,000 sign-up bonus",
-      "2x on all_other",
+      "2x on all other purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8817,7 +8824,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's business lineup, the closest comparison is the Truist Business Cash Rewards ($300 after $3,000/3mo, $0 AF). The Truist Business Premium is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Truist Business Premium sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $1,000 after spending $15,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Business Premium sign-up bonus?", a: "The current bonus is $1,000 after spending $15,000 on purchases within 3 months of account opening." },
       { q: "What's the Truist Business Premium annual fee?", a: "The annual fee is $299." },
       { q: "How long does the Truist Business Premium sign-up bonus take to post?", a: "Once you cross the $15,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8832,7 +8839,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "20,000 Points sign-up bonus",
-      "2x on airfare, car_rentals, hotels",
+      "2x on airfare, car rentals, hotels",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8841,7 +8848,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's business lineup, the closest comparison is the Truist Business Cash Rewards ($300 after $3,000/3mo, $0 AF). The Truist Business Travel Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Truist Business Travel Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Business Travel Rewards sign-up bonus?", a: "The current bonus is 20,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the Truist Business Travel Rewards annual fee?", a: "The annual fee is $49." },
       { q: "How long does the Truist Business Travel Rewards sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8856,7 +8863,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 30,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "30,000 Points sign-up bonus",
-      "3x on airfare, car_rentals, hotels",
+      "3x on airfare, car rentals, hotels",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8865,7 +8872,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's personal lineup, the closest comparison is the Truist Enjoy Cash (Option 1) (0 Points after $0/3mo, $0 AF). The Truist Enjoy Beyond is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Truist Enjoy Beyond sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Enjoy Beyond sign-up bonus?", a: "The current bonus is 30,000 Points after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Truist Enjoy Beyond annual fee?", a: "The annual fee is $95." },
       { q: "How long does the Truist Enjoy Beyond sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8881,7 +8888,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 Points sign-up bonus",
       "$0 annual fee",
-      "3x on ev_charging, gas_stations",
+      "3x on EV charging, gas stations",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8890,7 +8897,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's personal lineup, the closest comparison is the Truist Enjoy Beyond (30,000 Points after $1,500/3mo, $95 AF). The Truist Enjoy Cash (Option 1) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Truist Enjoy Cash (Option 1) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Enjoy Cash (Option 1) sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Truist Enjoy Cash (Option 1) annual fee?", a: "There is no annual fee on the Truist Enjoy Cash (Option 1)." },
       { q: "How long does the Truist Enjoy Cash (Option 1) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8906,7 +8913,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "0 Points sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8915,7 +8922,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's personal lineup, the closest comparison is the Truist Enjoy Beyond (30,000 Points after $1,500/3mo, $95 AF). The Truist Enjoy Cash (Option 2) is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Truist Enjoy Cash (Option 2) sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Enjoy Cash (Option 2) sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Truist Enjoy Cash (Option 2) annual fee?", a: "There is no annual fee on the Truist Enjoy Cash (Option 2)." },
       { q: "How long does the Truist Enjoy Cash (Option 2) sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8931,7 +8938,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "20,000 Points sign-up bonus",
       "$0 annual fee",
-      "2x on airfare, airfare, car_rentals",
+      "2x on airfare, airfare, car rentals",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -8940,7 +8947,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Truist's personal lineup, the closest comparison is the Truist Enjoy Beyond (30,000 Points after $1,500/3mo, $95 AF). The Truist Enjoy Travel is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Truist Enjoy Travel sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $1,500 on purchases within 3 months of account opening." },
+      { q: "What's the current Truist Enjoy Travel sign-up bonus?", a: "The current bonus is 20,000 Points after spending $1,500 on purchases within 3 months of account opening." },
       { q: "What's the Truist Enjoy Travel annual fee?", a: "There is no annual fee on the Truist Enjoy Travel." },
       { q: "How long does the Truist Enjoy Travel sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -8965,7 +8972,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Ubs personal cards in our catalog, the UBS Visa Infinite is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current UBS Visa Infinite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current UBS Visa Infinite sign-up bonus?", a: "The current bonus is 0 Points after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the UBS Visa Infinite annual fee?", a: "The annual fee is $650." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the UBS Visa Infinite sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -8982,7 +8989,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1.75% on everything_else",
+      "1.75% on all other purchases",
       "Unlimited 1.75% cash back",
       "No annual, balance-transfer, or foreign transaction fee",
     ],
@@ -8991,7 +8998,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within University-of-hawaii-fcu's personal lineup, the closest comparison is the UHFCU Platinum Plus Visa ($0 after $0/3mo, $0 AF). The UHFCU Cash Wave Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current UHFCU Cash Wave Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current UHFCU Cash Wave Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the UHFCU Cash Wave Visa annual fee?", a: "There is no annual fee on the UHFCU Cash Wave Visa." },
       { q: "How long does the UHFCU Cash Wave Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9007,7 +9014,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "1x on everything_else",
+      "1x on all other purchases",
       "1 rewards point per $1",
       "Fixed 9.99% APR",
     ],
@@ -9016,7 +9023,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within University-of-hawaii-fcu's personal lineup, the closest comparison is the UHFCU Cash Wave Visa ($0 after $0/3mo, $0 AF). The UHFCU Platinum Plus Visa is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current UHFCU Platinum Plus Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current UHFCU Platinum Plus Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the UHFCU Platinum Plus Visa annual fee?", a: "There is no annual fee on the UHFCU Platinum Plus Visa." },
       { q: "How long does the UHFCU Platinum Plus Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9040,7 +9047,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Unfcu's personal lineup, the closest comparison is the UNFCU Elite (10,000 Points after $2,000/3mo, $50 AF). The UNFCU Azure is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current UNFCU Azure sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current UNFCU Azure sign-up bonus?", a: "The current bonus is 10,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the UNFCU Azure annual fee?", a: "There is no annual fee on the UNFCU Azure." },
       { q: "How long does the UNFCU Azure sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9064,7 +9071,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Unfcu's personal lineup, the closest comparison is the UNFCU Azure (10,000 Points after $2,000/3mo, $0 AF). The UNFCU Elite is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current UNFCU Elite sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 Points after spending $2,000 on purchases within 3 months of account opening." },
+      { q: "What's the current UNFCU Elite sign-up bonus?", a: "The current bonus is 10,000 Points after spending $2,000 on purchases within 3 months of account opening." },
       { q: "What's the UNFCU Elite annual fee?", a: "The annual fee is $50." },
       { q: "How long does the UNFCU Elite sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9074,13 +9081,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-harris-teeter-rewards-rwp": {
-    summary: "The Harris Teeter Rewards is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Harris Teeter Rewards is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Harris Teeter Rewards until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "5x on department_stores, digital_wallet_payments, drug_stores, groceries, home_improvement_stores",
+      "5x on department stores, digital wallet payments, drug stores, groceries, home improvement stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9088,7 +9095,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The Harris Teeter Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Harris Teeter Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Harris Teeter Rewards sign-up bonus?", a: "The current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Harris Teeter Rewards annual fee?", a: "There is no annual fee on the Harris Teeter Rewards." },
       { q: "How long does the Harris Teeter Rewards sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9103,7 +9110,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "50,000 miles sign-up bonus",
-      "2x on airfare_(portal), cell_phone_carriers, dining, ev_charging, gas_stations, office_supplies",
+      "2x on airfare (travel portal), cell phone carriers, dining, EV charging, gas stations, office supplies",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9113,7 +9120,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the State Farm Business Card Rewards ($0 after $0/3mo, $0 AF). The Korean Air SKYPASS Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Korean Air SKYPASS Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 50,000 miles after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Korean Air SKYPASS Business sign-up bonus?", a: "The current bonus is 50,000 miles after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Korean Air SKYPASS Business annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Korean Air SKYPASS Business sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9128,7 +9135,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 40,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $99 annual fee.",
     pros: [
       "40,000 miles sign-up bonus",
-      "2x on airfare_(portal), dining, hotels",
+      "2x on airfare (travel portal), dining, hotels",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9138,7 +9145,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The Korean Air SKYPASS is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Korean Air SKYPASS sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 miles after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Korean Air SKYPASS sign-up bonus?", a: "The current bonus is 40,000 miles after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Korean Air SKYPASS annual fee?", a: "The annual fee is $99." },
       { q: "How long does the Korean Air SKYPASS sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9153,7 +9160,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 miles bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $450 annual fee.",
     pros: [
       "60,000 miles sign-up bonus",
-      "3x on airfare_(portal)",
+      "3x on airfare (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9163,7 +9170,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The Korean Air SKYPASS Select is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Korean Air SKYPASS Select sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 miles after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Korean Air SKYPASS Select sign-up bonus?", a: "The current bonus is 60,000 miles after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Korean Air SKYPASS Select annual fee?", a: "The annual fee is $450." },
       { q: "How long does the Korean Air SKYPASS Select sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9179,7 +9186,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "10,000 miles sign-up bonus",
       "$0 annual fee",
-      "2x on ridesharing, streaming_services",
+      "2x on ridesharing, streaming services",
       "Travel Portal Redemption",
     ],
     cons: [
@@ -9187,7 +9194,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The Korean Air SKYPASS SkyBlue is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Korean Air SKYPASS SkyBlue sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 10,000 miles after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Korean Air SKYPASS SkyBlue sign-up bonus?", a: "The current bonus is 10,000 miles after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Korean Air SKYPASS SkyBlue annual fee?", a: "There is no annual fee on the Korean Air SKYPASS SkyBlue." },
       { q: "How long does the Korean Air SKYPASS SkyBlue sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9197,13 +9204,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-kroger-rewards-rwp": {
-    summary: "The Kroger Rewards is currently offering $59 after $0 in purchases within 3 months. There's no annual fee, which makes the $59 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $59 based on a 100.0¢ per-point valuation.",
+    summary: "The Kroger Rewards is currently offering $59 after $0 in purchases within 3 months. There's no annual fee, which makes the $59 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $59 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Kroger Rewards until you've earned the $59 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $59 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$59 sign-up bonus",
       "$0 annual fee",
-      "5x on department_stores, digital_wallet_payments, dining, drug_stores, gas_stations, gas_stations, groceries, home_improvement_stores, sam's_club, specified_store(s)",
+      "5x on department stores, digital wallet payments, dining, drug stores, gas stations, gas stations, groceries, home improvement stores, sam's club, select stores",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9211,7 +9218,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The Kroger Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Kroger Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $59 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Kroger Rewards sign-up bonus?", a: "The current bonus is $59 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Kroger Rewards annual fee?", a: "There is no annual fee on the Kroger Rewards." },
       { q: "How long does the Kroger Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9227,7 +9234,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "3x on cell_phone_carriers, dining, ev_charging, gas_stations, insurance, office_supplies",
+      "3x on cell phone carriers, dining, EV charging, gas stations, insurance, office supplies",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9235,7 +9242,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The State Farm Business Card Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current State Farm Business Card Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current State Farm Business Card Rewards sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the State Farm Business Card Rewards annual fee?", a: "There is no annual fee on the State Farm Business Card Rewards." },
       { q: "How long does the State Farm Business Card Rewards sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9245,7 +9252,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-state-farm-premier-cash-rewards-rwp": {
-    summary: "The State Farm Premier Cash Rewards is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The State Farm Premier Cash Rewards is currently offering $150 after $500 in purchases within 3 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the State Farm Premier Cash Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -9258,7 +9265,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The State Farm Premier Cash Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current State Farm Premier Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current State Farm Premier Cash Rewards sign-up bonus?", a: "The current bonus is $150 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the State Farm Premier Cash Rewards annual fee?", a: "There is no annual fee on the State Farm Premier Cash Rewards." },
       { q: "How long does the State Farm Premier Cash Rewards sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9273,7 +9280,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "60,000 Points sign-up bonus",
-      "5x on car_rentals_(portal), hotels_(portal)",
+      "5x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9282,7 +9289,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The US Bank Altitude Connect Business is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current US Bank Altitude Connect Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $0 on purchases within 6 months of account opening." },
+      { q: "What's the current US Bank Altitude Connect Business sign-up bonus?", a: "The current bonus is 60,000 Points after spending $0 on purchases within 6 months of account opening." },
       { q: "What's the US Bank Altitude Connect Business annual fee?", a: "The annual fee is $95." },
       { q: "How long does the US Bank Altitude Connect Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9306,7 +9313,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Altitude Go is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current US Bank Altitude Go sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current US Bank Altitude Go sign-up bonus?", a: "The current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the US Bank Altitude Go annual fee?", a: "There is no annual fee on the US Bank Altitude Go." },
       { q: "How long does the US Bank Altitude Go sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9316,12 +9323,12 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-us-bank-business-leverage-rwp": {
-    summary: "The US Bank Business Leverage is currently offering $750 after $7,500 in purchases within 4 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $655 based on a 100.0¢ per-point valuation.",
+    summary: "The US Bank Business Leverage is currently offering $750 after $7,500 in purchases within 4 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $655 — the bonus is cash back, valued at face.",
     strategy: "To hit the $7,500 requirement in 4 months, you need about $1,875 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Business Leverage until you've earned the $750 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,875/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$750 sign-up bonus",
-      "5x on car_rentals_(portal), hotels_(portal)",
+      "5x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9330,7 +9337,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The US Bank Business Leverage is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current US Bank Business Leverage sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $750 after spending $7,500 on purchases within 4 months of account opening." },
+      { q: "What's the current US Bank Business Leverage sign-up bonus?", a: "The current bonus is $750 after spending $7,500 on purchases within 4 months of account opening." },
       { q: "What's the US Bank Business Leverage annual fee?", a: "The annual fee is $95." },
       { q: "How long does the US Bank Business Leverage sign-up bonus take to post?", a: "Once you cross the $7,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9346,14 +9353,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "4x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "4x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Shield is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current US Bank Shield sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current US Bank Shield sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the US Bank Shield annual fee?", a: "There is no annual fee on the US Bank Shield." },
       { q: "How long does the US Bank Shield sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9363,19 +9370,19 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-us-bank-shopper-cash-rewards-rwp": {
-    summary: "The US Bank Shopper Cash Rewards is currently offering $250 after $2,000 in purchases within 4 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 based on a 100.0¢ per-point valuation.",
+    summary: "The US Bank Shopper Cash Rewards is currently offering $250 after $2,000 in purchases within 4 months. It carries a $95 annual fee, with no first-year credits to soften it. Estimated net year-one value: $155 — the bonus is cash back, valued at face.",
     strategy: "To hit the $2,000 requirement in 4 months, you need about $500 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Shopper Cash Rewards until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Cardholders who can fully use the $250 bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "$250 sign-up bonus",
-      "6x on quarterly_categories",
+      "6x on rotating quarterly categories",
     ],
     cons: [
       "$95 annual fee",
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Shopper Cash Rewards is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current US Bank Shopper Cash Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $250 after spending $2,000 on purchases within 4 months of account opening." },
+      { q: "What's the current US Bank Shopper Cash Rewards sign-up bonus?", a: "The current bonus is $250 after spending $2,000 on purchases within 4 months of account opening." },
       { q: "What's the US Bank Shopper Cash Rewards annual fee?", a: "The annual fee is $95." },
       { q: "How long does the US Bank Shopper Cash Rewards sign-up bonus take to post?", a: "Once you cross the $2,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9391,14 +9398,14 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
     ],
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The US Bank Smartly is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current US Bank Smartly sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current US Bank Smartly sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the US Bank Smartly annual fee?", a: "There is no annual fee on the US Bank Smartly." },
       { q: "How long does the US Bank Smartly sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9408,13 +9415,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "us-bank-us-bank-triple-cash-rewards-business-rwp": {
-    summary: "The US Bank Triple Cash Rewards Business is currently offering $750 after $0 in purchases within 6 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 based on a 100.0¢ per-point valuation.",
+    summary: "The US Bank Triple Cash Rewards Business is currently offering $750 after $0 in purchases within 6 months. There's no annual fee, which makes the $750 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $750 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 6 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the US Bank Triple Cash Rewards Business until you've earned the $750 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $0/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$750 sign-up bonus",
       "$0 annual fee",
-      "5x on airfare_(portal), car_rentals_(portal), hotels_(portal)",
+      "5x on airfare (travel portal), car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9422,7 +9429,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The US Bank Triple Cash Rewards Business is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current US Bank Triple Cash Rewards Business sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $750 after spending $0 on purchases within 6 months of account opening." },
+      { q: "What's the current US Bank Triple Cash Rewards Business sign-up bonus?", a: "The current bonus is $750 after spending $0 on purchases within 6 months of account opening." },
       { q: "What's the US Bank Triple Cash Rewards Business annual fee?", a: "There is no annual fee on the US Bank Triple Cash Rewards Business." },
       { q: "How long does the US Bank Triple Cash Rewards Business sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9437,7 +9444,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Self-employed or sole-proprietor users with at least $2,500/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "75,000 Points sign-up bonus",
-      "6x on car_rentals_(portal), hotels_(portal)",
+      "6x on car rentals (travel portal), hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9447,7 +9454,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's business lineup, the closest comparison is the Korean Air SKYPASS Business (50,000 miles after $5,000/3mo, $99 AF). The US Bank U.S. Bank Business Altitude® Power Visa Signature® Card is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current US Bank U.S. Bank Business Altitude® Power Visa Signature® Card sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 75,000 Points after spending $10,000 on purchases within 4 months of account opening." },
+      { q: "What's the current US Bank U.S. Bank Business Altitude® Power Visa Signature® Card sign-up bonus?", a: "The current bonus is 75,000 Points after spending $10,000 on purchases within 4 months of account opening." },
       { q: "What's the US Bank U.S. Bank Business Altitude® Power Visa Signature® Card annual fee?", a: "The annual fee is $195." },
       { q: "How long does the US Bank U.S. Bank Business Altitude® Power Visa Signature® Card sign-up bonus take to post?", a: "Once you cross the $10,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9463,7 +9470,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3% on groceries, dining, home_improvement, gas, travel, transit, health_wellness, entertainment, streaming",
+      "3% on groceries, dining, home improvement, gas, travel, transit, health wellness, entertainment, streaming",
       "3x on rotating combined categories (up to $3k/qtr)",
       "No annual fee",
     ],
@@ -9472,7 +9479,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Cashback Rewards Plus ($0 after $0/3mo, $0 AF). The USAA Eagle Adapt is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current USAA Eagle Adapt sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Eagle Adapt sign-up bonus?", a: "The current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the USAA Eagle Adapt annual fee?", a: "There is no annual fee on the USAA Eagle Adapt." },
       { q: "How long does the USAA Eagle Adapt sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9488,7 +9495,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "5x on gas_stations, special",
+      "5x on gas stations, select purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9496,7 +9503,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Eagle Navigator (30,000 Points after $3,000/3mo, $95 AF). The USAA Bank Cashback Rewards Plus is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current USAA Bank Cashback Rewards Plus sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Bank Cashback Rewards Plus sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the USAA Bank Cashback Rewards Plus annual fee?", a: "There is no annual fee on the USAA Bank Cashback Rewards Plus." },
       { q: "How long does the USAA Bank Cashback Rewards Plus sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9511,7 +9518,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 30,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "30,000 Points sign-up bonus",
-      "3x on airfare, airfare_(portal), car_rentals, car_rentals_(portal), cruises, hotels_(portal), parking, ridesharing, toll_fees, transit, travel",
+      "3x on airfare, airfare (travel portal), car rentals, car rentals (travel portal), cruises, hotels (travel portal), parking, ridesharing, tolls, transit, travel",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9520,7 +9527,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Usaa-bank's personal lineup, the closest comparison is the USAA Bank Cashback Rewards Plus ($0 after $0/3mo, $0 AF). The USAA Bank Eagle Navigator is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current USAA Bank Eagle Navigator sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 30,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current USAA Bank Eagle Navigator sign-up bonus?", a: "The current bonus is 30,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the USAA Bank Eagle Navigator annual fee?", a: "The annual fee is $95." },
       { q: "How long does the USAA Bank Eagle Navigator sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9536,7 +9543,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$250 sign-up bonus",
       "$0 annual fee",
-      "1.5x on all_other",
+      "1.5x on all other purchases",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9584,7 +9591,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "Expired legacy offer",
       "$0 annual fee",
-      "2x on dining, gas_stations",
+      "2x on dining, gas stations",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9602,7 +9609,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "usb-altitude-connect-300": {
-    summary: "The U.S. Bank Altitude Connect is currently offering $300 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 based on a 100.0¢ per-point valuation.",
+    summary: "The U.S. Bank Altitude Connect is currently offering $300 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $300 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $300 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the U.S. Bank Altitude Connect until you've earned the $300 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $300 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -9616,7 +9623,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Cash+ ($200 after $1,000/3mo, $0 AF). The U.S. Bank Altitude Connect is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current U.S. Bank Altitude Connect sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current U.S. Bank Altitude Connect sign-up bonus?", a: "The current bonus is $300 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the U.S. Bank Altitude Connect annual fee?", a: "There is no annual fee on the U.S. Bank Altitude Connect." },
       { q: "How long does the U.S. Bank Altitude Connect sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9626,11 +9633,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "usb-cash-plus-200": {
-    summary: "The U.S. Bank Cash+ is currently offering $200 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the U.S. Bank Cash+ until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The U.S. Bank Cash+ is currently offering $250 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $250 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $250 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the U.S. Bank Cash+ until you've earned the $250 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a $250 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "$200 sign-up bonus",
+      "$250 sign-up bonus",
       "$0 annual fee",
       "No annual fee",
       "5% on 2 categories you choose (up to $2k/quarter)",
@@ -9638,25 +9645,25 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     cons: [
       "Issuer may change SUB or requirements at any time — verify before applying",
     ],
-    comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($300 after $1,000/3mo, $0 AF). The U.S. Bank Cash+ is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
+    comparison: "Within Us-bank's personal lineup, the closest comparison is the U.S. Bank Altitude Connect ($20,000 after $1,000/3mo, $0 AF). The U.S. Bank Cash+ is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current U.S. Bank Cash+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current U.S. Bank Cash+ sign-up bonus?", a: "The current bonus is $250 after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the U.S. Bank Cash+ annual fee?", a: "There is no annual fee on the U.S. Bank Cash+." },
       { q: "How long does the U.S. Bank Cash+ sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["u-s-bank-altitude-connect-300-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    relatedSlugs: ["u-s-bank-altitude-connect-20000-cash","harris-teeter-rewards-100-cash","capital-one-savor-250-cash"],
     verifiedAt: "2026-04-19T22:03:11.008Z",
     verifiedUrl: "https://www.usbank.com/credit-cards/cash-plus-visa-signature-credit-card.html",
   },
 
   "vystar-gators-signature-cash-back-150": {
-    summary: "The VyStar Gators Visa Signature Cash Back is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The VyStar Gators Visa Signature Cash Back is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 2 months, you need about $750 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the VyStar Gators Visa Signature Cash Back until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "3% on gas_stations",
+      "3% on gas stations",
       "$150 statement credit after $1,500 in purchases within 60 days",
       "Up to 3% cash back",
     ],
@@ -9665,7 +9672,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Vystar's personal lineup, the closest comparison is the VyStar Visa Signature Cash Back ($150 after $1,500/2mo, $0 AF). The VyStar Gators Visa Signature Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current VyStar Gators Visa Signature Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
+      { q: "What's the current VyStar Gators Visa Signature Cash Back sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
       { q: "What's the VyStar Gators Visa Signature Cash Back annual fee?", a: "There is no annual fee on the VyStar Gators Visa Signature Cash Back." },
       { q: "How long does the VyStar Gators Visa Signature Cash Back sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9675,7 +9682,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "vystar-orlando-magic-signature-rewards-150": {
-    summary: "The VyStar Orlando Magic Visa Signature Rewards is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The VyStar Orlando Magic Visa Signature Rewards is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 2 months, you need about $750 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the VyStar Orlando Magic Visa Signature Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -9689,7 +9696,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Vystar's personal lineup, the closest comparison is the VyStar Visa Signature Cash Back ($150 after $1,500/2mo, $0 AF). The VyStar Orlando Magic Visa Signature Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current VyStar Orlando Magic Visa Signature Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
+      { q: "What's the current VyStar Orlando Magic Visa Signature Rewards sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
       { q: "What's the VyStar Orlando Magic Visa Signature Rewards annual fee?", a: "There is no annual fee on the VyStar Orlando Magic Visa Signature Rewards." },
       { q: "How long does the VyStar Orlando Magic Visa Signature Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9699,13 +9706,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "vystar-visa-signature-cash-back-150": {
-    summary: "The VyStar Visa Signature Cash Back is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The VyStar Visa Signature Cash Back is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 2 months, you need about $750 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the VyStar Visa Signature Cash Back until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "3% on gas_stations",
+      "3% on gas stations",
       "$150 after $1,500 in purchases within 60 days",
       "3% cash back on gas",
     ],
@@ -9714,7 +9721,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Vystar's personal lineup, the closest comparison is the VyStar Visa Signature Rewards ($150 after $1,500/2mo, $0 AF). The VyStar Visa Signature Cash Back is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current VyStar Visa Signature Cash Back sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
+      { q: "What's the current VyStar Visa Signature Cash Back sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
       { q: "What's the VyStar Visa Signature Cash Back annual fee?", a: "There is no annual fee on the VyStar Visa Signature Cash Back." },
       { q: "How long does the VyStar Visa Signature Cash Back sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9724,13 +9731,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "vystar-visa-signature-rewards-150": {
-    summary: "The VyStar Visa Signature Rewards is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 based on a 100.0¢ per-point valuation.",
+    summary: "The VyStar Visa Signature Rewards is currently offering $150 after $1,500 in purchases within 2 months. There's no annual fee, which makes the $150 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $150 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 2 months, you need about $750 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the VyStar Visa Signature Rewards until you've earned the $150 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $150 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$150 sign-up bonus",
       "$0 annual fee",
-      "3x on gas_stations",
+      "3x on gas stations",
       "$150 statement credit after $1,500 in purchases within 60 days",
       "3x points on gas",
     ],
@@ -9739,7 +9746,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Vystar's personal lineup, the closest comparison is the VyStar Visa Signature Cash Back ($150 after $1,500/2mo, $0 AF). The VyStar Visa Signature Rewards is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current VyStar Visa Signature Rewards sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
+      { q: "What's the current VyStar Visa Signature Rewards sign-up bonus?", a: "The current bonus is $150 after spending $1,500 on purchases within 2 months of account opening." },
       { q: "What's the VyStar Visa Signature Rewards annual fee?", a: "There is no annual fee on the VyStar Visa Signature Rewards." },
       { q: "How long does the VyStar Visa Signature Rewards sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9755,7 +9762,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$0 sign-up bonus",
       "$0 annual fee",
-      "4x on ev_charging, gas_stations, ridesharing, transit",
+      "4x on EV charging, gas stations, ridesharing, transit",
       "No Foreign Transaction Fees",
     ],
     cons: [
@@ -9763,7 +9770,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Webbank personal cards in our catalog, the Gemini is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Gemini sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Gemini sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Gemini annual fee?", a: "There is no annual fee on the Gemini." },
       { q: "How long does the Gemini sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9779,7 +9786,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "40,000 Points sign-up bonus",
       "$0 annual fee",
-      "5x on hotels_(portal)",
+      "5x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9788,7 +9795,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Choice Privileges is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Choice Privileges sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 40,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Choice Privileges sign-up bonus?", a: "The current bonus is 40,000 Points after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Choice Privileges annual fee?", a: "There is no annual fee on the Choice Privileges." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Choice Privileges sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -9804,7 +9811,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     bestFor: "Cardholders who can fully use the 60,000 Points bonus, the $0 in credits, and any travel benefits — and who'd find the value even after the $95 annual fee.",
     pros: [
       "60,000 Points sign-up bonus",
-      "10x on hotels_(portal)",
+      "10x on hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9814,7 +9821,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Choice Privileges Select is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Choice Privileges Select sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Choice Privileges Select sign-up bonus?", a: "The current bonus is 60,000 Points after spending $3,000 on purchases within 3 months of account opening." },
       { q: "What's the Choice Privileges Select annual fee?", a: "The annual fee is $95." },
       { q: "How are these hotel loyalty points valued?", a: "Hotel loyalty currencies (Hilton Honors, Marriott Bonvoy, IHG One Rewards, etc.) typically redeem in the 0.4–0.6¢/point range, materially below the ~1.5–2¢/point you can squeeze from transferable currencies like Amex MR, Chase UR, or Capital One miles. We use 0.5¢/point in our value math here." },
       { q: "How long does the Choice Privileges Select sign-up bonus take to post?", a: "Once you cross the $3,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
@@ -9825,13 +9832,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "wells-fargo-expedia-group-one-key-rwp": {
-    summary: "The Expedia Group One Key+ is currently offering $400 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $400 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $400 based on a 100.0¢ per-point valuation.",
+    summary: "The Expedia Group One Key+ is currently offering $400 after $1,000 in purchases within 3 months. There's no annual fee, which makes the $400 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $400 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Expedia Group One Key+ until you've earned the $400 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $400 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$400 sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), car_rentals_(portal), dining, ev_charging, gas_stations, groceries, hotels_(portal)",
+      "3x on airfare (travel portal), car rentals (travel portal), dining, EV charging, gas stations, groceries, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9840,7 +9847,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Expedia Group One Key+ is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Expedia Group One Key+ sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $400 after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Expedia Group One Key+ sign-up bonus?", a: "The current bonus is $400 after spending $1,000 on purchases within 3 months of account opening." },
       { q: "What's the Expedia Group One Key+ annual fee?", a: "There is no annual fee on the Expedia Group One Key+." },
       { q: "How long does the Expedia Group One Key+ sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9856,7 +9863,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$400 sign-up bonus",
       "$0 annual fee",
-      "3x on airfare_(portal), car_rentals_(portal), dining, ev_charging, gas_stations, groceries, hotels_(portal)",
+      "3x on airfare (travel portal), car rentals (travel portal), dining, EV charging, gas stations, groceries, hotels (travel portal)",
       "No Foreign Transaction Fees",
       "Travel Portal Redemption",
     ],
@@ -9865,7 +9872,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Expedia Group One Key is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Expedia Group One Key sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $400 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Expedia Group One Key sign-up bonus?", a: "The current bonus is $400 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Expedia Group One Key annual fee?", a: "There is no annual fee on the Expedia Group One Key." },
       { q: "How long does the Expedia Group One Key sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9875,13 +9882,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "wells-fargo-wells-fargo-attune-rwp": {
-    summary: "The Wells Fargo Attune is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 based on a 100.0¢ per-point valuation.",
+    summary: "The Wells Fargo Attune is currently offering $100 after $500 in purchases within 3 months. There's no annual fee, which makes the $100 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $100 — the bonus is cash back, valued at face.",
     strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Attune until you've earned the $100 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $100 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$100 sign-up bonus",
       "$0 annual fee",
-      "4x on amazon, fitness_memberships, flowers_and_gardens, hobbies, movie_theaters, pet_care, select_live_entertainment, self-care_/_spa_services, sports_&_recreation, streaming_services, transit",
+      "4x on amazon, fitness memberships, flowers and gardens, hobbies, movie theaters, pet care, select live entertainment, self-care / spa services, sports & recreation, streaming services, transit",
       "Travel Portal Redemption",
       "Cash to Travel Conversion",
     ],
@@ -9890,7 +9897,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Wells Fargo Attune is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Wells Fargo Attune sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
+      { q: "What's the current Wells Fargo Attune sign-up bonus?", a: "The current bonus is $100 after spending $500 on purchases within 3 months of account opening." },
       { q: "What's the Wells Fargo Attune annual fee?", a: "There is no annual fee on the Wells Fargo Attune." },
       { q: "How long does the Wells Fargo Attune sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9900,13 +9907,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "wells-fargo-wells-fargo-autograph-rwp": {
-    summary: "The Wells Fargo Autograph is currently offering 20,000 Points after $1,000 in purchases within 3 months. There's no annual fee, which makes the 20,000 Points bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 1¢ per-point valuation.",
-    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Autograph until you've earned the 20,000 Points bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a 20,000 Points bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
+    summary: "The Wells Fargo Autograph is currently offering 20,000 Wells Fargo Rewards after $1,000 in purchases within 3 months. There's no annual fee, which makes the 20,000 Wells Fargo Rewards bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 1¢ per-point valuation.",
+    strategy: "To hit the $1,000 requirement in 3 months, you need about $334 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Autograph until you've earned the 20,000 Wells Fargo Rewards bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
+    bestFor: "Anyone with steady monthly spend who wants a 20,000 Wells Fargo Rewards bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
-      "20,000 Points sign-up bonus",
+      "20,000 Wells Fargo Rewards sign-up bonus",
       "$0 annual fee",
-      "3x on cell_phone_carriers, dining, ev_charging, gas_stations, ridesharing, streaming_services, transit, travel",
+      "3x on cell phone carriers, dining, EV charging, gas stations, ridesharing, streaming services, transit, travel",
       "No Foreign Transaction Fees",
       "Transfer Partners Available",
     ],
@@ -9915,17 +9922,17 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Wells Fargo Autograph is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Wells Fargo Autograph sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 20,000 Points after spending $1,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Wells Fargo Autograph sign-up bonus?", a: "The current bonus is 20,000 Wells Fargo Rewards after spending $1,000 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Wells Fargo Autograph annual fee?", a: "There is no annual fee on the Wells Fargo Autograph." },
       { q: "How long does the Wells Fargo Autograph sign-up bonus take to post?", a: "Once you cross the $1,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["wells-fargo-autograph-journey-60000-wells-fargo-rewards","wells-fargo-active-cash-200-cash","capital-one-savor-30000-cash"],
+    relatedSlugs: ["wells-fargo-autograph-journey-60000-wells-fargo-rewards","wells-fargo-active-cash-200-cash","capital-one-savor-250-cash"],
     verifiedAt: "2026-06-12T06:31:51.244Z",
     verifiedUrl: "https://creditcards.wellsfargo.com/autograph-visa-credit-card/?sub_channel=WEB&vendor_code=WF",
   },
 
   "wells-fargo-wells-fargo-reflect-visa-auto": {
-    summary: "The Wells Fargo Reflect Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 based on a 100.0¢ per-point valuation.",
+    summary: "The Wells Fargo Reflect Visa is currently offering $0 after $0 in purchases within 3 months. There's no annual fee, which makes the $0 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $0 — the bonus is cash back, valued at face.",
     strategy: "To hit the $0 requirement in 3 months, you need about $0 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Reflect Visa until you've earned the $0 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Anyone with steady monthly spend who wants a $0 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
@@ -9937,7 +9944,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Wells fargo personal cards in our catalog, the Wells Fargo Reflect Visa is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Wells Fargo Reflect Visa sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
+      { q: "What's the current Wells Fargo Reflect Visa sign-up bonus?", a: "The current bonus is $0 after spending $0 on purchases within 3 months of account opening." },
       { q: "What's the Wells Fargo Reflect Visa annual fee?", a: "There is no annual fee on the Wells Fargo Reflect Visa." },
       { q: "How long does the Wells Fargo Reflect Visa sign-up bonus take to post?", a: "Once you cross the $0 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9947,13 +9954,13 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "wells-fargo-wells-fargo-signify-business-cash-rwp": {
-    summary: "The Wells Fargo Signify Business Cash is currently offering $500 after $5,000 in purchases within 3 months. There's no annual fee, which makes the $500 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $500 based on a 100.0¢ per-point valuation.",
+    summary: "The Wells Fargo Signify Business Cash is currently offering $500 after $5,000 in purchases within 3 months. There's no annual fee, which makes the $500 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $500 — the bonus is cash back, valued at face.",
     strategy: "To hit the $5,000 requirement in 3 months, you need about $1,667 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Signify Business Cash until you've earned the $500 bonus. Because this is a business card, sign-up bonus earnings post separately from personal-card velocity rules at most issuers — so it can run in parallel with a personal SUB chase. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
     bestFor: "Self-employed or sole-proprietor users with at least $1,667/month in deductible business spend who want a SUB that doesn't count toward Chase 5/24 or other personal-card velocity caps.",
     pros: [
       "$500 sign-up bonus",
       "$0 annual fee",
-      "2x on all_other",
+      "2x on all other purchases",
       "Travel Portal Redemption",
       "Cash to Travel Conversion",
     ],
@@ -9962,7 +9969,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Among Wells-fargo business cards in our catalog, the Wells Fargo Signify Business Cash is the only active SUB option, so the comparison is mostly against other issuers' equivalents at the same fee tier.",
     faqs: [
-      { q: "What's the current Wells Fargo Signify Business Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $500 after spending $5,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Wells Fargo Signify Business Cash sign-up bonus?", a: "The current bonus is $500 after spending $5,000 on purchases within 3 months of account opening." },
       { q: "What's the Wells Fargo Signify Business Cash annual fee?", a: "There is no annual fee on the Wells Fargo Signify Business Cash." },
       { q: "How long does the Wells Fargo Signify Business Cash sign-up bonus take to post?", a: "Once you cross the $5,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
@@ -9972,8 +9979,8 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
   },
 
   "wf-active-cash-200": {
-    summary: "The Wells Fargo Active Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 based on a 100.0¢ per-point valuation.",
-    strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Active Cash until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
+    summary: "The Wells Fargo Active Cash is currently offering $200 after $500 in purchases within 3 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
+    strategy: "To hit the $500 requirement in 3 months, you need about $167 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Wells Fargo Active Cash until you've earned the $200 bonus. Mind your issuer rules: check the issuer's velocity rules before applying. With no annual fee there's nothing to cancel for — keep it open after the bonus posts so the account keeps aging your average credit history.",
     bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
     pros: [
       "$200 sign-up bonus",
@@ -9986,11 +9993,11 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Autograph Journey (60,000 Wells Fargo Rewards after $4,000/3mo, $95 AF). The Wells Fargo Active Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
     faqs: [
-      { q: "What's the current Wells Fargo Active Cash sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
+      { q: "What's the current Wells Fargo Active Cash sign-up bonus?", a: "The current bonus is $200 after spending $500 on purchases within 3 months of account opening. Offers change often — confirm the live terms on the issuer's page before applying." },
       { q: "What's the Wells Fargo Active Cash annual fee?", a: "There is no annual fee on the Wells Fargo Active Cash." },
-      { q: "How long does the Wells Fargo Active Cash sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
+      { q: "How long does the Wells Fargo Active Cash sign-up bonus take to post?", a: "Once you cross the $500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
-    relatedSlugs: ["wells-fargo-autograph-journey-60000-wells-fargo-rewards","amex-hilton-honors-no-fee-70000-hilton-honors"],
+    relatedSlugs: ["wells-fargo-autograph-journey-60000-wells-fargo-rewards","choice-privileges-40000-points","capital-one-savor-250-cash"],
     verifiedAt: "2026-04-19T22:02:59.376Z",
     verifiedUrl: "https://creditcards.wellsfargo.com/active-cash-credit-card/?sub_channel=WEB&vendor_code=WF&lp_cx_nm=CXNAME_CSMPD_CG",
   },
@@ -10011,7 +10018,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     ],
     comparison: "Within Wells-fargo's personal lineup, the closest comparison is the Wells Fargo Active Cash ($200 after $1,500/6mo, $0 AF). The Wells Fargo Autograph Journey is the right pick when you value premium benefits and credits over a no-fee structure.",
     faqs: [
-      { q: "What's the current Wells Fargo Autograph Journey sign-up bonus?", a: "As verified directly from the issuer offer page, the current bonus is 60,000 Wells Fargo Rewards after spending $4,000 on purchases within 3 months of account opening." },
+      { q: "What's the current Wells Fargo Autograph Journey sign-up bonus?", a: "The current bonus is 60,000 Wells Fargo Rewards after spending $4,000 on purchases within 3 months of account opening." },
       { q: "What's the Wells Fargo Autograph Journey annual fee?", a: "The annual fee is $95. It is partially offset by approximately $50 in year-one statement credits." },
       { q: "How long does the Wells Fargo Autograph Journey sign-up bonus take to post?", a: "Once you cross the $4,000 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
     ],
