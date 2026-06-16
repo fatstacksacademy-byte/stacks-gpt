@@ -16,7 +16,7 @@ if (existsSync(".env.local")) process.loadEnvFile(".env.local")
 
 import { join } from "node:path"
 import { scanChannel, applyRewrites } from "./core"
-import { buildReport } from "./report"
+import { buildReport, buildSummary } from "./report"
 import type { VideoVerdict } from "./types"
 
 const OUT_DIR = join("scripts", "link-sync", "output")
@@ -51,6 +51,7 @@ async function runScan() {
 
   mkdirSync(OUT_DIR, { recursive: true })
   writeFileSync(join(OUT_DIR, "report.md"), report)
+  writeFileSync(join(OUT_DIR, "summary.md"), buildSummary(scan))
   writeFileSync(
     join(OUT_DIR, "proposed-edits.json"),
     JSON.stringify(

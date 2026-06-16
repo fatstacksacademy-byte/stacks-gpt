@@ -1,0 +1,55 @@
+name: link-sync weekly scan
+
+# Scans every video description on the channel, live-checks affiliate links, and
+# posts a summary to a tracking issue. READ-ONLY — never edits descriptions
+# (no --commit). The full per-link report is uploaded as an artifact.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN
+# (same values as your local .env.local — mint via `npm run linksync:auth`).
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # Mondays 13:00 UTC
+  workflow_dispatch: {} # allow manual runs
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+
+      - name: Run link-sync scan (read-only)
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: npm run linksync:scan
+
+      - name: Upload full report
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-sync-report
+          path: scripts/link-sync/output/report.md
+
+      - name: Post summary to tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="🔗 Link-sync: affiliate-link health"
+          BODY_FILE=scripts/link-sync/output/summary.md
+          NUM=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number')
+          if [ -n "$NUM" ]; then
+            gh issue edit "$NUM" --body-file "$BODY_FILE"
+            gh issue comment "$NUM" --body "Re-scanned $(date -u +%Y-%m-%d). See updated summary above; full report in the workflow artifact."
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
+          fi

@@ -60,6 +60,38 @@ export function buildReport(scan: ScanResult): string {
   return out.join("\n")
 }
 
+/**
+ * Compact summary (registry health + counts only) for the scheduled scan's
+ * tracking issue — the full per-link report goes up as a CI artifact.
+ */
+export function buildSummary(scan: ScanResult): string {
+  const out: string[] = []
+  out.push(`Generated ${new Date().toISOString()} · ${scan.videos.length} videos · live check: ${scan.live ? "on" : "off"}\n`)
+
+  const deadHealth = scan.registryHealth.filter((h) => h.result.status === "dead")
+  if (deadHealth.length) {
+    out.push(`> ⚠️ ${deadHealth.length} of your CURRENT registry links are themselves dead — fix registry.ts.\n`)
+  }
+
+  if (scan.registryHealth.length) {
+    out.push(`### Registry health`)
+    for (const h of scan.registryHealth) {
+      const icon = h.result.status === "alive" ? "✅" : h.result.status === "dead" ? "🔴" : "❔"
+      out.push(`- ${icon} ${h.label} — ${h.result.status}`)
+    }
+    out.push("")
+  }
+
+  const tally = new Map<LinkStatus, number>()
+  for (const v of scan.videos)
+    for (const verdict of v.verdicts) tally.set(verdict.status, (tally.get(verdict.status) ?? 0) + 1)
+  out.push(`### Counts`)
+  for (const s of ORDER) if (tally.get(s)) out.push(`- ${LABELS[s]}: **${tally.get(s)}**`)
+  out.push(`- Videos with a safe auto-fix queued: **${scan.videos.filter((v) => v.changed).length}**`)
+  out.push(`\n_Full per-link report is attached as the \`link-sync-report\` workflow artifact._`)
+  return out.join("\n")
+}
+
 function collect(videos: VideoVerdict[], status: LinkStatus) {
   const rows: { title: string; url: string; link: string; reason: string; target?: string }[] = []
   for (const v of videos)
