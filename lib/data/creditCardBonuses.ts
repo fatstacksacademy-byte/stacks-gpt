@@ -128,6 +128,14 @@ export type CreditCardBonus = {
   military_only?: boolean
   /** Welcome offer is Cashback Match (Discover) — no fixed $ SUB. Lets the blog generate a page despite bonus_amount=0. */
   cashback_match?: boolean
+  /** Current bonus is an elevated/limited-time offer above the card's usual SUB. */
+  elevated?: boolean
+  /** The card's normal (non-elevated) bonus_amount — powers "100,000 (usually 75,000)". */
+  standard_bonus_amount?: number
+  /** Approx. end of the elevated offer (ISO date) if known; absent = "limited time, no published end". */
+  elevated_ends?: string
+  /** Public (non-referral) application link that shows the elevated offer, when the referral offer_link doesn't. */
+  public_offer_link?: string
   /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
   rewards?: RewardsTier[]
   /** Introductory 0% APR terms. Optional — absent until researched per card. */
@@ -738,6 +746,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_type: "personal",
     bonus_amount: 100000,
     bonus_currency: "Ultimate Rewards",
+    elevated: true,
+    standard_bonus_amount: 75000,
     is_hotel_card: false,
     cpp_value: 0.01,
     min_spend: 5000,
@@ -989,7 +999,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
     key_benefits: [
       "3x on travel, shipping, internet, phone, advertising",
@@ -4782,6 +4792,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_type: "personal",
     bonus_amount: 60000,
     bonus_currency: "Marriott Bonvoy",
+    elevated: true,
+    standard_bonus_amount: 30000,
     is_hotel_card: true,
     cpp_value: 0.007,
     min_spend: 1000,
@@ -7183,7 +7195,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 195,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -7201,6 +7213,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     // Note: Chase Ink cards now carry a lifetime signup-bonus limit, enforced at application.
     bonus_amount: 100000,
     bonus_currency: "Ultimate Rewards",
+    elevated: true,
+    standard_bonus_amount: 75000,
     is_hotel_card: false,
     cpp_value: 0.01,
     min_spend: 8000,
@@ -7208,7 +7222,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -7228,6 +7242,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
     // Note: Chase Ink cards now carry a lifetime signup-bonus limit, enforced at application.
     bonus_amount: 100000,
     bonus_currency: "Ultimate Rewards",
+    elevated: true,
+    standard_bonus_amount: 75000,
     is_hotel_card: false,
     cpp_value: 0.01,
     min_spend: 8000,
@@ -7235,7 +7251,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
     key_benefits: ["Travel Portal Redemption"],
     rewards: [
@@ -7257,7 +7273,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     annual_fee: 795,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     offer_verified_at: "2026-06-15",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Transfer Partners Available","Travel Portal Redemption"],

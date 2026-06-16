@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { US_STATES, TRANSFER_PROGRAMS, findTransferProgram } from "../../lib/data/catalogTaxonomy"
 import type { CreditCardBonus } from "../../lib/data/creditCardBonuses"
+import ElevatedBadge from "./ElevatedBadge"
 import {
   rankByIntroApr,
   balanceTransferCost,
@@ -668,8 +669,9 @@ function CardRow({ rank, card, primary, primaryLabel, secondary, badge }: { rank
       <div style={{ fontSize: 13, fontWeight: 800, color: "#bbb", width: 22, textAlign: "center" }}>{rank}</div>
       <CardArt card={card} />
       <div style={{ minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flexWrap: "wrap" }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.card_name}</span>
+          <ElevatedBadge card={card} compact />
           {badge && (
             <span
               title="Earns this currency but doesn't transfer on its own — pool its points into a premium card of the same currency to transfer."

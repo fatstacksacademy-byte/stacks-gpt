@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import ElevatedBadge from "../../components/ElevatedBadge"
 import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard } from "../../../lib/ownedCards"
 import {
   CATEGORY_LABELS,
@@ -795,6 +796,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2, flexWrap: "wrap" }}>
                             <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700 }}>#{idx + 1}</span>
                             <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{sc.card.card_name}</span>
+                            <ElevatedBadge card={sc.card} compact />
                             {sc.card.card_type === "business" && (
                               <span style={{ fontSize: 9, color: "#7c3aed", background: "#ede9fe", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>BIZ</span>
                             )}
