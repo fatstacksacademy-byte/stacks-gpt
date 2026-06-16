@@ -342,8 +342,11 @@ function CheckingArticle({ bonus, content }: { bonus: any; content?: BlogContent
         </Section>
       )}
 
-      {/* What Counts as Direct Deposit */}
-      {content?.ddMethods && content.ddMethods.length > 0 && (
+      {/* What Counts as Direct Deposit — only when the bonus actually involves DD
+          (skip debit/balance/deposit/transfer-triggered bonuses where DD plays no role).
+          Gated on the structured DD fields, not prose, to avoid matching "no direct deposit required". */}
+      {content?.ddMethods && content.ddMethods.length > 0 &&
+        (req.direct_deposit_required || req.min_direct_deposit_total != null || req.min_direct_deposit_per_deposit != null || req.dd_count_required != null) && (
         <Section title="What Counts as Direct Deposit">
           <p style={{ fontSize: 13, color: "#999", marginBottom: 16, lineHeight: 1.6 }}>
             Based on community data points and bank terms. Employer payroll is always the safest method. &quot;Mixed&quot; means some users report success but it is not guaranteed.

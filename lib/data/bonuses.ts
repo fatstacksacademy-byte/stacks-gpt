@@ -5070,7 +5070,7 @@ export const bonuses: any[] = [
     ],
     "requirements": {
       "direct_deposit_required": false,
-      "min_direct_deposit_total": 25000,
+      "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": 30,
@@ -5466,7 +5466,7 @@ export const bonuses: any[] = [
     ],
     "requirements": {
       "direct_deposit_required": false,
-      "min_direct_deposit_total": 5000,
+      "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": null,
@@ -5607,22 +5607,22 @@ export const bonuses: any[] = [
     "bonus_amount": 500,
     "cooldown_months": null,
     "tiers": [
-      { "bonus": 100, "min_dd_total": 25000 },
-      { "bonus": 300, "min_dd_total": 50000 },
-      { "bonus": 500, "min_dd_total": 100000 }
+      { "bonus": 100, "min_balance": 25000 },
+      { "bonus": 300, "min_balance": 50000 },
+      { "bonus": 500, "min_balance": 100000 }
     ],
     "requirements": {
-      "direct_deposit_required": true,
-      "min_direct_deposit_total": 100000,
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": 45,
       "holding_period_days": 365,
       "min_opening_deposit": null,
-      "min_balance": null,
+      "min_balance": 25000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Referral required. Tiered: $100 at $25k, $300 at $50k, $500 at $100k. 12-month hold."
+      "other_requirements_text": "Referral required. This is an asset-transfer bonus — move NEW money/assets and hold ~12 months (NOT payroll direct deposit). Tiered: $100 at $25k, $300 at $50k, $500 at $100k."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6187,11 +6187,11 @@ export const bonuses: any[] = [
     "bonus_amount": 350,
     "cooldown_months": null,
     "requirements": {
-      "direct_deposit_required": false,
-      "min_direct_deposit_total": null,
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 1500,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
@@ -6363,11 +6363,11 @@ export const bonuses: any[] = [
     "bonus_amount": 300,
     "cooldown_months": null,
     "requirements": {
-      "direct_deposit_required": false,
-      "min_direct_deposit_total": null,
+      "direct_deposit_required": true,
+      "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
