@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import SiteHeader from "../../components/SiteHeader"
+import GuideAddendum from "../components/GuideAddendum"
 
 const BASE = "https://fatstacksacademy.com"
 const YT = "https://www.youtube.com/@nathanielbooth"
@@ -513,6 +514,8 @@ export default function WhatCountsAsDirectDeposit() {
           <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best savings bonuses &rarr;</Link>
           <Link href="/blog/bank-bonus-tax-guide-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Bank bonus tax guide &rarr;</Link>
         </div>
+        <GuideAddendum slug="what-counts-as-direct-deposit" />
+
       </main>
 
       <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import SiteHeader from "../../components/SiteHeader"
+import GuideAddendum from "../components/GuideAddendum"
 import { bonuses } from "../../../lib/data/bonuses"
 import { savingsBonuses } from "../../../lib/data/savingsBonuses"
 import { getPostByBonusId } from "../../../lib/data/blogPosts"
@@ -617,6 +618,8 @@ export default function CooldownMatrix() {
           <Link href="/blog/best-savings-bonuses-2026" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>Best savings bonuses &rarr;</Link>
           <Link href="/blog/chexsystems-guide-bank-bonuses" style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>ChexSystems guide &rarr;</Link>
         </div>
+        <GuideAddendum slug="bank-account-churning-waiting-periods" />
+
       </main>
 
       <footer style={{ borderTop: "1px solid #f0f0f0", padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
