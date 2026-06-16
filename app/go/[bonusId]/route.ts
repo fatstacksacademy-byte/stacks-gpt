@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse, after } from "next/server"
 import { affiliateLinks } from "../../../lib/affiliateLinks"
+import { logClick } from "../../../lib/clickLog"
 import { bonuses } from "../../../lib/data/bonuses"
 import { savingsBonuses } from "../../../lib/data/savingsBonuses"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
@@ -38,6 +39,25 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ bon
 
   if (!target) {
     return NextResponse.json({ error: "bonus_not_found", bonusId }, { status: 404 })
+  }
+
+  // Best-effort click logging — runs after the response is sent so the
+  // redirect stays instant; logClick swallows its own errors.
+  try {
+    const src = new URL(_req.url).searchParams.get("src") ?? undefined
+    const ip = _req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    after(() =>
+      logClick({
+        bonusId,
+        servedUrl: target,
+        src,
+        referer: _req.headers.get("referer") ?? undefined,
+        userAgent: _req.headers.get("user-agent") ?? undefined,
+        ip,
+      }),
+    )
+  } catch {
+    // logging must never block the redirect
   }
 
   return NextResponse.redirect(target, 302)
