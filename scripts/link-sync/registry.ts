@@ -29,8 +29,10 @@ export const linkRegistry: LinkProgram[] = [
     key: "chase-business-referral",
     label: "Chase Ink / Sapphire business (refer-a-friend)",
     issuer: "chase",
-    currentUrl: "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
+    currentUrl: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     aliases: [
+      // Previous canonical (21f prefix now redirects to 21g) — folded in 2026-06-16.
+      "https://www.referyourchasecard.com/21f/WDA5Q4R6ON",
       // Prior business-referral codes — all dead 404s, each confirmed via
       // Ink/business video context — folded into the current link 2026-06-13.
       "https://www.referyourchasecard.com/21e/I1HNZSS5VJ",
@@ -67,7 +69,10 @@ export const linkRegistry: LinkProgram[] = [
     issuer: "amex",
     currentUrl: "",
     rotates: true,
-    domainMatch: /americanexpress\.com\/(en-us\/)?referral|refer\.amex|amex\.co\b/i,
+    // Amex uses two referral URL shapes: the short /en-us/referral/<card> and
+    // the current long /credit-cards/referral/prospect/<hash>. Match any
+    // americanexpress.com URL containing "referral" so neither slips to orphan.
+    domainMatch: /americanexpress\.com\/[^\s"]*referral|refer\.amex|amex\.co\b/i,
     expiredFingerprints: [
       "no longer available",
       "link you followed has expired",
@@ -123,6 +128,53 @@ export const linkRegistry: LinkProgram[] = [
     issuer: "bank of america",
     currentUrl: "https://www.bankofamerica.com/refer?prod=ccr&refid=CR2IP1EM-CCCR01",
     domainMatch: /bankofamerica\.com\/refer/i,
+  },
+
+  // ── Other affiliate/referral programs found across video descriptions
+  // (2026-06-16 scan). These carry Nathaniel's own ref codes. No aliases yet,
+  // so nothing auto-rewrites — registering them just pulls them out of
+  // "orphan" and starts staleness tracking. For programs where the scan found
+  // more than one code, the extra variant will surface as "review" so the
+  // duplicate can be reconciled; confirm the canonical link before adding
+  // aliases.
+  {
+    key: "bilt",
+    label: "Bilt Rewards",
+    currentUrl: "https://bilt.page/r/55HR-AZ3I",
+    domainMatch: /bilt\.page\/r\//i,
+  },
+  {
+    key: "rakuten",
+    label: "Rakuten",
+    currentUrl: "https://www.rakuten.com/r/BOOTHN21?eeid=28187",
+    domainMatch: /rakuten\.com\/r\//i,
+  },
+  {
+    key: "upgrade",
+    label: "Upgrade",
+    currentUrl: "https://upgrade.com/r/76699nSnjq",
+    domainMatch: /upgrade\.com\/r\//i,
+    notes: "Two ref codes found in descriptions (76699nSnjq, ZdBGd3JZpz) — confirm canonical.",
+  },
+  {
+    key: "laurel-road",
+    label: "Laurel Road (high-yield savings)",
+    currentUrl: "https://www.laurelroad.com/refer-hys/?hys_friend=t33ijh2q",
+    domainMatch: /laurelroad\.com\/refer/i,
+  },
+  {
+    key: "wealthfront",
+    label: "Wealthfront",
+    currentUrl: "https://www.wealthfront.com/c/affiliates/invited/AFFC-7L1L-HP7L-HXL6",
+    domainMatch: /wealthfront\.com\/c\/affiliates/i,
+    notes: "Two affiliate links found (AFFC-7L1L-HP7L-HXL6, AFFC-44C4-RGAJ-WHL2) — confirm canonical.",
+  },
+  {
+    key: "ally",
+    label: "Ally Bank",
+    currentUrl: "https://www.ally.com/referral?code=4X6V8R3V2J",
+    domainMatch: /ally\.com\/referral/i,
+    notes: "Two referral codes found (4X6V8R3V2J, 6J7N9D8R8T) — confirm canonical.",
   },
 ]
 
