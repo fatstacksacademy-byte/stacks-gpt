@@ -6991,8 +6991,7 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
     pros: [
       "$200 sign-up bonus",
       "$0 annual fee",
-      "3% on groceries, dining, home improvement, gas, travel, transit, health wellness, entertainment, streaming",
-      "3x on rotating combined categories (up to $3k/qtr)",
+      "3% on select categories (groceries, dining, home improvement, gas & EV, travel, transit, health & wellness, entertainment & streaming) — first $3,000 in combined purchases per quarter, then 1%",
       "No annual fee",
     ],
     cons: [

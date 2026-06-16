@@ -6426,9 +6426,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     offer_link: "https://www.usaa.com/banking/credit-cards-public/cash-back/eagle-adapt",
     expired: false,
     offer_verified_at: "2026-06-13",
-    key_benefits: ["3x on rotating combined categories (up to $3k/qtr)","No annual fee","USAA membership required"],
+    key_benefits: ["3% on select categories — first $3,000 in combined purchases per quarter, then 1%","No annual fee","USAA membership required"],
     rewards: [
-      { categories: ["groceries","dining","home_improvement","gas","travel","transit","health_wellness","entertainment","streaming"], multiplier: 3, unit: "%" },
+      { categories: ["select_categories"], multiplier: 3, unit: "%", note: "groceries, dining, home improvement, gas & EV charging, travel, transit, health & wellness, entertainment & streaming — first $3,000 in combined purchases per quarter, then 1%" },
       { categories: ["all_other"], multiplier: 1, unit: "%" },
     ],
     intro_apr: { purchase_apr_months: 15 },
