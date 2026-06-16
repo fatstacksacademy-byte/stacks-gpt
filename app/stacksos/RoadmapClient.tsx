@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback, useMemo } from "react"
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
 import { checkingBonusStep, customBonusStep, URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { updateBonusStep } from "../../lib/completedBonuses"
@@ -389,8 +389,14 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     return sources
   }
 
+  // The full-screen "Loading…" gate should only fire on the very first load.
+  // Subsequent refetches (after marking a step, completing a bonus, etc.) must
+  // update data in the background — flipping loadingRecords back to true here
+  // would re-trigger the early-return below, unmounting the whole page and
+  // bouncing the user to the top with a white flash.
+  const initialLoadRef = useRef(true)
   const loadRecords = useCallback(async () => {
-    setLoadingRecords(true)
+    if (initialLoadRef.current) setLoadingRecords(true)
     const [records, custom, deps, notes, skips, openAccts, vStates] = await Promise.all([
       getCompletedBonuses(userId),
       getCustomBonuses(userId),
@@ -415,6 +421,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     setOpenAccounts(openAccts)
     // Derive keptOpen from records that have kept_open flag
     setKeptOpen(records.filter((r: any) => r.kept_open && !r.closed_date).map((r: any) => r.bonus_id))
+    initialLoadRef.current = false
     setLoadingRecords(false)
   }, [userId])
 
