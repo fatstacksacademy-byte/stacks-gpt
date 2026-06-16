@@ -4657,30 +4657,6 @@ export const cardBlogContent: Record<string, CardBlogContent> = {
 
 
 
-  "citi-custom-cash-200": {
-    summary: "The Citi Custom Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
-    strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Custom Cash until you've earned the $200 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",
-    bestFor: "Anyone with steady monthly spend who wants a $200 bonus with no annual-fee drag and no requirement to \"make the math work\" on a fee.",
-    pros: [
-      "$200 sign-up bonus",
-      "$0 annual fee",
-      "No annual fee",
-      "5% on top spending category (up to $500/month)",
-    ],
-    cons: [
-      "Issuer may change SUB or requirements at any time — verify before applying",
-    ],
-    comparison: "Within Citi's personal lineup, the closest comparison is the Citi Strata Elite (100,000 ThankYou Points after $6,000/3mo, $595 AF). The Citi Custom Cash is the right pick when you value a clean no-AF SUB and don't need the elevated category bonuses of the fee-bearing card.",
-    faqs: [
-      { q: "What's the current Citi Custom Cash sign-up bonus?", a: "The current bonus is $200 after spending $1,500 on purchases within 6 months of account opening." },
-      { q: "What's the Citi Custom Cash annual fee?", a: "There is no annual fee on the Citi Custom Cash." },
-      { q: "How long does the Citi Custom Cash sign-up bonus take to post?", a: "Once you cross the $1,500 spend threshold, the bonus typically posts within 1–2 statement cycles — call it 6–8 weeks from the day you hit the requirement. Track the milestone in Stacks OS Spending so you don't miss the deadline." },
-    ],
-    relatedSlugs: ["citi-strata-elite-100000-thankyou-points","citi-double-cash-200-cash","amex-hilton-honors-no-fee-70000-hilton-honors"],
-    verifiedAt: "2026-04-19T22:02:56.901Z",
-    verifiedUrl: "https://www.citi.com/credit-cards/citi-custom-cash-credit-card?pdp=new_cc",
-  },
-
   "citi-double-cash-200": {
     summary: "The Citi Double Cash is currently offering $200 after $1,500 in purchases within 6 months. There's no annual fee, which makes the $200 bonus close to pure profit if you can hit the spend organically. Estimated net year-one value: $200 — the bonus is cash back, valued at face.",
     strategy: "To hit the $1,500 requirement in 6 months, you need about $250 per month in organic spend on this card. Route any predictable monthly bills you'd otherwise pay from a debit card — utilities, groceries, gas, streaming subscriptions — through the Citi Double Cash until you've earned the $200 bonus. Mind your issuer rules: Citi enforces an 8/65 rule plus 24-/48-month bonus restrictions on the same family. Track the SUB cycle in Stacks OS so you can downgrade or cancel before the next AF posts if the card stops earning its keep.",

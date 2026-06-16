@@ -6,6 +6,7 @@ import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
 import { applyUrl } from "../../../lib/affiliateLinks"
+import { humanizeCategories } from "../../../lib/categoryLabels"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
 import AffiliateDisclosure from "../components/AffiliateDisclosure"
@@ -601,7 +602,7 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
             {card.rewards.map((r: any, i: number) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < card.rewards.length - 1 ? "1px solid #f0f0f0" : "none" }}>
                 <span style={{ fontSize: 13, color: "#555" }}>
-                  {r.categories.join(", ")}
+                  {humanizeCategories(r.categories)}
                   {r.note && <span style={{ color: "#999", marginLeft: 6 }}>({r.note})</span>}
                   {r.annual_cap && <span style={{ color: "#999", marginLeft: 6 }}>· cap ${r.annual_cap.toLocaleString()}/yr</span>}
                 </span>
