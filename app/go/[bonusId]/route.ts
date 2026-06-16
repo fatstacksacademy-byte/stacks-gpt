@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server"
 import { affiliateLinks } from "../../../lib/affiliateLinks"
 import { logClick } from "../../../lib/clickLog"
+import { pickPooledLink } from "../../../lib/referralPools"
 import { bonuses } from "../../../lib/data/bonuses"
 import { savingsBonuses } from "../../../lib/data/savingsBonuses"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
@@ -35,7 +36,10 @@ function canonicalUrlForBonus(bonusId: string): string | null {
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ bonusId: string }> }) {
   const { bonusId } = await params
 
-  const target = affiliateLinks[bonusId] ?? canonicalUrlForBonus(bonusId)
+  // Rotating referral pool (e.g. Chase business) takes precedence so clicks
+  // spread across multiple links; falls back to the affiliate map / catalog link.
+  const pooled = pickPooledLink(bonusId)
+  const target = pooled?.url ?? affiliateLinks[bonusId] ?? canonicalUrlForBonus(bonusId)
 
   if (!target) {
     return NextResponse.json({ error: "bonus_not_found", bonusId }, { status: 404 })
@@ -50,6 +54,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ bon
       logClick({
         bonusId,
         servedUrl: target,
+        linkLabel: pooled?.label,
         src,
         referer: _req.headers.get("referer") ?? undefined,
         userAgent: _req.headers.get("user-agent") ?? undefined,
