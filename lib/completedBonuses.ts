@@ -68,6 +68,38 @@ export async function approveApplication(
 }
 
 /**
+ * Mark a bonus as posted: record the actual amount that landed (which often
+ * differs from the advertised figure) and the date it posted, then advance to
+ * "safe_to_close".
+ *
+ * bonus_posted_date lives behind migration 033. We try the update WITH it first
+ * and, if that column isn't present yet, fall back to the same update without
+ * it — so the action never breaks if code ships ahead of the migration.
+ */
+export async function markBonusPosted(
+  recordId: string, actualAmount: number, postedDate: string
+): Promise<void> {
+  const supabase = createClient()
+  const base = {
+    current_step: "safe_to_close",
+    bonus_received: true,
+    actual_amount: actualAmount,
+    updated_at: new Date().toISOString(),
+  }
+  const { error } = await supabase
+    .from("completed_bonuses")
+    .update({ ...base, bonus_posted_date: postedDate })
+    .eq("id", recordId)
+  if (!error) return
+  // Column likely missing (migration 033 not applied) — retry without the date.
+  const { error: fallbackErr } = await supabase
+    .from("completed_bonuses")
+    .update(base)
+    .eq("id", recordId)
+  if (fallbackErr) reportError("Could not mark bonus posted", fallbackErr)
+}
+
+/**
  * Record a bonus the user already had at some point — used by the
  * "Already had" flow on paycheck recommendations. Accepts partial date
  * info; if both opened_date and closed_date are null, the record is

@@ -314,8 +314,11 @@ function buildMilestoneDetail(
 
       case "bonus_posted":
         if (status === "completed") {
-          subtitle = `$${bonus.bonus_amount.toLocaleString()} received`
-          completionNote = `$${bonus.bonus_amount.toLocaleString()} bonus posted to your account.`
+          const postedAmt = record.actual_amount ?? bonus.bonus_amount
+          subtitle = record.bonus_posted_date
+            ? `$${postedAmt.toLocaleString()} received · ${fmtCompact(record.bonus_posted_date)}`
+            : `$${postedAmt.toLocaleString()} received`
+          completionNote = `$${postedAmt.toLocaleString()} bonus posted to your account.`
         } else if (status === "active") {
           const postDays = timeline?.bonus_posting_days_est
           if (postDays) {

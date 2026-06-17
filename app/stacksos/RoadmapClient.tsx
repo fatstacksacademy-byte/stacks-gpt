@@ -9,7 +9,7 @@ import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { blogContent } from "../../lib/data/blogContent"
 import { getPostByBonusId } from "../../lib/data/blogPosts"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
-import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus, markBonusApplied, approveApplication } from "../../lib/completedBonuses"
+import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus, markBonusApplied, approveApplication, markBonusPosted } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
@@ -275,7 +275,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [overrideNotes, setOverrideNotes] = useState("")
 
   // Inline date prompts for custom bonus step actions
-  const [pendingStepDate, setPendingStepDate] = useState<{ id: string; type: "open" | "close"; isEdit?: boolean } | null>(null)
+  const [pendingStepDate, setPendingStepDate] = useState<{ id: string; type: "open" | "close" | "posted"; isEdit?: boolean } | null>(null)
   const [stepDateValue, setStepDateValue] = useState(todayStr())
   const [stepBonusReceived, setStepBonusReceived] = useState(true)
   const [stepActualAmount, setStepActualAmount] = useState("")
@@ -487,6 +487,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     await loadRecords()
   }
 
+  // Confirm the "Bonus Posted" step — captures the real amount + posting date.
+  async function handleConfirmPosted(bonusId: string) {
+    const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
+    if (!record) return
+    const bonus = allBonuses.find(x => x.id === bonusId)
+    const parsed = stepActualAmount ? parseInt(stepActualAmount.replace(/\D/g, "")) : NaN
+    const amount = Number.isFinite(parsed) && parsed > 0 ? parsed : (bonus?.bonus_amount ?? 0)
+    await markBonusPosted(record.id, amount, stepDateValue)
+    setPendingStepDate(null)
+    await loadRecords()
+  }
+
   async function handleClose() {
     if (!actionBonus) return
     const record = completedRecords.find(r => r.bonus_id === actionBonus.bonus.id && !r.closed_date)
@@ -516,14 +528,6 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     // Write the milestone key directly — getMilestoneDetail reads it back
     // via the fallback: LEGACY_STEP_MAP[manualStep] ?? (manualStep as MilestoneKey)
     await handleStepOverride(bonusId, milestone)
-  }
-
-  async function handleMarkBonusReceived(bonusId: string, amount: number) {
-    const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
-    if (!record) return
-    const supabase = createClient()
-    await supabase.from("completed_bonuses").update({ bonus_received: true, actual_amount: amount }).eq("id", record.id)
-    await loadRecords()
   }
 
   // "Keep open" — mark bonus received but don't close
@@ -2472,8 +2476,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 const handleCheck = () => {
                                   if (isCompleted) return
                                   if (m.key === "bonus_posted") {
-                                    handleMilestoneOverride(b.id, "safe_to_close")
-                                    handleMarkBonusReceived(b.id, b.bonus_amount)
+                                    // Prompt for the real amount + posting date instead of
+                                    // silently assuming the full advertised figure.
+                                    setPendingStepDate({ id: b.id, type: "posted" })
+                                    setStepDateValue(todayStr())
+                                    setStepActualAmount(String(b.bonus_amount))
                                     return
                                   }
                                   // dd_confirmed is now a real user-visible step —
@@ -2518,6 +2525,38 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 )
                               })}
                             </div>
+                            {/* Inline "Bonus Posted" prompt — real amount + posting date */}
+                            {pendingStepDate?.id === b.id && pendingStepDate?.type === "posted" && (
+                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 8 }}>Bonus posted — confirm the details</div>
+                                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+                                  <div>
+                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Date posted</div>
+                                    <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
+                                      style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                  </div>
+                                  <div>
+                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Amount received</div>
+                                    <div style={{ position: "relative" }}>
+                                      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                      <input type="number" value={stepActualAmount} onChange={(e) => setStepActualAmount(e.target.value)}
+                                        placeholder={String(b.bonus_amount)}
+                                        style={{ width: 120, padding: "8px 10px 8px 20px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                                  <button onClick={() => handleConfirmPosted(b.id)}
+                                    style={{ padding: "9px 16px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                    Confirm
+                                  </button>
+                                  <button onClick={() => setPendingStepDate(null)}
+                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           {/* ── Deposits ── */}
