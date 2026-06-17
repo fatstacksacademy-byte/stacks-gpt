@@ -550,8 +550,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           const balance = deployableCash
           const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
           const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
-          let y1Bonus = 0, y1Interest = 0, y2Bonus = 0, y2Interest = 0
-          for (const e of year1Entries) { y1Bonus += e.bonus_amount; y1Interest += e.interest_earned }
+          let y1Bonus = 0, y1Interest = 0, y1Incremental = 0, y2Bonus = 0, y2Interest = 0
+          for (const e of year1Entries) { y1Bonus += e.bonus_amount; y1Interest += e.interest_earned; y1Incremental += e.incremental_vs_hysa }
           for (const e of year2Entries) { y2Bonus += e.bonus_amount; y2Interest += e.interest_earned }
           const y1Total = y1Bonus + y1Interest
           const y2Total = y2Bonus + y2Interest
@@ -576,7 +576,14 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                     </div>
                     {y1Total > 0 && (
                       <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
-                        Effective return: <span style={{ color: "#0d7c5f", fontWeight: 700 }}>{(y1Total / balance * 100).toFixed(1)}%</span> vs {currentApy > 0 ? pct(currentApy) : "0%"} HYSA
+                        {currentApy > 0 ? (
+                          <>
+                            <span style={{ color: "#0d7c5f", fontWeight: 700 }}>{money(y1Incremental)}</span> above leaving it in your {pct(currentApy)} HYSA{" "}
+                            <span style={{ color: "#bbb" }}>(+{(y1Incremental / balance * 100).toFixed(1)}% on your balance)</span>
+                          </>
+                        ) : (
+                          <>Effective return <span style={{ color: "#0d7c5f", fontWeight: 700 }}>{(y1Total / balance * 100).toFixed(1)}%</span> — add your HYSA APY to see the real edge over it</>
+                        )}
                       </div>
                     )}
                   </div>
