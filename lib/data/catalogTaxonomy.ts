@@ -620,7 +620,16 @@ export function getNormalizedCatalog(): CatalogItem[] {
   if (cached) return cached
   const checking = (rawCheckingBonuses as RawCheckingRow[]).map(normalizeChecking)
   const savings = (rawSavingsBonuses as unknown as RawSavingsRow[]).map(normalizeSavings)
-  cached = [...checking, ...savings]
+  // Dedupe by id, last-wins. A handful of regional credit-union offers (CEFCU,
+  // Citadel, Dupaco, …) exist BOTH as an older base stub and as a curated row
+  // in stateBankBonuses, which is spread into the base array afterwards. The
+  // stubs are stale and sometimes mis-stated (a CEFCU stub lists CA when the
+  // CU is Illinois-only), so last-wins keeps the officially-verified regional
+  // row and drops the stub — fixing wrong state-eligibility catalog-wide, not
+  // just the duplicate id.
+  const byId = new Map<string, CatalogItem>()
+  for (const item of [...checking, ...savings]) byId.set(item.id, item)
+  cached = [...byId.values()]
   return cached
 }
 

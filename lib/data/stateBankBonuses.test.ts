@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import {
   getLiveCatalog,
+  getNormalizedCatalog,
   bucketByState,
   isEligibleInState,
   US_STATES,
@@ -63,11 +64,14 @@ describe("state-local catalog data integrity", () => {
 
 describe("state-local eligibility", () => {
   it("each offer is eligible in exactly its declared states and nowhere else", () => {
-    const live = getLiveCatalog(TODAY)
+    // Eligibility is independent of expiration, so check against the full
+    // normalized catalog — an offer that has since expired (and dropped out of
+    // the live catalog) must still resolve to its declared states here.
+    const catalog = getNormalizedCatalog()
     for (const b of stateBankBonuses) {
       const allowed = (b.eligibility as { states_allowed: string[] }).states_allowed
-      const item = live.find(i => i.id === b.id)
-      expect(item, `${b.id} should be in the live catalog`).toBeTruthy()
+      const item = catalog.find(i => i.id === b.id)
+      expect(item, `${b.id} should be in the normalized catalog`).toBeTruthy()
       for (const s of US_STATES) {
         expect(
           isEligibleInState(item!, s.code),
@@ -85,7 +89,9 @@ describe("state-local eligibility", () => {
   })
 
   it("spot-checks representative offers appear for their state and not a neighbor", () => {
-    const live = getLiveCatalog(TODAY)
+    // Eligibility, not liveness — use the normalized catalog so an expired
+    // representative (e.g. Citadel, whose offer has since ended) still resolves.
+    const catalog = getNormalizedCatalog()
     const cases: Array<[string, string, string]> = [
       ["weokie-fcu-200-checking-2026", "OK", "TX"],
       ["bellco-cu-300-checking-2026", "CO", "WY"],
@@ -95,9 +101,9 @@ describe("state-local eligibility", () => {
     for (const [id, inState, outState] of cases) {
       const item = stateBankBonuses.find(b => b.id === id)
       if (!item) continue // superseded ids are intentionally excluded
-      const live_item = live.find(i => i.id === id)!
-      expect(isEligibleInState(live_item, inState), `${id} eligible in ${inState}`).toBe(true)
-      expect(isEligibleInState(live_item, outState), `${id} not eligible in ${outState}`).toBe(false)
+      const catalog_item = catalog.find(i => i.id === id)!
+      expect(isEligibleInState(catalog_item, inState), `${id} eligible in ${inState}`).toBe(true)
+      expect(isEligibleInState(catalog_item, outState), `${id} not eligible in ${outState}`).toBe(false)
     }
   })
 })

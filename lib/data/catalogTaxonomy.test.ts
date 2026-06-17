@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import {
   getLiveCatalog,
+  getNormalizedCatalog,
   getStrictlyLiveCatalog,
   isEligibleInState,
   bucketByState,
@@ -317,10 +318,26 @@ describe("expirationStatus + getStrictlyLiveCatalog", () => {
   })
 
   it("extracts obvious offer deadlines from catalog text", () => {
-    const catalog = getLiveCatalog(new Date("2026-06-11T12:00:00Z"))
-    expect(catalog.find(item => item.id === "hsbc-premier-checking-2026")).toBeUndefined()
-    expect(catalog.find(item => item.id === "wells-fargo-business-checking-825-2026")).toBeUndefined()
-    expect(catalog.find(item => item.id === "bmo-business-checking-1000-2026")).toBeUndefined()
+    // These offers each carry an "Expires <Month Day, Year>" in their text.
+    // Asserted self-relative to each offer's own extracted deadline so the test
+    // can't go stale when an offer is re-verified with a new future date.
+    const norm = getNormalizedCatalog()
+    for (const id of [
+      "hsbc-premier-checking-2026",
+      "wells-fargo-business-checking-825-2026",
+      "bmo-business-checking-1000-2026",
+    ]) {
+      const item = norm.find(i => i.id === id)
+      // 1) the parser lifted a deadline out of the free text …
+      expect(item?.expirationDate, `${id} should have a text-extracted deadline`).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      // 2) … and the day after that deadline the offer drops from the live catalog.
+      const dayAfter = new Date(item!.expirationDate + "T12:00:00Z")
+      dayAfter.setUTCDate(dayAfter.getUTCDate() + 1)
+      expect(
+        getLiveCatalog(dayAfter).some(i => i.id === id),
+        `${id} must drop from the live catalog after its deadline`,
+      ).toBe(false)
+    }
   })
 
   it("keeps state browsing populated when expiration is unknown", () => {
