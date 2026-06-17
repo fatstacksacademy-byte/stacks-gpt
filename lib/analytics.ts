@@ -16,6 +16,7 @@ export type AnalyticsEvent =
   | "wizard_completed"
   | "wizard_step_completed"
   // Bonus actions
+  | "bonus_applied"          // application submitted, decision pending
   | "bonus_started"          // module: paycheck|spending|savings|debt
   | "bonus_completed"
   | "bonus_skipped"
@@ -27,6 +28,9 @@ export type AnalyticsEvent =
   // Subscription
   | "checkout_started"
   | "billing_portal_opened"
+  // 0% intro-APR float calculator
+  | "intro_apr_card_selected"
+  | "intro_apr_apply_click"
   // Misc
   | "tax_summary_viewed"
   | "dashboard_tab_changed"
