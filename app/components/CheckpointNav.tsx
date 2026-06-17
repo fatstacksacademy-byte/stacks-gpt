@@ -11,6 +11,7 @@ const tabs = [
   { label: "Spending", href: "/stacksos/spending", beta: true },
   { label: "Debt", href: "/stacksos/debt", beta: true },
   { label: "0% APR", href: "/stacksos/intro-apr", beta: true },
+  { label: "Card Calc", href: "/stacksos/card-calculator", beta: true },
 ] as const
 
 // In-progress surfaces — visible as "coming soon" but still reachable while building.

@@ -595,6 +595,25 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
         {card.offer_link && <AffiliateDisclosure variant="inline" />}
       </div>
 
+      {/* Personalized value calculator — deep-links with this card preselected */}
+      <Link
+        href={`/credit-card-calculator?card=${card.id}`}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+          padding: "16px 20px", marginBottom: 32, background: "#f0faf5",
+          border: "1px solid #a7f3d0", borderRadius: 12, textDecoration: "none",
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>What&apos;s this card worth to you?</div>
+          <div style={{ fontSize: 13, color: "#666", marginTop: 2 }}>
+            Enter your spend and see {card.card_name}&apos;s Year 1 &amp; Year 2 value
+            {card.intro_apr?.purchase_apr_months ? " — plus the 0% APR float" : ""}.
+          </div>
+        </div>
+        <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, color: "#0d7c5f", whiteSpace: "nowrap" }}>Open calculator →</span>
+      </Link>
+
       {/* Rewards tiers */}
       {card.rewards && card.rewards.length > 0 && (
         <Section title="Rewards Earning">
