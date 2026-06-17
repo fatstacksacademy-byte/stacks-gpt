@@ -36,6 +36,7 @@ export default function CardValueCalculator({
   const [spend, setSpend] = useState<Record<string, number>>(DEFAULT_SPEND)
   const [zeroApr, setZeroApr] = useState(false)
   const [hysaApyPct, setHysaApyPct] = useState(DEFAULT_HYSA_APY * 100)
+  const [cardQuery, setCardQuery] = useState("")
 
   const selected = liveCards.find((c) => c.id === cardId) ?? liveCards[0]
   const result = useMemo(
@@ -50,6 +51,11 @@ export default function CardValueCalculator({
   const totalMonthly = CORE.reduce((s, c) => s + (spend[c.key] || 0), 0)
   const bonusLabel = subHeadline(selected)
 
+  const q = cardQuery.trim().toLowerCase()
+  const cardMatches = q
+    ? liveCards.filter((c) => c.card_name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q)).slice(0, 50)
+    : []
+
   function setCat(key: string, v: string) {
     const n = Math.max(0, Number(v.replace(/[^\d]/g, "")) || 0)
     setSpend((prev) => ({ ...prev, [key]: n }))
@@ -60,15 +66,33 @@ export default function CardValueCalculator({
       {/* ── Inputs ── */}
       <div style={{ ...card, flex: "1 1 320px", minWidth: 300 }}>
         <div style={{ ...label, marginBottom: 8 }}>Card</div>
-        <select
-          value={cardId}
-          onChange={(e) => setCardId(e.target.value)}
-          style={{ width: "100%", padding: "10px 12px", fontSize: 15, fontWeight: 600, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", marginBottom: 20 }}
-        >
-          {liveCards.map((c) => (
-            <option key={c.id} value={c.id}>{c.card_name}</option>
-          ))}
-        </select>
+        <div style={{ position: "relative", marginBottom: 20 }}>
+          <input
+            type="text"
+            value={cardQuery}
+            onChange={(e) => setCardQuery(e.target.value)}
+            placeholder={`${selected.card_name}  (type to change)`}
+            aria-label="Search for a card"
+            style={{ width: "100%", padding: "10px 12px", fontSize: 15, fontWeight: 500, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+          />
+          {q && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: 4, background: "#fff", border: "1px solid #e0e0e0", borderRadius: 8, boxShadow: "0 6px 20px rgba(0,0,0,0.10)", maxHeight: 280, overflowY: "auto", zIndex: 30 }}>
+              {cardMatches.length === 0 ? (
+                <div style={{ padding: "10px 12px", fontSize: 13, color: "#999" }}>No cards match “{cardQuery.trim()}”.</div>
+              ) : cardMatches.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { setCardId(c.id); setCardQuery("") }}
+                  style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, width: "100%", textAlign: "left", padding: "9px 12px", fontSize: 14, background: c.id === cardId ? "#f0faf5" : "#fff", border: "none", borderBottom: "1px solid #f4f4f4", cursor: "pointer", color: "#111", fontFamily: "inherit" }}
+                >
+                  <span style={{ fontWeight: 500 }}>{c.card_name}</span>
+                  <span style={{ fontSize: 11, color: "#bbb", textTransform: "capitalize", flexShrink: 0 }}>{c.issuer.replace(/-/g, " ")}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div style={{ ...label, marginBottom: 4 }}>Your monthly spend</div>
         <div style={{ fontSize: 12, color: "#bbb", marginBottom: 12 }}>
