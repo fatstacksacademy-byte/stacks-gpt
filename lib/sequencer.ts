@@ -1,6 +1,7 @@
 import { bonuses as allBonuses } from "./data/bonuses"
 import type { CompletedBonus } from "./churn"
 import type { IncomeSource } from "./profileServer"
+import { analyzeFeeStrategy, parseFeeWaiver } from "./feeStrategy"
 
 export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
 
@@ -9,30 +10,49 @@ export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly"
  * - If DD already waives the fee (user is routing DD anyway), fee = $0
  * - Otherwise, calculate total fee over the hold period
  */
-function calcNetBonus(bonus: (typeof allBonuses)[number], bonusAmount: number): { netBonus: number; totalFees: number; feeWaivedByDD: boolean } {
+function calcNetBonus(
+  bonus: (typeof allBonuses)[number],
+  bonusAmount: number,
+  ctx: { hysaApy: number; userDdPerCycle: number },
+): { netBonus: number; totalFees: number; feeWaivedByDD: boolean; feeStrategyNote: string | null } {
   const fee = bonus.fees?.monthly_fee ?? 0
-  if (fee === 0) return { netBonus: bonusAmount, totalFees: 0, feeWaivedByDD: false }
+  if (fee === 0) return { netBonus: bonusAmount, totalFees: 0, feeWaivedByDD: false, feeStrategyNote: null }
 
-  const waiver = (bonus.fees?.monthly_fee_waiver_text ?? "").toLowerCase()
-  const hasDDRequirement = bonus.requirements?.direct_deposit_required
+  // Pull structured waiver thresholds out of the free text. When the text
+  // mentions DD with no dollar threshold and the bonus already requires DD,
+  // treat any qualifying DD as enough to waive (preserves the old behavior;
+  // a $-threshold waiver like FHB's "$2,000+ DD" is honored precisely).
+  const waiver = parseFeeWaiver(bonus.fees?.monthly_fee_waiver_text)
+  const waiverText = (bonus.fees?.monthly_fee_waiver_text ?? "").toLowerCase()
+  const mentionsDd = /direct deposit|qualifying (electronic|deposit)|\bdd\b/.test(waiverText)
+  if (waiver.ddPerCycle == null && mentionsDd && bonus.requirements?.direct_deposit_required) {
+    waiver.ddPerCycle = 1
+  }
 
-  // If DD is required AND the waiver mentions DD/electronic deposits, fee is auto-waived
-  const ddWaivesFee = hasDDRequirement && (
-    waiver.includes("direct deposit") ||
-    waiver.includes("qualifying electronic") ||
-    waiver.includes("qualifying deposit") ||
-    waiver.includes("$500+ dd") ||
-    waiver.includes("dd")
-  )
-
-  if (ddWaivesFee) return { netBonus: bonusAmount, totalFees: 0, feeWaivedByDD: true }
-
-  // Calculate total fee cost over hold period
   const holdDays = bonus.timeline?.must_remain_open_days ?? 180
-  const months = Math.max(1, Math.ceil(holdDays / 30))
-  const totalFees = fee * months
+  const monthsOpen = Math.max(1, Math.ceil(holdDays / 30))
+  const postDays = bonus.timeline?.bonus_posting_days_est ?? 45
 
-  return { netBonus: bonusAmount - totalFees, totalFees, feeWaivedByDD: false }
+  const result = analyzeFeeStrategy({
+    bonusAmount,
+    monthlyFee: fee,
+    waiver,
+    userDdPerCycle: ctx.userDdPerCycle,
+    monthsOpen,
+    bonusPostsMonths: postDays / 30,
+    earlyClosureFee: (bonus.fees as { early_closure_fee?: number | null })?.early_closure_fee ?? null,
+    // No per-row clawback flag yet → conservative default (don't bank on closing
+    // early, which would forfeit the bonus at many banks).
+    hysaApy: ctx.hysaApy,
+    accountApy: 0,
+  })
+
+  return {
+    netBonus: result.bestNet,
+    totalFees: result.bestCost,
+    feeWaivedByDD: result.best.kind === "waive_dd",
+    feeStrategyNote: result.recommendation,
+  }
 }
 
 export type SequencedBonus = {
@@ -52,6 +72,8 @@ export type SequencedBonus = {
   net_bonus: number
   total_fees: number
   fee_waived_by_dd: boolean
+  /** One-line recommended fee play (pay / waive via DD / waive via balance). */
+  fee_strategy_note: string | null
   source_links: string[]
   weeks_to_complete: number
   velocity: number
@@ -191,6 +213,7 @@ export function runSequencer({
   userState,
   includeBusiness = false,
   militaryAffiliated = false,
+  currentHysaApy = 0.045,
 }: {
   slots: number
   payFrequency: string
@@ -203,6 +226,8 @@ export function runSequencer({
   includeBusiness?: boolean
   /** USAA / Navy Federal / AAFES-type offers gate on this. */
   militaryAffiliated?: boolean
+  /** Opportunity-cost rate for the fee-strategy math (park-to-waive vs pay). */
+  currentHysaApy?: number
 }): SequencerResult {
   // Use multi-source if provided, otherwise fall back to single
   const sources: IncomeSource[] = incomeSources && incomeSources.length > 0
@@ -221,7 +246,17 @@ export function runSequencer({
     netBonus?: number
     totalFees?: number
     feeWaivedByDD?: boolean
+    feeStrategyNote?: string | null
   }
+
+  // Fee-strategy context: the user's monthly direct-deposit capacity (drives
+  // whether a DD-based fee waiver is achievable) and their HYSA rate (the
+  // opportunity cost of parking a balance to waive a fee).
+  const userDdPerCycle = sources.reduce((s, src) => {
+    const dpp = DAYS_PER_PAY[src.pay_frequency] ?? 14
+    return s + src.paycheck_amount * (30.4 / dpp)
+  }, 0)
+  const feeCtx = { hysaApy: currentHysaApy, userDdPerCycle }
 
   const pool: EvalBonus[] = []
 
@@ -260,15 +295,15 @@ export function runSequencer({
     // If bonus has tiers, evaluate each tier and pick the best velocity
     const tiers = (b as any).tiers as { bonus: number; min_dd_total: number }[] | undefined
     if (tiers && tiers.length > 0) {
-      let bestTier: (EvalBonus & { netBonus: number; totalFees: number; feeWaivedByDD: boolean }) | null = null
+      let bestTier: (EvalBonus & { netBonus: number; totalFees: number; feeWaivedByDD: boolean; feeStrategyNote: string | null }) | null = null
       for (const tier of tiers) {
         const virtualBonus = { ...b, bonus_amount: tier.bonus, requirements: { ...b.requirements, min_direct_deposit_total: tier.min_dd_total } }
         const result = evaluate(virtualBonus, sources)
         if (!result.feasible) continue
-        const { netBonus, totalFees, feeWaivedByDD } = calcNetBonus(b, tier.bonus)
+        const { netBonus, totalFees, feeWaivedByDD, feeStrategyNote } = calcNetBonus(b, tier.bonus, feeCtx)
         const velocity = netBonus / result.weeksToComplete
         if (!bestTier || velocity > bestTier.velocity) {
-          bestTier = { bonus: virtualBonus, weeksToComplete: result.weeksToComplete, velocity, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD }
+          bestTier = { bonus: virtualBonus, weeksToComplete: result.weeksToComplete, velocity, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD, feeStrategyNote }
         }
       }
       if (bestTier) {
@@ -279,8 +314,8 @@ export function runSequencer({
     } else {
       const result = evaluate(b, sources)
       if (!result.feasible) { skipped.push({ bank_name: b.bank_name, reason: result.reason }); continue }
-      const { netBonus, totalFees, feeWaivedByDD } = calcNetBonus(b, b.bonus_amount)
-      pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: netBonus / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD })
+      const { netBonus, totalFees, feeWaivedByDD, feeStrategyNote } = calcNetBonus(b, b.bonus_amount, feeCtx)
+      pool.push({ bonus: b, weeksToComplete: result.weeksToComplete, velocity: netBonus / result.weeksToComplete, cooldownMonths, cooldownWeeks, isLifetime, netBonus, totalFees, feeWaivedByDD, feeStrategyNote })
     }
   }
 
@@ -385,6 +420,7 @@ export function runSequencer({
       net_bonus: eb.netBonus ?? b.bonus_amount,
       total_fees: eb.totalFees ?? 0,
       fee_waived_by_dd: eb.feeWaivedByDD ?? false,
+      fee_strategy_note: eb.feeStrategyNote ?? null,
       weeks_to_complete: eb.weeksToComplete, velocity: eb.velocity,
       slot: bestSlot, start_week: startWeek, end_week: endWeek, payout_week: payoutWeek,
       cycle, cooldown_months: eb.cooldownMonths,

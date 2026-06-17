@@ -301,6 +301,11 @@ function BonusCard({ bonus: b, color, position, startDate, isChained, onStartDat
             <DetailRow label="Hard pull" value={b.hard_pull === null ? "—" : b.hard_pull ? "Yes" : "No"} />
             <DetailRow label="Cooldown" value={b.cooldown_months == null ? "One-time only" : `${b.cooldown_months} months`} />
           </div>
+          {b.monthly_fee != null && b.monthly_fee > 0 && b.fee_strategy_note && (
+            <div style={{ marginTop: 12, padding: "10px 12px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
+              <span style={{ fontWeight: 700 }}>Fee play:</span> {b.fee_strategy_note}
+            </div>
+          )}
           {link && <a href={link} target="_blank" rel="noreferrer" style={applyLink}>Apply →</a>}
         </div>
       )}
