@@ -754,21 +754,27 @@ export const creditCardBonuses: CreditCardBonus[] = [
     spend_months: 3,
     annual_fee: 95,
     annual_fee_waived_first_year: false,
-    statement_credits_year1: 50,
+    statement_credits_year1: 100,
     offer_link: "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
-    offer_verified_at: "2026-06-15",
+    offer_verified_at: "2026-06-16",
     expired: false,
+    // June 15, 2026 refresh: hotel credit doubled to $100, new $120 Global Entry/TSA/NEXUS
+    // credit (every 4 yrs) + 1 yr of Apple TV+, new 3x gas/EV and 3x vacation rentals.
+    // The 10% anniversary points bonus was eliminated for applicants on/after June 15, 2026,
+    // and the flat 1.25cpp Chase Travel redemption was replaced by Points Boost in Oct 2025.
     key_benefits: [
-      "$50 annual hotel credit (book via Chase Travel)",
-      "Anniversary points (10% of prior-year spend)",
-      "Transfer to Hyatt, United, Southwest, et al.",
-      "Trip cancellation + delay insurance",
-      "Primary rental car CDW",
+      "$100 annual hotel credit via Chase Travel (doubled in the June 2026 refresh)",
+      "$120 Global Entry / TSA PreCheck / NEXUS credit (new; every 4 years)",
+      "1 year of Apple TV+ free (activate by Dec 31, 2026)",
+      "3x dining, online grocery, streaming, gas & EV charging, vacation rentals",
+      "Transfer 1:1 to Hyatt, United, Southwest & more",
     ],
     rewards: [
       { categories: ["dining"], multiplier: 3, unit: "points" },
       { categories: ["online_grocery"], multiplier: 3, unit: "points" },
       { categories: ["streaming"], multiplier: 3, unit: "points" },
+      { categories: ["gas_ev_charging"], multiplier: 3, unit: "points" },
+      { categories: ["vacation_rentals"], multiplier: 3, unit: "points" },
       { categories: ["chase_travel_portal"], multiplier: 5, unit: "points" },
       { categories: ["travel"], multiplier: 2, unit: "points" },
       { categories: ["everything_else"], multiplier: 1, unit: "points" },
@@ -776,9 +782,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
     travel: {
       transfer_partners: ["united", "southwest", "jetblue", "aeroplan", "british-airways", "flying-blue", "virgin-atlantic", "emirates", "singapore", "hyatt", "marriott", "ihg"],
       max_transfer_cpp: 0.02,
-      travel_credit: 50,
+      travel_credit: 100,
       lounge_access: false,
-      global_entry_credit: false,
+      global_entry_credit: true,
       no_foreign_tx_fee: true,
     },
     credit_score_required: "good",
@@ -789,7 +795,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
       rental_cdw_primary: true,
     },
     annual_credits_detail: [
-      { label: "Hotel (book via Chase Travel)", amount: 50, cadence: "annual" },
+      { label: "Hotel (book via Chase Travel)", amount: 100, cadence: "annual" },
     ],
     anniversary_bonus: { points: 0, annual_credit: 0 },
   },
@@ -1778,9 +1784,13 @@ export const creditCardBonuses: CreditCardBonus[] = [
     expired: false,
     offer_verified_at: "2026-06-13",
     key_benefits: [
+      "Pick TWO 5% categories each quarter — 5% on the first $2,000 combined",
+      "Pick ONE unlimited 2% category (gas/EV, groceries, or dining)",
+      "0% intro APR for 15 billing cycles on purchases & balance transfers",
+      "Must re-enroll categories each quarter or you earn 1%",
       "No annual fee",
-      "5% on 2 categories you choose (up to $2k/quarter)",
     ],
+    intro_apr: { purchase_apr_months: 15, bt_apr_months: 15, bt_fee_pct: 5, go_to_apr_low: 17.74, go_to_apr_high: 27.99 },
   },
 
   // ─── OTHER ──────────────────────────────────────────────────────
@@ -2771,19 +2781,30 @@ export const creditCardBonuses: CreditCardBonus[] = [
     bonus_currency: "cash",
     is_hotel_card: false,
     cpp_value: 1,
-    min_spend: 0,
+    min_spend: 1000,
     spend_months: 3,
     annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
     offer_link: "https://www.bankofamerica.com/credit-cards/products/cash-back-credit-card/?campaign=4079538~DY~en_US",
     expired: false,
-    key_benefits: [],
+    offer_verified_at: "2026-06-16",
+    // New-cardholder promo (live since June 1, 2025): +3% first-year boost on the chosen
+    // 3% category -> effectively 6% for the first 12 months, capped by the shared
+    // $2,500/quarter cap (choice + grocery/wholesale combined). $200 bonus after $1k/90 days.
+    key_benefits: [
+      "6% on your choice category for the first year (3% + 3% new-cardholder boost)",
+      "Pick 1 of 6 categories: online shopping, gas/EV, dining, travel, drug stores, home improvement",
+      "2% at grocery stores & wholesale clubs (choice + grocery share a $2,500/quarter cap)",
+      "0% intro APR for 15 billing cycles on purchases & balance transfers (BT within 60 days)",
+      "No annual fee",
+    ],
     rewards: [
-      { categories: ["monthly_categories"], multiplier: 3, unit: "points" },
+      { categories: ["monthly_categories"], multiplier: 3, unit: "points", note: "effectively 6% for the first 12 months via the new-cardholder boost; choice category, change once per calendar month" },
       { categories: ["groceries","wholesale_clubs"], multiplier: 2, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+    intro_apr: { purchase_apr_months: 15, bt_apr_months: 15, bt_fee_pct: 3, bt_window_days: 60, go_to_apr_low: 17.49, go_to_apr_high: 27.49 },
   },
   {
     id: "bofa-bank-of-america-premium-rewards-rwp",
@@ -7224,7 +7245,13 @@ export const creditCardBonuses: CreditCardBonus[] = [
     statement_credits_year1: 0,
     offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
-    key_benefits: ["Travel Portal Redemption"],
+    key_benefits: [
+      "5% at office supply stores & on internet/cable/phone — first $25k/yr",
+      "2% at gas stations & restaurants — first $25k/yr",
+      "0% intro APR for 12 months on purchases",
+      "No annual fee",
+      "Business card — won't add to your personal 5/24 count",
+    ],
     rewards: [
       { categories: ["cell_phone_carriers","internet_and_cable","office_supplies","streaming_services"], multiplier: 5, unit: "points" },
       { categories: ["dining","gas_stations"], multiplier: 2, unit: "points" },
@@ -7253,7 +7280,12 @@ export const creditCardBonuses: CreditCardBonus[] = [
     statement_credits_year1: 0,
     offer_link: "https://www.referyourchasecard.com/21g/2XCDJ70WA6",
     expired: false,
-    key_benefits: ["Travel Portal Redemption"],
+    key_benefits: [
+      "Unlimited 1.5% cash back on every purchase — no categories",
+      "0% intro APR for 12 months on purchases",
+      "No annual fee",
+      "Business card — won't add to your personal 5/24 count",
+    ],
     rewards: [
       { categories: ["all_other"], multiplier: 1.5, unit: "points" },
     ],
