@@ -36,6 +36,7 @@ export const monthlyBankPicks: MonthlyBankPicks[] = [
     monthSlug: "june-2026",
     monthLabel: "June 2026",
     publishedDate: "2026-06-09",
+    videoId: "vOTY5ppIdGc",
     intro:
       "These are the four bank account bonuses I'm prioritizing this month — ranked by bonus value, simplicity of the direct-deposit requirement, and how confident I am the offer sticks around past July.",
     picks: [
