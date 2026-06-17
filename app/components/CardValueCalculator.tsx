@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import type { CreditCardBonus } from "../../lib/data/creditCardBonuses"
 import { computeCardValue, DEFAULT_HYSA_APY } from "../../lib/cardValueCalculator"
+import { subHeadline } from "../../lib/data/cardSpendValue"
 import { SPENDING_CATEGORY_DEFINITIONS } from "../../lib/spendingCategories"
 
 const ACCENT = "#0d7c5f"
@@ -47,9 +48,7 @@ export default function CardValueCalculator({
   }
 
   const totalMonthly = CORE.reduce((s, c) => s + (spend[c.key] || 0), 0)
-  const bonusLabel = selected.bonus_currency === "cash"
-    ? `$${selected.bonus_amount.toLocaleString()}`
-    : `${selected.bonus_amount.toLocaleString()} ${selected.bonus_currency}`
+  const bonusLabel = subHeadline(selected)
 
   function setCat(key: string, v: string) {
     const n = Math.max(0, Number(v.replace(/[^\d]/g, "")) || 0)

@@ -224,6 +224,13 @@ export type CreditCardBonus = {
     note?: string
   }[]
   /**
+   * Whether the advertised welcome offer is variable/targeted rather than a
+   * fixed public bonus — drives an "Up to X" headline. Defaults via heuristic
+   * (Amex offers and any card with bonus_tiers are treated as variable); set
+   * explicitly to override (e.g. `false` to force a fixed Amex offer).
+   */
+  bonus_variable?: boolean
+  /**
    * Foreign-transaction fee percent. Distinct from TravelValue's
    * `no_foreign_tx_fee` boolean — when it's NOT zero, the actual rate
    * matters (1% vs 3% vs 5%).
@@ -1670,6 +1677,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
       transfer_partners: ["flying-blue", "avianca", "british-airways", "choice"],
       no_foreign_tx_fee: true,
     },
+    annual_credits_detail: [
+      { label: "Airline purchase credit", amount: 50, cadence: "annual" },
+    ],
   },
   {
     id: "wf-active-cash-200",

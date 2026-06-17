@@ -6,6 +6,7 @@ import { blogContent, type BlogContent } from "../../../lib/data/blogContent"
 import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
 import { applyUrl } from "../../../lib/affiliateLinks"
+import { subHeadline } from "../../../lib/data/cardSpendValue"
 import { humanizeCategories } from "../../../lib/categoryLabels"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
@@ -546,9 +547,7 @@ function SavingsArticle({ bonus, content }: { bonus: any; content?: BlogContent 
 function CardArticle({ card, content }: { card: any; content?: CardBlogContent }) {
   const hasBonus = (card.bonus_amount ?? 0) > 0
   const isCashbackMatch = !!card.cashback_match
-  const bonusLabel = card.bonus_currency === "cash"
-    ? `$${card.bonus_amount.toLocaleString()}`
-    : `${card.bonus_amount.toLocaleString()} ${card.bonus_currency}`
+  const bonusLabel = subHeadline(card)
   const subValue = card.bonus_currency === "cash"
     ? card.bonus_amount
     : Math.round(card.bonus_amount * (card.cpp_value ?? 0.01))

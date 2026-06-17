@@ -5,7 +5,7 @@ import { blogPosts } from "../../lib/data/blogPosts"
 import { creditCardBonuses } from "../../lib/data/creditCardBonuses"
 import { getCategorizedBonuses } from "../../lib/data/bonusCategories"
 import CardFinder from "../components/CardFinder"
-import { signupYearOneValue } from "../../lib/data/cardSpendValue"
+import { signupYearOneValue, subHeadline } from "../../lib/data/cardSpendValue"
 import {
   BrowseHeader,
   BrowseFooter,
@@ -39,11 +39,6 @@ function slugForBonus(bonusId: string): string | null {
 
 function yearOneValue(c: typeof creditCardBonuses[number]): number {
   return signupYearOneValue(c)
-}
-
-function bonusLabel(c: typeof creditCardBonuses[number]): string {
-  if (c.bonus_currency === "cash") return `$${c.bonus_amount.toLocaleString()}`
-  return `${c.bonus_amount.toLocaleString()} ${c.bonus_currency}`
 }
 
 export default function SpendingBrowsePage() {
@@ -94,12 +89,12 @@ export default function SpendingBrowsePage() {
           title="Personal Credit Cards"
           subtitle={`${personal.length} live cards · ranked by year-one value`}
         >
-          <TopPicksGrid sourcePage="/spending" items={personal.slice(0, 6).map(({ card, value }) => ({
+          <TopPicksGrid sourcePage="/spending" items={personal.slice(0, 6).map(({ card }) => ({
             bonusId: card.id,
             bonusType: "credit-card",
             bank: card.card_name,
-            value: `$${value.toLocaleString()}`,
-            sub: `${bonusLabel(card)} after $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
+            value: subHeadline(card),
+            sub: `After $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
             href: slugForBonus(card.id) ? `/blog/${slugForBonus(card.id)}` : undefined,
             summary: card.key_benefits?.[0],
           }))} />
@@ -110,7 +105,7 @@ export default function SpendingBrowsePage() {
               return {
                 i: i + 1,
                 bank: card.card_name,
-                bonus: bonusLabel(card),
+                bonus: subHeadline(card),
                 col3: money(card.min_spend),
                 col4: `${card.spend_months}mo`,
                 col5: card.annual_fee > 0
@@ -131,12 +126,12 @@ export default function SpendingBrowsePage() {
           title="Business Credit Cards"
           subtitle={`${business.length} live cards · biggest payouts in the game (don't report to 5/24)`}
         >
-          <TopPicksGrid sourcePage="/spending" items={business.slice(0, 6).map(({ card, value }) => ({
+          <TopPicksGrid sourcePage="/spending" items={business.slice(0, 6).map(({ card }) => ({
             bonusId: card.id,
             bonusType: "credit-card",
             bank: card.card_name,
-            value: `$${value.toLocaleString()}`,
-            sub: `${bonusLabel(card)} after $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
+            value: subHeadline(card),
+            sub: `After $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
             href: slugForBonus(card.id) ? `/blog/${slugForBonus(card.id)}` : undefined,
             summary: card.key_benefits?.[0],
           }))} />
@@ -147,7 +142,7 @@ export default function SpendingBrowsePage() {
               return {
                 i: i + 1,
                 bank: card.card_name,
-                bonus: bonusLabel(card),
+                bonus: subHeadline(card),
                 col3: money(card.min_spend),
                 col4: `${card.spend_months}mo`,
                 col5: card.annual_fee > 0

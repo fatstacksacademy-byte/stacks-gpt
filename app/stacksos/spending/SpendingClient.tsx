@@ -26,7 +26,7 @@ import { getVerificationStateMap, type VerificationState } from "../../../lib/ve
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode, type SequencedCard } from "../../../lib/ccSequencer"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
-import { signupBonusValue, signupYearOneValue } from "../../../lib/data/cardSpendValue"
+import { signupBonusValue, signupYearOneValue, subHeadline } from "../../../lib/data/cardSpendValue"
 import { TRANSFER_PROGRAMS, US_STATES, findTransferProgram } from "../../../lib/data/catalogTaxonomy"
 import { transferKind } from "../../../lib/data/travelValue"
 import { DEFAULT_BENEFIT_PROFILE, type UserBenefitProfile } from "../../../lib/cardBenefits"
@@ -853,12 +853,8 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                           </div>
                         </div>
                         <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
-                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{formatCurrency(sc.net_value)}</div>
-                          {isTravel && sc.card.bonus_currency !== "cash" && (
-                            <div style={{ fontSize: 10, color: "#7c3aed", fontWeight: 600 }}>
-                              = {sc.card.bonus_amount.toLocaleString()} {sc.card.bonus_currency}
-                            </div>
-                          )}
+                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{subHeadline(sc.card)}</div>
+                          <div style={{ fontSize: 10, color: "#999" }}>est. {formatCurrency(sc.net_value)} value</div>
                           <div style={{ fontSize: 10, color: "#999" }}>
                             {rankingMode === "return_on_spend"
                               ? `${(sc.return_on_spend * 100).toFixed(1)}% return on required spend`

@@ -82,6 +82,39 @@ export type SpendEstimate = {
   netAnnual: number
 }
 
+// ─── Sign-up-bonus headline ─────────────────────────────────────────────────
+// The actual advertised SUB ("100K UR", "$200", "Up to 90K MR") — NOT a
+// cents-per-point dollar valuation. The cpp-based dollar value is editorial and
+// belongs in the article analysis, not on the card headline where it confuses.
+
+const CURRENCY_ABBR: Record<string, string> = {
+  "Ultimate Rewards": "UR",
+  "Membership Rewards": "MR",
+  "ThankYou Points": "TYP",
+  "ThankYou": "TYP",
+  "Capital One miles": "C1 miles",
+}
+
+function compactAmount(n: number): string {
+  return n >= 1000 && n % 1000 === 0 ? `${n / 1000}K` : n.toLocaleString()
+}
+
+/** Variable/targeted offer → headline should hedge with "Up to". */
+export function isVariableBonus(card: CreditCardBonus): boolean {
+  if (typeof card.bonus_variable === "boolean") return card.bonus_variable
+  return card.issuer === "amex" || (card.bonus_tiers?.length ?? 0) > 0
+}
+
+/** Raw welcome-bonus headline: "100K UR", "$200", or "Up to 90K MR". */
+export function subHeadline(card: CreditCardBonus): string {
+  const amt = card.bonus_amount ?? 0
+  if (amt <= 0) return "No current bonus"
+  const core = card.bonus_currency === "cash"
+    ? `$${amt.toLocaleString()}`
+    : `${compactAmount(amt)} ${CURRENCY_ABBR[card.bonus_currency] ?? card.bonus_currency}`
+  return isVariableBonus(card) ? `Up to ${core}` : core
+}
+
 /** Cash-equivalent value of the welcome bonus before fees or credits. */
 export function signupBonusValue(card: CreditCardBonus, cppOverride?: number): number {
   // True cashback offers are stored as face-value dollars. A few legacy rows
