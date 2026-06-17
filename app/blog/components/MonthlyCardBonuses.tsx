@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getCardById, getPostByBonusId } from "../../../lib/data/blogPosts"
 import {
   getPreviousCardMonths,
+  type CardSection,
   type MonthlyCardPick,
   type MonthlyCardPicks,
 } from "../../../lib/data/monthlyCardPicks"
@@ -32,6 +33,7 @@ type ResolvedCard = {
   statementCreditsYear1: number
   keyBenefits: string[]
   takeaway: string
+  sections?: CardSection[]
   slug?: string
   offerLink?: string
 }
@@ -53,6 +55,7 @@ function resolveCard(p: MonthlyCardPick, rank: number): ResolvedCard | null {
     statementCreditsYear1: card.statement_credits_year1 ?? 0,
     keyBenefits: card.key_benefits ?? [],
     takeaway: p.takeaway,
+    sections: p.sections,
     slug,
     offerLink: card.offer_link,
   }
@@ -400,6 +403,51 @@ export default function MonthlyCardBonuses({ data }: { data: MonthlyCardPicks })
                     <p style={{ fontSize: 15, color: "#333", lineHeight: 1.6, margin: 0 }}>
                       {r.takeaway}
                     </p>
+                  </div>
+                )}
+
+                {r.sections && r.sections.length > 0 && (
+                  <div style={{ padding: "8px 28px 4px" }}>
+                    {r.sections.map((s, si) => (
+                      <div key={si} style={{ marginTop: si === 0 ? 8 : 18 }}>
+                        <h3
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 800,
+                            color: "#111",
+                            margin: "0 0 8px",
+                            letterSpacing: "-0.01em",
+                          }}
+                        >
+                          {s.heading}
+                        </h3>
+                        {s.paras?.map((para, pi) => (
+                          <p
+                            key={pi}
+                            style={{ fontSize: 15, color: "#444", lineHeight: 1.7, margin: "0 0 10px" }}
+                          >
+                            {para}
+                          </p>
+                        ))}
+                        {s.bullets && s.bullets.length > 0 && (
+                          <ul
+                            style={{
+                              margin: "0 0 6px",
+                              paddingLeft: 20,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 5,
+                            }}
+                          >
+                            {s.bullets.map((b, bi) => (
+                              <li key={bi} style={{ fontSize: 14.5, color: "#444", lineHeight: 1.55 }}>
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
