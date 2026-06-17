@@ -9,7 +9,7 @@ import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { blogContent } from "../../lib/data/blogContent"
 import { getPostByBonusId } from "../../lib/data/blogPosts"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
-import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus } from "../../lib/completedBonuses"
+import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus, markBonusApplied, approveApplication } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
@@ -299,6 +299,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [flippedHeroes, setFlippedHeroes] = useState<Set<string>>(new Set())
   const [matchingCustomId, setMatchingCustomId] = useState<string | null>(null)
   const [alreadyHadBonusId, setAlreadyHadBonusId] = useState<string | null>(null)
+  // Application tracking: when a pending application's "Approved" is clicked we
+  // reveal an open-date input; approvingId holds the record id being approved.
+  const [approvingId, setApprovingId] = useState<string | null>(null)
+  const [applyDateValue, setApplyDateValue] = useState(todayStr())
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -458,6 +462,29 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     track("bonus_started", { module: "paycheck", source: "catalog", bonus_id: actionBonus.bonus.id, amount: actionBonus.bonus.bonus_amount })
     await loadRecords()
     setActionBonus(null)
+  }
+
+  // ── Application flow ──────────────────────────────────────────────────────
+  // "I applied" creates a pending record; the decision (approved/denied/pending)
+  // is then recorded from the active tracker card.
+  async function handleMarkApplied(bonus: Bonus) {
+    await markBonusApplied(userId, bonus.id)
+    track("bonus_applied", { module: "paycheck", source: "catalog", bonus_id: bonus.id, amount: bonus.bonus_amount })
+    await loadRecords()
+  }
+
+  async function handleApproveApplication(recordId: string, bonus: Bonus, openedDate: string) {
+    await approveApplication(recordId, openedDate)
+    // Approval == account opened == the bonus is now genuinely "started".
+    track("bonus_started", { module: "paycheck", source: "application", bonus_id: bonus.id, amount: bonus.bonus_amount })
+    setApprovingId(null)
+    await loadRecords()
+  }
+
+  // Denied → drop the record so the bonus returns to the available pool.
+  async function handleDenyApplication(recordId: string) {
+    await deleteCompletedBonus(recordId)
+    await loadRecords()
   }
 
   async function handleClose() {
@@ -1011,6 +1038,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         const urgentBonuses = inProgress.filter(({ bonus: b }) => {
           const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
           if (!record?.opened_date) return false
+          // Pending applications have a placeholder open date — the deposit
+          // clock hasn't started, so they can't be deadline-urgent.
+          if (record.current_step === "applied") return false
           const windowDays = b.requirements?.deposit_window_days
           if (!windowDays) return false
           const startDate = new Date(record.opened_date + "T00:00:00")
@@ -1908,9 +1938,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               {ctaLabel}
                             </a>
                           )}
-                          <button onClick={() => { setActionBonus({ bonus: hb.bonus, mode: "start" }); setActionDate(todayStr()) }}
+                          <button onClick={() => handleMarkApplied(hb.bonus)}
+                            title="Track this bonus — you'll record the decision (approved / denied / pending) next"
                             style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
-                            I already opened it
+                            I applied
                           </button>
                           <button onClick={() => setAlreadyHadBonusId(alreadyHadBonusId === hb.bonus.id ? null : hb.bonus.id)}
                             title="Record as already completed so we stop recommending it"
@@ -2261,6 +2292,99 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     {activeBonuses.map(({ bonus: b, churnStatus }) => {
                       const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
                       if (!record) return null
+
+                      // ── Application pending: applied but no decision recorded yet ──
+                      // The bonus lives here (occupying a slot) until the user marks
+                      // approved (→ enter open date) or denied (→ back to available).
+                      if (record.current_step === "applied") {
+                        const isApprovingThis = approvingId === record.id
+                        const lockedSteps = [
+                          "Account Opened",
+                          "Set Up Recurring Direct Deposit",
+                          "Deposit Requirement Met",
+                          "Bonus Posted",
+                        ]
+                        return (
+                          <div key={b.id} style={{
+                            background: "#fff",
+                            border: "2px solid #d97706",
+                            borderRadius: 14, overflow: "hidden",
+                            boxShadow: "0 2px 12px rgba(217,119,6,0.06)",
+                          }}>
+                            {/* Header */}
+                            <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                              <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                                <span style={{ fontSize: 10, color: "#d97706", background: "#fef3c7", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
+                              </div>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                            </div>
+
+                            {/* Checklist preview — Applied done, rest locked until approved */}
+                            <div style={{ padding: "16px 24px 0" }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+                                  <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  </div>
+                                  <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
+                                </div>
+                                {lockedSteps.map((label) => (
+                                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+                                    <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, border: "2px solid #e5e5e5", background: "transparent" }} />
+                                    <span style={{ fontSize: 14, color: "#ccc" }}>{label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Decision panel */}
+                            <div style={{ padding: "14px 24px 20px" }}>
+                              {!isApprovingThis ? (
+                                <>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>What happened with your application?</div>
+                                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                    <button onClick={() => { setApprovingId(record.id); setApplyDateValue(todayStr()) }}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                      Approved
+                                    </button>
+                                    <button onClick={() => handleDenyApplication(record.id)}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#b91c1c", border: "1px solid #fecaca", borderRadius: 8, cursor: "pointer" }}>
+                                      Denied
+                                    </button>
+                                    <button disabled
+                                      title="No decision yet — check back when you hear from the bank"
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#fef3c7", color: "#d97706", border: "1px solid #fde68a", borderRadius: 8, cursor: "default" }}>
+                                      Still pending
+                                    </button>
+                                  </div>
+                                  <div style={{ fontSize: 12, color: "#bbb", marginTop: 10 }}>Denied applications go back to your recommendations.</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>When did the account open?</div>
+                                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                                    <input type="date" value={applyDateValue} onChange={(e) => setApplyDateValue(e.target.value)}
+                                      style={{ padding: "9px 12px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                    <button onClick={() => handleApproveApplication(record.id, b, applyDateValue)}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                      Confirm open date
+                                    </button>
+                                    <button onClick={() => setApprovingId(null)}
+                                      style={{ padding: "10px 14px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      }
+
                       const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
                       const req = b.requirements
                       const fees = b.fees
@@ -2330,6 +2454,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               )}
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              {/* Applied — always complete once a bonus is in progress */}
+                              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+                                <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                    <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                </div>
+                                <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
+                              </div>
                               {milestoneDetail.milestones
                                 .filter((m) => m.key !== "safe_to_close")
                                 .map((m) => {
@@ -2749,8 +2882,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
                         </div>
                         <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
-                          <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-                            style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Start now</button>
+                          <button onClick={() => handleMarkApplied(b)}
+                            style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>I applied</button>
                           <button onClick={() => handleSkip(b.id)}
                             style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           {getPostByBonusId(b.id) && (
@@ -3226,8 +3359,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             ) : (
                               <>
                                 {link && <a href={applyUrl(b.id)} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", textAlign: "center" }}>Open account</a>}
-                                <button onClick={() => { setActionBonus({ bonus: b, mode: "start" }); setActionDate(todayStr()) }}
-                                  style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>Already opened</button>
+                                <button onClick={() => handleMarkApplied(b)}
+                                  style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>I applied</button>
                               </>
                             )}
                           </div>

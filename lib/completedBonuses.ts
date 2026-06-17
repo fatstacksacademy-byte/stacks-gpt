@@ -26,6 +26,48 @@ export async function markBonusStarted(
 }
 
 /**
+ * Mark a bonus as APPLIED — the application is submitted but no decision yet.
+ * This is the new first step of the tracker (before "Account Opened"). The
+ * record sits in current_step="applied" until the user records the decision:
+ *   • approved → approveApplication() sets the real open date + clears the flag
+ *   • denied   → deleteCompletedBonus() (returns the bonus to the available pool)
+ *   • pending  → no change
+ *
+ * opened_date is NOT NULL in the schema, so we seed it with today's date as a
+ * placeholder; it's overwritten with the true open date on approval. The
+ * "applied" flag gates the milestone engine until then, so the placeholder
+ * never drives any timeline math.
+ */
+export async function markBonusApplied(
+  userId: string, bonusId: string
+): Promise<CompletedBonus | null> {
+  const supabase = createClient()
+  const today = new Date().toISOString().split("T")[0]
+  const { data, error } = await supabase
+    .from("completed_bonuses")
+    .insert({ user_id: userId, bonus_id: bonusId, opened_date: today, bonus_received: false, current_step: "applied" })
+    .select().single()
+  if (error) { reportError("Could not mark bonus as applied", error); return null }
+  return data as CompletedBonus
+}
+
+/**
+ * Approve a pending application: record the real account-open date and clear
+ * the "applied" flag (current_step → null) so the milestone engine takes over
+ * exactly as it does for a directly-started bonus.
+ */
+export async function approveApplication(
+  recordId: string, openedDate: string
+): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from("completed_bonuses")
+    .update({ opened_date: openedDate, current_step: null, updated_at: new Date().toISOString() })
+    .eq("id", recordId)
+  if (error) reportError("Could not approve application", error)
+}
+
+/**
  * Record a bonus the user already had at some point — used by the
  * "Already had" flow on paycheck recommendations. Accepts partial date
  * info; if both opened_date and closed_date are null, the record is
