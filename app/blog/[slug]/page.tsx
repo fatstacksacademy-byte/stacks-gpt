@@ -7,6 +7,7 @@ import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import { cardBlogContent, type CardBlogContent } from "../../../lib/data/cardBlogContent"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { subHeadline } from "../../../lib/data/cardSpendValue"
+import { hasOfferWatch, standardOfferLabel, highestOfferLabel, isAtAllTimeHigh, elevatedEndsLabel } from "../../../lib/elevatedOffers"
 import { humanizeCategories } from "../../../lib/categoryLabels"
 import NewsletterCTA from "../components/NewsletterCTA"
 import CommentSection from "../components/CommentSection"
@@ -612,6 +613,33 @@ function CardArticle({ card, content }: { card: any; content?: CardBlogContent }
         </div>
         <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, color: "#0d7c5f", whiteSpace: "nowrap" }}>Open calculator →</span>
       </Link>
+
+      {/* Offers to watch for — history / elevated-vs-standard / CardMatch */}
+      {hasOfferWatch(card) && (() => {
+        const std = standardOfferLabel(card)
+        const high = highestOfferLabel(card)
+        const atHigh = isAtAllTimeHigh(card)
+        const ends = elevatedEndsLabel(card)
+        return (
+          <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 12, padding: "16px 20px", marginBottom: 32 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#92400e", marginBottom: 10 }}>📈 Offers to watch for</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, color: "#78350f", lineHeight: 1.5 }}>
+              {std && <div><span style={{ color: "#a16207" }}>Usual offer:</span> <strong>{std}</strong></div>}
+              {high && (
+                <div>
+                  <span style={{ color: "#a16207" }}>All-time high:</span> <strong>{high}</strong>
+                  {atHigh && <span style={{ color: "#0d7c5f", fontWeight: 700 }}> — current offer is at the all-time high 🔥</span>}
+                </div>
+              )}
+              {ends && <div><span style={{ color: "#a16207" }}>Current elevated offer ends:</span> <strong>~{ends}</strong></div>}
+              {card.check_cardmatch && (
+                <div>Amex offers are personalized — check <strong>CardMatch</strong> and no-lifetime-language (NLL) referral links for a higher targeted offer.</div>
+              )}
+              {card.offer_note && <div style={{ color: "#92400e" }}>{card.offer_note}</div>}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Rewards tiers */}
       {card.rewards && card.rewards.length > 0 && (

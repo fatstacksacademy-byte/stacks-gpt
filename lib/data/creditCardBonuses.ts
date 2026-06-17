@@ -136,6 +136,12 @@ export type CreditCardBonus = {
   elevated_ends?: string
   /** Public (non-referral) application link that shows the elevated offer, when the referral offer_link doesn't. */
   public_offer_link?: string
+  /** All-time-high welcome bonus this card has ever offered (same unit as bonus_amount). Powers "best ever: X" watch copy. */
+  highest_bonus_amount?: number
+  /** Freeform "offers to watch for" guidance shown on the card review (history, what to wait for, gotchas). */
+  offer_note?: string
+  /** Welcome offer is personalized/targeted (Amex) — prompts readers to check CardMatch / NLL links for a higher offer. */
+  check_cardmatch?: boolean
   /** Rewards earning tiers. Optional — spending optimizer falls back to key_benefits text when absent. */
   rewards?: RewardsTier[]
   /** Introductory 0% APR terms. Optional — absent until researched per card. */
@@ -748,6 +754,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "chase-sapphire-preferred-75k",
+    highest_bonus_amount: 100000,
+    offer_note: "100K is the all-time high — only the third time ever (2021, 2025, June 2026), and elevated Sapphire offers rarely last long. The usual offer is 60–75K.",
     card_name: "Chase Sapphire Preferred",
     issuer: "chase",
     card_type: "personal",
@@ -808,6 +816,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-gold-100k",
+    elevated: true,
+    standard_bonus_amount: 60000,
+    highest_bonus_amount: 100000,
+    check_cardmatch: true,
+    offer_note: "Standard public offer is 60K; 90–100K shows up as limited-time or targeted offers.",
     card_name: "American Express Gold",
     issuer: "amex",
     card_type: "personal",
@@ -962,6 +975,10 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "chase-sapphire-reserve-125k",
+    elevated: true,
+    standard_bonus_amount: 60000,
+    highest_bonus_amount: 150000,
+    offer_note: "Has reached 150K (its all-time high, live since Apr 30, 2026) after $6K in 3 months; the long-run standard is ~60K.",
     card_name: "Chase Sapphire Reserve",
     issuer: "chase",
     card_type: "personal",
@@ -1000,6 +1017,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-ink-business-preferred-100k",
+    standard_bonus_amount: 90000,
+    highest_bonus_amount: 120000,
+    offer_note: "Has hit 120K (fall 2024) — its all-time high; usually 90–100K. Counts toward 5/24.",
     card_name: "Chase Ink Business Preferred",
     issuer: "chase",
     card_type: "business",
@@ -1129,6 +1149,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "amex-platinum-175k",
+    elevated: true,
+    standard_bonus_amount: 80000,
+    highest_bonus_amount: 175000,
+    check_cardmatch: true,
+    offer_note: "Standard is 80K; 150–175K is the elevated/targeted high. A low offer can be declined (soft pull) and retried in ~30 days.",
     card_name: "American Express Platinum",
     issuer: "amex",
     card_type: "personal",
@@ -1166,6 +1191,11 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-business-platinum-200k",
+    elevated: true,
+    standard_bonus_amount: 150000,
+    highest_bonus_amount: 300000,
+    check_cardmatch: true,
+    offer_note: "Personalized; 250–300K is the current elevated high. Note the steep $20K-in-3-months spend.",
     card_name: "Amex Business Platinum",
     issuer: "amex",
     card_type: "business",
@@ -7236,6 +7266,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-ink-business-cash-rwp",
+    highest_bonus_amount: 100000,
+    offer_note: "100K is the best-ever for the no-fee Ink cards (usually 75K). The two no-fee Inks share one bonus under current rules — pick Cash or Unlimited.",
     card_name: "Chase Ink Business Cash",
     issuer: "chase",
     card_type: "business",
@@ -7271,6 +7303,8 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-ink-business-unlimited-rwp",
+    highest_bonus_amount: 100000,
+    offer_note: "100K is the best-ever for the no-fee Ink cards (usually 75K). The two no-fee Inks share one bonus under current rules — pick Cash or Unlimited.",
     card_name: "Chase Ink Business Unlimited",
     issuer: "chase",
     card_type: "business",

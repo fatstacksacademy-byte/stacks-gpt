@@ -26,3 +26,30 @@ export function elevatedEndsLabel(c: CreditCardBonus): string | null {
 export function bestOfferLink(c: CreditCardBonus): string | undefined {
   return c.public_offer_link || c.offer_link
 }
+
+// ─── Offers-to-watch-for (history) ──────────────────────────────────────────
+
+/** The card's normal SUB ("75,000 Ultimate Rewards"), independent of the elevated flag. */
+export function standardOfferLabel(c: CreditCardBonus): string | null {
+  return c.standard_bonus_amount != null ? fmtBonus(c.standard_bonus_amount, c.bonus_currency) : null
+}
+
+/** The all-time-high SUB ("120,000 Ultimate Rewards"), if recorded. */
+export function highestOfferLabel(c: CreditCardBonus): string | null {
+  return c.highest_bonus_amount != null ? fmtBonus(c.highest_bonus_amount, c.bonus_currency) : null
+}
+
+/** True when the current offer is at or above the recorded all-time high. */
+export function isAtAllTimeHigh(c: CreditCardBonus): boolean {
+  return c.highest_bonus_amount != null && (c.bonus_amount ?? 0) >= c.highest_bonus_amount
+}
+
+/** Whether there's any "offers to watch for" content worth surfacing on the card. */
+export function hasOfferWatch(c: CreditCardBonus): boolean {
+  return (
+    c.standard_bonus_amount != null ||
+    c.highest_bonus_amount != null ||
+    !!c.offer_note ||
+    !!c.check_cardmatch
+  )
+}
