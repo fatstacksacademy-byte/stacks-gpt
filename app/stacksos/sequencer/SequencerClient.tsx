@@ -42,11 +42,11 @@ function filterToYear(entries: SlotEntry[], yearStart: number, yearEnd: number):
   return entries.filter(e => e.start_week <= yearEnd && e.end_week >= yearStart)
 }
 
-// Compute total bonus for a year window across all slots
+// Compute total NET bonus (after unwaived fees) for a year window across all slots
 function yearBonus(slots: SlotEntry[][], yearStart: number, yearEnd: number): number {
   return slots.flat()
     .filter(e => e.type === "bonus" && e.start_week <= yearEnd && e.start_week >= yearStart)
-    .reduce((sum, e) => sum + (e as SequencedBonus).bonus_amount, 0)
+    .reduce((sum, e) => sum + (e as SequencedBonus).net_bonus, 0)
 }
 
 // Count bonus entries (not placeholders) in a year window
@@ -64,6 +64,10 @@ export default function SequencerClient() {
   const [completedRecords, setCompletedRecords] = useState<CompletedBonus[]>([])
   const [loadingRecords, setLoadingRecords] = useState(true)
   const [currentYear, setCurrentYear] = useState(1)
+  const [showBusiness, setShowBusiness] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("stacks_show_business") === "true"
+  })
 
   useEffect(() => {
     async function load() {
@@ -83,6 +87,11 @@ export default function SequencerClient() {
       payFrequency: profile.pay_frequency,
       paycheckAmount: profile.paycheck_amount,
       completedRecords,
+      // Eligibility filters — previously dropped, which silently hid every
+      // state-restricted, business, and military bonus the user qualifies for.
+      userState: profile.state ?? null,
+      militaryAffiliated: profile.military_affiliated === true,
+      includeBusiness: showBusiness,
     })
     setResult(r)
     setShowSkipped(false)
@@ -119,6 +128,15 @@ export default function SequencerClient() {
           <span style={profileChip}>{profile.dd_slots} DD slot{profile.dd_slots > 1 ? "s" : ""}</span>
           <span style={profileChip}>{profile.pay_frequency}</span>
           <span style={profileChip}>${profile.paycheck_amount.toLocaleString()} / paycheck</span>
+          {profile.state && <span style={profileChip}>{profile.state}</span>}
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#555", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={showBusiness}
+              onChange={e => { setShowBusiness(e.target.checked); localStorage.setItem("stacks_show_business", String(e.target.checked)) }}
+            />
+            Include business accounts
+          </label>
           <span style={profileNote}>Change your profile in the bar above — syncs everywhere.</span>
         </div>
         <button onClick={handleRun} style={runBtn}>Build My Stack →</button>
@@ -253,7 +271,14 @@ function BonusCard({ bonus: b, color, position, startDate, isChained, onStartDat
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ ...bonusAmountStyle, color }}>${b.bonus_amount.toLocaleString()}</div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <div style={{ ...bonusAmountStyle, color }}>${b.net_bonus.toLocaleString()}</div>
+            {b.total_fees > 0 && (
+              <div style={{ fontSize: 10, color: "#b45309" }}>
+                net · ${b.bonus_amount.toLocaleString()} − ${b.total_fees} fees
+              </div>
+            )}
+          </div>
           <div style={velocityBadge}>${b.velocity.toFixed(1)}/wk</div>
           <button onClick={() => setOpen(o => !o)} style={expandBtn}>{open ? "▲" : "▼"}</button>
         </div>

@@ -403,7 +403,10 @@ export function runSequencer({
   }
 
   const allBonusEntries = slotBonuses.flat().filter(e => e.type === "bonus") as SequencedBonus[]
-  const totalBonus = allBonusEntries.reduce((sum, b) => sum + b.bonus_amount, 0)
+  // Sum NET bonus (after any unwaived monthly fees), not gross. The pool is
+  // already ranked by net velocity; surfacing gross here would overstate the
+  // projected total by every fee the plan actually eats.
+  const totalBonus = allBonusEntries.reduce((sum, b) => sum + b.net_bonus, 0)
   const horizonWeeks = allBonusEntries.length > 0 ? Math.max(...allBonusEntries.map(b => b.payout_week)) : 0
 
   return { slots: slotBonuses, total_bonus: totalBonus, horizon_weeks: horizonWeeks, skipped }
