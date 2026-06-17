@@ -5,6 +5,7 @@ import { useProfile } from "../../../lib/useProfile"
 import { runSequencer, SequencerResult, SequencedBonus, SlotEntry } from "../../../lib/sequencer"
 import { getCompletedBonuses } from "../../../lib/completedBonuses"
 import type { CompletedBonus } from "../../../lib/churn"
+import { getSavingsProfile } from "../../../lib/savingsProfile"
 import { createClient } from "../../../lib/supabase/client"
 
 const SLOT_COLORS = ["#1a6ef5", "#0d9e6e", "#c45c00"]
@@ -68,14 +69,22 @@ export default function SequencerClient() {
     if (typeof window === "undefined") return false
     return localStorage.getItem("stacks_show_business") === "true"
   })
+  // The user's saved HYSA APY drives the fee-strategy opportunity-cost math
+  // (park-a-balance-to-waive vs pay the fee). Undefined until loaded → the
+  // sequencer falls back to its near-zero default (no HYSA = no opportunity cost).
+  const [hysaApy, setHysaApy] = useState<number | undefined>(undefined)
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const records = await getCompletedBonuses(user.id)
+      const [records, savings] = await Promise.all([
+        getCompletedBonuses(user.id),
+        getSavingsProfile(user.id).catch(() => null),
+      ])
       setCompletedRecords(records)
+      if (savings?.current_apy != null && savings.current_apy > 0) setHysaApy(savings.current_apy)
       setLoadingRecords(false)
     }
     load()
@@ -92,6 +101,8 @@ export default function SequencerClient() {
       userState: profile.state ?? null,
       militaryAffiliated: profile.military_affiliated === true,
       includeBusiness: showBusiness,
+      // Real saved HYSA rate when set; otherwise the sequencer's near-zero default.
+      currentHysaApy: hysaApy,
     })
     setResult(r)
     setShowSkipped(false)
@@ -137,7 +148,12 @@ export default function SequencerClient() {
             />
             Include business accounts
           </label>
-          <span style={profileNote}>Change your profile in the bar above — syncs everywhere.</span>
+          <span style={profileNote}>
+            Profile syncs from the bar above ·{" "}
+            {hysaApy != null
+              ? `fee math uses your ${(hysaApy * 100).toFixed(2)}% HYSA`
+              : "fee math assumes no HYSA — set your savings APY to refine"}
+          </span>
         </div>
         <button onClick={handleRun} style={runBtn}>Build My Stack →</button>
       </div>

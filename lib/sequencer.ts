@@ -48,8 +48,10 @@ function calcNetBonus(
   })
 
   return {
-    netBonus: result.bestNet,
-    totalFees: result.bestCost,
+    // Round at this boundary — bonuses display as whole dollars, and the
+    // opportunity-cost term can make bestNet fractional.
+    netBonus: Math.round(result.bestNet),
+    totalFees: Math.round(result.bestCost),
     feeWaivedByDD: result.best.kind === "waive_dd",
     feeStrategyNote: result.recommendation,
   }
@@ -213,7 +215,10 @@ export function runSequencer({
   userState,
   includeBusiness = false,
   militaryAffiliated = false,
-  currentHysaApy = 0.045,
+  // Default to a near-zero rate: not everyone parks cash in a HYSA, and with no
+  // opportunity cost "park a balance to waive the fee" is essentially free.
+  // The savings-profile APY overrides this when the user has set one.
+  currentHysaApy = 0.0001,
 }: {
   slots: number
   payFrequency: string
