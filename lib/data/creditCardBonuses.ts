@@ -1132,7 +1132,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "American Express Platinum",
     issuer: "amex",
     card_type: "personal",
-    bonus_amount: 80000,
+    bonus_amount: 175000, // elevated "as high as 175K" offer ($12K/6mo); shown as "Up to" (variable)
     bonus_currency: "Membership Rewards",
     is_hotel_card: false,
     cpp_value: 0.007,
@@ -1169,7 +1169,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Amex Business Platinum",
     issuer: "amex",
     card_type: "business",
-    bonus_amount: 200000,
+    bonus_amount: 300000, // elevated "as high as 300K" offer ($20K/3mo); shown as "Up to" (variable)
     bonus_currency: "Membership Rewards",
     is_hotel_card: false,
     cpp_value: 0.01,
@@ -7586,6 +7586,10 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["cell_phone_carriers","dining","gas_stations"], multiplier: 4, unit: "points" },
       { categories: ["all_other"], multiplier: 2, unit: "points" },
     ],
+    // The $125 statement credit is a ONE-TIME welcome-offer credit (earned with
+    // the 150K bonus), not a recurring perk — so no statement credit recurs in
+    // year 2. Recurring value is the annual Free Night Award (not modeled as $).
+    annual_credits_detail: [],
   },
   {
     id: "continental-bank-novo-business-rwp",

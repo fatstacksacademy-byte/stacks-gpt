@@ -52,13 +52,14 @@ export type CardValueResult = {
 }
 
 /**
- * Recurring annual statement credits (year 2+). Prefer the itemized
- * annual_credits_detail when present (annualizing by cadence); otherwise assume
- * the year-1 statement credits recur — true for the large majority of cards,
- * whose travel/dining/etc. credits reset every membership year.
+ * Recurring annual statement credits (year 2+). An explicit annual_credits_detail
+ * — even an empty array — is authoritative: it means the recurring credits have
+ * been itemized (an empty list = the year-1 credits were one-time, so $0 recurs).
+ * When the field is absent we assume the year-1 statement credits recur, true for
+ * the large majority of cards whose travel/dining/etc. credits reset yearly.
  */
 function recurringAnnualCredits(card: CreditCardBonus): number {
-  if (card.annual_credits_detail?.length) {
+  if (card.annual_credits_detail) {
     return Math.round(
       card.annual_credits_detail.reduce((sum, c) => {
         const mult = c.cadence === "monthly" ? 12 : c.cadence === "biennial" ? 0.5 : 1

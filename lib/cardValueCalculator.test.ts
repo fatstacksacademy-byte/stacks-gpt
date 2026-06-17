@@ -51,6 +51,17 @@ describe("computeCardValue", () => {
     expect(r.year2).toBe(73)                 // 48 + 120 − 95
   })
 
+  it("treats an empty annual_credits_detail as one-time credits — $0 recurs", () => {
+    // e.g. Marriott Bonvoy Business: $125 is a one-time welcome credit.
+    const r = computeCardValue(
+      makeCard({ statement_credits_year1: 125, annual_credits_detail: [] }),
+      SPEND
+    )
+    expect(r.year1Credits).toBe(125)         // still counted in year 1
+    expect(r.recurringCredits).toBe(0)       // explicit empty list → nothing recurs
+    expect(r.year2).toBe(-47)                // 48 − 95, credit excluded
+  })
+
   it("adds the 0% APR float to Year 1 only when toggled and offered", () => {
     const base = computeCardValue(makeCard({ intro_apr: { purchase_apr_months: 12 } }), SPEND)
     expect(base.hasIntroApr).toBe(true)
