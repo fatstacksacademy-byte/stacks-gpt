@@ -975,10 +975,9 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "chase-sapphire-reserve-125k",
-    elevated: true,
     standard_bonus_amount: 60000,
     highest_bonus_amount: 150000,
-    offer_note: "Has reached 150K (its all-time high, live since Apr 30, 2026) after $6K in 3 months; the long-run standard is ~60K.",
+    offer_note: "Hit 150K (all-time high) in the Apr 30 – Jun 15, 2026 window — now expired; the long-run standard is ~60K. Watch for the next elevated offer.",
     card_name: "Chase Sapphire Reserve",
     issuer: "chase",
     card_type: "personal",
