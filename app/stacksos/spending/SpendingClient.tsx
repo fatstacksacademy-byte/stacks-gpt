@@ -1,9 +1,11 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useMemo, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
 import ElevatedBadge from "../../components/ElevatedBadge"
 import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard } from "../../../lib/ownedCards"
+import { getCardAccounts, type CardAccount } from "../../../lib/cardAccounts"
+import { computeFive24, type Five24Status } from "../../../lib/five24"
 import {
   CATEGORY_LABELS,
   SPENDING_CATEGORIES_EXTRA,
@@ -21,7 +23,7 @@ import AlreadyHaveForm from "../../components/AlreadyHaveForm"
 import VerifiedBadge from "../../components/VerifiedBadge"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
-import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode } from "../../../lib/ccSequencer"
+import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode, type SequencedCard } from "../../../lib/ccSequencer"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import { signupBonusValue, signupYearOneValue } from "../../../lib/data/cardSpendValue"
@@ -92,6 +94,9 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   const [matchingCardId, setMatchingCardId] = useState<string | null>(null)
   const [alreadyHaveCardId, setAlreadyHaveCardId] = useState<string | null>(null)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
+  // Card inventory drives the inline 5/24 check on Chase recommendations.
+  // Sourced from the same table as the Cards tab so the two stay in sync.
+  const [cardAccounts, setCardAccounts] = useState<CardAccount[]>([])
 
   // Form state
   const [fCardName, setFCardName] = useState("")
@@ -134,6 +139,27 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
   }, [userId])
 
   useEffect(() => { loadData() }, [loadData])
+
+  // Load the card inventory once for the inline 5/24 eligibility check.
+  useEffect(() => {
+    getCardAccounts(userId).then(setCardAccounts).catch(() => {})
+  }, [userId])
+
+  // Personal-card 5/24 status (Chase approvals gate on this). Counts only
+  // personal cards opened in the last 24 months — computeFive24 handles that.
+  const five24: Five24Status = useMemo(
+    () => computeFive24(
+      cardAccounts.map(c => ({
+        id: c.id,
+        issuer: c.issuer,
+        product_name: c.product_name,
+        card_type: c.card_type,
+        open_date: c.open_date,
+      })),
+      todayStr(),
+    ),
+    [cardAccounts],
+  )
 
   function resetForm() {
     setFCardName(""); setFIssuer(""); setFSignupBonus(""); setFAnnualFee(""); setFSpendReq("")
@@ -782,6 +808,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   <span style={{ fontSize: 12, color: "#555" }}>Show USAA / Navy Federal offers</span>
                 </label>
               </div>
+              {!recSearchQ && <ChurnTimeline cards={ccSequence} maxCardsPerYear={maxCardsPerYear} />}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {(showAllRecs ? ccSequence : ccSequence.slice(0, 15)).map((sc, idx) => {
                   const isExpanded = expandedRecCard === sc.card.id
@@ -804,6 +831,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                               <span title="These points reach the selected program when pooled into a premium card in the same rewards family" style={{ fontSize: 9, color: "#7c3aed", background: "#f5f3ff", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}>POOL</span>
                             )}
                             <VerifiedBadge state={verificationStates.get(sc.card.id)} compact />
+                            <Five24RecBadge issuer={sc.card.issuer} five24={five24} hasInventory={cardAccounts.length > 0} />
                             {(() => {
                               const post = getPostByBonusId(sc.card.id)
                               if (!post) return null
@@ -1778,6 +1806,92 @@ function WalletSlotView({
             })}
           </tbody>
         </table>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Inline 5/24 eligibility chip for Chase recommendations. Chase generally
+ * approves new cards only when you're under 5/24 (5 personal cards opened in
+ * the last 24 months), so recommending one to someone already at the limit
+ * just burns a hard pull. Only renders for Chase cards.
+ */
+function Five24RecBadge({ issuer, five24, hasInventory }: { issuer: string; five24: Five24Status; hasInventory: boolean }) {
+  if (!/chase/i.test(issuer)) return null
+  if (!hasInventory) {
+    return (
+      <a
+        href="/stacksos/cards"
+        title="Chase uses the 5/24 rule. Add your cards on the Cards tab to check eligibility before you apply."
+        style={{ fontSize: 9, color: "#b45309", background: "#fffbeb", padding: "1px 5px", borderRadius: 99, fontWeight: 700, textDecoration: "none" }}
+      >
+        5/24?
+      </a>
+    )
+  }
+  if (five24.under_524) {
+    return (
+      <span
+        title={`${five24.count}/24 personal cards in the last 24 months — Chase approvals likely`}
+        style={{ fontSize: 9, color: "#0d7c5f", background: "#ecfdf5", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}
+      >
+        ✓ Under 5/24
+      </span>
+    )
+  }
+  return (
+    <span
+      title={`At 5/24 (${five24.count} personal cards in 24mo). Chase will most likely deny.${five24.next_slot_opens ? " Next slot opens " + five24.next_slot_opens + "." : ""}`}
+      style={{ fontSize: 9, color: "#dc2626", background: "#fef2f2", padding: "1px 5px", borderRadius: 99, fontWeight: 700 }}
+    >
+      ⚠ At 5/24
+    </span>
+  )
+}
+
+/**
+ * Application-pace plan timeline. The sequencer already spaces cards (so you're
+ * never juggling two open SUBs) and stores each card's completion month in
+ * cumulative_months; this draws that as a horizontal Gantt of the next ~12
+ * months so the plan reads as "apply this, then that" instead of a flat list.
+ */
+function ChurnTimeline({ cards, maxCardsPerYear }: { cards: SequencedCard[]; maxCardsPerYear: number }) {
+  const plan = cards.filter(c => c.cumulative_months <= 12).slice(0, 8)
+  if (plan.length < 2) return null
+  const horizon = Math.max(12, ...plan.map(c => c.cumulative_months))
+  return (
+    <div style={{ background: "#fafafa", border: "1px solid #eee", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: "#111", marginBottom: 2 }}>
+        Your churn plan — {plan.length} cards over ~{Math.ceil(plan[plan.length - 1].cumulative_months)} months
+      </div>
+      <div style={{ fontSize: 11, color: "#999", marginBottom: 10 }}>
+        At {maxCardsPerYear} cards/yr pace. Each bar runs from application to hitting the minimum spend.
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {plan.map((c, i) => {
+          const start = Math.max(0, c.cumulative_months - c.months_to_complete)
+          const leftPct = (start / horizon) * 100
+          const widthPct = Math.max(4, ((c.cumulative_months - start) / horizon) * 100)
+          const accent = c.card.card_type === "business" ? "#7c3aed" : "#2563eb"
+          return (
+            <div key={c.card.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 18, fontSize: 10, color: "#bbb", fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+              <div style={{ position: "relative", flex: 1, height: 22, background: "#f0f0f0", borderRadius: 5 }}>
+                <div
+                  title={`Apply ~month ${start.toFixed(1)}, spend done ~month ${c.cumulative_months.toFixed(1)}`}
+                  style={{ position: "absolute", left: `${leftPct}%`, width: `${widthPct}%`, top: 0, bottom: 0, background: accent, borderRadius: 5, display: "flex", alignItems: "center", paddingLeft: 6, overflow: "hidden" }}
+                >
+                  <span style={{ fontSize: 10, color: "#fff", fontWeight: 700, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{c.card.card_name}</span>
+                </div>
+              </div>
+              <div style={{ width: 56, textAlign: "right", fontSize: 11, fontWeight: 700, color: "#0d7c5f", flexShrink: 0 }}>{formatCurrency(c.net_value)}</div>
+            </div>
+          )
+        })}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#bbb", marginTop: 6, paddingLeft: 26, paddingRight: 60 }}>
+        <span>now</span><span>month {Math.round(horizon / 2)}</span><span>month {Math.round(horizon)}</span>
       </div>
     </div>
   )
