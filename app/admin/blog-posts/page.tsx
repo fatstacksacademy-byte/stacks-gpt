@@ -43,6 +43,37 @@ function bonusLabel(amount: number, currency: string) {
   return `${amount.toLocaleString()} ${currency.toUpperCase()}`
 }
 
+/**
+ * Guards against embedding a video that isn't ours (e.g. a competitor's clip
+ * pulled in from research output). Resolves the video's channel via
+ * /api/validate-youtube and asks for explicit confirmation before saving a
+ * non-own or unverifiable video. Returns whether the save should proceed.
+ */
+async function guardVideoOwnership(videoId: string): Promise<{ ok: boolean }> {
+  const id = videoId.trim()
+  if (!id) return { ok: true }
+  try {
+    const res = await fetch(`/api/validate-youtube?videoId=${encodeURIComponent(id)}`)
+    const data = await res.json()
+    if (data.isMine) return { ok: true }
+    if (!data.found) {
+      return {
+        ok: window.confirm(
+          `Couldn't verify video "${id}" — it may be private, deleted, or the ID is wrong.\n\nSave anyway?`
+        ),
+      }
+    }
+    return {
+      ok: window.confirm(
+        `⚠️ This video is NOT your channel.\n\n"${data.title}"\nby ${data.author_name} (${data.author_url})\n\n` +
+          `Embedding it sends your blog traffic to them. Save anyway?`
+      ),
+    }
+  } catch {
+    return { ok: window.confirm(`Couldn't reach the video-check service for "${id}".\n\nSave anyway?`) }
+  }
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function SaveBar({
@@ -400,6 +431,11 @@ function BankTab({ supabase }: { supabase: ReturnType<typeof createClient> }) {
   }
 
   async function save() {
+    const guard = await guardVideoOwnership(draft.videoId)
+    if (!guard.ok) {
+      setSaveError("Save cancelled — video isn't your channel. Fix the video ID and try again.")
+      return
+    }
     setSaving(true)
     setSaveError(null)
     const { error } = await supabase.from("monthly_bank_picks").upsert({
@@ -725,6 +761,11 @@ function CardsTab({ supabase }: { supabase: ReturnType<typeof createClient> }) {
   }
 
   async function save() {
+    const guard = await guardVideoOwnership(draft.videoId)
+    if (!guard.ok) {
+      setSaveError("Save cancelled — video isn't your channel. Fix the video ID and try again.")
+      return
+    }
     setSaving(true)
     setSaveError(null)
     const { error } = await supabase.from("monthly_card_picks").upsert({
