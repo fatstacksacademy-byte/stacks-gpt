@@ -22,6 +22,13 @@ const articles: Article[] = [
     featured: true,
   },
   {
+    href: "/blog/best-credit-cards-june-2026",
+    title: "Best Credit Cards for June 2026",
+    description: "My top card picks this month, ranked by signup bonus value, spend requirements, and how well they pair with bank bonus sequencing.",
+    category: "Monthly Picks",
+    date: "June 16, 2026",
+  },
+  {
     href: "/blog/what-is-early-direct-deposit",
     title: "What Is Early Direct Deposit?",
     description: "How banks release paychecks early, which accounts support it, and how it fits into a bonus strategy.",
