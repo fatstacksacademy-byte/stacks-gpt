@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { computeCardValue } from "./cardValueCalculator"
+import { computeCardValue, defaultAprSchedule } from "./cardValueCalculator"
 import type { CreditCardBonus } from "./data/creditCardBonuses"
 
 // Minimal fixture carrying only the fields computeCardValue reads.
@@ -77,5 +77,56 @@ describe("computeCardValue", () => {
     const r = computeCardValue(makeCard({ intro_apr: undefined }), SPEND, { zeroApr: true })
     expect(r.hasIntroApr).toBe(false)
     expect(r.floatBenefit).toBe(0)
+    expect(r.floatValue).toBe(0)
+  })
+
+  it("counts the full bonus when the SUB-window spend meets the minimum (the default)", () => {
+    const r = computeCardValue(makeCard(), SPEND) // min_spend 4,000; subWindowSpend defaults to it
+    expect(r.minSpend).toBe(4000)
+    expect(r.spendMonths).toBe(3)
+    expect(r.bonusEarned).toBe(true)
+    expect(r.signupBonus).toBe(600)
+    expect(r.signupBonusPotential).toBe(600)
+  })
+
+  it("forfeits the bonus when the SUB-window spend falls short", () => {
+    const r = computeCardValue(makeCard(), SPEND, { subWindowSpend: 1000 })
+    expect(r.bonusEarned).toBe(false)
+    expect(r.signupBonus).toBe(0)              // not counted
+    expect(r.signupBonusPotential).toBe(600)   // but still surfaced as forfeited value
+    expect(r.year1).toBe(-47)                  // 0 + 0 − 95 + 48 (no bonus)
+  })
+
+  it("treats a no-minimum-spend card as always earning the bonus", () => {
+    const r = computeCardValue(makeCard({ min_spend: 0 }), SPEND, { subWindowSpend: 0 })
+    expect(r.bonusEarned).toBe(true)
+    expect(r.signupBonus).toBe(600)
+  })
+
+  it("prices the float from an explicit month-by-month schedule", () => {
+    const card = makeCard({ intro_apr: { purchase_apr_months: 12 } })
+    // All spend in month 0 floats the full 12 months at 4.5% → $12,000 × 0.045 = $540.
+    const schedule = [12000, ...Array(11).fill(0)]
+    const r = computeCardValue(card, SPEND, { zeroApr: true, hysaApy: 0.045, aprSchedule: schedule })
+    expect(r.floatValue).toBe(540)
+    expect(r.floatBenefit).toBe(540)
+    // Float is computed even with the toggle off, just not folded into Year 1.
+    const off = computeCardValue(card, SPEND, { hysaApy: 0.045, aprSchedule: schedule })
+    expect(off.floatValue).toBe(540)
+    expect(off.floatBenefit).toBe(0)
+  })
+})
+
+describe("defaultAprSchedule", () => {
+  it("front-loads the minimum spend across the bonus window, then $0", () => {
+    expect(defaultAprSchedule(4000, 3)).toEqual([1333, 1333, 1333, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  })
+
+  it("is all zeros when the card has no minimum spend", () => {
+    expect(defaultAprSchedule(0, 3)).toEqual(Array(12).fill(0))
+  })
+
+  it("guards against a zero/missing window (no divide-by-zero)", () => {
+    expect(defaultAprSchedule(4000, 0)).toEqual([1333, 1333, 1333, 0, 0, 0, 0, 0, 0, 0, 0, 0])
   })
 })
