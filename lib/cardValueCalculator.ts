@@ -15,7 +15,7 @@
  * which is exactly why it belongs on Year 1 and not Year 2.
  */
 import type { CreditCardBonus } from "./data/creditCardBonuses"
-import { estimateCard, signupBonusValue, type SpendInput, type SpendBucket } from "./data/cardSpendValue"
+import { estimateCard, signupBonusValue, baseEarnRate, type SpendInput, type SpendBucket } from "./data/cardSpendValue"
 import { runIntroAprArbitrage, type IntroAprResult } from "./introAprArbitrage"
 
 /** Default high-yield savings APY used for the float estimate (editable in UI). */
@@ -98,6 +98,8 @@ export type CardValueResult = {
   spendMonths: number
   /** Whether the bonus is earned given the SUB-window spend (always true when there's no minimum). */
   bonusEarned: boolean
+  /** Everyday rewards earned on the SUB-window spend itself, valued at the base "everything else" rate (year 1 only). */
+  subRewards: number
   /** First-year statement credits. */
   year1Credits: number
   /** Annual fee actually charged in year 1 (0 if waived first year). */
@@ -153,6 +155,12 @@ export function computeCardValue(
   const signupBonusPotential = signupBonusValue(card)
   const signupBonus = bonusEarned ? signupBonusPotential : 0
 
+  // The spend you make to clear the bonus also earns everyday rewards. We don't
+  // know its category mix, so value it at the card's base ("everything else")
+  // rate. Earned whether or not the threshold is hit — you get points on spend
+  // regardless. This is one-time year-1 spend, so it's not annualized.
+  const subRewards = Math.round(subWindowSpend * baseEarnRate(card))
+
   const year1Credits = card.statement_credits_year1
   const firstYearFee = card.annual_fee_waived_first_year ? 0 : card.annual_fee
   const recurringCredits = recurringAnnualCredits(card)
@@ -173,7 +181,7 @@ export function computeCardValue(
   const floatValue = float ? Math.round(float.netInterest) : 0
   const floatBenefit = opts.zeroApr ? floatValue : 0
 
-  const year1 = Math.round(signupBonus + year1Credits - firstYearFee + rewardsAnnual + floatBenefit)
+  const year1 = Math.round(signupBonus + subRewards + year1Credits - firstYearFee + rewardsAnnual + floatBenefit)
   const year2 = Math.round(rewardsAnnual + recurringCredits - card.annual_fee)
 
   return {
@@ -182,6 +190,7 @@ export function computeCardValue(
     minSpend,
     spendMonths: card.spend_months ?? 0,
     bonusEarned,
+    subRewards,
     year1Credits,
     firstYearFee,
     annualFee: card.annual_fee,

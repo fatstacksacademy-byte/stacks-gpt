@@ -22,12 +22,13 @@ function makeCard(overrides: Partial<CreditCardBonus> = {}): CreditCardBonus {
 const SPEND = { dining: 100, other: 100 } // $200/mo → $2,400/yr
 
 describe("computeCardValue", () => {
-  it("composes Year 1 = bonus + credits − first-year fee + rewards", () => {
+  it("composes Year 1 = bonus + SUB-spend rewards + credits − first-year fee + rewards", () => {
     const r = computeCardValue(makeCard(), SPEND)
     expect(r.signupBonus).toBe(600)          // 60,000 × $0.01
+    expect(r.subRewards).toBe(40)            // $4,000 SUB spend × 1% base rate
     expect(r.rewardsAnnual).toBe(48)         // dining 1,200×3% + other 1,200×1%
     expect(r.firstYearFee).toBe(95)
-    expect(r.year1).toBe(553)                // 600 + 0 − 95 + 48
+    expect(r.year1).toBe(593)                // 600 + 40 + 0 − 95 + 48
   })
 
   it("Year 2 = ongoing rewards + recurring credits − annual fee", () => {
@@ -38,7 +39,7 @@ describe("computeCardValue", () => {
   it("waives the first-year fee but keeps the ongoing fee in Year 2", () => {
     const r = computeCardValue(makeCard({ annual_fee_waived_first_year: true }), SPEND)
     expect(r.firstYearFee).toBe(0)
-    expect(r.year1).toBe(648)                // 600 + 0 − 0 + 48
+    expect(r.year1).toBe(688)                // 600 + 40 + 0 − 0 + 48
     expect(r.year2).toBe(-47)                // fee still applies in year 2
   })
 
@@ -89,12 +90,13 @@ describe("computeCardValue", () => {
     expect(r.signupBonusPotential).toBe(600)
   })
 
-  it("forfeits the bonus when the SUB-window spend falls short", () => {
+  it("forfeits the bonus when the SUB-window spend falls short, but still earns base rewards on it", () => {
     const r = computeCardValue(makeCard(), SPEND, { subWindowSpend: 1000 })
     expect(r.bonusEarned).toBe(false)
     expect(r.signupBonus).toBe(0)              // not counted
     expect(r.signupBonusPotential).toBe(600)   // but still surfaced as forfeited value
-    expect(r.year1).toBe(-47)                  // 0 + 0 − 95 + 48 (no bonus)
+    expect(r.subRewards).toBe(10)              // $1,000 × 1% base — you still earn on the spend
+    expect(r.year1).toBe(-37)                  // 0 + 10 − 95 + 48 (no bonus, but base rewards)
   })
 
   it("treats a no-minimum-spend card as always earning the bonus", () => {

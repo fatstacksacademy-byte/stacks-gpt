@@ -10,7 +10,12 @@ import {
   DEFAULT_HYSA_APY,
 } from "../../lib/cardValueCalculator"
 import { subHeadline } from "../../lib/data/cardSpendValue"
-import { SPENDING_CATEGORY_DEFINITIONS } from "../../lib/spendingCategories"
+import {
+  SPENDING_CATEGORY_DEFINITIONS,
+  SPENDING_CATEGORY_BY_KEY,
+  type SpendingCategory,
+} from "../../lib/spendingCategories"
+import SpendingCategoryPicker from "./SpendingCategoryPicker"
 
 const ACCENT = "#0d7c5f"
 const CORE = SPENDING_CATEGORY_DEFINITIONS.filter((c) => c.core)
@@ -43,6 +48,7 @@ export default function CardValueCalculator({
 
   const [cardId, setCardId] = useState(initialCard?.id ?? "")
   const [spend, setSpend] = useState<Record<string, number>>(DEFAULT_SPEND)
+  const [addedCats, setAddedCats] = useState<SpendingCategory[]>([])
   const [subWindowSpend, setSubWindowSpend] = useState(() => initialCard?.min_spend ?? 0)
   const [aprSchedule, setAprSchedule] = useState<number[]>(() =>
     defaultAprSchedule(initialCard?.min_spend ?? 0, initialCard?.spend_months ?? 3)
@@ -74,11 +80,18 @@ export default function CardValueCalculator({
     [selected, aprSchedule, hysaApyPct]
   )
 
+  // Core categories always show; extras are opt-in via the picker (as in Stacks OS).
+  const displayedCats = useMemo(
+    () => [...CORE, ...addedCats.map((k) => SPENDING_CATEGORY_BY_KEY[k]).filter(Boolean)],
+    [addedCats]
+  )
+  const selectedKeys = useMemo(() => displayedCats.map((c) => c.key as SpendingCategory), [displayedCats])
+
   if (!selected || !result) {
     return <div style={{ color: "#999", padding: 24 }}>No cards available.</div>
   }
 
-  const totalMonthly = CORE.reduce((s, c) => s + (spend[c.key] || 0), 0)
+  const totalMonthly = displayedCats.reduce((s, c) => s + (spend[c.key] || 0), 0)
   const bonusLabel = subHeadline(selected)
   const shortfall = Math.max(0, result.minSpend - subWindowSpend)
 
@@ -90,6 +103,18 @@ export default function CardValueCalculator({
   function setCat(key: string, v: string) {
     const n = Math.max(0, Number(v.replace(/[^\d]/g, "")) || 0)
     setSpend((prev) => ({ ...prev, [key]: n }))
+  }
+  function addCat(key: SpendingCategory) {
+    if (SPENDING_CATEGORY_BY_KEY[key]?.core) return
+    setAddedCats((cur) => (cur.includes(key) ? cur : [...cur, key]))
+  }
+  function removeCat(key: SpendingCategory) {
+    setAddedCats((cur) => cur.filter((k) => k !== key))
+    setSpend((prev) => {
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
   }
   function setAprMonth(i: number, v: string) {
     const n = Math.max(0, Number(v.replace(/[^\d]/g, "")) || 0)
@@ -183,24 +208,44 @@ export default function CardValueCalculator({
             (${totalMonthly.toLocaleString()}/mo total).
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {CORE.map((c) => (
+            {displayedCats.map((c) => (
               <div key={c.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 14, color: "#333", fontWeight: 500 }}>{c.label}</div>
                   <div style={{ fontSize: 11, color: "#bbb" }}>{c.hint}</div>
                 </div>
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                  <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={spend[c.key] ?? 0}
-                    onChange={(e) => setCat(c.key, e.target.value)}
-                    style={{ width: 100, padding: "8px 10px 8px 20px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, outline: "none", textAlign: "right", boxSizing: "border-box" }}
-                  />
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={spend[c.key] ?? 0}
+                      onChange={(e) => setCat(c.key, e.target.value)}
+                      style={{ width: 100, padding: "8px 10px 8px 20px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, outline: "none", textAlign: "right", boxSizing: "border-box" }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeCat(c.key)}
+                    aria-label={`Remove ${c.label}`}
+                    title={c.core ? "Core category" : `Remove ${c.label}`}
+                    disabled={!!c.core}
+                    style={{ width: 22, height: 22, lineHeight: "20px", textAlign: "center", border: "none", background: "transparent", color: c.core ? "#e8e8e8" : "#bbb", cursor: c.core ? "default" : "pointer", fontSize: 16, fontFamily: "inherit", flexShrink: 0 }}
+                  >
+                    ×
+                  </button>
                 </div>
               </div>
             ))}
+          </div>
+
+          <div style={{ marginTop: 14 }}>
+            <SpendingCategoryPicker
+              selected={selectedKeys}
+              onAdd={addCat}
+              placeholder="Add a category (Amazon, transit, streaming…)"
+            />
           </div>
         </div>
 
@@ -227,6 +272,7 @@ export default function CardValueCalculator({
             ) : (
               <Row title="Welcome bonus" sub="min spend not met — not earned" value="$0" muted />
             )}
+            {result.subRewards > 0 && <Row title="Rewards on bonus-window spend" sub={`${money(subWindowSpend)} at base rate`} value={`+${money(result.subRewards)}`} />}
             {result.year1Credits > 0 && <Row title="First-year credits" value={`+${money(result.year1Credits)}`} />}
             <Row title="Rewards on your spend" sub="ongoing category earnings / yr" value={`+${money(result.rewardsAnnual)}`} />
             {result.floatBenefit > 0 && <Row title="0% APR float" sub={`${result.promoMonths} mo at ${hysaApyPct}% APY`} value={`+${money(result.floatBenefit)}`} accent />}
@@ -240,7 +286,7 @@ export default function CardValueCalculator({
           {/* Category breakdown */}
           <div style={card}>
             <div style={{ ...label, marginBottom: 12 }}>Rewards by category</div>
-            {CORE.filter((c) => (spend[c.key] || 0) > 0).map((c) => (
+            {displayedCats.filter((c) => (spend[c.key] || 0) > 0).map((c) => (
               <Row key={c.key} title={c.label} sub={`${money(spend[c.key] || 0)}/mo`} value={money(result.breakdown[c.key] ?? 0)} muted />
             ))}
             <div style={{ borderTop: "1px solid #eee", marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 14, color: "#111" }}>

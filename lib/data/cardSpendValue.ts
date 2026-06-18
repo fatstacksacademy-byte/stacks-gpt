@@ -53,6 +53,15 @@ function baseRate(card: CreditCardBonus): number {
   return rewardCpp(card) // assume 1x if no explicit base tier
 }
 
+/**
+ * The card's base ("everything else") earn rate in $/$ — what a dollar of
+ * uncategorized spend returns. Exposed for one-off spend (e.g. valuing the
+ * sign-up-bonus-window spend, whose category mix is unknown, at the base rate).
+ */
+export function baseEarnRate(card: CreditCardBonus): number {
+  return baseRate(card)
+}
+
 /** Best $/$ rate a card earns for a given bucket, and whether it beat base. */
 function bestRateForBucket(card: CreditCardBonus, bucket: SpendBucket): { rate: number; capped?: number } {
   const tokens = SPENDING_CATEGORY_BY_KEY[bucket].catalogTokens
