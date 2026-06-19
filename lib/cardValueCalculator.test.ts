@@ -99,6 +99,15 @@ describe("computeCardValue", () => {
     expect(r.year1).toBe(-37)                  // 0 + 10 − 95 + 48 (no bonus, but base rewards)
   })
 
+  it("values the SUB-window spend at the chosen category's rate (defaults to base)", () => {
+    // makeCard earns 3x on dining; default 'other' is base 1x.
+    const base = computeCardValue(makeCard(), SPEND)
+    expect(base.subRewards).toBe(40)                                        // $4,000 × 1% base
+    const onDining = computeCardValue(makeCard(), SPEND, { subWindowCategory: "dining" })
+    expect(onDining.subRewards).toBe(120)                                   // $4,000 × 3%
+    expect(onDining.year1).toBe(base.year1 + 80)                            // +$80 vs base rate
+  })
+
   it("treats a no-minimum-spend card as always earning the bonus", () => {
     const r = computeCardValue(makeCard({ min_spend: 0 }), SPEND, { subWindowSpend: 0 })
     expect(r.bonusEarned).toBe(true)

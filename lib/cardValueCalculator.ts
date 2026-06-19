@@ -15,7 +15,7 @@
  * which is exactly why it belongs on Year 1 and not Year 2.
  */
 import type { CreditCardBonus } from "./data/creditCardBonuses"
-import { estimateCard, signupBonusValue, baseEarnRate, type SpendInput, type SpendBucket } from "./data/cardSpendValue"
+import { estimateCard, signupBonusValue, categoryEarnRate, type SpendInput, type SpendBucket } from "./data/cardSpendValue"
 import { runIntroAprArbitrage, type IntroAprResult } from "./introAprArbitrage"
 
 /** Default high-yield savings APY used for the float estimate (editable in UI). */
@@ -31,6 +31,12 @@ export type CardValueOptions = {
    * the card's `min_spend` (i.e. "assume the bonus is met").
    */
   subWindowSpend?: number
+  /**
+   * Which spending category the SUB-window spend lands in, for valuing the
+   * everyday rewards it earns. Defaults to "other" ("Everything else" / base
+   * rate) since the mix is unknown until the user says what they put it on.
+   */
+  subWindowCategory?: SpendBucket
   /** Factor the 0% intro-APR float into Year 1 (only applies if the card offers it). */
   zeroApr?: boolean
   /** HYSA APY as a decimal (0.04 = 4%). Defaults to DEFAULT_HYSA_APY. */
@@ -155,11 +161,11 @@ export function computeCardValue(
   const signupBonusPotential = signupBonusValue(card)
   const signupBonus = bonusEarned ? signupBonusPotential : 0
 
-  // The spend you make to clear the bonus also earns everyday rewards. We don't
-  // know its category mix, so value it at the card's base ("everything else")
-  // rate. Earned whether or not the threshold is hit — you get points on spend
-  // regardless. This is one-time year-1 spend, so it's not annualized.
-  const subRewards = Math.round(subWindowSpend * baseEarnRate(card))
+  // The spend you make to clear the bonus also earns everyday rewards, at the
+  // rate of whichever category the user says they put it on (defaults to
+  // "everything else"). Earned whether or not the threshold is hit — you get
+  // points on spend regardless. One-time year-1 spend, so it's not annualized.
+  const subRewards = Math.round(subWindowSpend * categoryEarnRate(card, opts.subWindowCategory ?? "other"))
 
   const year1Credits = card.statement_credits_year1
   const firstYearFee = card.annual_fee_waived_first_year ? 0 : card.annual_fee

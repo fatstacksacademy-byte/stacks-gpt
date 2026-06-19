@@ -20,6 +20,17 @@ import SpendingCategoryPicker from "./SpendingCategoryPicker"
 const ACCENT = "#0d7c5f"
 const CORE = SPENDING_CATEGORY_DEFINITIONS.filter((c) => c.core)
 
+// Every category, grouped, for the "what did you spend the bonus minimum on?" picker.
+const CATEGORY_GROUPS: [string, (typeof SPENDING_CATEGORY_DEFINITIONS)[number][]][] = (() => {
+  const m = new Map<string, (typeof SPENDING_CATEGORY_DEFINITIONS)[number][]>()
+  for (const c of SPENDING_CATEGORY_DEFINITIONS) {
+    const arr = m.get(c.group) ?? []
+    arr.push(c)
+    m.set(c.group, arr)
+  }
+  return Array.from(m)
+})()
+
 // A sensible starting profile so the calculator shows real numbers immediately.
 const DEFAULT_SPEND: Record<string, number> = {
   dining: 300, groceries: 500, gas: 150, travel: 200, utilities: 200, online_shopping: 200, other: 400,
@@ -50,6 +61,7 @@ export default function CardValueCalculator({
   const [spend, setSpend] = useState<Record<string, number>>(DEFAULT_SPEND)
   const [addedCats, setAddedCats] = useState<SpendingCategory[]>([])
   const [subWindowSpend, setSubWindowSpend] = useState(() => initialCard?.min_spend ?? 0)
+  const [subWindowCategory, setSubWindowCategory] = useState<SpendingCategory>("other")
   const [aprSchedule, setAprSchedule] = useState<number[]>(() =>
     defaultAprSchedule(initialCard?.min_spend ?? 0, initialCard?.spend_months ?? 3)
   )
@@ -71,9 +83,9 @@ export default function CardValueCalculator({
   const result = useMemo(
     () =>
       selected
-        ? computeCardValue(selected, spend, { subWindowSpend, zeroApr, hysaApy: hysaApyPct / 100, aprSchedule })
+        ? computeCardValue(selected, spend, { subWindowSpend, subWindowCategory, zeroApr, hysaApy: hysaApyPct / 100, aprSchedule })
         : null,
-    [selected, spend, subWindowSpend, zeroApr, hysaApyPct, aprSchedule]
+    [selected, spend, subWindowSpend, subWindowCategory, zeroApr, hysaApyPct, aprSchedule]
   )
   const aprDetail = useMemo(
     () => (selected ? introAprFloat(selected, { schedule: aprSchedule, hysaApy: hysaApyPct / 100 }) : null),
@@ -175,6 +187,25 @@ export default function CardValueCalculator({
                   style={{ width: "100%", padding: "9px 10px 9px 20px", fontSize: 15, border: "1px solid #e0e0e0", borderRadius: 8, outline: "none", textAlign: "right", boxSizing: "border-box" }}
                 />
               </div>
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 5 }}>
+                  What will you mostly put that spend on? <span style={{ color: "#bbb" }}>(sets how much it earns)</span>
+                </div>
+                <select
+                  value={subWindowCategory}
+                  onChange={(e) => setSubWindowCategory(e.target.value as SpendingCategory)}
+                  aria-label="Bonus-window spend category"
+                  style={{ width: "100%", maxWidth: 280, padding: "9px 10px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+                >
+                  {CATEGORY_GROUPS.map(([group, cats]) => (
+                    <optgroup key={group} label={group}>
+                      {cats.map((c) => (
+                        <option key={c.key} value={c.key}>{c.label}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
               <div
                 style={{
                   marginTop: 10, padding: "8px 12px", borderRadius: 8, fontSize: 13, lineHeight: 1.5,
@@ -272,7 +303,7 @@ export default function CardValueCalculator({
             ) : (
               <Row title="Welcome bonus" sub="min spend not met — not earned" value="$0" muted />
             )}
-            {result.subRewards > 0 && <Row title="Rewards on bonus-window spend" sub={`${money(subWindowSpend)} at base rate`} value={`+${money(result.subRewards)}`} />}
+            {result.subRewards > 0 && <Row title="Rewards on bonus-window spend" sub={`${money(subWindowSpend)} on ${SPENDING_CATEGORY_BY_KEY[subWindowCategory].label}`} value={`+${money(result.subRewards)}`} />}
             {result.year1Credits > 0 && <Row title="First-year credits" value={`+${money(result.year1Credits)}`} />}
             <Row title="Rewards on your spend" sub="ongoing category earnings / yr" value={`+${money(result.rewardsAnnual)}`} />
             {result.floatBenefit > 0 && <Row title="0% APR float" sub={`${result.promoMonths} mo at ${hysaApyPct}% APY`} value={`+${money(result.floatBenefit)}`} accent />}
