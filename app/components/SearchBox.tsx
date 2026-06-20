@@ -29,21 +29,30 @@ export default function SearchBox({ entries }: { entries: SearchEntry[] }) {
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
-  const results = useMemo(() => {
+  // Match against the whole index so we know the TRUE total, then show
+  // only the top 8 in the dropdown. The "See all N results" footer routes
+  // to /search where every match is rendered — so capping here never hides
+  // an offer the user is looking for.
+  const { results, total } = useMemo(() => {
     const term = q.trim().toLowerCase()
-    if (term.length < 2) return []
+    if (term.length < 2) return { results: [] as SearchEntry[], total: 0 }
     const matches: SearchEntry[] = []
+    let count = 0
     for (const e of entries) {
       if (e.searchText.includes(term)) {
-        matches.push(e)
-        if (matches.length >= 8) break
+        count++
+        if (matches.length < 8) matches.push(e)
       }
     }
-    return matches
+    return { results: matches, total: count }
   }, [q, entries])
 
+  const searchHref = `/search?q=${encodeURIComponent(q.trim())}`
+
+  // -1 = nothing selected, so plain Enter goes to the full results page
+  // (Google-style); arrow keys select a specific suggestion.
   useEffect(() => {
-    setActiveIdx(0)
+    setActiveIdx(-1)
   }, [q])
 
   const close = useCallback(() => {
@@ -57,9 +66,12 @@ export default function SearchBox({ entries }: { entries: SearchEntry[] }) {
       setActiveIdx((i) => Math.min(i + 1, results.length - 1))
     } else if (e.key === "ArrowUp") {
       e.preventDefault()
-      setActiveIdx((i) => Math.max(i - 1, 0))
-    } else if (e.key === "Enter" && results[activeIdx]) {
-      window.location.href = results[activeIdx].href
+      setActiveIdx((i) => Math.max(i - 1, -1))
+    } else if (e.key === "Enter") {
+      // A specific suggestion is highlighted → open it; otherwise fall
+      // through to the full results page with whatever was typed.
+      if (activeIdx >= 0 && results[activeIdx]) window.location.href = results[activeIdx].href
+      else if (q.trim().length >= 2) window.location.href = searchHref
     } else if (e.key === "Escape") {
       close()
     }
@@ -137,11 +149,16 @@ export default function SearchBox({ entries }: { entries: SearchEntry[] }) {
           }}
         >
           {results.length === 0 ? (
-            <div style={{ padding: "14px 12px", fontSize: 13, color: "#888" }}>
-              No matches for &ldquo;{q.trim()}&rdquo;
-            </div>
+            <Link
+              href={searchHref}
+              onClick={close}
+              style={{ display: "block", padding: "14px 12px", fontSize: 13, color: "#888", textDecoration: "none" }}
+            >
+              No matches for &ldquo;{q.trim()}&rdquo; — search the full catalog &rarr;
+            </Link>
           ) : (
-            results.map((r, i) => (
+            <>
+            {results.map((r, i) => (
               <div
                 key={r.id}
                 role="option"
@@ -203,7 +220,24 @@ export default function SearchBox({ entries }: { entries: SearchEntry[] }) {
                   Apply →
                 </Link>
               </div>
-            ))
+            ))}
+            <Link
+              href={searchHref}
+              onClick={close}
+              style={{
+                display: "block",
+                padding: "11px 12px",
+                fontSize: 12.5,
+                fontWeight: 700,
+                color: "#0d7c5f",
+                textAlign: "center",
+                textDecoration: "none",
+                background: "#f8faf9",
+              }}
+            >
+              See all {total} result{total === 1 ? "" : "s"} for &ldquo;{q.trim()}&rdquo; &rarr;
+            </Link>
+            </>
           )}
         </div>
       )}
