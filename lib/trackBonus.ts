@@ -1,6 +1,6 @@
 import { markBonusStarted, getCompletedBonuses } from "./completedBonuses"
 import { addSavingsEntry, getSavingsEntries } from "./savingsEntries"
-import { addOwnedCard } from "./ownedCards"
+import { addOwnedCard, getOwnedCards } from "./ownedCards"
 import { savingsBonuses, practicalHoldDays } from "./data/savingsBonuses"
 import { creditCardBonuses } from "./data/creditCardBonuses"
 import { signupBonusValue } from "./data/cardSpendValue"
@@ -89,6 +89,14 @@ export async function trackCatalogBonus(
   if (kind === "credit-card") {
     const card = creditCardBonuses.find(c => c.id === bonusId)
     if (!card) return "error"
+    // Duplicate guard: an existing open owned_cards row linked to this
+    // catalog id means we should NOT create a second one. Mirrors the
+    // checking/savings branches above.
+    const existing = await getOwnedCards(userId)
+    const open = existing.find(
+      c => c.canonical_offer_id === bonusId && c.status !== "completed" && c.status !== "canceled",
+    )
+    if (open) return "duplicate"
     const signupCash = signupBonusValue(card)
     const feeY1 = card.annual_fee_waived_first_year ? 0 : card.annual_fee
     const expected = signupCash + card.statement_credits_year1 - feeY1
