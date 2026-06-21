@@ -83,6 +83,11 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     const stored = localStorage.getItem("stacks_show_brokerage")
     return stored === null ? true : stored === "true"
   })
+  // Business-only view: show ONLY business-entity bonuses (sole-prop friendly).
+  const [businessOnly, setBusinessOnly] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("stacks_business_only") === "true"
+  })
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -260,8 +265,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
         skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
         userState,
         currentHysaApy: currentApy || 0,
-        includeBusiness: showBusiness,
-        includeBrokerage: showBrokerage,
+        includeBusiness: showBusiness || businessOnly,
+        includeBrokerage: showBrokerage && !businessOnly,
         militaryAffiliated,
       })
     : { entries: [] as SavingsSequencedEntry[], total_earnings: 0, total_days: 0, skipped: [] as { bank_name: string; reason: string }[] }
@@ -272,6 +277,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
   const recSearchQ = recSearch.trim().toLowerCase()
   const filteredEntries = sequencerResult.entries
     .filter((e) => !justStartedIds.has(e.id))
+    .filter((e) => !businessOnly || e.bonus?.business === true)
     .filter((e) => !recSearchQ || e.bank_name.toLowerCase().includes(recSearchQ))
 
   // Start a recommended bonus — add it as a savings entry
@@ -456,6 +462,11 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 <input type="checkbox" checked={showBrokerage} onChange={e => { setShowBrokerage(e.target.checked); localStorage.setItem("stacks_show_brokerage", String(e.target.checked)) }}
                   style={{ accentColor: "#2563eb" }} />
                 <span style={{ fontSize: 13, color: "#555" }}>Include brokerage bonuses</span>
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                <input type="checkbox" checked={businessOnly} onChange={e => { setBusinessOnly(e.target.checked); localStorage.setItem("stacks_business_only", String(e.target.checked)) }}
+                  style={{ accentColor: "#7c3aed" }} />
+                <span style={{ fontSize: 13, color: "#555" }}>Business only</span>
               </label>
             </div>
 

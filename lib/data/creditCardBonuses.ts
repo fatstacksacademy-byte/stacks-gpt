@@ -6908,6 +6908,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "amex-american-express-blue-business-cash-rwp",
     card_name: "American Express Blue Business Cash",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "amex",
     card_type: "business",
     bonus_amount: 250,
@@ -6929,6 +6930,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "amex-american-express-blue-business-plus-rwp",
     card_name: "American Express Blue Business Plus",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "amex",
     card_type: "business",
     bonus_amount: 15000,
@@ -7460,6 +7462,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "fnbo-fnbo-evergreen-business-rwp",
     card_name: "FNBO Evergreen Business",
+    intro_apr: { purchase_apr_months: 6 },
     issuer: "fnbo",
     card_type: "business",
     bonus_amount: 200,
@@ -7756,6 +7759,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "us-bank-state-farm-business-card-rewards-rwp",
     card_name: "State Farm Business Card Rewards",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "us-bank",
     card_type: "business",
     bonus_amount: 0,
@@ -7914,6 +7918,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "us-bank-us-bank-triple-cash-rewards-business-rwp",
     card_name: "US Bank Triple Cash Rewards Business",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "us-bank",
     card_type: "business",
     bonus_amount: 750,
@@ -7960,6 +7965,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   {
     id: "wells-fargo-wells-fargo-signify-business-cash-rwp",
     card_name: "Wells Fargo Signify Business Cash",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "wells-fargo",
     card_type: "business",
     bonus_amount: 500,

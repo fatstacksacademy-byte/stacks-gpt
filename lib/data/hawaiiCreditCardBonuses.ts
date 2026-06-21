@@ -328,6 +328,7 @@ const seeds: HawaiiCardSeed[] = [
   {
     id: "cpb-business-cash-preferred-25",
     card_name: "Central Pacific Bank Business Cash Preferred",
+    intro_apr: { purchase_apr_months: 12 },
     issuer: "central-pacific-bank",
     card_type: "business",
     bonus_amount: 25,
