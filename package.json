@@ -38,7 +38,11 @@
     "yt:mine": "tsx scripts/yt-research/my-recent.ts",
     "yt:mine-tx": "tsx scripts/yt-research/my-transcripts.ts",
     "yt:analytics": "tsx scripts/yt-research/my-analytics.ts",
-    "yt:compare": "tsx scripts/yt-research/compare-ids.ts"
+    "yt:compare": "tsx scripts/yt-research/compare-ids.ts",
+    "thumb:research": "tsx scripts/yt-research/thumb-lab.ts",
+    "thumb:refs": "tsx scripts/yt-research/ref-thumbs.ts",
+    "thumb:stills": "python3 scripts/thumb-gen/grab_stills.py",
+    "thumb": "python3 scripts/thumb-gen/generate.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
