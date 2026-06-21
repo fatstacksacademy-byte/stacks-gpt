@@ -103,6 +103,13 @@ export type CreditCardBonus = {
   card_type: "personal" | "business"
   bonus_amount: number
   bonus_currency: string
+  /**
+   * Optional override for reward-currency class. When absent, cardCurrencyType()
+   * (lib/cardCurrencyType.ts) derives it from bonus_currency + card name. Drives
+   * "value at 1¢" filtering — only cash/flexible/fixed_value belong in dollar
+   * rankings; airline/hotel/restricted overstate at 1¢.
+   */
+  reward_currency_type?: "cash" | "flexible" | "fixed_value" | "airline" | "hotel" | "restricted"
   /** true for hotel loyalty cards (Hilton, Marriott, IHG) — valued at 0.5 cpp */
   is_hotel_card: boolean
   cpp_value: number
@@ -113,6 +120,8 @@ export type CreditCardBonus = {
   /** Easily claimable statement credits in year 1 (travel, dining, etc.) */
   statement_credits_year1: number
   offer_link: string
+  /** Card-art thumbnail served from /public, e.g. "/card-art/chase-sapphire-preferred.png". Optional. */
+  image_url?: string
   expired: boolean
   key_benefits: string[]
   state_restricted?: string[]
@@ -754,6 +763,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "chase-sapphire-preferred-75k",
+    image_url: "/card-art/chase-sapphire-preferred.png",
     highest_bonus_amount: 100000,
     offer_note: "100K is the all-time high — only the third time ever (2021, 2025, June 2026), and elevated Sapphire offers rarely last long. The usual offer is 60–75K.",
     card_name: "Chase Sapphire Preferred",
@@ -1807,6 +1817,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "usb-cash-plus-200",
+    image_url: "/card-art/usbank-cash-plus.png",
     card_name: "U.S. Bank Cash+",
     issuer: "us-bank",
     card_type: "personal",
@@ -2813,6 +2824,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-bank-of-america-customized-cash-rewards-rwp",
+    image_url: "/card-art/bofa-customized-cash-rewards.png",
     card_name: "Bank of America Customized Cash Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -6470,6 +6482,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "usaa-bank-eagle-adapt-200",
+    image_url: "/card-art/usaa-eagle-adapt.png",
     card_name: "USAA Eagle Adapt",
     issuer: "usaa-bank",
     card_type: "personal",
@@ -6736,16 +6749,17 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Wyndham Earner",
     issuer: "barclays",
     card_type: "personal",
-    bonus_amount: 45000,
+    bonus_amount: 75000,
     bonus_currency: "Points",
     is_hotel_card: true,
     cpp_value: 0.007,
     min_spend: 1000,
     spend_months: 3,
-    annual_fee: 95,
+    annual_fee: 0,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
-    offer_link: "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-business-card/",
+    offer_note: "June 17, 2026 Barclays/Wyndham refresh: no annual fee; up to 75K (30K after $1K spend/90d + 45K after $500 at Hotels by Wyndham/180d).",
+    offer_link: "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
     rewards: [
@@ -6759,15 +6773,16 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Wyndham Earner+",
     issuer: "barclays",
     card_type: "personal",
-    bonus_amount: 45000,
+    bonus_amount: 100000,
     bonus_currency: "Points",
     is_hotel_card: true,
     cpp_value: 0.009000000000000001,
     min_spend: 1000,
     spend_months: 3,
-    annual_fee: 75,
+    annual_fee: 95,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
+    offer_note: "June 17, 2026 Barclays/Wyndham refresh: AF raised $75→$95 for new applicants (existing keep $75); up to 100K (45K after $1K spend/90d + 55K after $500 at Hotels by Wyndham/180d); anniversary bonus 7.5K→15K.",
     offer_link: "https://www.wyndhamrewardscreditcard.com/earner-plus-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
@@ -7265,6 +7280,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-ink-business-cash-rwp",
+    image_url: "/card-art/chase-ink-business-cash.png",
     highest_bonus_amount: 100000,
     offer_note: "100K is the best-ever for the no-fee Ink cards (usually 75K). The two no-fee Inks share one bonus under current rules — pick Cash or Unlimited.",
     card_name: "Chase Ink Business Cash",
@@ -7302,6 +7318,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-ink-business-unlimited-rwp",
+    image_url: "/card-art/chase-ink-business-unlimited.png",
     highest_bonus_amount: 100000,
     offer_note: "100K is the best-ever for the no-fee Ink cards (usually 75K). The two no-fee Inks share one bonus under current rules — pick Cash or Unlimited.",
     card_name: "Chase Ink Business Unlimited",
@@ -7989,15 +8006,16 @@ export const creditCardBonuses: CreditCardBonus[] = [
     card_name: "Wyndham Earner Business",
     issuer: "barclays",
     card_type: "business",
-    bonus_amount: 45000,
+    bonus_amount: 100000,
     bonus_currency: "Points",
     is_hotel_card: true,
     cpp_value: 0.007,
     min_spend: 3000,
     spend_months: 3,
-    annual_fee: 95,
+    annual_fee: 149,
     annual_fee_waived_first_year: false,
     statement_credits_year1: 0,
+    offer_note: "June 17, 2026 Barclays/Wyndham refresh: AF raised $95→$149 for new applicants; up to 100K (45K after $3K spend/90d + 55K after $500 at Hotels by Wyndham/180d).",
     offer_link: "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-business-card/",
     expired: false,
     key_benefits: ["No Foreign Transaction Fees","Travel Portal Redemption"],
@@ -8006,6 +8024,28 @@ export const creditCardBonuses: CreditCardBonus[] = [
       { categories: ["cell_phone_carriers","internet_and_cable","marketing_/_advertising","utilities"], multiplier: 5, unit: "points" },
       { categories: ["all_other"], multiplier: 1, unit: "points" },
     ],
+  },
+  {
+    // NEW premium card from the June 17, 2026 Barclays/Wyndham refresh.
+    // Bonus/fee/spend are sourced (PR Newswire + DoC + Frequent Miler); rewards
+    // earn-rates omitted (not confirmed) rather than guessed.
+    id: "barclays-wyndham-earner-premier",
+    card_name: "Wyndham Earner Premier",
+    issuer: "barclays",
+    card_type: "personal",
+    bonus_amount: 120000,
+    bonus_currency: "Points",
+    is_hotel_card: true,
+    cpp_value: 0.009000000000000001,
+    min_spend: 6000,
+    spend_months: 4,
+    annual_fee: 395,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 165,
+    offer_note: "NEW June 17, 2026 premium Wyndham card. Up to 120K (90K after $6K spend + paying the AF in full within 120d + 30K after $750 at Hotels by Wyndham/180d). 30K anniversary points, points never expire, 20% award-night discount, Insider membership; credits incl. ~$100 hotel + $65 wholesale club + Global Entry/TSA.",
+    offer_link: "https://www.wyndhamrewardscreditcard.com/earner-premier-card/",
+    expired: false,
+    key_benefits: ["No Foreign Transaction Fees","Points Never Expire","20% Award-Night Discount","$100 Hotel Credit","Global Entry/TSA Credit"],
   },
 
 

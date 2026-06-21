@@ -32,26 +32,30 @@ export function hintFromTitle(title: string): {
   product: string | null
 } {
   let bonus_amount: number | null = null
-  // $X cash. Allow $X, $X,XXX, $Xk.
-  const dollarMatch = title.match(/\$(\d{1,3}(?:,\d{3})*|\d+)(?:,\d{3})*\s*(?:[kK])?/)
-  if (dollarMatch) {
-    const raw = dollarMatch[1].replace(/,/g, "")
-    let n = Number(raw)
-    if (/k$/i.test(dollarMatch[0])) n *= 1000
-    if (Number.isFinite(n)) bonus_amount = n
-  }
   // X,XXX points / miles / Avios / Membership Rewards / etc.  Card SUBs almost
   // never have a $ in the title, so this catches things like "Earn 125,000
-  // Membership Rewards" / "75K MR points" / "100,000 Avios".
+  // Membership Rewards" / "75K MR points" / "100,000 Avios".  Run this BEFORE
+  // the dollar regex so a points total like "$0 AF, 100,000 points" isn't
+  // mis-read as a dollar amount.
+  const pointsMatch = title.match(
+    /\b(\d{1,3}(?:,\d{3})+|\d{1,3}[kK])\s+(?:bonus\s+)?(?:points|miles|MR|UR|ThankYou|Avios|Membership\s+Rewards|Ultimate\s+Rewards|Aeroplan)/i,
+  )
+  if (pointsMatch) {
+    const raw = pointsMatch[1].replace(/,/g, "")
+    let n = Number(raw)
+    if (/k$/i.test(raw)) n = Number(raw.slice(0, -1)) * 1000
+    if (Number.isFinite(n)) bonus_amount = n
+  }
+  // $X cash. Capture FULL amounts incl. comma groups ($5,000) or 3-6 plain
+  // digits ($5000). Avoids truncating "$5000" -> 500 and rejects junk tiny
+  // amounts like "$5" / "$42" (which aren't real sign-up bonuses).
   if (bonus_amount === null) {
-    const pointsMatch = title.match(
-      /\b(\d{1,3}(?:,\d{3})+|\d{1,3}[kK])\s+(?:bonus\s+)?(?:points|miles|MR|UR|ThankYou|Avios|Membership\s+Rewards|Ultimate\s+Rewards|Aeroplan)/i,
-    )
-    if (pointsMatch) {
-      const raw = pointsMatch[1].replace(/,/g, "")
-      let n = Number(raw)
-      if (/k$/i.test(raw)) n = Number(raw.slice(0, -1)) * 1000
-      if (Number.isFinite(n)) bonus_amount = n
+    const dollarMatch = title.match(/\$\s?(\d{1,3}(?:,\d{3})+|\d{3,6})\b/)
+    if (dollarMatch) {
+      const raw = dollarMatch[1].replace(/,/g, "")
+      const n = Number(raw)
+      // Reject implausible dollar bonuses (< $25).
+      if (Number.isFinite(n) && n >= 25) bonus_amount = n
     }
   }
 

@@ -1041,6 +1041,7 @@ export const bonuses: any[] = [
   {
     "id": "us-bank-smartly-checking-450-2026",
     "bank_name": "U.S. Bank",
+    "expired": true,
     "product_name": "U.S. Bank Smartly Checking",
     "product_type": "checking",
     "bonus_amount": 450,
@@ -1105,6 +1106,7 @@ export const bonuses: any[] = [
   {
     "id": "bcu-500-powerplus-checking-2026",
     "bank_name": "BCU (Baxter Credit Union)",
+    "expired": true,
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": null,

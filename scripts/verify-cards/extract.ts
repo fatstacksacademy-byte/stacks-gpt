@@ -23,6 +23,13 @@ export type CardExtracted = {
   introApr: ExtractedIntroApr | null
   /** Whether the card name appears on the page at all. False = suspicious. */
   cardNameOnPage: boolean
+  /**
+   * Page advertises a free-night / anniversary-night certificate. These cards
+   * store a SYNTHETIC bonus_amount (e.g. 250,000 = value of multiple free
+   * nights) while the page only shows a lower per-night points cap. Never
+   * auto-propose downgrading the stored value for these — route to a human.
+   */
+  freeNight: boolean
   /** Raw snippets for each match so callers can display context. */
   snippets: {
     bonusAmount: string | null
@@ -80,6 +87,15 @@ export function extractBonusAmount(text: string): {
       amountIdx: 1,
       unitIdx: 2,
     },
+    {
+      // Branded hotel/airline currencies. ~40 co-brand cards (Hilton, Marriott,
+      // Hyatt, IHG, Delta, AA, JetBlue, Southwest, United, Aeroplan, BA Avios…)
+      // never matched the generic "points|miles" patterns and silently extracted
+      // NOTHING — they showed up as no_fields_extracted instead of being verified.
+      re: /\b(?:earn\s+)?(\d{1,3}(?:,\d{3})*)\s+(?:bonus\s+)?(Hilton\s+Honors(?:\s+Bonus)?\s+[Pp]oints|Marriott\s+Bonvoy(?:\s+Bonus)?\s+[Pp]oints|Bonvoy(?:\s+Bonus)?\s+[Pp]oints|World\s+of\s+Hyatt\s+[Pp]oints|Hyatt\s+[Pp]oints|IHG\s+One\s+Rewards(?:\s+Bonus)?\s+[Pp]oints|Choice\s+Privileges(?:\s+Bonus)?\s+[Pp]oints|Wyndham\s+Rewards\s+[Pp]oints|AAdvantage(?:\s+[Bb]onus)?\s+miles|SkyMiles|TrueBlue\s+[Pp]oints|Rapid\s+Rewards\s+(?:Bonus\s+)?[Pp]oints|MileagePlus(?:\s+bonus)?\s+miles|Aeroplan\s+[Pp]oints|Avios)/i,
+      amountIdx: 1,
+      unitIdx: 2,
+    },
   ]
   const pointsCandidates: Array<{ amount: number; unit: string; snippet: string }> = []
   for (const p of pointsPatterns) {
@@ -109,6 +125,12 @@ export function extractBonusAmount(text: string): {
     /\bearn\s+\$(\d+(?:,\d{3})*)\s+(?:cash\s+)?(?:back\s+)?bonus/i,
     /\$(\d+(?:,\d{3})*)\s+(?:cash\s+)?(?:back\s+)?(?:welcome\s+)?bonus/i,
     /\bearn\s+\$(\d+(?:,\d{3})*)\s+when\s+you\s+spend/i,
+    // Standard Citi/Chase/Discover cash phrasing — "$200 cash back after you
+    // spend $1,500", "earn $200 statement credit". 155 cash cards used this
+    // wording and extracted nothing before.
+    /\$(\d+(?:,\d{3})*)\s+(?:cash\s*back|statement\s+credit)\s+after\s+(?:you\s+)?spend/i,
+    /\bearn\s+\$(\d+(?:,\d{3})*)\s+(?:cash\s*back|statement\s+credit)/i,
+    /\$(\d+(?:,\d{3})*)\s+back\s+after\s+(?:you\s+)?spend/i,
   ]
   const dollarCandidates: Array<{ amount: number; snippet: string }> = []
   for (const re of dollarPatterns) {
@@ -503,12 +525,17 @@ export function extractAll(text: string, cardName: string): CardExtracted {
   const fee = extractAnnualFee(text)
   const intro = extractIntroApr(text)
   const cardNameOnPage = checkCardNameOnPage(text, cardName)
+  const freeNight =
+    /free\s+night|night\s+award|anniversary\s+night|annual\s+(?:free\s+)?night|category\s+\d\s+(?:free\s+)?night|free\s+(?:weekend\s+)?night\s+certificate/i.test(
+      text,
+    )
 
   const flags: string[] = []
   if (!cardNameOnPage) flags.push("card_name_not_on_page")
   if (bonus.amount === null) flags.push("no_bonus_amount_found")
   if (spend.minSpend === null) flags.push("no_spend_requirement_found")
   if (fee.annualFee === null) flags.push("no_annual_fee_found")
+  if (freeNight) flags.push("free_night_card")
 
   return {
     bonusAmount: bonus.amount,
@@ -518,6 +545,7 @@ export function extractAll(text: string, cardName: string): CardExtracted {
     annualFee: fee.annualFee,
     introApr: intro.intro,
     cardNameOnPage,
+    freeNight,
     snippets: {
       bonusAmount: bonus.snippet,
       minSpend: spend.snippet,

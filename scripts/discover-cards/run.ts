@@ -147,9 +147,11 @@ function cardAlreadyInCatalog(cardName: string): boolean {
     const existing = normalizeName(c.card_name)
     if (!existing) continue
     if (existing === norm) return true
-    // Substring match in either direction (handles "Chase Sapphire" vs "Chase Sapphire Preferred")
+    // Directional match only: a candidate is a dupe when its name is contained
+    // in an existing one (handles "Chase Sapphire" vs "Chase Sapphire Preferred").
+    // We deliberately do NOT match the reverse direction, which would wrongly
+    // drop longer/new variants like "Capital One Venture X" against "Capital One Venture".
     if (norm.length >= 12 && existing.includes(norm)) return true
-    if (existing.length >= 12 && norm.includes(existing)) return true
   }
   return false
 }
@@ -422,7 +424,7 @@ async function main() {
   const worthApplying = proposals.filter((p) => {
     if (!p.offer_link) return false
     if (p.flags.includes("card_name_not_on_page")) return false
-    if (p.flags.includes("issuer_fetch_failed")) return false
+    if (p.flags.some((f) => f.startsWith("issuer_fetch_failed"))) return false
     const isCleanSub =
       p.bonus_amount !== null &&
       p.min_spend !== null &&

@@ -121,7 +121,11 @@ function classify(e: Edit, r: Result | undefined): Omit<Classified, keyof Edit> 
   // Monthly fee=0 with "no monthly fee" in snippet is usually real but has
   // a conditional waiver ("no fee WITH direct deposit"). Flag for eye.
   if (e.path === "fees.monthly_fee" && e.to === 0) {
-    const conditional = snippet && /(?:if|when|with|unless|under\s+age)/i.test(snippet)
+    const conditional =
+      snippet &&
+      /(?:if|when|with|unless|under\s+age|avoid|waiv|direct deposit|minimum|balance|daily|or \$0|either|qualify)/i.test(
+        snippet,
+      )
     return {
       bucket: conditional ? "NEEDS_EYE" : "SAFE",
       bank_name: bank,

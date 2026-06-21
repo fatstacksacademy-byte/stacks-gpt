@@ -247,7 +247,7 @@ const SEEDS: Seed[] = [
     src: ["https://www.desertfinancial.com/200"],
   },
   {
-    id: "arizona-financial-cu-300-checking-2026", bank: "Arizona Financial Credit Union", amount: 300, states: ["AZ"],
+    id: "arizona-financial-cu-300-checking-2026", bank: "Arizona Financial Credit Union", amount: 200, states: ["AZ"],
     dd: 1000, open: 20, payout: 75, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
     reqText: "Open Free Checking ($20): $200 for recurring direct deposits totaling $1,000+/month plus a $500 balance on day 60; lower tiers $150 ($500/mo DD, or $250/mo DD + 15 debit) and $100 (15 debit transactions).",
     feeWaiver: "Free Checking has no monthly fee.",
@@ -285,7 +285,7 @@ const SEEDS: Seed[] = [
     expired: true,
   },
   {
-    id: "sunward-slfcu-200-checking-2026", bank: "Sunward Credit Union", amount: 200, states: ["NM"],
+    id: "sunward-slfcu-200-checking-2026", bank: "Sunward Credit Union", amount: 200, states: ["NM"], expired: true,
     dd: 100, ddWindow: 60, open: 1, payout: 40, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: true,
     reqText: "Open a Quick Cash or Money Manager Checking account and establish recurring ACH direct deposits of $100+ (payroll, pension, or government benefits) within the first 60 days of membership.",
     feeWaiver: "No monthly fee on eligible checking.",
@@ -368,7 +368,7 @@ const SEEDS: Seed[] = [
     src: ["https://www.communityamerica.com/personal/bank/accounts/checking/kc-checking-promo"],
   },
   {
-    id: "together-cu-300-checking-2026", bank: "Together Credit Union", amount: 300, states: ["MO", "IL"],
+    id: "together-cu-300-checking-2026", bank: "Together Credit Union", amount: 200, states: ["MO", "IL"],
     dd: 500, ddWindow: 60, debit: 5, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", exp: "2026-06-30", lifetime: true,
     reqText: "Open a consumer checking account: $50 at opening + $250 after 60 days for 1+ ACH/direct deposit of $500+, 5 Visa debit POS transactions, and eStatements (all within 60 days).",
     feeWaiver: "No monthly fee on eligible checking.",
