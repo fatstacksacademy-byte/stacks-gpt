@@ -194,6 +194,7 @@ export const maineCards = buildStateCards({
     {
       id: "bangor-everblue-business-rewards-plus-mastercard",
       card_name: "everblue Business Rewards Plus Mastercard",
+      intro_apr: { purchase_apr_months: 6 },
       issuer: "bangor-savings-bank",
       card_type: "business",
       offer_link: "https://www.bangor.com/everblue/everblue-business/everblue-business-rewards-plus/",

@@ -1041,6 +1041,7 @@ export const bonuses: any[] = [
   {
     "id": "us-bank-smartly-checking-450-2026",
     "bank_name": "U.S. Bank",
+    "expired": true,
     "product_name": "U.S. Bank Smartly Checking",
     "product_type": "checking",
     "bonus_amount": 450,
@@ -1105,6 +1106,7 @@ export const bonuses: any[] = [
   {
     "id": "bcu-500-powerplus-checking-2026",
     "bank_name": "BCU (Baxter Credit Union)",
+    "expired": true,
     "product_type": "checking",
     "bonus_amount": 500,
     "cooldown_months": null,
@@ -2682,11 +2684,11 @@ export const bonuses: any[] = [
   },
   {
     "id": "oneaz-cu-350-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "OneAZ Credit Union",
     "product_type": "checking",
     "bonus_amount": 350,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": false,
       "min_direct_deposit_total": null,
@@ -2706,12 +2708,12 @@ export const bonuses: any[] = [
       "state_restricted": true,
       "states_allowed": ["AZ"],
       "states_excluded": [],
-      "lifetime_language": true,
-      "eligibility_notes": "Arizona residents only. New members only."
+      "lifetime_language": false,
+      "eligibility_notes": "Arizona residents only. New members only — not eligible if you closed a OneAZ account in the past 12 months (12-month cooldown). Verified 2026-06-21."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
-    "source_links": ["https://www.oneazcu.com/"],
-    "raw_excerpt": "$350 checking bonus with 25 debit purchases of $5+ in 60 days. No DD required. Arizona only."
+    "source_links": ["https://www.oneazcu.com/350/", "https://www.oneazcu.com/"],
+    "raw_excerpt": "$350 checking bonus with 25 debit purchases of $5+ in 60 days. No DD required. Arizona only. Live through July 31, 2026 (verified 2026-06-21)."
   },
   {
     "id": "bar-harbor-400-checking-2026",

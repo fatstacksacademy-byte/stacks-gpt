@@ -36,6 +36,7 @@ type ResolvedCard = {
   sections?: CardSection[]
   slug?: string
   offerLink?: string
+  imageUrl?: string
 }
 
 function resolveCard(p: MonthlyCardPick, rank: number): ResolvedCard | null {
@@ -58,6 +59,7 @@ function resolveCard(p: MonthlyCardPick, rank: number): ResolvedCard | null {
     sections: p.sections,
     slug,
     offerLink: card.offer_link,
+    imageUrl: card.image_url,
   }
 }
 
@@ -297,6 +299,31 @@ export default function MonthlyCardBonuses({ data }: { data: MonthlyCardPicks })
                   >
                     #{r.rank}
                   </div>
+                  {r.imageUrl && (
+                    <div
+                      style={{
+                        width: 104,
+                        height: 66,
+                        borderRadius: 8,
+                        background: "#f7f7f7",
+                        border: "1px solid #ececec",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <img
+                        src={r.imageUrl}
+                        alt={`${r.cardName} card art`}
+                        loading="lazy"
+                        width={104}
+                        height={66}
+                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      />
+                    </div>
+                  )}
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <div
                       style={{
@@ -513,6 +540,18 @@ export default function MonthlyCardBonuses({ data }: { data: MonthlyCardPicks })
             (adjusted for spend requirement), <strong>how the annual fee nets out in year one</strong>{" "}
             after statement credits, and <strong>how well it pairs with bank bonus sequencing</strong>.
             Cards with ridiculous spend requirements or tiny bonuses don&rsquo;t make the list.
+          </p>
+          <p style={{ fontSize: 15, color: "#555", lineHeight: 1.8, margin: "12px 0 0" }}>
+            Want to run your own numbers?{" "}
+            <Link
+              href="/credit-card-calculator"
+              style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}
+            >
+              Try the credit card profitability calculator &rarr;
+            </Link>{" "}
+            It shows each card&rsquo;s real Year 1 and Year 2 value &mdash; signup bonus plus rewards
+            minus the annual fee &mdash; and even what the 0% intro-APR window is worth if you float
+            the spend.
           </p>
         </div>
 

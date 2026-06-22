@@ -194,6 +194,7 @@ export const kentuckyCards = buildStateCards({
     {
       id: "republic-bank-business-cash-mastercard",
       card_name: "Republic Bank Mastercard Business Cash",
+      intro_apr: { purchase_apr_months: 9 },
       issuer: "republic-bank-trust-ky",
       card_type: "business",
       state_restricted: ["KY", "TN", "OH", "IN", "FL"],
@@ -212,6 +213,7 @@ export const kentuckyCards = buildStateCards({
     {
       id: "republic-bank-business-manager-mastercard",
       card_name: "Republic Bank Mastercard Business Manager",
+      intro_apr: { purchase_apr_months: 9 },
       issuer: "republic-bank-trust-ky",
       card_type: "business",
       state_restricted: ["KY", "TN", "OH", "IN", "FL"],

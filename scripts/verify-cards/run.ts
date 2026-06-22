@@ -132,6 +132,23 @@ function compareCard(card: CreditCardBonus, extracted: CardExtracted): FieldResu
     })
   ) {
     out.push({ field: "bonus_amount", stored: card.bonus_amount, extracted: extracted.bonusAmount, status: "match" })
+  } else if (
+    card.elevated &&
+    typeof card.standard_bonus_amount === "number" &&
+    Math.abs(card.standard_bonus_amount - extracted.bonusAmount) /
+      Math.max(card.standard_bonus_amount, extracted.bonusAmount) <
+      0.1
+  ) {
+    // The page is showing this card's STANDARD (non-elevated) bonus, or the
+    // limited-time elevated offer has reverted. Do NOT auto-propose downgrading
+    // the stored elevated value — this is exactly the CSP 100k→75k regression
+    // we must never ship. Surface as a match; a human re-checks elevated offers.
+    out.push({ field: "bonus_amount", stored: card.bonus_amount, extracted: extracted.bonusAmount, status: "match" })
+  } else if (extracted.freeNight && extracted.bonusAmount < card.bonus_amount) {
+    // Free-night / anniversary-night cards carry a SYNTHETIC stored value (the
+    // dollar/points worth of the certificate); the page only shows a lower
+    // per-night points cap. Never auto-downgrade these — treat as a match.
+    out.push({ field: "bonus_amount", stored: card.bonus_amount, extracted: extracted.bonusAmount, status: "match" })
   } else {
     const ratio = Math.abs(card.bonus_amount - extracted.bonusAmount) / Math.max(card.bonus_amount, extracted.bonusAmount)
     out.push({
@@ -200,7 +217,7 @@ function cardNameMatchesUrl(urlValue: string, cardName: string): boolean {
 }
 
 async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
-  const verifiedAt = new Date().toISOString()
+  let verifiedAt = new Date().toISOString()
   const defaultUrl = card.offer_link ?? ""
   const url = resolveUrl(feedbackState, card.id, defaultUrl)
   if (!url) {
@@ -222,6 +239,9 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
     finalUrl = cached.finalUrl
     status = cached.status
     cacheHit = true
+    // Reflect when the page was actually fetched, not "now" — otherwise a
+    // 24h-stale cache hit shows a misleading "verified just now" freshness badge.
+    verifiedAt = cached.fetchedAt
   } else {
     const f = await fetchPage(url)
     textContent = f.textContent
@@ -261,10 +281,24 @@ async function verifyCard(card: CreditCardBonus): Promise<CardResult> {
       //    a cross-host redirect usually means the apply page is gone.
       //    Normalize by stripping a leading "www." on both sides so
       //    chase.com vs www.chase.com doesn't false-positive.
-      const norm = (h: string) => h.toLowerCase().replace(/^www\./, "")
-      const origHost = norm(origUrl.host)
-      const finalHost = norm(finalUrlObj.host)
-      const landedOnDifferentHost = origHost !== finalHost
+      // Compare REGISTRABLE domain (eTLD+1), not full host, so a normal
+      // subdomain→root redirect (creditcards.chase.com → chase.com) is NOT
+      // treated as dead. Plus an allowlist of issuer apply/referral domains
+      // that legitimately cross-domain on redirect — without this we flagged
+      // the canonical Chase RAF (referyourchasecard.com → chase.com) and Amex
+      // apply links as dead and queued "mark expired" on live monetized links.
+      const regDomain = (h: string) =>
+        h.toLowerCase().replace(/^www\./, "").split(".").slice(-2).join(".")
+      const REDIRECT_DOMAIN_ALLOWLIST = new Set([
+        "chase.com", "referyourchasecard.com", "americanexpress.com",
+        "capitalone.com", "citi.com", "citicards.com", "bankofamerica.com",
+        "usbank.com", "discover.com", "wellsfargo.com", "barclaycardus.com",
+        "barclays.com", "navyfederal.org", "usaa.com", "applynow.com",
+      ])
+      const origDomain = regDomain(origUrl.host)
+      const finalDomain = regDomain(finalUrlObj.host)
+      const landedOnDifferentHost =
+        origDomain !== finalDomain && !REDIRECT_DOMAIN_ALLOWLIST.has(finalDomain)
 
       if (landedOnCatalogRoot || landedOnNotFoundPath || landedOnDifferentHost) {
         pageSignal = "redirected_to_generic"

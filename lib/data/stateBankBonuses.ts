@@ -77,6 +77,8 @@ type Seed = {
   recheck: number
   type: "bank" | "credit_union"
   lifetime?: boolean
+  /** Stated re-eligibility cooldown in months (e.g. "ineligible if closed in past 12 months"). */
+  cooldownMonths?: number
 }
 
 function build(s: Seed): StateCheckingRow {
@@ -86,7 +88,7 @@ function build(s: Seed): StateCheckingRow {
     bank_name: s.bank,
     product_type: "checking",
     bonus_amount: s.amount,
-    cooldown_months: null,
+    cooldown_months: s.cooldownMonths ?? null,
     requirements: {
       direct_deposit_required: s.dd != null || s.ddNoMin === true,
       min_direct_deposit_total: s.dd ?? null,
@@ -146,7 +148,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "first-tech-fcu-500-checking-2026", bank: "First Tech Federal Credit Union", amount: 500, states: ["CA", "OR", "WA"],
-    open: 0, holdDays: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    open: 0, holdDays: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 18,
     reqText: "Open First Tech Rewards Checking and bring in new money from outside First Tech within 30 days: $1,500 = $100, $5,000 = $250, $15,000 = $500. No direct deposit required. Funds must remain 90 consecutive days.",
     feeWaiver: "No monthly fee.",
     notes: "Membership open to anyone via a partner association (e.g. Financial Fitness Association), plus tech employers and family. New members only (not a primary owner of a Membership Savings in the prior 18 months); 18+. Tiered by new-money amount; no direct deposit required. 'Valid as of January 1, 2026, subject to change' (no fixed deadline).",
@@ -174,7 +176,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "gesa-cu-250-checking-2026", bank: "Gesa Credit Union", amount: 250, states: ["WA", "OR", "ID"],
-    dd: 250, ddWindow: 75, open: 25, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 250, ddWindow: 75, open: 25, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 24,
     reqText: "Open a personal checking account (promo code SMARTS), receive 2 recurring direct deposits of $250+ from an employer/government within 75 days, and enroll in eStatements within 60 days. A member savings account is required.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Serves WA, OR, and ID. 18+; must not have had a Gesa checking account in the last 24 months. Bonus to savings within 60 days of completing requirements. 'For a limited time' — no fixed end date stated.",
@@ -210,7 +212,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "clark-county-cu-100-checking-2026", bank: "Clark County Credit Union", amount: 100, states: ["NV"],
-    dd: 500, ddWindow: 60, debit: 6, open: 5, payout: 60, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: true,
+    dd: 500, ddWindow: 60, debit: 6, open: 5, payout: 60, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open a personal checking account (promo code BONUS): $50 for a direct deposit totaling $500+ within 60 days, plus $50 for 6 debit-card transactions (ATM/digital-wallet excluded).",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: live/work in Clark County CU's Nevada field of membership; $5 to open membership. No CCCU checking now or in the last 12 months; one offer per household. Bonus within 60 days. No fixed deadline stated.",
@@ -239,7 +241,7 @@ const SEEDS: Seed[] = [
   // ── ARIZONA ─────────────────────────────────────────────────────────
   {
     id: "desert-financial-cu-200-checking-2026", bank: "Desert Financial Credit Union", amount: 200, states: ["AZ"],
-    dd: 1000, ddWindow: 60, open: 25, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddWindow: 60, open: 25, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open Free Checking + Membership Savings, receive a single direct deposit of $1,000+ within 60 days, and enroll in eStatements.",
     feeWaiver: "Free Checking has no monthly fee.",
     notes: "Membership: Arizona field of membership ($25 min in Membership Savings). New DFCU members only; existing/joint owners and anyone who closed a membership in the past 12 months are ineligible. Bonus paid the month after the qualifying period. No fixed deadline stated.",
@@ -247,7 +249,7 @@ const SEEDS: Seed[] = [
     src: ["https://www.desertfinancial.com/200"],
   },
   {
-    id: "arizona-financial-cu-300-checking-2026", bank: "Arizona Financial Credit Union", amount: 300, states: ["AZ"],
+    id: "arizona-financial-cu-300-checking-2026", bank: "Arizona Financial Credit Union", amount: 200, states: ["AZ"],
     dd: 1000, open: 20, payout: 75, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
     reqText: "Open Free Checking ($20): $200 for recurring direct deposits totaling $1,000+/month plus a $500 balance on day 60; lower tiers $150 ($500/mo DD, or $250/mo DD + 15 debit) and $100 (15 debit transactions).",
     feeWaiver: "Free Checking has no monthly fee.",
@@ -257,7 +259,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "vantage-west-cu-100-checking-2026", bank: "Vantage West Credit Union", amount: 100, states: ["AZ"],
-    dd: 750, ddWindow: 30, debit: 1, open: 20, payout: 7, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: true,
+    dd: 750, ddWindow: 30, debit: 1, open: 20, payout: 7, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: false, cooldownMonths: 6,
     reqText: "Open Essential Checking ($20), deposit $750 within 30 days, and make 1 debit-card transaction within 60 days (submit the Refer-a-Friend form within 60 days).",
     feeWaiver: "Essential Checking has no monthly fee.",
     notes: "Membership: Arizona field of membership. New member who has not been a primary member in the last 6 months. Account must stay open 6 months (bonus may be debited if closed sooner). No fixed deadline stated.",
@@ -267,7 +269,7 @@ const SEEDS: Seed[] = [
   // ── UTAH (+ AF multi-state) / NEW MEXICO ────────────────────────────
   {
     id: "america-first-cu-350-checking-2026", bank: "America First Credit Union", amount: 350, states: ["UT", "AZ", "NV", "ID", "NM", "OR"],
-    dd: 1000, ddWindow: 60, payout: 60, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddWindow: 60, payout: 60, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open a savings + checking account ($150), then receive $1,000+ in direct deposits within 60 days ($200). Direct deposit excludes bank-to-bank, P2P, wire, and internal transfers.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: UT/AZ/NV/ID/NM/OR field of membership. Primary owners of an America First account opened within the last 12 months are ineligible; employees/business/secondary accounts excluded. Forfeit the bonus if accounts close or transfer within 12 months. Bonus within 60 days.",
@@ -285,7 +287,7 @@ const SEEDS: Seed[] = [
     expired: true,
   },
   {
-    id: "sunward-slfcu-200-checking-2026", bank: "Sunward Credit Union", amount: 200, states: ["NM"],
+    id: "sunward-slfcu-200-checking-2026", bank: "Sunward Credit Union", amount: 200, states: ["NM"], expired: true,
     dd: 100, ddWindow: 60, open: 1, payout: 40, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: true,
     reqText: "Open a Quick Cash or Money Manager Checking account and establish recurring ACH direct deposits of $100+ (payroll, pension, or government benefits) within the first 60 days of membership.",
     feeWaiver: "No monthly fee on eligible checking.",
@@ -360,7 +362,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "communityamerica-cu-400-checking-2026", bank: "CommunityAmerica Credit Union", amount: 400, states: ["MO", "KS", "IL"],
-    dd: 10000, ddWindow: 90, payout: 30, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-07-31", lifetime: true,
+    dd: 10000, ddWindow: 90, payout: 30, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-07-31", lifetime: false, cooldownMonths: 12,
     reqText: "Open Cashback Free or Chiefs Checking (promo code SPRING26): 2+ direct deposits totaling $2,000+ ($150), $5,000+ ($250), or $10,000+ ($400), plus eStatements, within 90 days. Zelle/P2P excluded.",
     feeWaiver: "No monthly fee, no minimum balance.",
     notes: "Membership: reside in the Kansas City (MO-KS) or St. Louis (MO-IL) markets and meet CommunityAmerica's field of membership. No CommunityAmerica personal checking in the past 12 months. Window 3/23/2026–7/31/2026. Bonus within 30 days after the deposit period.",
@@ -368,7 +370,7 @@ const SEEDS: Seed[] = [
     src: ["https://www.communityamerica.com/personal/bank/accounts/checking/kc-checking-promo"],
   },
   {
-    id: "together-cu-300-checking-2026", bank: "Together Credit Union", amount: 300, states: ["MO", "IL"],
+    id: "together-cu-300-checking-2026", bank: "Together Credit Union", amount: 200, states: ["MO", "IL"],
     dd: 500, ddWindow: 60, debit: 5, payout: 60, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", exp: "2026-06-30", lifetime: true,
     reqText: "Open a consumer checking account: $50 at opening + $250 after 60 days for 1+ ACH/direct deposit of $500+, 5 Visa debit POS transactions, and eStatements (all within 60 days).",
     feeWaiver: "No monthly fee on eligible checking.",
@@ -379,7 +381,7 @@ const SEEDS: Seed[] = [
   // ── MINNESOTA / WISCONSIN / IOWA / NORTH DAKOTA ─────────────────────
   {
     id: "wings-cu-500-checking-2026", bank: "Wings Credit Union", amount: 500, states: ["MN", "WI", "FL", "GA", "MI"],
-    dd: 5000, ddWindow: 60, debit: 10, open: 5, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: true,
+    dd: 5000, ddWindow: 60, debit: 10, open: 5, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: false, cooldownMonths: 12,
     reqText: "Open Share Savings ($5) + checking together online (promo code WINGS26) and within 60 days set up recurring payroll direct deposit ($3,000 = $300, $4,000 = $400, $5,000 = $500), make 10+ debit/credit purchases of $5+, and enroll in online banking + eDocuments. Fund within 21 business days.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: live in a Wings service-area county in FL, GA, MI, MN, or WI. New members only (not a member in the last 12 months, no prior new-account bonus); one per person. Qualified recurring payroll direct deposit required. Bonus paid the week of 9/7/2026. Open by 6/30/2026.",
@@ -388,7 +390,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "topline-cu-300-checking-2026", bank: "TopLine Financial Credit Union", amount: 300, states: ["MN"],
-    dd: 1000, open: 50, payout: 28, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", exp: "2026-12-31", lifetime: true,
+    dd: 1000, open: 50, payout: 28, mustOpen: 180, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", exp: "2026-12-31", lifetime: false, cooldownMonths: 12,
     reqText: "Open Totally Free Checking ($50), set up a $1,000 direct deposit for 3 consecutive months, and enroll in eStatements. Account must remain open 6 months.",
     feeWaiver: "Totally Free Checking has no monthly fee.",
     notes: "Membership: TopLine field of membership (Twin Cities metro, MN). No TopLine checking relationship in the last 12 months. Direct deposit = payroll/pension/SS/regular income (transfers/P2P/mobile/ATM excluded). Bonus ~4 weeks after completion, into savings. Valid through 12/31/2026.",
@@ -425,7 +427,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "summit-cu-200-checking-2026", bank: "Summit Credit Union", amount: 200, states: ["WI"],
-    debit: 20, payout: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    debit: 20, payout: 90, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 24,
     reqText: "Open a new Summit checking account with a debit card and make 20+ qualifying debit-card purchases (excluding ATM) within 60 days. No direct deposit required.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: Summit CU field of membership (Madison/Milwaukee/Green Bay, WI). First Summit checking only; ineligible if you/any signer have an existing Summit consumer checking, closed one in the past 24 months, or were paid a Summit premium in 24 months. Bonus within 90 days. Valid from 3/2/2026, no fixed end date.",
@@ -443,7 +445,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "bankers-trust-400-checking-2026", bank: "Bankers Trust", amount: 400, states: ["IA", "NE", "AZ"],
-    dd: 400, ddWindow: 60, debit: 25, open: 25, payout: 75, mustOpen: 365, earlyClose: 400, scope: "regional", membership: false, online: false, recheck: 14, type: "bank", exp: "2026-06-30", lifetime: true,
+    dd: 400, ddWindow: 60, debit: 25, open: 25, payout: 75, mustOpen: 365, earlyClose: 400, scope: "regional", membership: false, online: false, recheck: 14, type: "bank", exp: "2026-06-30", lifetime: false, cooldownMonths: 6,
     reqText: "Open a primary checking account in person at a branch ($25). Within 60 days complete 25 debit transactions AND 2 direct (ACH) and/or mobile deposits of $200+ each.",
     feeWaiver: "Not stated.",
     notes: "Bankers Trust markets (IA, NE, AZ). Branch opening required. Not for existing BT checking customers or anyone with a BT checking in the last 6 months; one bonus per household. $400 early-closing fee if closed within 12 months. Paid within 75 days. (A $250 market-specific variant exists.) Open by 6/30/2026.",
@@ -471,7 +473,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "secu-md-350-checking-2026", bank: "SECU Maryland", amount: 350, states: ["MD", "DC", "DE", "VA", "WV", "PA"],
-    ddNoMin: true, ddWindow: 90, payout: 60, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: true,
+    ddNoMin: true, ddWindow: 90, payout: 60, scope: "regional", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: false, cooldownMonths: 24,
     reqText: "Open a SECU Total Checking & Rewards account and receive at least 2 separate qualifying payroll direct deposits (recurring payroll, pension, or Social Security) within 90 days.",
     feeWaiver: "No monthly maintenance fees.",
     notes: "Membership: Maryland residents or surrounding states (DC, DE, PA, VA, WV); SECU of Maryland field of membership. One per member; ineligible if you had a SECU checking account or received a SECU checking bonus in the last 24 months. Bonus within 60 days. Valid through 6/30/2026.",
@@ -515,7 +517,7 @@ const SEEDS: Seed[] = [
   // ── GREAT LAKES ─────────────────────────────────────────────────────
   {
     id: "everwise-cu-250-checking-2026", bank: "Everwise Credit Union", amount: 250, states: ["IN", "MI"],
-    dd: 500, ddWindow: 60, debit: 10, payout: 35, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 500, ddWindow: 60, debit: 10, payout: 35, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open Simply/Plus/Max Checking (promo code Get250), receive $500+ in qualifying electronic deposits, make 10 debit Mastercard purchases, and enroll in eStatements — all within 60 days.",
     feeWaiver: "Simply Checking has no monthly fee.",
     notes: "Membership: Indiana or Michigan residents (Everwise field of membership). One bonus per member; not available if you have an existing checking account or closed one in the last 12 months. Deposits may be payroll OR ACH from another institution/fintech/wallet. Paid by close of the next full statement. No fixed deadline stated.",
@@ -648,7 +650,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "georgias-own-cu-240-checking-2026", bank: "Georgia's Own Credit Union", amount: 240, states: ["GA"],
-    dd: 1500, debit: 15, payout: 14, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: true,
+    dd: 1500, debit: 15, payout: 14, scope: "membership", membership: true, online: true, recheck: 14, type: "credit_union", exp: "2026-06-30", lifetime: false, cooldownMonths: 3,
     reqText: "Open All Access Checking (promo code BONUS240), establish $1,500+ in qualifying direct deposits per statement cycle within 30 days, make 15 debit purchases of $5+ per cycle, and enroll in online banking — $20/cycle for up to 12 cycles.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: Georgia's Own field of membership. New All Access Checking members; excludes existing holders, anyone who closed within 90 days or closed negative within 3 years; no business/second accounts. DD excludes P2P and internal transfers. Open by 6/30/2026; $20 paid within 14 days of each prior cycle.",
@@ -703,7 +705,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "affinity-fcu-100-checking-2026", bank: "Affinity Federal Credit Union", amount: 100, states: ["NJ"],
-    dd: 500, ddWindow: 60, payout: 35, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: true,
+    dd: 500, ddWindow: 60, payout: 35, scope: "membership", membership: true, online: true, recheck: 60, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open a Cash Back Debit checking account and receive recurring direct deposits totaling $500+ in a calendar month within 60 days.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: Affinity FCU ($5 eligibility account; broad field of membership, New Jersey-based). For members without a current Cash Back Debit account who haven't closed membership in the prior 12 months. Paid by the last business day of the month after completion. No fixed deadline stated.",
@@ -712,7 +714,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "valley-bank-100-checking-2026", bank: "Valley Bank", amount: 100, states: ["NJ", "NY", "FL", "AL"],
-    dd: 500, ddWindow: 60, open: 100, fee: 15, payout: 30, mustOpen: 120, scope: "regional", membership: false, online: true, recheck: 30, type: "bank", lifetime: true,
+    dd: 500, ddWindow: 60, open: 100, fee: 15, payout: 30, mustOpen: 120, scope: "regional", membership: false, online: true, recheck: 30, type: "bank", lifetime: false, cooldownMonths: 12,
     reqText: "Open All Access Checking ($100) and receive $500+ in qualifying payroll/pension/government direct deposits within 60 days. (P2P/Zelle/transfers excluded.)",
     feeWaiver: "$15/month waived with $250+ direct deposit per cycle or a $500 balance.",
     notes: "Valley Bank is multi-state (NJ, NY, FL, AL). No Valley personal checking in the past 12 months. Paid within 30 days after the DD is met and the account has been open 120 days. No fixed deadline stated.",
@@ -731,7 +733,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "penn-community-bank-475-checking-2026", bank: "Penn Community Bank", amount: 475, states: ["PA"],
-    dd: 1750, ddWindow: 60, debit: 20, open: 25, payout: 45, mustOpen: 180, scope: "regional", membership: false, online: true, recheck: 7, type: "bank", exp: "2026-06-27", lifetime: true,
+    dd: 1750, ddWindow: 60, debit: 20, open: 25, payout: 45, mustOpen: 180, scope: "regional", membership: false, online: true, recheck: 7, type: "bank", exp: "2026-06-27", lifetime: false, cooldownMonths: 12,
     reqText: "Open any personal checking ($25, promo code 475BONUS) and within 60 days either receive direct deposits totaling $1,750+ OR make 20+ debit purchases of $20+ each.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Penn Community Bank (Bucks/Montgomery County, PA region). New customers (no PCB checking closed in the prior 12 months / no prior incentive); one per household. Account must stay open 6 months (early closing reverses the bonus). Paid within 45 days. Deadline June 27, 2026.",
@@ -740,7 +742,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "trumark-financial-cu-250-checking-2026", bank: "TruMark Financial Credit Union", amount: 250, states: ["PA"],
-    dd: 1000, ddWindow: 90, fee: 10, payout: 50, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddWindow: 90, fee: 10, payout: 50, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open Momentum Checking and receive qualifying direct deposits totaling $1,000+ within 90 days. Paid as 25,000 rewards points (~$250 value).",
     feeWaiver: "$10/month waived with $1,000 e-deposits, 15 card transactions, or age 26 and under.",
     notes: "Membership: TruMark field of membership (Southeastern Pennsylvania). No TruMark checking in the past 12 months. Direct deposit = payroll/pension/government via ACH (P2P, transfers, mobile/cash/wire excluded). Paid as 25,000 rewards points (not cash) ~6–8 weeks after requirements. No fixed deadline stated.",
@@ -767,7 +769,7 @@ const SEEDS: Seed[] = [
   },
   {
     id: "cambridge-savings-300-checking-2026", bank: "Cambridge Savings Bank", amount: 300, states: ["MA"],
-    debit: 10, open: 10, payout: 60, scope: "regional", membership: false, online: true, recheck: 30, type: "bank", exp: "2026-09-30", lifetime: true,
+    debit: 10, open: 10, payout: 60, scope: "regional", membership: false, online: true, recheck: 30, type: "bank", exp: "2026-09-30", lifetime: false, cooldownMonths: 12,
     reqText: "Open a personal checking ($10) and make 10 qualifying debit-card purchases of $10+ each calendar month for 12 months ($25/month, up to $300). No direct deposit required.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Must live or work in Massachusetts. No CSB personal checking in the last 12 months. Open window 5/1/2026–9/30/2026; paid within 2 months of the qualification period end. (Separate $400 money-market and $150 student offers stack to 'up to $1,200'.)",
@@ -1477,7 +1479,7 @@ const SEEDS: Seed[] = [
   // ── WI ──────────────────────────────────────────────────────────────────────
   {
     id: "pyramax-bank-300-checking-2026", bank: "PyraMax Bank", amount: 300, states: ["WI"],
-    dd: 300, ddWindow: 90, ddCount: 2, payout: 30, mustOpen: 120, scope: "regional", membership: false, online: true, recheck: 14, type: "bank", exp: "2026-12-31", lifetime: true,
+    dd: 300, ddWindow: 90, ddCount: 2, payout: 30, mustOpen: 120, scope: "regional", membership: false, online: true, recheck: 14, type: "bank", exp: "2026-12-31", lifetime: false, cooldownMonths: 12,
     reqText: "Open a new Simply Cash Back Checking ($25 min; promo code BONUS300) and set up a recurring direct deposit of $300+/month for 2 consecutive months within 90 days. Account must remain open 120+ days. Limit 1 per household; no PyraMax checking in past 12 months.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "PyraMax Bank (Milwaukee WI). Two simultaneous offers: BONUS300 ($300 DD-based, expires 12/31/2026) and BONUS100 ($100 no-DD, expires 8/31/2026). This seed covers the $300 DD offer.",

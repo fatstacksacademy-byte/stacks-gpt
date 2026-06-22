@@ -201,11 +201,20 @@ export function extractMonthlyFee(text: string): R<number> {
       const snippet = text.slice(Math.max(0, idx - 80), Math.min(text.length, idx + 160))
       const value = cleanDollars(m[1] ?? null)
       if (value === null) continue
+      // Real monthly maintenance fees top out around $35. A "$150/$300/$500
+      // monthly fee" is almost always a misread of a neighboring funding-cap /
+      // minimum-balance column in a comparison table — the exact bug that once
+      // wrote a $500 fee into lib/data. Drop implausible values outright.
+      if (value > 50) continue
       if (applyWaiverFilter && isFeeMatchActuallyAWaiver(text, idx)) continue
       candidates.push({ value, snippet })
     }
   }
-  for (const re of dollarBeforePatterns) pushMatches(re, false)
+  // Apply the waiver/threshold filter to BOTH pattern classes. The "$X monthly
+  // fee" (dollar-before) class was previously trusted unconditionally, but it
+  // also catches "...needed to waive monthly maintenance fee $100..." style
+  // threshold columns, so it needs the same lead-text guard.
+  for (const re of dollarBeforePatterns) pushMatches(re, true)
   for (const re of dollarAfterPatterns) pushMatches(re, true)
 
   // Then check "no monthly fee" — but only treat it as authoritative $0 if it
@@ -225,6 +234,18 @@ export function extractMonthlyFee(text: string): R<number> {
       candidates.push({ value: 0, snippet })
     }
     // If conditional, skip — we want the structural fee, not the waiver.
+  }
+
+  // Canonical "Monthly fee(s): None / $0 / N/A" phrasing — the word order
+  // differs from "no monthly fee" so the loop above misses it. Only treat as an
+  // authoritative $0 when no positive fee candidate survived above.
+  if (candidates.length === 0) {
+    const zeroRe = /monthly\s+(?:service\s+|maintenance\s+)?fees?\s*[:\-]?\s*(?:none|n\/?a|\$?0(?:\.00)?)\b/i
+    const zm = zeroRe.exec(text)
+    if (zm) {
+      const idx = zm.index
+      return { value: 0, snippet: text.slice(Math.max(0, idx - 40), idx + 80) }
+    }
   }
 
   if (candidates.length === 0) return { value: null, snippet: null }

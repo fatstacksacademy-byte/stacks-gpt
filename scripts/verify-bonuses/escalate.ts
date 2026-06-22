@@ -91,5 +91,11 @@ export async function escalate(
 }
 
 export function needsEscalation(r: FieldResult): boolean {
+  // Skip null-stored fields. compare.ts forces a null/undefined stored value to
+  // "ambiguous", but that's a catalog GAP, not an offer drift the model can
+  // adjudicate ("is null equivalent to $1,500?" is unanswerable). These cases
+  // previously consumed ~3/4 of the per-run escalation budget for zero signal.
+  // They still appear in needs-review.json as a proposed fill for a human.
+  if (r.stored === null || r.stored === undefined) return false
   return r.status === "ambiguous"
 }

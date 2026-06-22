@@ -131,9 +131,8 @@ export async function claudeClassify(item: RawItem): Promise<ClassifyResult> {
     return { classification: "other", confidence: 0.3, via: "claude", reason: "budget exhausted" }
   }
   const prompt = [
-    `Classify the type of bonus offer. Respond with one token on line 1:`,
+    `Classify the type of bonus offer. Reply with EXACTLY ONE token, nothing else:`,
     `  BANK_ACCOUNT | CREDIT_CARD | BROKERAGE | OTHER`,
-    `Then one short sentence of reasoning.`,
     ``,
     `Title: ${item.title}`,
     `Outbound URLs: ${(item.outbound_urls ?? []).slice(0, 3).join(", ")}`,
@@ -143,8 +142,8 @@ export async function claudeClassify(item: RawItem): Promise<ClassifyResult> {
     _callsUsed++
     const r = await client().messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 100,
-      system: "You classify bonus-offer leads tersely. One verdict token + one sentence.",
+      max_tokens: 8,
+      system: "You classify bonus-offer leads. Reply with exactly one verdict token and no other text.",
       messages: [{ role: "user", content: prompt }],
     })
     const text = r.content

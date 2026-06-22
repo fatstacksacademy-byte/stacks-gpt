@@ -29,6 +29,20 @@ const articles: Article[] = [
     date: "June 16, 2026",
   },
   {
+    href: "/blog/business-bank-bonuses-no-business-2026",
+    title: "Business Bank Bonuses Without a Business (20%+ APY)",
+    description: "Business checking pays the biggest bonuses in banking — and you don't need an LLC. As a sole proprietor you can earn the equivalent of 20%+ APY on FDIC-insured cash.",
+    category: "Business Strategy",
+    date: "June 21, 2026",
+  },
+  {
+    href: "/blog/business-card-0apr-float-strategy-2026",
+    title: "The 0% APR Float Strategy (7% Back on Everything)",
+    description: "A handful of business cards earn strong rewards AND give 0% APR for 12 months. Float your spending, keep your cash earning, and net about 7% back on everything.",
+    category: "Business Strategy",
+    date: "June 21, 2026",
+  },
+  {
     href: "/blog/what-is-early-direct-deposit",
     title: "What Is Early Direct Deposit?",
     description: "How banks release paychecks early, which accounts support it, and how it fits into a bonus strategy.",
