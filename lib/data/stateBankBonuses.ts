@@ -77,6 +77,8 @@ type Seed = {
   recheck: number
   type: "bank" | "credit_union"
   lifetime?: boolean
+  /** Stated re-eligibility cooldown in months (e.g. "ineligible if closed in past 12 months"). */
+  cooldownMonths?: number
 }
 
 function build(s: Seed): StateCheckingRow {
@@ -86,7 +88,7 @@ function build(s: Seed): StateCheckingRow {
     bank_name: s.bank,
     product_type: "checking",
     bonus_amount: s.amount,
-    cooldown_months: null,
+    cooldown_months: s.cooldownMonths ?? null,
     requirements: {
       direct_deposit_required: s.dd != null || s.ddNoMin === true,
       min_direct_deposit_total: s.dd ?? null,
@@ -239,7 +241,7 @@ const SEEDS: Seed[] = [
   // ── ARIZONA ─────────────────────────────────────────────────────────
   {
     id: "desert-financial-cu-200-checking-2026", bank: "Desert Financial Credit Union", amount: 200, states: ["AZ"],
-    dd: 1000, ddWindow: 60, open: 25, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddWindow: 60, open: 25, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open Free Checking + Membership Savings, receive a single direct deposit of $1,000+ within 60 days, and enroll in eStatements.",
     feeWaiver: "Free Checking has no monthly fee.",
     notes: "Membership: Arizona field of membership ($25 min in Membership Savings). New DFCU members only; existing/joint owners and anyone who closed a membership in the past 12 months are ineligible. Bonus paid the month after the qualifying period. No fixed deadline stated.",
@@ -267,7 +269,7 @@ const SEEDS: Seed[] = [
   // ── UTAH (+ AF multi-state) / NEW MEXICO ────────────────────────────
   {
     id: "america-first-cu-350-checking-2026", bank: "America First Credit Union", amount: 350, states: ["UT", "AZ", "NV", "ID", "NM", "OR"],
-    dd: 1000, ddWindow: 60, payout: 60, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: true,
+    dd: 1000, ddWindow: 60, payout: 60, mustOpen: 365, scope: "membership", membership: true, online: true, recheck: 30, type: "credit_union", lifetime: false, cooldownMonths: 12,
     reqText: "Open a savings + checking account ($150), then receive $1,000+ in direct deposits within 60 days ($200). Direct deposit excludes bank-to-bank, P2P, wire, and internal transfers.",
     feeWaiver: "No monthly fee on eligible checking.",
     notes: "Membership: UT/AZ/NV/ID/NM/OR field of membership. Primary owners of an America First account opened within the last 12 months are ineligible; employees/business/secondary accounts excluded. Forfeit the bonus if accounts close or transfer within 12 months. Bonus within 60 days.",
