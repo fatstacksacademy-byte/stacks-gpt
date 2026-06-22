@@ -431,6 +431,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "citi-strata-premier-60k",
+    image_url: "/card-art/citi-strata-premier.png",
     card_name: "Citi Strata Premier",
     issuer: "citi",
     card_type: "personal",
@@ -555,6 +556,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "citi-diamond-preferred-0apr",
+    image_url: "/card-art/citi-diamond-preferred.png",
     card_name: "Citi Diamond Preferred",
     issuer: "citi",
     card_type: "personal",
@@ -826,6 +828,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-gold-100k",
+    image_url: "/card-art/amex-gold.png",
     elevated: true,
     standard_bonus_amount: 60000,
     highest_bonus_amount: 100000,
@@ -985,6 +988,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "chase-sapphire-reserve-125k",
+    image_url: "/card-art/chase-sapphire-reserve.png",
     standard_bonus_amount: 60000,
     highest_bonus_amount: 150000,
     offer_note: "Hit 150K (all-time high) in the Apr 30 – Jun 15, 2026 window — now expired; the long-run standard is ~60K. Watch for the next elevated offer.",
@@ -1026,6 +1030,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-ink-business-preferred-100k",
+    image_url: "/card-art/chase-ink-business-preferred.png",
     standard_bonus_amount: 90000,
     highest_bonus_amount: 120000,
     offer_note: "Has hit 120K (fall 2024) — its all-time high; usually 90–100K. Counts toward 5/24.",
@@ -1158,6 +1163,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "amex-platinum-175k",
+    image_url: "/card-art/amex-platinum.png",
     elevated: true,
     standard_bonus_amount: 80000,
     highest_bonus_amount: 175000,
@@ -1200,6 +1206,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-business-platinum-200k",
+    image_url: "/card-art/amex-business-platinum.png",
     elevated: true,
     standard_bonus_amount: 150000,
     highest_bonus_amount: 300000,
@@ -1405,6 +1412,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-blue-cash-everyday-250",
+    image_url: "/card-art/amex-blue-cash-everyday.png",
     card_name: "Amex Blue Cash Everyday",
     issuer: "amex",
     card_type: "personal",
@@ -1431,6 +1439,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "citi-strata-elite-100k",
+    image_url: "/card-art/citi-strata-elite.png",
     card_name: "Citi Strata Elite",
     issuer: "citi",
     card_type: "personal",
@@ -1466,6 +1475,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "citi-double-cash-200",
+    image_url: "/card-art/citi-double-cash.png",
     card_name: "Citi Double Cash",
     issuer: "citi",
     card_type: "personal",
@@ -1487,6 +1497,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "citi-custom-cash-200",
+    image_url: "/card-art/citi-custom-cash.png",
     card_name: "Citi Custom Cash",
     issuer: "citi",
     card_type: "personal",
@@ -1512,6 +1523,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "capital-one-venture-75k",
+    image_url: "/card-art/capital-one-venture.png",
     card_name: "Capital One Venture",
     issuer: "capital-one",
     card_type: "personal",
@@ -1544,6 +1556,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "capital-one-spark-cash-select-750",
+    image_url: "/card-art/capital-one-spark-cash-select.png",
     card_name: "Capital One Spark Cash Select",
     issuer: "capital-one",
     card_type: "business",
@@ -1640,6 +1653,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-premium-rewards-60k",
+    image_url: "/card-art/bofa-premium-rewards.png",
     card_name: "BofA Premium Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -1666,6 +1680,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-unlimited-cash-200",
+    image_url: "/card-art/bofa-unlimited-cash-rewards.png",
     card_name: "BofA Unlimited Cash Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -1796,6 +1811,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "usb-altitude-connect-300",
+    image_url: "/card-art/usbank-altitude-connect.png",
     card_name: "U.S. Bank Altitude Connect",
     issuer: "us-bank",
     card_type: "personal",
@@ -2440,6 +2456,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-american-express-blue-cash-preferred-rwp",
+    image_url: "/card-art/amex-blue-cash-preferred.png",
     card_name: "American Express Blue Cash Preferred",
     issuer: "amex",
     card_type: "personal",
@@ -2859,6 +2876,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-bank-of-america-premium-rewards-rwp",
+    image_url: "/card-art/bofa-premium-rewards.png",
     card_name: "Bank of America Premium Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -2881,6 +2899,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-bank-of-america-travel-rewards-rwp",
+    image_url: "/card-art/bofa-travel-rewards.png",
     card_name: "Bank of America Travel Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -2926,6 +2945,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "bofa-bank-of-america-unlimited-cash-rewards-rwp",
+    image_url: "/card-art/bofa-unlimited-cash-rewards.png",
     card_name: "Bank of America Unlimited Cash Rewards",
     issuer: "bofa",
     card_type: "personal",
@@ -3197,6 +3217,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "capital-one-capital-one-quicksilver-rewards-rwp",
+    image_url: "/card-art/capital-one-quicksilver.png",
     card_name: "Capital One Quicksilver Rewards",
     issuer: "capital-one",
     card_type: "personal",
@@ -3219,6 +3240,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "capital-one-capital-one-ventureone-rewards-rwp",
+    image_url: "/card-art/capital-one-ventureone.png",
     card_name: "Capital One VentureOne Rewards",
     issuer: "capital-one",
     card_type: "personal",
@@ -3329,6 +3351,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-freedom-flex-rwp",
+    image_url: "/card-art/chase-freedom-flex.png",
     card_name: "Chase Freedom Flex",
     issuer: "chase",
     card_type: "personal",
@@ -3353,6 +3376,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "chase-chase-freedom-unlimited-rwp",
+    image_url: "/card-art/chase-freedom-unlimited.png",
     card_name: "Chase Freedom Unlimited",
     issuer: "chase",
     card_type: "personal",
@@ -3764,6 +3788,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "discover-discover-it-chrome-gas-restaurant-rwp",
+    image_url: "/card-art/discover-it-chrome.png",
     card_name: "Discover It Chrome Gas & Restaurant",
     issuer: "discover",
     card_type: "personal",
@@ -6344,6 +6369,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "us-bank-us-bank-altitude-go-rwp",
+    image_url: "/card-art/usbank-altitude-go.png",
     card_name: "US Bank Altitude Go",
     issuer: "us-bank",
     card_type: "personal",
@@ -6367,6 +6393,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "us-bank-us-bank-shield-rwp",
+    image_url: "/card-art/usbank-shield.png",
     card_name: "US Bank Shield",
     issuer: "us-bank",
     card_type: "personal",
@@ -6438,6 +6465,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "us-bank-us-bank-smartly-rwp",
+    image_url: "/card-art/usbank-smartly.png",
     card_name: "US Bank Smartly",
     issuer: "us-bank",
     card_type: "personal",
@@ -6952,6 +6980,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   {
     id: "amex-american-express-business-gold-rwp",
+    image_url: "/card-art/amex-business-gold.png",
     card_name: "American Express Business Gold",
     issuer: "amex",
     card_type: "business",
@@ -8228,6 +8257,7 @@ export const creditCardBonuses: CreditCardBonus[] = [
 
   {
     id: "discover-discover-chrome-auto",
+    image_url: "/card-art/discover-it-chrome.png",
     card_name: "Discover Chrome",
     issuer: "discover",
     card_type: "personal",

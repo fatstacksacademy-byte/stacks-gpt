@@ -12,6 +12,8 @@ export type BonusTableRow = {
   href?: string
   bonusId?: string
   bonusType?: string
+  /** Optional card-art thumbnail (credit cards only). */
+  image?: string
 }
 
 export function money(n?: number): string {
@@ -54,6 +56,26 @@ export type TopPick = {
   summary?: string
   bonusId: string
   bonusType: string
+  /** Optional card-art thumbnail (credit cards only). */
+  image?: string
+}
+
+/** Small card-art thumbnail used across the browse listings; nothing renders without a src. */
+function CardThumb({ src, w, h }: { src?: string; w: number; h: number }) {
+  if (!src) return null
+  return (
+    <span
+      style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: w, height: h, borderRadius: 5, background: "#f7f7f7",
+        border: "1px solid #ececec", overflow: "hidden", flexShrink: 0,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" aria-hidden loading="lazy" width={w} height={h}
+        style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+    </span>
+  )
 }
 
 export function TopPicksGrid({ items, sourcePage }: { items: TopPick[]; sourcePage: string }) {
@@ -71,7 +93,10 @@ export function TopPicksGrid({ items, sourcePage }: { items: TopPick[]; sourcePa
               TOP PICK
             </div>
           )}
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#666" }}>{it.bank}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <CardThumb src={it.image} w={56} h={36} />
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#666" }}>{it.bank}</div>
+          </div>
           <div style={{ fontSize: 30, fontWeight: 800, color: "#0d7c5f", lineHeight: 1, letterSpacing: "-0.02em" }}>{it.value}</div>
           <div style={{ fontSize: 12, color: "#888", lineHeight: 1.5 }}>{it.sub}</div>
           {it.summary && (
@@ -131,7 +156,10 @@ export function BonusTable({ rows, headers, sourcePage }: {
               <tr key={r.i} style={{ borderBottom: "1px solid #f4f4f4" }}>
                 <td style={{ padding: "12px 16px", color: r.i <= 3 ? "#0d7c5f" : "#bbb", fontWeight: 700, width: 40 }}>{r.i}</td>
                 <td style={{ padding: "12px 16px", color: "#111", fontWeight: 600 }}>
-                  {r.href ? <Link href={r.href} style={{ color: "#111", textDecoration: "none" }}>{r.bank}</Link> : r.bank}
+                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <CardThumb src={r.image} w={44} h={28} />
+                    {r.href ? <Link href={r.href} style={{ color: "#111", textDecoration: "none" }}>{r.bank}</Link> : r.bank}
+                  </span>
                 </td>
                 <td style={{ padding: "12px 16px", color: "#0d7c5f", fontWeight: 700 }}>{r.bonus}</td>
                 <td style={{ padding: "12px 16px", color: "#666" }}>{r.col3}</td>
