@@ -254,6 +254,19 @@ function PromoScreenshot({ bonusId, link }: { bonusId: string; link: string | nu
     "figfcu-250-high-yield-checking-ghycheck": "/screenshots/figfcu-checking-promo.png",
     "teachers-fcu-300-checking-smart26": "/screenshots/teachers-checking-promo.png",
     "bcu-500-powerplus-checking-2026": "/screenshots/bcu-checking-promo.png",
+    "amex-rewards-checking-300-2026": "/screenshots/amex-rewards-checking-promo.png",
+    "316-financial-100-checking-relevant2026": "/screenshots/316-financial-checking-promo.png",
+    "bmo-400-checking-2026": "/screenshots/bmo-checking-promo.png",
+    "chase-business-checking-500-2026": "/screenshots/chase-business-checking-promo.png",
+    "grasshopper-business-checking-750-2026": "/screenshots/grasshopper-business-promo.png",
+    "pnc-400-virtual-wallet-performance-select-2026": "/screenshots/pnc-checking-promo.png",
+    "pnc-business-checking-400-2026": "/screenshots/pnc-business-promo.png",
+    "percapita-300-checking-2026": "/screenshots/percapita-checking-promo.png",
+    "usbank-business-checking-1200-2026": "/screenshots/usbank-business-promo.png",
+    "hsbc-premier-checking-2026": "/screenshots/hsbc-checking-promo.png",
+    "greenfi-75-checking-2026": "/screenshots/greenfi-checking-promo.png",
+    "nasa-fcu-300-checking-2026": "/screenshots/nasa-fcu-checking-promo.png",
+    "usaa-300-checking-2026": "/screenshots/usaa-checking-promo.png",
   }
   const src = screenshotMap[bonusId]
   if (!src) return null
