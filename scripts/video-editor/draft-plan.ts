@@ -75,7 +75,7 @@ const SITES: { re: RegExp; label: string; url: string; why: string }[] = [
   { re: /\b(link in the description|write ?up|the full list|on (my|the) (site|website)|fatstacksacademy)\b/i, label: 'site-blog', url: 'https://fatstacksacademy.com/blog', why: 'site / write-up mention' },
 ];
 
-type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; status: string; why: string; label?: string };
+type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string };
 const proposed: Seg[] = [];
 const sectBounds = [...sections, faceDur];
 
@@ -106,10 +106,30 @@ for (const w of words) for (const site of SITES) {
   if (site.re.test(win)) { if (!proposed.some(p => p.label === site.label && Math.abs(p.start - w.t) < 20)) proposed.push({ start: +w.t.toFixed(2), end: +Math.min(w.t + SEG, faceDur).toFixed(2), layout: 'plain', url: site.url, label: site.label, status: 'needs-screenshot', why: site.why }); }
 }
 
+// EXPLAINER moments → a full-screen motion-graphic (gfx). Detect the type + draft a best-effort spec
+// you review/fill (status needs-spec); build-broll layout:'gfx' renders it via motion-gfx.py.
+const GFX: { re: RegExp; type: string; build: (s: string) => any }[] = [
+  { re: /\b0%\s*(intro\s*)?apr|interest[- ]free|\bthe float\b/i, type: 'timeline',
+    build: (s) => { const mo = s.match(/(\d+)\s*months?/i)?.[1]; return { title: 'The 0% APR float', markers: [{ label: 'Buy now', sub: 'month 0' }, { label: '0% interest', sub: mo ? `${mo} months` : 'intro period' }, { label: 'Pay in full', sub: 'before the due date' }, { label: 'Keep your cash', sub: 'earning interest' }] }; } },
+  { re: /\bspend \$?[\d,]+\s*(in|within)\s*\d+\s*months?\b/i, type: 'steps',
+    build: (s) => { const m = s.match(/\$?([\d,]+)\s*(?:in|within)\s*(\d+)\s*months?/i); return { title: 'How to earn it', steps: ['Apply for the card', m ? `Spend $${m[1]} in ${m[2]} months` : 'Hit the minimum spend', 'Earn the bonus'] }; } },
+  { re: /\bworth (?:about |around |roughly )?\$[\d,]+|comes out to \$[\d,]+|that'?s \$[\d,]+ in (?:value|rewards)\b/i, type: 'value',
+    build: (s) => ({ label: "what it's worth", a: '<points>', b: '<cents / pt>', c: (s.match(/\$[\d,]+/) || ['$0'])[0] }) },
+  { re: /\b(up from|versus|vs\.?|compared to)\b[^.]*?\d{2,}/i, type: 'bars',
+    build: (s) => { const nums = ((s.replace(/(\d)\s+,/g, '$1,').match(/[\d,]{2,}/g)) || []).map(x => parseInt(x.replace(/,/g, ''), 10)).filter(x => x >= 1000).slice(0, 2); return { title: 'Compared', items: nums.length === 2 ? [{ label: 'Before', value: nums[0] }, { label: 'Now', value: nums[1] }] : [{ label: 'Before', value: 75000 }, { label: 'Now', value: 100000 }] }; } },
+];
+const seenGfx = new Set<number>();
+for (const s of sentences) {
+  const g = GFX.find(x => x.re.test(s.text));
+  if (!g) continue;
+  const key = Math.round(s.t / 6); if (seenGfx.has(key)) continue; seenGfx.add(key);
+  proposed.push({ start: +s.t.toFixed(2), end: +Math.min(s.t + SEG + 1, faceDur).toFixed(2), layout: 'gfx', gfx_type: g.type, spec: g.build(s.text), status: 'needs-spec', why: `explainer (${g.type}) — review/fill the spec: "${s.text.slice(0, 60)}"` });
+}
+
 // ---- importance-space + de-overlap. Place HIGH-priority first (a card intro must never be knocked
 //      out by a site/change segment), then fill remaining gaps; two segments collide if their
 //      [start,end] windows are within GAP of each other. ----
-const prio = (s: Seg) => (s.cardId ? 3 : s.layout === 'highlight' ? 2 : 1);  // card > article > site
+const prio = (s: Seg) => (s.cardId ? 3 : (s.layout === 'highlight' || s.layout === 'gfx') ? 2 : 1);  // card > article/gfx > site
 proposed.sort((a, b) => prio(b) - prio(a) || a.start - b.start);
 const placed: Seg[] = [];
 for (const s of proposed) {

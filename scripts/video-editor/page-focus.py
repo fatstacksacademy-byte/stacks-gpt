@@ -55,6 +55,10 @@ ap.add_argument("--face", default="", help="optional face video → circle PiP b
 ap.add_argument("--face-d", type=int, default=330, help="circle diameter (matches the uploaded video)")
 ap.add_argument("--ring", default="#0d7c5f", help="emerald ring color (matches render-broll2)")
 ap.add_argument("--zoom", type=float, default=-1.0, help="total eased push toward the ROI (-1=auto per style)")
+ap.add_argument("--annotate", choices=["none", "circle", "arrow", "underline"], default="none",
+                help="draw an animated attention annotation on the ROI (Leo: circles/arrows/underlines)")
+ap.add_argument("--tint", choices=["none", "neg", "pos"], default="none",
+                help="colour-connotation wash — neg=red (a downside), pos=green (a win)")
 a = ap.parse_args()
 
 
@@ -182,6 +186,33 @@ def zoom_affine(im, z):
     return im.transform((W, H), Image.AFFINE, (1 / z, 0, left, 0, 1 / z, topz), resample=Image.BICUBIC)
 
 
+ANN_COL = hex2rgb(a.accent)
+TINT = {"neg": (210, 45, 45), "pos": (70, 200, 95)}.get(a.tint)   # red = downside, green = win
+
+
+def annotation(progress):
+    """An animated circle / arrow / underline drawn ONTO the ROI (rides the zoom). Hand-drawn feel:
+    it draws ON over ~0.6s (eased), then holds. ROI is (x0,y0,x1,y1) in framed-frame px."""
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
+    e = smooth(progress); col = ANN_COL + (255,)
+    x0, y0, x1, y1 = roi
+    if a.annotate == "underline":
+        ly = min(H - 2, y1 + max(6, int(rh * 0.14))); w = max(6, int(rh * 0.10))
+        d.line([(x0, ly), (x0 + (x1 - x0) * e, ly)], fill=col, width=w)
+    elif a.annotate == "circle":
+        pad = max(10, int(min(rw, rh) * 0.30))
+        d.arc([x0 - pad, y0 - pad, x1 + pad, y1 + pad], -90, -90 + 360 * e,
+              fill=col, width=max(6, int(min(rw, rh) * 0.07)))
+    elif a.annotate == "arrow":
+        tx, ty = x0, y0                                   # tip at the ROI's top-left corner
+        sx, sy = max(0, x0 - 240), max(0, y0 - 170)       # start up-and-left
+        ex_, ey_ = sx + (tx - sx) * e, sy + (ty - sy) * e
+        d.line([(sx, sy), (ex_, ey_)], fill=col, width=10)
+        if e > 0.7:                                       # arrowhead lands once the shaft arrives
+            d.polygon([(tx, ty), (tx + 30, ty - 4), (tx - 4, ty + 30)], fill=col)
+    return ov
+
+
 tmp = tempfile.mkdtemp()
 nf = max(1, int(round(a.dur * a.fps)))   # integer frame count drives BOTH seqs + -t (no frozen tail)
 DUR = nf / a.fps
@@ -203,6 +234,10 @@ for f in range(nf):
         frame = Image.composite(base, dim, mask).convert("RGBA")  # ROI sharp+bright, feathered
         g = glow.copy(); g.putalpha(g.getchannel("A").point(lambda v: int(v * 0.45 * blend)))
         frame = Image.alpha_composite(frame, g)
+    if TINT is not None:                                          # colour-connotation wash (subtle)
+        frame = Image.blend(frame.convert("RGB"), Image.new("RGB", (W, H), TINT), 0.16).convert("RGBA")
+    if a.annotate != "none":                                      # animated circle/arrow/underline on the ROI
+        frame = Image.alpha_composite(frame, annotation((t - 0.3) / 0.6))
     frame = zoom_affine(frame.convert("RGB"), z).convert("RGBA")  # push toward ROI (page only)
     if srcpill is not None:                                       # pill is a FIXED annotation — after zoom
         frame.alpha_composite(srcpill, (40, 36))

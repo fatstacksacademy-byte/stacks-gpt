@@ -33,6 +33,7 @@ import argparse, json, os, subprocess, sys, tempfile
 W, H = 1920, 1080
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE_FOCUS = os.path.join(HERE, "page-focus.py")
+MOTION_GFX = os.path.join(HERE, "motion-gfx.py")
 ap = argparse.ArgumentParser()
 ap.add_argument("--plan", required=True)
 ap.add_argument("--keep-tmp", action="store_true")
@@ -123,8 +124,14 @@ def face_slice(start_f, nframes, out):  # NATIVE-res circle-cam source — page-
 def render_seg(s, start_f, nframes, i):
     dur = nframes / FPS
     layout = s.get("layout", "plain")
+    if layout == "gfx":   # full-screen animated explainer (motion-gfx.py) — A-roll audio plays under it
+        out = os.path.join(tmp, f"part_{i:03d}.mp4")
+        run(["python3", MOTION_GFX, "--type", s.get("gfx_type", "value"),
+             "--spec", json.dumps(s.get("spec", {})), "--dur", f"{dur:.4f}", "--fps", str(FPS), "--out", out],
+            f"motion-gfx seg {i}")
+        return out
     if layout not in ("plain", "focus", "highlight"):
-        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight)")
+        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|gfx)")
     image = expand(s.get("image") or s.get("hero"))
     if not image or not os.path.exists(image):
         sys.exit(f"build-broll: segment {i} ({layout}) missing image/hero (got {image!r})")
