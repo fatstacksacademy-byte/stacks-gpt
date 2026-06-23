@@ -262,7 +262,15 @@ python3 scripts/video-editor/build-broll.py --plan broll-plan.json
 `spec`, e.g. `{"layout":"gfx","gfx_type":"value","spec":{...}}`; A-roll audio plays under it). Relevance lives in the plan — for text moments use focus/highlight with a `page-roi.py`
 box (content-matched to your words); use plain only with a deliberate ~16:9 hero (or give plain a `roi` to
 frame a region). Guards: errors if `total` exceeds the face length, if a part comes up short, or if the face
-has no audio. Output is 1920×1080.
+has no audio.
+
+> **Resolution — 4K by default.** `build-broll.py`, `page-focus.py`, and `motion-gfx.py` all honor
+> `RENDER_SCALE` (default **2 = native 3840×2160**; set `RENDER_SCALE=1` for the fast/proven 1080 path).
+> build-broll locks the same scale into its page-focus/motion-gfx children, so every segment matches.
+> page-focus is *true* 4K (it crops your native-4K screenshots straight into the frame — no 1080
+> downsample); motion-gfx upscales its flat brand graphics with lanczos (native-equivalent, zero layout
+> risk). ⚠️ The **face/A-roll** portion is only true-4K if the source face is 4K — a 1080 face is scaled
+> up to fill the frame. `fetch-screenshots.ts` already captures at 2× DPI (native 4K).
 
 ## Motion graphics — `motion-gfx.py` (animated explainers)
 
@@ -281,6 +289,27 @@ python3 scripts/video-editor/motion-gfx.py --type bars --out b.mp4 --dur 4 \
 `value` builds A × B = C and **counts up** the result; `steps` pops numbered steps in sequence; `bars`
 grows a comparison (last bar = gold). `--spec` is inline JSON or `@file.json`. *(Planned: wire into
 build-broll as a `gfx` segment so explainers auto-place; more templates — float timeline, comparison table.)*
+
+## Polish layer (Leo gap-closers)
+
+The retention details that make an edit feel pro — each importance-gated / off by default:
+
+- **Split b-roll layout** — `build-broll` `{"layout":"split", "split_style":"focus", "image":…, "roi":…}`:
+  a big portrait of you (emerald border) beside the page region. An alternate to the circle so cards
+  don't all feel identical.
+- **`page-focus --annotate circle|arrow|underline` + `--tint neg|pos`** — animated attention marks + a
+  red-downside / green-win colour wash.
+- **`page-focus --eyeline fx,fy`** — place the focused region at a consistent screen spot (match where
+  your eyes sit in the A-roll) so a cut doesn't jump the viewer's gaze. Default `0.5,0.5` = centred.
+- **Per-segment mood music** — `preview-full --music "a.mp3,b.mp3,c.mp3"` maps one song per subject and
+  fades between; a `-` slot runs that section **silent** (e.g. `"inspired.mp3,-,carefree.mp3"`).
+- **Music beat-sync** — the bed dips then **swells into each topic shift** (Leo: "the music picks up").
+- **SFX** (`make_sfx.py`): whoosh / riser / **hit** (release) / **highlight** / **drone** (suspense bed).
+- **`particles.py`** — a subtle drifting-bokeh overlay (seamless loop, qtrle alpha). Overlay it faint:
+  `ffmpeg -i v.mp4 -stream_loop -1 -i particles.mov -filter_complex "[1:v]colorchannelmixer=aa=0.5[p];[0:v][p]overlay=shortest=1" out.mp4`
+- **`transition.py`** — a full-screen whip/wipe light-sweep to mask a cut (`--style whip|wipe`, `--dur 0.4`),
+  overlaid at a section/b-roll change.
+- **motion-gfx** also has **`bignum`** (one huge hero stat) and **`checklist`** (✓/✗ rows).
 
 ## Brand kit
 

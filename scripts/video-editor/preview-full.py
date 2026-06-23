@@ -121,10 +121,13 @@ hit_t = list(reveal_t)
 hl_t = [c["t"] for c in caps if c.get("impact")]
 drone_t = [c["t"] for c in caps if c.get("impact") and NEG.search(c.get("text", ""))]
 idx = n_ov  # next input index
-music_idx = []; whoosh_i = riser_i = hit_i = hl_i = drone_i = None
-for mf in [f.strip() for f in a.music.split(",")]:   # one OR MORE songs (per-subject mood) → mapped to sections
-    if mf and os.path.exists(mf):
-        idx += 1; music_idx.append(idx); inputs += ["-i", mf]
+music_slots = []; whoosh_i = riser_i = hit_i = hl_i = drone_i = None
+for mf in [f.strip() for f in a.music.split(",")]:   # one OR MORE songs (per-subject mood) → mapped to sections;
+    if mf in ("-", "none", "off", "silence"):        # a "-" slot = NO music for that section span (Leo: silence elevates)
+        music_slots.append(None)
+    elif mf and os.path.exists(mf):
+        idx += 1; music_slots.append(idx); inputs += ["-i", mf]
+music_idx = [s for s in music_slots if s is not None]   # the real (non-silent) inputs
 if whoosh and section_t:
     idx += 1; whoosh_i = idx; inputs += ["-i", whoosh]
 if riser and riser_t:
@@ -166,17 +169,20 @@ if music_idx:
     rt = reveal_t[0] if reveal_t else -1
     base = f"if(gt(t,{sec1:.2f}),0.16,0.12)" if sec1 > 0 else "0.13"
     fout = max(dur - 3, 0)  # clamp: short clips would otherwise get a negative fade-out start
-    if len(music_idx) == 1:
-        # ONE bed across the clip + a per-topic DIP (a fade marks each section close)
-        dip = "".join(f"*if(between(t,{s - 0.3:.2f},{s + 0.4:.2f}),0.45,1)" for s in section_t)
-        core = f"({base}){dip}"
-        fc.append(f"[{music_idx[0]}:a]atrim=0:{dur:.2f},afade=t=in:st=0:d={min(2, dur):.2f},"
+    # BEAT-SYNC the music to the video's structure: at each topic shift, a smooth DIP-then-SWELL —
+    # the bed breathes down just before the cut, then PICKS UP into the new section (Leo: "the music
+    # picks up, marking the topic shift and making the next segment more exciting"). Triangular ramps.
+    swell = "".join(f"*(1-0.40*max(0,1-abs(t-{s - 0.3:.2f})/0.30)+0.42*max(0,1-abs(t-{s + 0.45:.2f})/0.55))" for s in section_t)
+    if len(music_slots) == 1:
+        core = f"({base}){swell}"
+        fc.append(f"[{music_slots[0]}:a]atrim=0:{dur:.2f},afade=t=in:st=0:d={min(2, dur):.2f},"
                   f"afade=t=out:st={fout:.2f}:d={min(3, dur):.2f}[rawbed]")
     else:
-        # ONE SONG PER SUBJECT: map tracks to section spans round-robin; each fades out→in at the boundary
-        # (the song change IS the topic cue — Leo). No overlap-crossfade; the brief dip between is the breath.
+        # ONE SONG PER SUBJECT: map slots to section spans round-robin; each fades out→in at the boundary
+        # (the song change IS the topic cue — Leo). A None slot ('-') = that section runs with NO music.
         bounds = [0.0] + list(section_t) + [dur]
-        spans = [(bounds[k], bounds[k + 1], music_idx[k % len(music_idx)]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k] + 0.6]
+        spans = [(bounds[k], bounds[k + 1], music_slots[k % len(music_slots)]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k] + 0.6]
+        spans = [(s, e, mi) for (s, e, mi) in spans if mi is not None]   # drop SILENT ('-') spans
         if not spans:
             spans = [(0.0, dur, music_idx[0])]
         labels = []
@@ -186,7 +192,7 @@ if music_idx:
                       f"afade=t=out:st={max(0, dk - fo):.2f}:d={fo:.2f},adelay={int(s * 1000)}:all=1[mt{k}]")
             labels.append(f"mt{k}")
         fc.append("".join(f"[{l}]" for l in labels) + f"amix=inputs={len(labels)}:normalize=0:dropout_transition=0[rawbed]")
-        core = base   # the song change handles topic shifts; no extra dip
+        core = f"({base}){swell}"   # song change + the dip-then-swell both mark the topic shift
     volexpr = f"if(between(t,{rt - 0.2:.2f},{rt + 0.7:.2f}),0.02,{core})" if rt > 0 else core  # elevate-pause
     fc.append(f"[rawbed]volume='{volexpr}':eval=frame[mus]")
     alabels.append("mus")

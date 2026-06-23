@@ -27,9 +27,13 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 BRAND = json.load(open(os.path.join(HERE, "lib", "brand.json")))
 C = BRAND["color"]
 W, H = 1920, 1080
+# Render the proven 1080 coordinate space, then output at RENDER_SCALE (default 2 = native 4K 3840×2160).
+# These cards are flat brand graphics (solid fills + big Anton/Archivo text), so a lanczos upscale is
+# visually native-equivalent with zero layout risk. RENDER_SCALE=1 keeps the byte-identical 1080 path.
+S = max(1, int(os.environ.get("RENDER_SCALE", "2")))
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--type", required=True, choices=["value", "steps", "bars", "timeline", "table"])
+ap.add_argument("--type", required=True, choices=["value", "steps", "bars", "timeline", "table", "bignum", "checklist"])
 ap.add_argument("--spec", required=True, help="inline JSON or @file.json")
 ap.add_argument("--out", required=True)
 ap.add_argument("--dur", type=float, default=4.0)
@@ -197,6 +201,40 @@ def render(t, base):
             d.text((labelX, yy), str(row.get("label", "")).upper(), font=flab, fill=MUTED + (al,), anchor="lm")
             for j, cell in enumerate(row.get("cells", [])[:nc]):
                 d.text((cx(j), yy), str(cell), font=ftxt, fill=(GOLD if j == hl else WHITE) + (al,), anchor="mm")
+    elif a.type == "bignum":     # one HUGE hero stat (counts up if numeric) + eyebrow + sub
+        lab, val, sub = str(spec.get("label", "")), str(spec.get("value", "")), str(spec.get("sub", ""))
+        if lab and env(t, 0.0, 0.3) > 0:
+            d.text((W // 2, 300), lab.upper(), font=font("heavy", 50), fill=GREEN + (int(255 * env(t, 0.0, 0.3)),), anchor="ma")
+        if env(t, 0.4, 0.2) > 0:
+            pre, v, suf = num_parts(val); dec = 2 if (v is not None and v != int(v)) else 0
+            cur = (v or 0) * smooth((t - 0.45) / 0.9)
+            shown = (f"{pre}{cur:,.{dec}f}{suf}" if dec else f"{pre}{int(round(cur)):,}{suf}") if v is not None else val
+            fv = font("display", max(40, int(248 * (0.5 + 0.5 * pop(env(t, 0.4, 0.5))))))
+            d.text((W // 2, 560), shown, font=fv, fill=GOLD + (255,), anchor="mm")
+        if sub and env(t, 0.95, 0.4) > 0:
+            d.text((W // 2, 780), sub, font=font("heavy", 42), fill=MUTED + (int(255 * env(t, 0.95, 0.4)),), anchor="ma")
+    elif a.type == "checklist":  # ✓/✗ items pop in sequentially (eligibility, do/don't); marks drawn as vectors
+        title, items = str(spec.get("title", "")), spec.get("items", [])
+        if title:
+            e = env(t, 0.0, 0.4)
+            d.text((W // 2, 150 - int(20 * (1 - e))), title.upper(), font=font("display", 84), fill=WHITE + (int(255 * e),), anchor="ma")
+            d.line([(W // 2 - 90, 290), (W // 2 + 90, 290)], fill=GREEN + (int(255 * e),), width=8)
+        n = max(1, len(items)); rowH = min(150, (H - 430) // n); y0 = 360; r = 40
+        for i, it in enumerate(items):
+            if env(t, 0.5 + i * 0.4, 0.45) <= 0:
+                continue
+            al = int(255 * min(1.0, env(t, 0.5 + i * 0.4, 0.3)))
+            ok = it.get("ok", True) if isinstance(it, dict) else True
+            txt = str(it.get("text", "") if isinstance(it, dict) else it)
+            yy = y0 + i * rowH; xx = 420 + int(-50 * (1 - smooth(env(t, 0.5 + i * 0.4, 0.45))))
+            d.ellipse([xx, yy, xx + 2 * r, yy + 2 * r], fill=(GREEN if ok else hx("danger")) + (al,))
+            cx_, cy_ = xx + r, yy + r
+            if ok:   # checkmark
+                d.line([(cx_ - 16, cy_ + 2), (cx_ - 4, cy_ + 14), (cx_ + 18, cy_ - 14)], fill=NAVY + (al,), width=8, joint="curve")
+            else:    # X
+                d.line([(cx_ - 13, cy_ - 13), (cx_ + 13, cy_ + 13)], fill=NAVY + (al,), width=8)
+                d.line([(cx_ - 13, cy_ + 13), (cx_ + 13, cy_ - 13)], fill=NAVY + (al,), width=8)
+            d.text((xx + 2 * r + 36, cy_), txt, font=font("heavy", 48), fill=WHITE + (al,), anchor="lm")
     return im
 
 
@@ -205,12 +243,13 @@ nf = max(1, int(round(a.dur * a.fps))); DUR = nf / a.fps
 base = background()
 for f in range(nf):
     render(f / a.fps, base).save(os.path.join(tmp, f"{f:04d}.png"))
+vf = [] if S == 1 else ["-vf", f"scale={W * S}:{H * S}:flags=lanczos"]
 enc = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-framerate", str(a.fps),
-       "-i", os.path.join(tmp, "%04d.png"), "-t", f"{DUR:.4f}",
+       "-i", os.path.join(tmp, "%04d.png"), "-t", f"{DUR:.4f}", *vf,
        "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", a.out]
 r = subprocess.run(enc, capture_output=True)
 if r.returncode != 0:
     sys.exit("motion-gfx FFMPEG FAIL:\n" + r.stderr.decode()[-1500:])
 if not os.path.exists(a.out) or os.path.getsize(a.out) < 2000:
     sys.exit(f"motion-gfx: empty output ({a.out})")
-print(f"✓ {a.out}  ({a.type}, {DUR:.2f}s @ {a.fps}fps)")
+print(f"✓ {a.out}  ({a.type}, {DUR:.2f}s @ {a.fps}fps, {W * S}×{H * S})")
