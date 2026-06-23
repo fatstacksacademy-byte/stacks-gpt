@@ -63,6 +63,12 @@ function withCurrent(items: { label: string; done: boolean }[]): { label: string
   return items.map((i, k) => ({ ...i, current: k === idx }))
 }
 
+/** Format an annualized return (fraction) as a compact "~52% APY" label. */
+function fmtApy(a: number): string {
+  const pct = a * 100
+  return pct >= 100 ? `~${Math.round(pct)}% APY` : `~${pct.toFixed(1)}% APY`
+}
+
 export default function HubClient({
   userEmail,
   userId,
@@ -159,7 +165,7 @@ export default function HubClient({
 
   const spendingProjection = useMemo(() => {
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
-    if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number }[] }
+    if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number; note?: string }[], effectiveApy: null as number | null }
     // Mirror the Spending tab's controls: pace from localStorage,
     // rewards mode from localStorage, per-currency overrides from
     // spending_profile. So the dashboard's spending projection always
@@ -175,10 +181,31 @@ export default function HubClient({
     const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace, useTravel, overrides, profile.military_affiliated === true)
     const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
     const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
+    // "Effective APY" for a card SUB = annualized return on the required
+    // spend (the capital you route through the card). Mirrors the savings
+    // formula: return ÷ capital × annualization factor.
+    //   return_on_spend = net_value / min_spend  (from the sequencer)
+    //   effApy          = return_on_spend × (12 / months_to_complete)
+    const apyFor = (s: typeof year1List[number]): number | null =>
+      s.card.min_spend > 0 && s.months_to_complete > 0
+        ? s.return_on_spend * (12 / s.months_to_complete)
+        : null
     const items = [...year1List]
       .sort((a, b) => b.net_value - a.net_value)
-      .map((s) => ({ label: s.card.card_name, amount: Math.round(s.net_value) }))
-    return { total: Math.round(year1), items }
+      .map((s) => {
+        const apy = apyFor(s)
+        return { label: s.card.card_name, amount: Math.round(s.net_value), note: apy != null ? fmtApy(apy) : undefined }
+      })
+    // Blended module APY: spend-weighted average of the per-card APYs, so the
+    // headline reflects where the capital actually goes.
+    let weightedSpend = 0
+    let weightedApy = 0
+    for (const s of year1List) {
+      const apy = apyFor(s)
+      if (apy != null) { weightedApy += apy * s.card.min_spend; weightedSpend += s.card.min_spend }
+    }
+    const effectiveApy = weightedSpend > 0 ? weightedApy / weightedSpend : null
+    return { total: Math.round(year1), items, effectiveApy }
   }, [spendingProfile, profile.state, profile.military_affiliated])
 
   const portfolio12mo =
@@ -609,7 +636,7 @@ export default function HubClient({
             total={portfolio12mo}
             breakdown={[
               { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
-              { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items },
+              { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items, note: spendingProjection.effectiveApy != null ? fmtApy(spendingProjection.effectiveApy) : undefined },
               { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
             ]}
           />

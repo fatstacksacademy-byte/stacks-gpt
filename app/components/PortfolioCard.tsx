@@ -2,7 +2,12 @@
 
 import { useState } from "react"
 
-export type BreakdownItem = { label: string; amount: number }
+export type BreakdownItem = {
+  label: string
+  amount: number
+  /** Optional dim suffix, e.g. "~52% APY" for the spending effective-yield. */
+  note?: string
+}
 
 type Breakdown = {
   label: string
@@ -10,6 +15,8 @@ type Breakdown = {
   href: string
   /** Top items making up this number — shown when the user expands the breakdown row. */
   items?: BreakdownItem[]
+  /** Optional dim suffix next to the module total, e.g. a blended effective APY. */
+  note?: string
 }
 
 /**
@@ -72,6 +79,9 @@ export default function PortfolioCard({
                   <span style={{ fontSize: 15, fontWeight: 700 }}>
                     ${b.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </span>
+                  {b.note && (
+                    <span style={{ fontSize: 12, fontWeight: 600, opacity: 0.7 }}>· {b.note}</span>
+                  )}
                   {hasItems && (
                     <button
                       onClick={() => setExpandedLabel(isExpanded ? null : b.label)}
@@ -100,8 +110,13 @@ export default function PortfolioCard({
                         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {it.label}
                         </span>
-                        <span style={{ fontWeight: 600, flexShrink: 0 }}>
+                        <span style={{ fontWeight: 600, flexShrink: 0, textAlign: "right" }}>
                           ${it.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          {it.note && (
+                            <span style={{ display: "block", fontWeight: 400, fontSize: 11, opacity: 0.7 }}>
+                              {it.note}
+                            </span>
+                          )}
                         </span>
                       </div>
                     ))}
