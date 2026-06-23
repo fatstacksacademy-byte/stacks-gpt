@@ -34,6 +34,8 @@ export type AnalyticsEvent =
   // Misc
   | "tax_summary_viewed"
   | "dashboard_tab_changed"
+  | "dashboard_bonus_advanced"   // inline step-advance from a dashboard card
+  | "pay_profile_saved"          // explicit Save on the Paycheck pay-profile panel
 
 export function track(event: AnalyticsEvent, props?: Record<string, unknown>) {
   try {

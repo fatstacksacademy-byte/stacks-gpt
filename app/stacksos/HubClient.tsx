@@ -8,6 +8,7 @@ import DashboardGoalBar from "../components/DashboardGoalBar"
 import PushOptIn from "../components/PushOptIn"
 import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
 import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep } from "../../lib/bonusNextStep"
+import { getMilestoneDetail } from "../../lib/bonusSteps"
 import { track } from "../../lib/analytics"
 import CheckpointNav from "../components/CheckpointNav"
 import WelcomeWizard from "../components/WelcomeWizard"
@@ -20,10 +21,10 @@ import { bonuses } from "../../lib/data/bonuses"
 import type { UserProfile, IncomeSource } from "../../lib/profileTypes"
 import { getSavingsProfile, type SavingsProfile } from "../../lib/savingsProfile"
 import { getSpendingProfile, type SpendingProfile } from "../../lib/spendingProfile"
-import { getCompletedBonuses } from "../../lib/completedBonuses"
-import { getCustomBonuses, type CustomBonus } from "../../lib/customBonuses"
-import { getOwnedCards, type OwnedCard } from "../../lib/ownedCards"
-import { getSavingsEntries, type SavingsEntry } from "../../lib/savingsEntries"
+import { getCompletedBonuses, markBonusPosted } from "../../lib/completedBonuses"
+import { getCustomBonuses, updateCustomBonus, type CustomBonus } from "../../lib/customBonuses"
+import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedCards"
+import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
 import type { CompletedBonus } from "../../lib/churn"
 
 const PAYS_PER_MONTH: Record<string, number> = {
@@ -51,6 +52,16 @@ function getTotalMonthlyIncome(p: UserProfile): number {
 }
 
 const NON_ACTIVE_CUSTOM_STEPS = new Set(["pending", "kept_open", "skipped", "bonus_posted"])
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/** Flag the first not-yet-done item as the "current" step for highlighting. */
+function withCurrent(items: { label: string; done: boolean }[]): { label: string; done: boolean; current: boolean }[] {
+  const idx = items.findIndex((i) => !i.done)
+  return items.map((i, k) => ({ ...i, current: k === idx }))
+}
 
 export default function HubClient({
   userEmail,
@@ -202,6 +213,25 @@ export default function HubClient({
       const safeClose = r.opened_date && holdDays
         ? addDaysISO(r.opened_date, holdDays)
         : null
+      const md = getMilestoneDetail(b, r, profile.pay_frequency, profile.paycheck_amount)
+      const checklist = md.milestones.map((m) => ({
+        label: m.label,
+        done: m.status === "completed",
+        current: m.status === "active",
+      }))
+      // Confirming the cash is the only forward action that changes the
+      // dashboard state (the next-step label is date-driven). Intermediate
+      // milestones live on the Paycheck page.
+      const advance: StartedBonus["advance"] =
+        !r.bonus_received && r.current_step !== "applied"
+          ? {
+              label: "Mark bonus received",
+              run: async () => {
+                await markBonusPosted(r.id, r.actual_amount ?? cat.bonus_amount ?? 0, todayISO())
+                track("dashboard_bonus_advanced", { module: "paycheck", action: "bonus_received" })
+              },
+            }
+          : null
       out.push({
         module: "paycheck",
         name: cat.bank_name ?? r.bonus_id,
@@ -214,6 +244,8 @@ export default function HubClient({
         bonus_id: r.bonus_id,
         expected_payout_date: expectedPayout,
         safe_close_date: safeClose,
+        advance,
+        checklist,
       })
     }
 
@@ -225,6 +257,25 @@ export default function HubClient({
       const safeClose = c.opened_date && c.holding_period_days
         ? addDaysISO(c.opened_date, c.holding_period_days)
         : null
+      const ddReq = c.dd_required === true
+      const posted = c.current_step === "bonus_posted" || c.bonus_received
+      const advanceToPosted = async () => {
+        await updateCustomBonus(c.id, { current_step: "bonus_posted", bonus_received: true, actual_amount: c.actual_amount ?? c.bonus_amount })
+        track("dashboard_bonus_advanced", { module: "custom", action: "bonus_posted" })
+      }
+      let advance: StartedBonus["advance"] = null
+      if (c.current_step === null || c.current_step === "account_opened") {
+        advance = ddReq
+          ? { label: "Mark requirements met", run: async () => { await updateCustomBonus(c.id, { current_step: "requirements_met" }); track("dashboard_bonus_advanced", { module: "custom", action: "requirements_met" }) } }
+          : { label: "Mark bonus posted", run: advanceToPosted }
+      } else if (c.current_step === "requirements_met") {
+        advance = { label: "Mark bonus posted", run: advanceToPosted }
+      }
+      const checklist = withCurrent([
+        { label: "Account opened", done: true },
+        ...(ddReq ? [{ label: "Requirements met", done: c.current_step === "requirements_met" || posted }] : []),
+        { label: "Bonus posted", done: posted },
+      ])
       out.push({
         module: "paycheck",
         name: c.bank_name,
@@ -235,6 +286,8 @@ export default function HubClient({
         urgency: step.urgency,
         href: "/stacksos/paycheck",
         safe_close_date: safeClose,
+        advance,
+        checklist,
       })
     }
 
@@ -244,6 +297,18 @@ export default function HubClient({
       const step = spendingCardStep(c)
       // Card "expected payout" = spend deadline + ~30d billing-cycle posting.
       const expectedPayout = c.spend_deadline ? addDaysISO(c.spend_deadline, 30) : null
+      const advance: StartedBonus["advance"] = {
+        label: "Mark bonus earned",
+        run: async () => {
+          await updateOwnedCard(c.id, { status: "completed" })
+          track("dashboard_bonus_advanced", { module: "spending", action: "completed" })
+        },
+      }
+      const checklist = withCurrent([
+        { label: "Card opened", done: true },
+        { label: c.spend_requirement ? `Spend $${c.spend_requirement.toLocaleString()}` : "Meet spend requirement", done: false },
+        { label: "Bonus earned", done: false },
+      ])
       out.push({
         module: "spending",
         name: c.card_name,
@@ -254,6 +319,8 @@ export default function HubClient({
         urgency: step.urgency,
         href: "/stacksos/spending",
         expected_payout_date: expectedPayout,
+        advance,
+        checklist,
       })
     }
 
@@ -264,6 +331,20 @@ export default function HubClient({
       const expectedPayout = e.opened_date && e.holding_period_days
         ? addDaysISO(e.opened_date, e.holding_period_days)
         : null
+      const openedAt = e.account_opened_at
+      const fundedAt = e.funded_at
+      const postedAt = e.bonus_posted_at
+      let advance: StartedBonus["advance"]
+      if (!openedAt) advance = { label: "Mark account opened", run: async () => { await setSavingsMilestone(e.id, "account_opened_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "account_opened" }) } }
+      else if (!fundedAt) advance = { label: "Mark funded", run: async () => { await setSavingsMilestone(e.id, "funded_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "funded" }) } }
+      else if (!postedAt) advance = { label: "Mark bonus posted", run: async () => { await setSavingsMilestone(e.id, "bonus_posted_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "bonus_posted" }) } }
+      else advance = { label: "Mark complete", run: async () => { await updateSavingsEntry(e.id, { status: "completed" }); track("dashboard_bonus_advanced", { module: "savings", action: "completed" }) } }
+      const checklist = withCurrent([
+        { label: "Account opened", done: !!openedAt },
+        { label: "Funded", done: !!fundedAt },
+        { label: "Bonus posted", done: !!postedAt },
+        { label: "Complete", done: false },
+      ])
       out.push({
         module: "savings",
         name: e.institution_name,
@@ -276,12 +357,14 @@ export default function HubClient({
         bonus_id: e.canonical_offer_id,
         expected_payout_date: expectedPayout,
         safe_close_date: expectedPayout, // for savings, payout date IS safe-to-withdraw
+        advance,
+        checklist,
       })
     }
 
     // Drop items where nextStep is null — bonus is fully done (received + no hold remaining).
     return out.filter(item => item.nextStep != null)
-  }, [completedRecords, customBonuses, ownedCards, savingsEntries])
+  }, [completedRecords, customBonuses, ownedCards, savingsEntries, profile.pay_frequency, profile.paycheck_amount])
 
   // ─── Lifetime earned (completed across all modules) ───────────────
   // Mirror the per-module logic so the dashboard number matches what each
@@ -516,7 +599,7 @@ export default function HubClient({
             {startedBonuses.length === 0 ? (
               <EmptyDashboardCta onAddCustom={() => { track("custom_bonus_modal_opened", { source: "dashboard_empty_state" }); setShowAddModal(true) }} isPaid={isPaid} />
             ) : (
-              <StartedBonusesList bonuses={startedBonuses} />
+              <StartedBonusesList bonuses={startedBonuses} onChanged={loadData} />
             )}
           </>
         )}
