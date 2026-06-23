@@ -1,0 +1,4 @@
+# 🔥 Rapid Zoom Effect in DaVinci Resolve | Quick & Smooth Camera Punch Tutorial — MSKedits
+# https://www.youtube.com/watch?v=_0oioAUtshI · 440 views · 2/day · manual captions · ~76 words
+
+How to create a rapid zoom using an adjustment clip. Add an adjustment clip. Drag adjustment clip on the timeline above your video clips. Trim it to cover the section where you want to rapid zoom. Select the adjustment clip. Go to the transform zoom. Move the playhead to where you want to zoom to start. Click the diamond next to zoom to add a key frame. Move forward a few frames. Add another key frames.
