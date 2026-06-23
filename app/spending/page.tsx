@@ -93,6 +93,7 @@ export default function SpendingBrowsePage() {
             bonusId: card.id,
             bonusType: "credit-card",
             bank: card.card_name,
+            image: card.image_url,
             value: subHeadline(card),
             sub: `After $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
             href: slugForBonus(card.id) ? `/blog/${slugForBonus(card.id)}` : undefined,
@@ -105,6 +106,7 @@ export default function SpendingBrowsePage() {
               return {
                 i: i + 1,
                 bank: card.card_name,
+                image: card.image_url,
                 bonus: subHeadline(card),
                 col3: money(card.min_spend),
                 col4: `${card.spend_months}mo`,
@@ -130,6 +132,7 @@ export default function SpendingBrowsePage() {
             bonusId: card.id,
             bonusType: "credit-card",
             bank: card.card_name,
+            image: card.image_url,
             value: subHeadline(card),
             sub: `After $${card.min_spend.toLocaleString()} in ${card.spend_months}mo${card.annual_fee > 0 ? ` · $${card.annual_fee} AF${card.annual_fee_waived_first_year ? " (waived Y1)" : ""}` : " · No AF"}`,
             href: slugForBonus(card.id) ? `/blog/${slugForBonus(card.id)}` : undefined,
@@ -142,6 +145,7 @@ export default function SpendingBrowsePage() {
               return {
                 i: i + 1,
                 bank: card.card_name,
+                image: card.image_url,
                 bonus: subHeadline(card),
                 col3: money(card.min_spend),
                 col4: `${card.spend_months}mo`,

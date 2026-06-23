@@ -951,6 +951,35 @@ const ISSUER_COLORS: Record<string, string> = {
 }
 
 function CardArt({ card }: { card: CreditCardBonus }) {
+  // Real card art when we have it; otherwise fall back to the issuer-colored tile.
+  if (card.image_url) {
+    return (
+      <div
+        style={{
+          width: 56,
+          height: 36,
+          borderRadius: 6,
+          background: "#f7f7f7",
+          border: "1px solid #ececec",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+          flexShrink: 0,
+        }}
+      >
+        <img
+          src={card.image_url}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          width={56}
+          height={36}
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
+      </div>
+    )
+  }
   const key = card.issuer?.toLowerCase().replace(/\s+/g, "_") ?? ""
   const bg = ISSUER_COLORS[key] || hashColor(card.issuer || card.card_name)
   const initials = (card.issuer || card.card_name)
