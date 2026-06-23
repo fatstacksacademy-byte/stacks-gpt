@@ -143,9 +143,12 @@ python3 scripts/video-editor/preview-full.py --clip clip.mp4 --plan plan.json \
 **Importance-weighted effects (Leo's rule — effects mark importance, not a metronome):**
 - **Zoom-punch** is a continuous *sub-pixel* `scale`+`crop` ease (smoothstep ramp-in/hold/out),
   fired only on section openers + headline reveals ≥18s apart. (NOT `zoompan` — that stepped.)
-- **SFX gating:** whoosh fires only on real **section/b-roll transitions**; a riser fires only
-  on a reveal that lands *on* a section change. A standalone reveal still zooms but is **silent** —
-  never SFX on a bare zoom-emphasis.
+- **SFX gating (Leo pillar 4):** whoosh on real **section/b-roll transitions**; **riser** (build) into a
+  section-opening reveal; **hit** (release) on each headline-bonus reveal; soft **highlight** tick on emphasis
+  captions; **drone** bed under a "downside/catch" word. A standalone reveal still zooms but is **silent** —
+  never SFX on a bare zoom-emphasis. (SFX are stdlib placeholders in `make_sfx.py` — swap for licensed packs.)
+- **Music moves:** ducked bed + a per-topic **dip** at each section start + a near-**pause** at the top reveal
+  ("pause the music to elevate the moment").
 
 > This Homebrew ffmpeg has **no libass/freetype/`timeout`**; `-loop` image inputs need an explicit
 > `-t`; deep overlay chains are slow (emphasis captions keep counts low).
@@ -172,7 +175,9 @@ python3 scripts/video-editor/page-focus.py --image doc.png --style highlight \
   --roi 1091,726,984,84 --lines "1411,726,664,40;1091,770,282,40" --face face.mp4 --out hl.mp4
 ```
 `--roi`/`--lines` are `x,y,w,h` (source px) or `auto:fx,fy,fw,fh` (fractions). `--face` is square-cropped
-by its **min dimension** (portrait-safe). Flags: `--hl-color`, `--hl-opacity`, `--sweep`, `--zoom`.
+by its **min dimension** (portrait-safe). Attention-guides (Leo's "6 ways"): `--annotate circle|arrow|underline`
+(animated draw-on over the ROI) and `--tint neg|pos` (red=downside / green=win wash). Other flags: `--hl-color`,
+`--hl-opacity`, `--sweep`, `--zoom`.
 
 ### `page-roi.py` — OCR the tight box (no dead space, lands on the words)
 
@@ -253,10 +258,29 @@ python3 scripts/video-editor/build-broll.py --plan broll-plan.json
 }
 ```
 `layout`: **plain** (full hero, top-anchored, + circle) · **focus** (blur + sharp region) · **highlight**
-(animated marker). Relevance lives in the plan — for text moments use focus/highlight with a `page-roi.py`
+(animated marker) · **gfx** (full-screen animated explainer via `motion-gfx.py` — pass `gfx_type` +
+`spec`, e.g. `{"layout":"gfx","gfx_type":"value","spec":{...}}`; A-roll audio plays under it). Relevance lives in the plan — for text moments use focus/highlight with a `page-roi.py`
 box (content-matched to your words); use plain only with a deliberate ~16:9 hero (or give plain a `roi` to
 frame a region). Guards: errors if `total` exceeds the face length, if a part comes up short, or if the face
 has no audio. Output is 1920×1080.
+
+## Motion graphics — `motion-gfx.py` (animated explainers)
+
+Leo's biggest lever for dense moments: "an animation explains a complicated thing crystal-clear and
+fast" where a-roll/b-roll would be slow or confusing. Renders a full-screen, brand-styled animated card
+(navy/green/gold, Anton + Archivo from `lib/brand.json`) to drop on the timeline at an explainer beat.
+
+```bash
+python3 scripts/video-editor/motion-gfx.py --type value --out v.mp4 --dur 4 \
+  --spec '{"label":"what the bonus is worth","a":"100,000 pts","b":"1.5¢ / pt","c":"$1,500"}'
+python3 scripts/video-editor/motion-gfx.py --type steps --out s.mp4 --dur 5 \
+  --spec '{"title":"How to earn it","steps":["Apply for the card","Spend $5,000 in 3 months","Earn 100,000 points"]}'
+python3 scripts/video-editor/motion-gfx.py --type bars --out b.mp4 --dur 4 \
+  --spec '{"title":"Best-ever bonus","items":[{"label":"Usual","value":75000},{"label":"Right now","value":100000}]}'
+```
+`value` builds A × B = C and **counts up** the result; `steps` pops numbered steps in sequence; `bars`
+grows a comparison (last bar = gold). `--spec` is inline JSON or `@file.json`. *(Planned: wire into
+build-broll as a `gfx` segment so explainers auto-place; more templates — float timeline, comparison table.)*
 
 ## Brand kit
 
