@@ -1,0 +1,12 @@
+# build artifacts & generated media — never commit (build/ is multi-GB of recordings/renders)
+build/
+__pycache__/
+*.pyc
+
+# media safety net (recordings/renders live under build/, but guard anyway)
+*.mp4
+*.mov
+*.wav
+*.m4a
+*.aif
+*.aiff

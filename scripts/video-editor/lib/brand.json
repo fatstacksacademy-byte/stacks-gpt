@@ -1,0 +1,50 @@
+{
+  "_comment": "Single source of truth for the Fat Stacks Academy VIDEO brand (punchy money look). Read by lib/brand.ts (TS renderer) AND scripts/thumb-gen/generate.py (thumbnails) so graphics + thumbnails stay one identity. Paths are relative to the repo root.",
+  "name": "Fat Stacks Academy",
+  "lockup": "FAT STACKS ACADEMY",
+  "handle": "@fatstacksacademy",
+  "presenter": "Nathaniel",
+  "color": {
+    "green": "#21d07a",
+    "greenBright": "#2ff08f",
+    "greenDeep": "#15945a",
+    "gold": "#f5c451",
+    "goldBright": "#ffd84d",
+    "navyDeep": "#0b1220",
+    "navyMid": "#162234",
+    "navyElev": "#1f3050",
+    "line": "#3a4d66",
+    "textPrimary": "#ffffff",
+    "textSecondary": "#9fb3c8",
+    "textMuted": "#6b7f96",
+    "danger": "#ff5d5d",
+    "overlayInk": "rgba(11,18,32,0.92)",
+    "websiteTeal": "#0d7c5f"
+  },
+  "thumb": {
+    "_comment": "Higher-saturation variants of the SAME hue family for thumbnails, which must win at 120px. Same identity, more punch — not a separate palette.",
+    "green": "#22e06e",
+    "gold": "#ffd21a",
+    "alert": "#ff3b30",
+    "navy": "#0a1730",
+    "dark": "#0a0e16"
+  },
+  "font": {
+    "display": { "family": "FSA Display", "file": "assets/fonts/Anton-Regular.ttf", "note": "Anton — condensed heavy display, used UPPERCASE for titles/numbers" },
+    "heavy": { "family": "FSA Heavy", "file": "assets/fonts/ArchivoBlack-Regular.ttf", "note": "Archivo Black — heavy grotesque for stat chips / emphasis" },
+    "bodyStack": "-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Arial,sans-serif"
+  },
+  "asset": {
+    "faceCutout": "assets/nathaniel-cutout.png",
+    "faceHead": "assets/nathaniel-head.png",
+    "cardArtDir": "public/card-art"
+  },
+  "geometry": {
+    "width": 1920,
+    "height": 1080,
+    "radius": 22,
+    "accentBarH": 10,
+    "safeX": 130,
+    "safeY": 90
+  }
+}

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import PortalStacksBadge from "./PortalStacksBadge"
 
@@ -8,7 +9,27 @@ import PortalStacksBadge from "./PortalStacksBadge"
  * spending, and savings. Each card surfaces the next required action
  * + deadline + urgency, so the dashboard reads like a prioritized
  * to-do.
+ *
+ * Cards are interactive: each carries an optional `advance` action that
+ * moves the bonus to its next step (mark DD met → bonus posted → safe to
+ * close, etc.) and a `checklist` so you can work the bonus right from the
+ * dashboard without opening each module page. The card body expands to
+ * show the full checklist + a link into the module for deeper edits.
  */
+
+export type AdvanceAction = {
+  /** Button label, e.g. "Mark bonus received". */
+  label: string
+  /** Performs the mutation. The list calls onChanged() after it resolves. */
+  run: () => Promise<void>
+}
+
+export type ChecklistItem = {
+  label: string
+  done: boolean
+  /** The next not-yet-done step (highlighted). */
+  current: boolean
+}
 
 export type StartedBonus = {
   module: "paycheck" | "spending" | "savings"
@@ -24,6 +45,10 @@ export type StartedBonus = {
   expected_payout_date?: string | null
   /** ISO yyyy-mm-dd of when the account can be safely closed. */
   safe_close_date?: string | null
+  /** One-tap action to advance this bonus to its next step. */
+  advance?: AdvanceAction | null
+  /** Ordered milestone checklist shown when the card is expanded. */
+  checklist?: ChecklistItem[]
 }
 
 const MODULE_COLORS: Record<StartedBonus["module"], { fg: string; bg: string; label: string }> = {
@@ -52,7 +77,41 @@ function fmtDeadline(iso: string | null | undefined): string | null {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" })
 }
 
-export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[] }) {
+function keyOf(b: StartedBonus): string {
+  return `${b.module}:${b.bonus_id ?? b.name}:${b.started_date ?? ""}`
+}
+
+export default function StartedBonusesList({
+  bonuses,
+  onChanged,
+}: {
+  bonuses: StartedBonus[]
+  /** Called after an inline advance so the dashboard can reload its data. */
+  onChanged?: () => void
+}) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [busyKey, setBusyKey] = useState<string | null>(null)
+
+  function toggle(key: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  async function runAdvance(key: string, advance: AdvanceAction) {
+    if (busyKey) return
+    setBusyKey(key)
+    try {
+      await advance.run()
+      onChanged?.()
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   if (bonuses.length === 0) {
     return (
       <div style={{
@@ -93,7 +152,10 @@ export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="started-bonuses-list">
-        {sorted.map((b, i) => {
+        {sorted.map((b) => {
+          const key = keyOf(b)
+          const isOpen = expanded.has(key)
+          const isBusy = busyKey === key
           const color = MODULE_COLORS[b.module]
           const urgency = b.urgency ?? "none"
           const urg = URGENCY_STYLE[urgency]
@@ -101,121 +163,205 @@ export default function StartedBonusesList({ bonuses }: { bonuses: StartedBonus[
           const daysLeft = daysUntil(b.deadline ?? null)
           const deadlineLabel = fmtDeadline(b.deadline)
           return (
-            <a
-              key={i}
-              href={b.href}
+            <div
+              key={key}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
                 background: "#fff",
                 border: `1px solid ${urg.border}`,
                 borderLeft: urgency === "overdue" || urgency === "urgent"
                   ? `4px solid ${urg.border}`
                   : `1px solid ${urg.border}`,
                 borderRadius: 12,
-                padding: "14px 18px",
-                textDecoration: "none",
-                color: "inherit",
-                transition: "border-color 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (urgency === "none" || urgency === "soon") e.currentTarget.style.borderColor = "#ccc"
-              }}
-              onMouseLeave={(e) => {
-                if (urgency === "none" || urgency === "soon") e.currentTarget.style.borderColor = urg.border
+                overflow: "hidden",
               }}
             >
-              <span style={{
-                fontSize: 10,
-                fontWeight: 700,
-                color: color.fg,
-                background: color.bg,
-                padding: "3px 9px",
-                borderRadius: 99,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                flexShrink: 0,
-              }}>
-                {color.label}
-              </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontSize: 14,
+              {/* Header row — click to expand */}
+              <div
+                onClick={() => toggle(key)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "14px 18px",
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{
+                  fontSize: 10,
                   fontWeight: 700,
-                  color: "#111",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  color: color.fg,
+                  background: color.bg,
+                  padding: "3px 9px",
+                  borderRadius: 99,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  flexShrink: 0,
                 }}>
-                  {b.name}
-                </div>
-                {b.nextStep && (
-                  <div style={{ fontSize: 12, color: "#333", marginTop: 4, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 600 }}>Next:</span>
-                    <span>{b.nextStep}</span>
-                    {deadlineLabel && (
-                      <span style={{ color: "#666" }}>
-                        · by {deadlineLabel}
-                        {daysLeft != null && (
-                          <>
-                            {" "}({daysLeft < 0
-                              ? `${Math.abs(daysLeft)}d overdue`
-                              : daysLeft === 0
-                              ? "today"
-                              : `${daysLeft}d left`})
-                          </>
-                        )}
-                      </span>
-                    )}
-                    {urg.chipLabel && (
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        background: urg.chipBg,
-                        color: urg.chipFg,
-                        padding: "2px 7px",
-                        borderRadius: 99,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.04em",
-                      }}>
-                        {urg.chipLabel}
-                      </span>
-                    )}
-                    <PortalStacksBadge bonusId={b.bonus_id} />
+                  {color.label}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: "#111",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {b.name}
                   </div>
-                )}
-                <div style={{ fontSize: 11, color: "#999", marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  {days != null && (
-                    <span>Started {days} day{days !== 1 ? "s" : ""} ago</span>
+                  {b.nextStep && (
+                    <div style={{ fontSize: 12, color: "#333", marginTop: 4, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                      <span style={{ fontWeight: 600 }}>Next:</span>
+                      <span>{b.nextStep}</span>
+                      {deadlineLabel && (
+                        <span style={{ color: "#666" }}>
+                          · by {deadlineLabel}
+                          {daysLeft != null && (
+                            <>
+                              {" "}({daysLeft < 0
+                                ? `${Math.abs(daysLeft)}d overdue`
+                                : daysLeft === 0
+                                ? "today"
+                                : `${daysLeft}d left`})
+                            </>
+                          )}
+                        </span>
+                      )}
+                      {urg.chipLabel && (
+                        <span style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          background: urg.chipBg,
+                          color: urg.chipFg,
+                          padding: "2px 7px",
+                          borderRadius: 99,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                        }}>
+                          {urg.chipLabel}
+                        </span>
+                      )}
+                      <PortalStacksBadge bonusId={b.bonus_id} />
+                    </div>
                   )}
-                  {b.expected_payout_date && (
-                    <span style={{ color: "#666" }}>
-                      Estimated payout {fmtDeadline(b.expected_payout_date)}
-                    </span>
-                  )}
-                  {b.safe_close_date && (
-                    <span style={{ color: "#666" }}>
-                      Estimated safe date {fmtDeadline(b.safe_close_date)}
-                    </span>
+                  <div style={{ fontSize: 11, color: "#999", marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {days != null && (
+                      <span>Started {days} day{days !== 1 ? "s" : ""} ago</span>
+                    )}
+                    {b.expected_payout_date && (
+                      <span style={{ color: "#666" }}>
+                        Estimated payout {fmtDeadline(b.expected_payout_date)}
+                      </span>
+                    )}
+                    {b.safe_close_date && (
+                      <span style={{ color: "#666" }}>
+                        Estimated safe date {fmtDeadline(b.safe_close_date)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+                  <div className="sbl-amount" style={{
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "#0d7c5f",
+                  }}>
+                    ${Math.round(b.amount).toLocaleString()}
+                  </div>
+                  {b.advance && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!) }}
+                      disabled={isBusy}
+                      className="sbl-advance"
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#fff",
+                        background: color.fg,
+                        border: "none",
+                        borderRadius: 8,
+                        padding: "7px 12px",
+                        cursor: isBusy ? "wait" : "pointer",
+                        opacity: isBusy ? 0.6 : 1,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {isBusy ? "Saving…" : b.advance.label}
+                    </button>
                   )}
                 </div>
+                <span style={{ fontSize: 16, color: "#bbb", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>
+                  ›
+                </span>
               </div>
-              <div className="sbl-amount" style={{
-                fontSize: 16,
-                fontWeight: 800,
-                color: "#0d7c5f",
-                flexShrink: 0,
-              }}>
-                ${Math.round(b.amount).toLocaleString()}
-              </div>
-            </a>
+
+              {/* Expanded drawer — full checklist + link into the module */}
+              {isOpen && (
+                <div style={{ borderTop: "1px solid #f0f0f0", background: "#fafafa", padding: "14px 18px 16px" }}>
+                  {b.checklist && b.checklist.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
+                      {b.checklist.map((item, idx) => (
+                        <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
+                          <span style={{
+                            width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                            border: item.done ? "none" : `2px solid ${item.current ? color.fg : "#d4d4d4"}`,
+                            background: item.done ? "#0d7c5f" : "transparent",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            {item.done && (
+                              <svg width="9" height="9" viewBox="0 0 14 14" fill="none">
+                                <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            )}
+                          </span>
+                          <span style={{
+                            fontSize: 13,
+                            color: item.done ? "#999" : item.current ? "#111" : "#bbb",
+                            fontWeight: item.current ? 600 : 400,
+                            textDecoration: item.done ? "line-through" : "none",
+                          }}>
+                            {item.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    {b.advance && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!) }}
+                        disabled={isBusy}
+                        style={{
+                          fontSize: 13, fontWeight: 700, color: "#fff", background: color.fg,
+                          border: "none", borderRadius: 8, padding: "9px 16px",
+                          cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1,
+                        }}
+                      >
+                        {isBusy ? "Saving…" : b.advance.label}
+                      </button>
+                    )}
+                    <a
+                      href={b.href}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        fontSize: 13, fontWeight: 600, color: color.fg,
+                        padding: "9px 14px", border: `1px solid ${color.fg}`, borderRadius: 8,
+                        textDecoration: "none",
+                      }}
+                    >
+                      Open in {color.label} →
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           )
         })}
       </div>
       <style>{`
         @media (max-width: 380px) {
-          .started-bonuses-list a { padding: 12px 14px !important; gap: 10px !important; }
+          .started-bonuses-list > div > div { padding: 12px 14px !important; gap: 10px !important; }
           .started-bonuses-list .sbl-amount { font-size: 15px !important; }
         }
       `}</style>
