@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useRef } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
 import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, setSavingsMilestone, SavingsEntry, type SavingsMilestone } from "../../../lib/savingsEntries"
 import LiquidityTimeline from "../../components/LiquidityTimeline"
@@ -88,6 +88,12 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     if (typeof window === "undefined") return false
     return localStorage.getItem("stacks_business_only") === "true"
   })
+  // How the recommendation list is ordered: by effective APY (default) or by
+  // raw bonus dollars. Effective APY is still shown in both modes.
+  const [recSort, setRecSort] = useState<"apy" | "amount">(() => {
+    if (typeof window === "undefined") return "apy"
+    return localStorage.getItem("stacks_rec_sort") === "amount" ? "amount" : "apy"
+  })
 
   // Form state
   const [fInstitution, setFInstitution] = useState("")
@@ -107,8 +113,13 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
   const autoYield = calcYield(fDepositRequired, fOfferApy || fPromoApy, fHoldingDays)
   const autoTotal = (parseFloat(fBonusAmount) || 0) + autoYield
 
+  // Only the FIRST load shows the full-screen spinner. Subsequent refetches
+  // (after a milestone toggle, status change, start, etc.) update in place —
+  // flipping `loading` back to true would unmount the whole page and snap the
+  // user's scroll position back to the top, which felt like a page refresh.
+  const hasLoadedRef = useRef(false)
   const loadData = useCallback(async () => {
-    setLoading(true)
+    if (!hasLoadedRef.current) setLoading(true)
     const supabaseClient = createClient()
     const [e, p, { data: userProfile }, vStates] = await Promise.all([
       getSavingsEntries(userId),
@@ -122,6 +133,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     const up = userProfile as { military_affiliated?: boolean | null } | null
     setMilitaryAffiliated(up?.military_affiliated === true)
     setVerificationStates(vStates)
+    hasLoadedRef.current = true
     setLoading(false)
   }, [userId])
 
@@ -265,20 +277,31 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
         skippedBonusIds: [...skippedSavingsIds, ...inProgressBonusIds],
         userState,
         currentHysaApy: currentApy || 0,
-        includeBusiness: showBusiness || businessOnly,
-        includeBrokerage: showBrokerage && !businessOnly,
+        includeBusiness: showBusiness,
+        includeBrokerage: showBrokerage,
+        businessOnly,
         militaryAffiliated,
       })
     : { entries: [] as SavingsSequencedEntry[], total_earnings: 0, total_days: 0, skipped: [] as { bank_name: string; reason: string }[] }
 
-  // Sequencer now handles business/brokerage filtering.
-  // Also hide anything the user *just* clicked start on — the DB write is
-  // still in-flight, and we don't want the card to sit there looking unresponsive.
+  // Sequencer now handles business/brokerage/business-only filtering, so every
+  // consumer of sequencerResult.entries (recommendations AND the year-plan
+  // rotation table) stays consistent.
+  // Hide anything the user *just* clicked start on — the DB write is still
+  // in-flight, and we don't want the card to sit there looking unresponsive.
   const recSearchQ = recSearch.trim().toLowerCase()
   const filteredEntries = sequencerResult.entries
     .filter((e) => !justStartedIds.has(e.id))
-    .filter((e) => !businessOnly || e.bonus?.business === true)
     .filter((e) => !recSearchQ || e.bank_name.toLowerCase().includes(recSearchQ))
+    // Display ordering. The sequencer already ranks by effective APY; when the
+    // user picks "Bonus $", re-sort by raw bonus dollars (tie-break on APY).
+    // Pure presentation — doesn't change the sequencer's capital-allocation plan.
+    .slice()
+    .sort((a, b) =>
+      recSort === "amount"
+        ? b.bonus_amount - a.bonus_amount || b.effective_apy - a.effective_apy
+        : b.effective_apy - a.effective_apy
+    )
 
   // Start a recommended bonus — add it as a savings entry
   async function handleStartRecommended(rec: SavingsSequencedEntry) {
@@ -718,7 +741,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
                           <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{e.institution_name}</div>
                           {offerLink && catalogEntry && (
-                            <a href={applyUrl(catalogEntry.id)} target="_blank" rel="noreferrer"
+                            <a href={applyUrl(catalogEntry.id, deposit || undefined)} target="_blank" rel="noreferrer"
                               style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
                               View offer ↗
                             </a>
@@ -742,6 +765,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                     <LiquidityTimeline
                       entry={e}
                       onToggle={(milestone, hit) => handleMilestoneToggle(e, milestone, hit)}
+                      transactionsRequired={catalogEntry?.requires_transactions ?? null}
                       recommendation={
                         bonusReceived
                           ? "Close & rotate this cash into your next bonus"
@@ -852,7 +876,23 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                Recommended — Ranked by Effective APY
+                Recommended — Ranked by {recSort === "amount" ? "Bonus $" : "Effective APY"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 11, color: "#aaa" }}>Sort by</span>
+                <div style={{ display: "inline-flex", border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden" }}>
+                  {([["apy", "Effective APY"], ["amount", "Bonus $"]] as const).map(([val, lbl]) => (
+                    <button
+                      key={val}
+                      onClick={() => { setRecSort(val); localStorage.setItem("stacks_rec_sort", val) }}
+                      style={{
+                        fontSize: 12, fontWeight: 600, padding: "5px 11px", border: "none", cursor: "pointer",
+                        background: recSort === val ? "#7c3aed" : "#fff",
+                        color: recSort === val ? "#fff" : "#666",
+                      }}
+                    >{lbl}</button>
+                  ))}
+                </div>
               </div>
             </div>
             <div style={{ marginBottom: 10, position: "relative" }}>
@@ -889,7 +929,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                     {(() => {
                       const combo = getComboFor(rec.bonus.id)
                       const isCombo = !!combo && !!comboMode[rec.id]
-                      const offerUrl = isCombo && combo?.combo_url ? combo.combo_url : (rec.bonus.source_links?.[0] ? applyUrl(rec.bonus.id) : undefined)
+                      const offerUrl = isCombo && combo?.combo_url ? combo.combo_url : ((rec.tier.enroll_url || rec.bonus.source_links?.[0]) ? applyUrl(rec.bonus.id, rec.deposit) : undefined)
                       const headlineTotal = isCombo ? rec.total_earnings + (combo!.comboTotal - combo!.selfEffectiveAmount) : rec.total_earnings
                       return (
                         <>
@@ -959,6 +999,12 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Interest</div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{money(rec.interest_earned)}</div>
                       </div>
+                      {rec.fee_cost > 0 && (
+                        <div>
+                          <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Fees</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#c0392b" }} title={`${money(rec.bonus.fees.monthly_fee)}/mo not waived at this deposit — netted out of the APY above`}>−{money(rec.fee_cost)}</div>
+                        </div>
+                      )}
                       <div>
                         <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Deposit</div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{money(rec.deposit)}</div>

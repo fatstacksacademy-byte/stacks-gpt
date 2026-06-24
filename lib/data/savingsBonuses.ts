@@ -1,6 +1,13 @@
 export type SavingsBonusTier = {
   min_deposit: number
   bonus_amount: number
+  /**
+   * Tier-specific enrollment URL. Some offers (e.g. Wells Fargo Initiate
+   * Business Checking) use a DIFFERENT signup link per deposit tier — linking
+   * to the wrong one lands the user on the wrong bonus. When set, the apply
+   * CTA for this tier resolves here instead of the bonus-level source_links[0].
+   */
+  enroll_url?: string
 }
 
 export type SavingsBonus = {
@@ -16,6 +23,16 @@ export type SavingsBonus = {
   fees: {
     monthly_fee: number
     early_closure_fee: number
+    /**
+     * True when the monthly fee is waived for someone doing this bonus as
+     * intended — i.e. the balance you hold to qualify already clears the
+     * bank's waiver threshold, so the net fee cost is ~$0. When omitted (or
+     * false) and monthly_fee > 0, the sequencer treats the fee as a real cost
+     * and nets it out of the bonus in the effective-APY math. First Hawaiian
+     * Business is the canonical not-waived case: $25/mo waived only at $50k
+     * combined, but the bonus tiers are $10k/$20k, so the fee genuinely bites.
+     */
+    monthly_fee_waived?: boolean
   }
   eligibility: {
     state_restricted: boolean
@@ -32,6 +49,18 @@ export type SavingsBonus = {
   notes?: string
   business?: boolean
   brokerage?: boolean
+  /**
+   * Set when the bonus requires debit/electronic transactions or card spend
+   * during the hold (on top of the deposit). Drives a checkable "Transactions"
+   * milestone + explanation on the hero card so the user doesn't forfeit the
+   * bonus by holding the balance but never running the swipes.
+   */
+  requires_transactions?: {
+    /** Human description, e.g. "10 electronic transactions within 90 days". */
+    description: string
+    /** Optional count for compact display ("10 txns"). Omit for spend-based. */
+    count?: number
+  }
   /**
    * Optional override for the "deposited" step label on the active-bonus card.
    * Use when the real qualifying action isn't a one-time deposit — e.g.,
@@ -896,6 +925,7 @@ export const savingsBonuses: SavingsBonus[] = [
   // ─── BUSINESS CHECKING (capital deployment) ───────────────────
   {
     id: "chase-biz-savings-500",
+    requires_transactions: { description: "5 transactions within 90 days", count: 5 },
     bank_name: "Chase Business Checking",
     product_type: "savings",
     business: true,
@@ -914,6 +944,7 @@ export const savingsBonuses: SavingsBonus[] = [
   },
   {
     id: "capital-one-biz-checking-500-2026",
+    requires_transactions: { description: "10 electronic transactions within 90 days", count: 10 },
     bank_name: "Capital One Business",
     product_type: "savings",
     business: true,
@@ -923,13 +954,14 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 500 }],
     cooldown_months: 24,
-    fees: { monthly_fee: 15, early_closure_fee: 0 },
+    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Basic Business Checking, promo SBOFFER500 (enter during online application). Deposit $5,000 from an external source within 30 days, maintain $5,000 for at least 60 of the first 90 days, plus 10 qualifying electronic transactions within 90 days. New customers only — ineligible if a signer on a Capital One Business checking opened after Jan 1, 2025; one account per business. Online applications only (in-branch ineligible). $15/mo Basic fee waived with $2,000 min balance (so waived while holding the $5k); Enhanced tier $35/mo waived at $25k. Bonus posts 60–90 days after requirements met." },
     source_links: ["https://www.capitalone.com/small-business/bank/bizchecking500/"],
     raw_excerpt: "Capital One Business Checking $500. $5,000 external deposit within 30 days, maintain $5,000 for 60 of 90 days + 10 electronic transactions. Online-only, nationwide. Promo SBOFFER500.",
   },
   {
     id: "usbank-biz-savings-1200",
+    requires_transactions: { description: "6 transactions within 60 days", count: 6 },
     bank_name: "U.S. Bank Business Platinum",
     product_type: "savings",
     business: true,
@@ -939,16 +971,16 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 1200 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 30, early_closure_fee: 0 },
-    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking. Promo Q2DIG26. Deposit in 30 days, maintain 60 days, 6 transactions." },
+    fees: { monthly_fee: 30, early_closure_fee: 0, monthly_fee_waived: true },
+    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking ($25k→$1,200) or Business Essentials/Silver ($5k→$400). Promo code Q2DIG26 (direct channel — Business Essentials or Platinum) OR Q2AFL26 (Platinum, online/affiliate channel) — both valid, channel-specific; use the one for your application path. Deposit in 30 days, maintain 60 days, 6 transactions. Expires June 30, 2026." },
     source_links: ["https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html",
       "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
     ],
-    raw_excerpt: "U.S. Bank Business $400/$1,200. $25k for top tier. Promo Q2AFL26.",
+    raw_excerpt: "U.S. Bank Business Checking $400 ($5k Silver/Essentials) / $1,200 ($25k Platinum). Maintain 60 days, 6 transactions. Promo Q2DIG26 (direct) or Q2AFL26 (Platinum online). Expires June 30, 2026.",
   },
   {
     id: "bmo-biz-savings-1000",
-    expired: true,
+    requires_transactions: { description: "10 debit-card transactions within 90 days", count: 10 },
     bank_name: "BMO Business",
     product_type: "savings",
     business: true,
@@ -956,12 +988,17 @@ export const savingsBonuses: SavingsBonus[] = [
     funding_window_days: 30,
     maintenance_days: 90,
     total_hold_days: 90,
-    tiers: [{ min_deposit: 4000, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 750 }, { min_deposit: 50000, bonus_amount: 1000 }],
-    cooldown_months: null,
-    fees: { monthly_fee: 0, early_closure_fee: 0 },
-    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Checking. Deposit in 30 days, maintain 90 days." },
-    source_links: ["https://www.bmo.com/en-us/main/business/checking-accounts/"],
-    raw_excerpt: "BMO Business $400/$750/$1,000. Tiered by deposit. 90-day hold.",
+    tiers: [
+      { min_deposit: 4000, bonus_amount: 400 },
+      { min_deposit: 25000, bonus_amount: 750 },
+      { min_deposit: 50000, bonus_amount: 1000 },
+      { min_deposit: 100000, bonus_amount: 1500 },
+    ],
+    cooldown_months: 12,
+    fees: { monthly_fee: 10, early_closure_fee: 50, monthly_fee_waived: true },
+    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Checking (Digital tier $10/mo waived at $500 balance). Deposit within 30 days, hold the tier minimum balance days 31–90 (a minimum, not an average), plus 10 debit-card transactions within 90 days. New customers only — no BMO business checking in the past 12 months. Opens online, but BMO's branch footprint is regional (Midwest + western ex-Bank-of-the-West states) and this offer has been footprint-gated before — verify residency before applying. Verified live 2026-06-23, expires Aug 31, 2026." },
+    source_links: ["https://www.bmo.com/en-us/main/business-banking/bank-accounts/bb-checking-offer/", "https://www.doctorofcredit.com/az-fl-il-ks-mo-mn-wi-bmo-harris-200-500-business-checking-bonus/"],
+    raw_excerpt: "BMO Business $400/$750/$1,000/$1,500 at $4k/$25k/$50k/$100k. Hold the tier balance days 31–90 + 10 debit transactions. Verified live 2026-06-23, expires Aug 31, 2026.",
   },
   {
     id: "bluevine-biz-savings-500",
@@ -1047,6 +1084,7 @@ export const savingsBonuses: SavingsBonus[] = [
   },
   {
     id: "provident-cu-biz-checking-475-2026",
+    requires_transactions: { description: "$400 in card purchases for 2 consecutive months" },
     bank_name: "Provident Credit Union Business",
     product_type: "savings",
     business: true,
@@ -1091,7 +1129,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 15000, bonus_amount: 900 },
     ],
     cooldown_months: 24,
-    fees: { monthly_fee: 15, early_closure_fee: 0 },
+    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
@@ -1282,7 +1320,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 15000, bonus_amount: 750 },
     ],
     cooldown_months: 12,
-    fees: { monthly_fee: 16, early_closure_fee: 0 },
+    fees: { monthly_fee: 16, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
@@ -1307,11 +1345,14 @@ export const savingsBonuses: SavingsBonus[] = [
     maintenance_days: 60,
     total_hold_days: 60, // maintain $2,500 ending balance through day 60 (corrected from removed dup wells-fargo-biz-savings-825; was an over-pessimistic 90)
     tiers: [
-      { min_deposit: 2500, bonus_amount: 400 },
-      { min_deposit: 25000, bonus_amount: 825 },
+      // Each tier has its OWN enrollment URL — linking to the wrong one lands
+      // you on the other tier's bonus. businesscheckinga = $400/$2.5k,
+      // businesscheckingb = $825/$25k (verified 2026-06-23).
+      { min_deposit: 2500, bonus_amount: 400, enroll_url: "https://accountoffers.wellsfargo.com/businesscheckinga" },
+      { min_deposit: 25000, bonus_amount: 825, enroll_url: "https://accountoffers.wellsfargo.com/businesscheckingb" },
     ],
-    cooldown_months: 12,
-    fees: { monthly_fee: 15, early_closure_fee: 0 },
+    cooldown_months: 24, // official offer terms: "Limit one business checking bonus offer per business entity or business owner within last 24 months" (accountoffers.wellsfargo.com, verified 2026-06-23). Prior value 12 was stale.
+    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
@@ -1344,7 +1385,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 200000, bonus_amount: 2000 },
     ],
     cooldown_months: null,
-    fees: { monthly_fee: 15, early_closure_fee: 0 },
+    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: true,
       states_allowed: ["CA", "FL", "IL", "MD", "NV", "NY", "DC"],

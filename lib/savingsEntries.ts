@@ -28,11 +28,14 @@ export type SavingsEntry = {
   funded_at?: string | null
   /** Timestamp the cash bonus posted (the moment it's "earned"). */
   bonus_posted_at?: string | null
+  /** Timestamp the user finished the bonus's transaction/spend requirement
+   *  (e.g. 10 debit swipes). Only meaningful for bonuses that require it. */
+  transactions_done_at?: string | null
   created_at: string
   updated_at: string
 }
 
-export type SavingsMilestone = "account_opened_at" | "funded_at" | "bonus_posted_at"
+export type SavingsMilestone = "account_opened_at" | "funded_at" | "bonus_posted_at" | "transactions_done_at"
 
 /**
  * Mark or unmark a single milestone on a savings entry. Pass `null` to

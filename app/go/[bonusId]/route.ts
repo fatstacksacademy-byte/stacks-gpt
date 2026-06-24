@@ -20,12 +20,25 @@ const cardOfferUrls = new Map(
 // canonical URL stored in the catalog. Adding an affiliate URL = one line
 // in lib/affiliateLinks.ts; no rendering changes needed.
 
-function canonicalUrlForBonus(bonusId: string): string | null {
+function canonicalUrlForBonus(bonusId: string, tierDeposit?: number): string | null {
   const bonus = (bonuses as Array<{ id: string; source_links?: string[] }>).find(b => b.id === bonusId)
   if (bonus?.source_links?.[0]) return bonus.source_links[0]
 
   const savings = savingsBonuses.find(b => b.id === bonusId)
-  if (savings?.source_links?.[0]) return savings.source_links[0]
+  if (savings) {
+    // Some savings offers have a different enrollment link per deposit tier
+    // (e.g. Wells Fargo Initiate). When the click carries ?tier=<min_deposit>,
+    // prefer that tier's enroll_url so we don't land on the wrong bonus.
+    if (tierDeposit != null) {
+      const tier = savings.tiers.find(t => t.min_deposit === tierDeposit)
+      if (tier?.enroll_url) return tier.enroll_url
+    }
+    // Otherwise fall back to the tier-specific link of the lowest tier if one
+    // exists (the most common recommendation), then the bonus-level source.
+    const firstTierUrl = savings.tiers.find(t => t.enroll_url)?.enroll_url
+    if (firstTierUrl) return firstTierUrl
+    if (savings.source_links?.[0]) return savings.source_links[0]
+  }
 
   const cardUrl = cardOfferUrls.get(bonusId)
   if (cardUrl) return cardUrl
@@ -38,8 +51,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ bon
 
   // Rotating referral pool (e.g. Chase business) takes precedence so clicks
   // spread across multiple links; falls back to the affiliate map / catalog link.
+  const tierParam = new URL(_req.url).searchParams.get("tier")
+  const tierDeposit = tierParam != null && tierParam !== "" ? Number(tierParam) : undefined
   const pooled = pickPooledLink(bonusId)
-  const target = pooled?.url ?? affiliateLinks[bonusId] ?? canonicalUrlForBonus(bonusId)
+  const target = pooled?.url ?? affiliateLinks[bonusId] ?? canonicalUrlForBonus(bonusId, Number.isFinite(tierDeposit) ? tierDeposit : undefined)
 
   if (!target) {
     return NextResponse.json({ error: "bonus_not_found", bonusId }, { status: 404 })

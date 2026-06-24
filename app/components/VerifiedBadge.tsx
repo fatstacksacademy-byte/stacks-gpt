@@ -1,17 +1,26 @@
 "use client"
 
-import { formatFreshness, freshnessTier, type VerificationState } from "../../lib/verificationState"
+import { freshnessTier, type VerificationState } from "../../lib/verificationState"
 
+// Neutral, low-key palette. We no longer shout "Verified"/"Needs review" —
+// the badge is just a factual "last verified on <date>" stamp. The dot color
+// is a subtle recency cue (green = recent, amber = getting old, grey = old or
+// not yet checked); the wording stays the same regardless of tier.
 const PALETTE = {
-  fresh: { dot: "#10b981", bg: "#ecfdf5", fg: "#065f46", border: "#a7f3d0" },
-  stale: { dot: "#f59e0b", bg: "#fffbeb", fg: "#92400e", border: "#fde68a" },
-  warn:  { dot: "#ef4444", bg: "#fef2f2", fg: "#991b1b", border: "#fecaca" },
+  fresh: { dot: "#10b981", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
+  stale: { dot: "#f59e0b", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
+  warn:  { dot: "#cbd5e1", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
 } as const
 
+function fmtVerifiedDate(verifiedAt: string): string {
+  const d = new Date(verifiedAt)
+  if (Number.isNaN(d.getTime())) return "—"
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+}
+
 function labelFor(state: VerificationState | undefined): string {
-  if (!state) return "Unverified"
-  if (state.confidence === "low") return `Needs review · ${formatFreshness(state.verified_at)}`
-  return `Verified ${formatFreshness(state.verified_at)}`
+  if (!state) return "Not yet verified"
+  return `Last verified ${fmtVerifiedDate(state.verified_at)}`
 }
 
 function tooltipFor(state: VerificationState | undefined): string {
