@@ -90,6 +90,20 @@ export const HOLD_BUFFER_DAYS = 10
 export const practicalHoldDays = (b: Pick<SavingsBonus, "total_hold_days">) =>
   b.total_hold_days + HOLD_BUFFER_DAYS
 
+/**
+ * Resolve the catalog bonus backing a saved entry. Entries store the catalog's
+ * string id in `bonus_name` (the `canonical_offer_id` column is a uuid type and
+ * is left null for system bonuses), so match on either field — the same
+ * convention the savings hero card uses to look up `requires_transactions`.
+ */
+export function savingsBonusForEntry(
+  entry: { bonus_name?: string | null; canonical_offer_id?: string | null },
+): SavingsBonus | undefined {
+  return savingsBonuses.find(
+    (b) => b.id === entry.bonus_name || b.id === entry.canonical_offer_id,
+  )
+}
+
 export const savingsBonuses: SavingsBonus[] = [
   {
     id: "etrade-premium-savings-2026",
@@ -1294,13 +1308,13 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 110,
     tiers: [{ min_deposit: 30000, bonus_amount: 1000 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 12, early_closure_fee: 0 },
+    fees: { monthly_fee: 12, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       states_excluded: [],
       lifetime_language: false,
-      eligibility_notes: "New PNC business checking customers only (no existing PNC business checking; no account closed in past 90 days; no bonus in past 12 months). Open a PNC Treasury Enterprise Plan (incl. Analysis Business Checking) by June 30, 2026. Annual revenue under $5M not required for this tier.",
+      eligibility_notes: "New PNC business checking customers only (no existing PNC business checking; no account closed in past 90 days; no bonus in past 12 months). Open the Treasury Enterprise Plan ($50/mo, but $0 for the first 3 statement cycles AND waived at a $30k average balance — so fee-free for this hold) by June 30, 2026. NOTE: do NOT open Analysis Business Checking instead — its fee is only offset by an earnings credit on balances above ~$125k, so $30k would still be charged ~$25/mo. Annual revenue under $5M not required for this tier.",
     },
     source_links: ["https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html"],
     raw_excerpt: "PNC Treasury Enterprise Plan $1,000 bonus: maintain $30,000+ average ledger balance for each of the first 3 statement cycles. No transaction requirement. Reward within 90 days. Open by June 30, 2026.",
@@ -1420,7 +1434,7 @@ export const savingsBonuses: SavingsBonus[] = [
       states_allowed: ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "New business checking customers only. State restricted. Expires June 16, 2026 — verify still live.",
+      eligibility_notes: "New business checking customers only. State restricted. Apply-by June 16, 2026 has PASSED — verify it's been renewed before featuring. Monthly fee NOT waivable at the bonus deposit: the $400 tier opens Unlimited Business Checking ($20/mo, waived only at a $10k deposit-relationship balance) and the $1,000 tier opens Unlimited Plus ($40/mo, waived only at $50k) — neither the $5k nor the $20k deposit clears its threshold (the cash bonus doesn't count), so plan on paying the monthly fee through the hold.",
     },
     source_links: [
       "https://www.huntington.com/business-banking-promotions-offers",
@@ -1445,13 +1459,13 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 100000, bonus_amount: 1500 },
     ],
     cooldown_months: null,
-    fees: { monthly_fee: 25, early_closure_fee: 0 },
+    fees: { monthly_fee: 25, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: true,
       states_allowed: ["CT", "DC", "DE", "MD", "NJ", "NY", "PA", "VA", "WV"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "New business checking customers only. Balance-based tiers measured in the 3rd month. State restricted: CT, DC, DE, MD, NJ, NY, PA, VA, WV. Expires June 30, 2026.",
+      eligibility_notes: "New business checking customers only. Balance-based tiers measured in the 3rd month. State restricted: CT, DC, DE, MD, NJ, NY, PA, VA, WV. Expires June 30, 2026. Monthly fee waived: the bonus opens Business Essential ($5/mo, waived at $1k avg ledger), Plus ($15/mo at $7.5k), or Premium ($25/mo at $10k) — pick the account whose threshold your deposit clears (same avg-ledger metric as the bonus); also auto-waived the first 3 months, which covers the hold.",
     },
     source_links: [
       "https://campaigns.mtb.com/bizbonus",
@@ -1497,13 +1511,13 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 110,
     tiers: [{ min_deposit: 5000, bonus_amount: 500 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 5, early_closure_fee: 0 },
+    fees: { monthly_fee: 5, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: true,
       states_allowed: ["AK", "CO", "CT", "ID", "IN", "MA", "ME", "MI", "NY", "OH", "OR", "PA", "UT", "VT", "WA"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "TARGETED: requires a personalized $500 offer letter; open in-branch/by appointment (no online application). Cannot have had a KeyBank business checking/savings in the past 12 months. State restricted. Expires Aug 21, 2026.",
+      eligibility_notes: "TARGETED: requires a personalized $500 offer letter; open in-branch/by appointment (no online application). Cannot have had a KeyBank business checking/savings in the past 12 months. State restricted. Expires Aug 21, 2026. Open Basic Business Checking ($5/mo, waived at a $1k average ledger balance — so $0 at a $5k hold); do NOT open Key Business Reward Checking ($25/mo, needs $7.5k to waive).",
     },
     source_links: [
       "https://www.key.com/small-business/small-business-checking/small-business-checking.jsp",
