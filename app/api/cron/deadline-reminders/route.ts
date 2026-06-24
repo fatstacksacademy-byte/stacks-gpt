@@ -5,6 +5,7 @@ import { deadlineReminderHTML, deadlineReminderText } from "../../../../lib/emai
 import { alreadySent, recordSent } from "../../../../lib/email/preferences"
 import { sendToUser as sendPushToUser } from "../../../../lib/push/server"
 import { bonuses as catalogBonuses } from "../../../../lib/data/bonuses"
+import { savingsBonusForEntry } from "../../../../lib/data/savingsBonuses"
 import {
   checkingBonusStep,
   customBonusStep,
@@ -243,7 +244,7 @@ async function collectCandidates(
   }
 
   for (const e of savings.data ?? []) {
-    const step = savingsEntryStep(e)
+    const step = savingsEntryStep(e, { requiresTransactions: savingsBonusForEntry(e)?.requires_transactions ?? null })
     if (!step.nextStep || !step.deadline) continue
     out.push({
       bonusKey: keyOf("savings", e.id, step.stage),

@@ -285,4 +285,55 @@ describe("savingsEntryStep — milestone-aware stages", () => {
     expect(r.deadline).toBeNull()
     expect(r.urgency).toBe("none")
   })
+
+  // ─── Transaction-requirement milestone (migration 035) ───────────────
+  const fundedBase = {
+    ...base,
+    account_opened_at: "2026-06-04T00:00:00Z",
+    funded_at:         "2026-06-04T12:00:00Z",
+  }
+
+  it("stage='transactions' when funded, txns required, and not yet done — surfaced before the passive hold", () => {
+    const r = savingsEntryStep(fundedBase, {
+      requiresTransactions: { description: "10 electronic transactions within 90 days", count: 10 },
+    })
+    expect(r.stage).toBe("transactions")
+    expect(r.nextStep).toBe("Run your 10 required transactions")
+    expect(r.deadline).toBe("2026-09-02") // funded_at + 90d (maintenance-window proxy)
+  })
+
+  it("spend-based requirement (no count) uses the card-spend label", () => {
+    const r = savingsEntryStep(fundedBase, {
+      requiresTransactions: { description: "$400 in card purchases for 2 consecutive months" },
+    })
+    expect(r.stage).toBe("transactions")
+    expect(r.nextStep).toBe("Complete the card-spend requirement")
+  })
+
+  it("advances past transactions to 'hold' once transactions_done_at is set", () => {
+    const r = savingsEntryStep(
+      { ...fundedBase, transactions_done_at: "2026-06-10T00:00:00Z" },
+      { requiresTransactions: { description: "10 electronic transactions within 90 days", count: 10 } },
+    )
+    expect(r.stage).toBe("hold")
+  })
+
+  it("transactions stay surfaced even after the hold window closes — they still must be run", () => {
+    const r = savingsEntryStep(
+      {
+        ...base,
+        account_opened_at: "2026-03-01T00:00:00Z",
+        funded_at:         "2026-03-01T00:00:00Z",
+        holding_period_days: 60, // hold ended 2026-04-30, before today 2026-06-04
+      },
+      { requiresTransactions: { description: "6 transactions within 60 days", count: 6 } },
+    )
+    expect(r.stage).toBe("transactions")
+    expect(r.nextStep).toBe("Run your 6 required transactions")
+  })
+
+  it("no requiresTransactions → milestone skipped entirely (unchanged hold behavior)", () => {
+    const r = savingsEntryStep(fundedBase)
+    expect(r.stage).toBe("hold")
+  })
 })
