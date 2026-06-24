@@ -67,6 +67,8 @@ ap.add_argument("--tint", choices=["none", "neg", "pos"], default="none",
 ap.add_argument("--eyeline", default="0.5,0.5",
                 help="focus/highlight: screen position (fx,fy fractions) to place the ROI — match where his eyes "
                      "sit in the A-roll so the cut doesn't jump the viewer's gaze (Leo eye-line continuity)")
+ap.add_argument("--glow", type=float, default=0.0,
+                help="focus/highlight: bloom/glow intensity on the subject, 0..1 (Leo's 'make the subject glow')")
 a = ap.parse_args()
 EYE_X, EYE_Y = (max(0.18, min(0.82, float(v))) for v in (a.eyeline.split(",") + ["0.5", "0.5"])[:2])
 
@@ -226,6 +228,13 @@ tmp = tempfile.mkdtemp()
 nf = max(1, int(round(a.dur * a.fps)))   # integer frame count drives BOTH seqs + -t (no frozen tail)
 DUR = nf / a.fps
 op = max(0.0, min(1.0, a.hl_opacity))
+# subject GLOW: a blurred, brightened copy of the ROI region — screen-blended back per frame so the
+# focused element BLOOMS (Leo's "make the subject glow"). Precomputed once; pulsed in the loop.
+bloom = None
+if a.glow > 0:
+    bloom = Image.new("RGB", (W, H), (0, 0, 0))
+    bloom.paste(base.crop(roi), (roi[0], roi[1]))
+    bloom = ImageEnhance.Brightness(bloom.filter(ImageFilter.GaussianBlur(s(34)))).enhance(1.6)
 for f in range(nf):
     t = f / a.fps
     z = 1.0 + zoom_amt * smooth(min(1.0, t / DUR))   # slow continuous push toward the ROI
@@ -243,6 +252,10 @@ for f in range(nf):
         frame = Image.composite(base, dim, mask).convert("RGBA")  # ROI sharp+bright, feathered
         g = glow.copy(); g.putalpha(g.getchannel("A").point(lambda v: int(v * 0.45 * blend)))
         frame = Image.alpha_composite(frame, g)
+    if bloom is not None and a.style in ("focus", "highlight"):   # pulse the subject glow (screen-blend)
+        gi = a.glow * (0.7 + 0.3 * math.sin(2 * math.pi * t / 1.6)) * smooth(min(1.0, t / 0.5))
+        rgb = frame.convert("RGB")
+        frame = Image.blend(rgb, ImageChops.screen(rgb, bloom), max(0.0, min(1.0, gi))).convert("RGBA")
     if TINT is not None:                                          # colour-connotation wash (subtle)
         frame = Image.blend(frame.convert("RGB"), Image.new("RGB", (W, H), TINT), 0.16).convert("RGBA")
     if a.annotate != "none":                                      # animated circle/arrow/underline on the ROI

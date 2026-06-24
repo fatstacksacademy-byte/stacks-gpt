@@ -303,8 +303,11 @@ The retention details that make an edit feel pro — each importance-gated / off
   your eyes sit in the A-roll) so a cut doesn't jump the viewer's gaze. Default `0.5,0.5` = centred.
 - **Per-segment mood music** — `preview-full --music "a.mp3,b.mp3,c.mp3"` maps one song per subject and
   fades between; a `-` slot runs that section **silent** (e.g. `"inspired.mp3,-,carefree.mp3"`).
-- **Music beat-sync** — the bed dips then **swells into each topic shift** (Leo: "the music picks up").
-- **SFX** (`make_sfx.py`): whoosh / riser / **hit** (release) / **highlight** / **drone** (suspense bed).
+- **Music beat-sync** — the bed dips then **swells into each topic shift** (Leo: "the music picks up");
+  `--beat-sync` snaps that swell to the song's **actual beats** (via librosa) instead of the section time.
+- **SFX** (`make_sfx.py`): whoosh / riser / **hit** (release) / **highlight** / **drone** (suspense bed) /
+  **pop** (soft "graphic appears" on each gold chip — swap `assets/sfx/pop.wav` for a sound you like).
+- **`page-focus --glow 0..1`** — pulse a bloom on the focused subject (Leo's "make the subject glow"; 0 = off).
 - **`particles.py`** — a subtle drifting-bokeh overlay (seamless loop, qtrle alpha). Overlay it faint:
   `ffmpeg -i v.mp4 -stream_loop -1 -i particles.mov -filter_complex "[1:v]colorchannelmixer=aa=0.5[p];[0:v][p]overlay=shortest=1" out.mp4`
 - **`transition.py`** — a full-screen whip/wipe light-sweep to mask a cut (`--style whip|wipe`, `--dur 0.4`),
