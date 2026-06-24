@@ -10,13 +10,14 @@ import type { UserProfile, PayFrequency } from "../../lib/profileTypes"
 type Step = "paycheck" | "savings" | "spending" | "done"
 
 /**
- * First-visit onboarding wizard. Three steps:
+ * First-visit onboarding wizard. Three steps, all required (enter 0 to opt out):
  *   1. Paycheck (required) — state, frequency, paycheck amount, DD slots
- *   2. Savings (skippable — beta)
- *   3. Spending (skippable — beta)
+ *   2. Savings (required — beta; enter 0 if none)
+ *   3. Spending (required — beta; enter 0 if none)
  *
- * Sets localStorage flag `stacks:onboarded=1` on completion so it doesn't
- * show again. Savings/spending can be filled in later from /stacksos/profile.
+ * Requiring a deliberate value (even 0) makes users surface their savings /
+ * credit-card bonuses instead of silently skipping them. Sets localStorage flag
+ * `stacks:onboarded=1` on completion. Numbers can be edited later from /stacksos/profile.
  */
 export default function WelcomeWizard({
   userId,
@@ -144,7 +145,6 @@ export default function WelcomeWizard({
             setSavApy={setSavApy}
             saving={savingSaving}
             onSave={() => saveSavings(false)}
-            onSkip={() => saveSavings(true)}
             onBack={() => setStep("paycheck")}
           />
         )}
@@ -156,7 +156,6 @@ export default function WelcomeWizard({
             rewardsVal={rewardsVal}
             setRewardsVal={setRewardsVal}
             onSave={() => saveSpending(false)}
-            onSkip={() => saveSpending(true)}
             onBack={() => setStep("savings")}
           />
         )}
@@ -258,7 +257,6 @@ function SavingsStep({
   setSavApy,
   saving,
   onSave,
-  onSkip,
   onBack,
 }: {
   savBalance: number
@@ -267,22 +265,24 @@ function SavingsStep({
   setSavApy: (n: number) => void
   saving: boolean
   onSave: () => void
-  onSkip: () => void
   onBack: () => void
 }) {
+  // Require a deliberate entry (0 is fine) so savings bonuses get surfaced
+  // instead of silently skipped.
+  const [touched, setTouched] = useState(false)
   return (
     <>
       <EyebrowText>
-        Step 2 of 3 · <BetaPill /> · Optional
+        Step 2 of 3 · <BetaPill /> · Required
       </EyebrowText>
       <Title>Do you have savings to deploy?</Title>
       <Subtitle>
         If you have cash sitting in savings, we can route it through high-yield bonuses
-        for extra earnings on top of your paycheck stack. Skip this if you're just here for paycheck bonuses.
+        for extra earnings on top of your paycheck stack. No savings? Just enter 0.
       </Subtitle>
 
-      <Field label="Current savings balance">
-        <DollarInput value={savBalance} onChange={setSavBalance} placeholder="0" />
+      <Field label="Current savings balance" subtitle="Enter 0 if you have none">
+        <DollarInput value={savBalance} onChange={(n) => { setSavBalance(n); setTouched(true) }} placeholder="0" />
       </Field>
 
       <Field label="Current APY" subtitle="Rate your savings currently earns">
@@ -291,8 +291,7 @@ function SavingsStep({
 
       <Actions>
         <SecondaryButton onClick={onBack}>← Back</SecondaryButton>
-        <SecondaryButton onClick={onSkip}>Skip for now</SecondaryButton>
-        <PrimaryButton disabled={saving} onClick={onSave}>
+        <PrimaryButton disabled={saving || !touched} onClick={onSave}>
           {saving ? "Saving…" : "Continue →"}
         </PrimaryButton>
       </Actions>
@@ -306,7 +305,6 @@ function SpendingStep({
   rewardsVal,
   setRewardsVal,
   onSave,
-  onSkip,
   onBack,
 }: {
   monthlySpend: number
@@ -314,22 +312,24 @@ function SpendingStep({
   rewardsVal: "cashback" | "points"
   setRewardsVal: (v: "cashback" | "points") => void
   onSave: () => void
-  onSkip: () => void
   onBack: () => void
 }) {
+  // Require a deliberate entry (0 is fine) so credit-card bonuses get surfaced
+  // instead of silently skipped.
+  const [touched, setTouched] = useState(false)
   return (
     <>
       <EyebrowText>
-        Step 3 of 3 · <BetaPill /> · Optional
+        Step 3 of 3 · <BetaPill /> · Required
       </EyebrowText>
       <Title>Do you want to earn on spending too?</Title>
       <Subtitle>
         Credit card sign-up bonuses can add thousands per year if you spend routinely. We'll rank
-        cards by return on spend. Skip if cards aren't your thing.
+        cards by return on spend. Don't use cards? Just enter 0.
       </Subtitle>
 
-      <Field label="Monthly spend" subtitle="Rough total across all categories">
-        <DollarInput value={monthlySpend} onChange={setMonthlySpend} placeholder="0" />
+      <Field label="Monthly spend" subtitle="Rough total across all categories — 0 if none">
+        <DollarInput value={monthlySpend} onChange={(n) => { setMonthlySpend(n); setTouched(true) }} placeholder="0" />
       </Field>
 
       <Field label="Preferred rewards">
@@ -345,8 +345,7 @@ function SpendingStep({
 
       <Actions>
         <SecondaryButton onClick={onBack}>← Back</SecondaryButton>
-        <SecondaryButton onClick={onSkip}>Skip for now</SecondaryButton>
-        <PrimaryButton onClick={onSave}>Finish →</PrimaryButton>
+        <PrimaryButton disabled={!touched} onClick={onSave}>Finish →</PrimaryButton>
       </Actions>
     </>
   )
