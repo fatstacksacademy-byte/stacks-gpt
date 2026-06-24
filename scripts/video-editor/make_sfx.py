@@ -58,10 +58,13 @@ def riser(dur=1.2):
 
 
 def pop(dur=0.13):
+    # soft "graphic appears" pop — a quick RISING bloop (380→900Hz) with a gentle attack + fast decay
+    # (his pick from the audition; replaces the old flat 660Hz ping he disliked).
     n = int(SR * dur); out = []
     for i in range(n):
-        env = math.exp(-i / (SR * 0.025))                  # fast decay
-        out.append(math.sin(2 * math.pi * 660 * i / SR) * env)
+        f = 380 + 520 * (i / n)
+        env = min(1.0, i / (SR * 0.004)) * math.exp(-i / (SR * 0.045))   # soft attack, fast decay
+        out.append(math.sin(2 * math.pi * f * i / SR) * env)
     return out
 
 
