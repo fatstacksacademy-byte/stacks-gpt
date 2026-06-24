@@ -76,8 +76,12 @@ function OnboardingInner() {
   const [userState, setUserState] = useState<string>("")
   const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [ddSlots, setDdSlots] = useState<string>("1")
-  const [savingsBalance, setSavingsBalance] = useState<string>("0")
-  const [monthlySpend, setMonthlySpend] = useState<string>("0")
+  // Empty by default (not "0") so the user must consciously enter a value —
+  // zero is allowed, but they can't silently skip past and miss the savings /
+  // credit-card bonuses those numbers unlock. Button stays disabled until both
+  // are filled (see `disabled` on "Show my projection").
+  const [savingsBalance, setSavingsBalance] = useState<string>("")
+  const [monthlySpend, setMonthlySpend] = useState<string>("")
   const [bonuses, setBonuses] = useState<ProjItem[]>([])
   const [counts, setCounts] = useState({ paycheck: 0, savings: 0, spending: 0 })
   const [yearTotal, setYearTotal] = useState(0)
@@ -260,7 +264,7 @@ function OnboardingInner() {
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                 Tell us about your finances
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine. This helps us find the best bonuses for you.</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine — enter 0 for anything that doesn't apply. The more we know, the more bonuses we can find (savings &amp; credit-card too).</p>
             </div>
             <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>
               Paycheck amount <span style={{ color: "#bbb" }}>({FREQ_LABEL[frequency]}, take-home)</span>
@@ -293,7 +297,7 @@ function OnboardingInner() {
                 </select>
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available</div>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available <span style={{ color: "#bbb" }}>(0 if none)</span></div>
                 <div style={{ position: "relative" }}>
                   <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
                   <input type="number" value={savingsBalance} onChange={e => setSavingsBalance(e.target.value)}
@@ -301,7 +305,7 @@ function OnboardingInner() {
                 </div>
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Monthly card spend <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Beta</span></div>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Monthly card spend <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Beta</span> <span style={{ color: "#bbb" }}>(0 if none)</span></div>
                 <div style={{ position: "relative" }}>
                   <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
                   <input type="number" value={monthlySpend} onChange={e => setMonthlySpend(e.target.value)}
