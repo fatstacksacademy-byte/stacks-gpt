@@ -21,11 +21,15 @@ export type LiquidityMilestoneKey =
   | "account_opened_at"
   | "funded_at"
   | "bonus_posted_at"
+  | "transactions_done_at"
 
 type Props = {
   entry: SavingsEntry
   onToggle: (milestone: LiquidityMilestoneKey, hit: boolean) => void
   recommendation?: string | null
+  /** When set, the bonus requires debit/electronic transactions or card spend
+   *  during the hold — renders an extra checkable "Transactions" step. */
+  transactionsRequired?: { description: string; count?: number } | null
 }
 
 type StepStatus = "done" | "current" | "future"
@@ -62,10 +66,11 @@ function daysBetween(a: string | null, b: string | null): number | null {
   return Math.floor((bd - ad) / 86400000)
 }
 
-export default function LiquidityTimeline({ entry, onToggle, recommendation }: Props) {
+export default function LiquidityTimeline({ entry, onToggle, recommendation, transactionsRequired }: Props) {
   const opened = entry.account_opened_at != null
   const funded = entry.funded_at != null
   const bonusPosted = entry.bonus_posted_at != null
+  const txnsDone = entry.transactions_done_at != null
 
   const holdDays = entry.holding_period_days ?? 0
   const fundedDateISO = entry.funded_at ? entry.funded_at.slice(0, 10) : entry.opened_date
@@ -98,6 +103,21 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation }: P
       milestone: "funded_at",
       done: funded,
     },
+    // Transaction/spend requirement — only present for bonuses that need it.
+    // Sits between funding and the end of the hold because the swipes happen
+    // while the balance is parked. Forgetting this is the #1 silent forfeit.
+    ...(transactionsRequired
+      ? [{
+          key: "txns",
+          label: transactionsRequired.count ? `${transactionsRequired.count} transactions` : "Transactions / spend",
+          date: fmtDate(entry.transactions_done_at),
+          status: (txnsDone ? "done" : funded ? "current" : "future") as StepStatus,
+          detail: transactionsRequired.description,
+          clickable: true,
+          milestone: "transactions_done_at" as LiquidityMilestoneKey,
+          done: txnsDone,
+        }]
+      : []),
     {
       key: "hold",
       label: `Holding period (${holdDays}d)`,

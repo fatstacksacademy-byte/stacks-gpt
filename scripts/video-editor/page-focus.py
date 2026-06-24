@@ -37,7 +37,12 @@ def load_font(size):
     return ImageFont.load_default()
 
 
-W, H = 1920, 1080
+# RENDER_SCALE (default 2 = native 4K 3840×2160). The page CONTENT is native 4K because the source
+# screenshot is cropped+resized straight into the W×H frame (no 1080 downsample), and every absolute
+# decoration constant below is scaled by s(). RENDER_SCALE=1 keeps the proven 1080 path.
+S = max(1, int(os.environ.get("RENDER_SCALE", "2")))
+W, H = 1920 * S, 1080 * S
+def s(v): return int(round(v * S))   # scale an absolute-px constant into the render space
 ap = argparse.ArgumentParser()
 ap.add_argument("--image", required=True)
 ap.add_argument("--roi", required=True, help="x,y,w,h (px) or auto:fx,fy,fw,fh (fractions)")
@@ -52,14 +57,20 @@ ap.add_argument("--hl-opacity", type=float, default=0.82, help="highlight: marke
 ap.add_argument("--sweep", type=float, default=0.0, help="highlight: marker stroke seconds (0=auto)")
 ap.add_argument("--source", default="", help="optional attribution pill, e.g. 'Doctor of Credit'")
 ap.add_argument("--face", default="", help="optional face video → circle PiP bottom-left")
-ap.add_argument("--face-d", type=int, default=330, help="circle diameter (matches the uploaded video)")
+ap.add_argument("--face-d", type=int, default=0, help="circle diameter in OUTPUT px (0=auto: 330×RENDER_SCALE, matches the uploaded video)")
 ap.add_argument("--ring", default="#0d7c5f", help="emerald ring color (matches render-broll2)")
 ap.add_argument("--zoom", type=float, default=-1.0, help="total eased push toward the ROI (-1=auto per style)")
 ap.add_argument("--annotate", choices=["none", "circle", "arrow", "underline"], default="none",
                 help="draw an animated attention annotation on the ROI (Leo: circles/arrows/underlines)")
 ap.add_argument("--tint", choices=["none", "neg", "pos"], default="none",
                 help="colour-connotation wash — neg=red (a downside), pos=green (a win)")
+ap.add_argument("--eyeline", default="0.5,0.5",
+                help="focus/highlight: screen position (fx,fy fractions) to place the ROI — match where his eyes "
+                     "sit in the A-roll so the cut doesn't jump the viewer's gaze (Leo eye-line continuity)")
+ap.add_argument("--glow", type=float, default=0.0,
+                help="focus/highlight: bloom/glow intensity on the subject, 0..1 (Leo's 'make the subject glow')")
 a = ap.parse_args()
+EYE_X, EYE_Y = (max(0.18, min(0.82, float(v))) for v in (a.eyeline.split(",") + ["0.5", "0.5"])[:2])
 
 
 def hex2rgb(h):
@@ -103,8 +114,8 @@ else:
         Hd = uh / 0.46; Wd = Hd * W / H
     Wd = max(Wd, NW / 2.6)                        # cap zoom (don't over-enlarge a thin line)
     Wd = min(Wd, NW); Hd = Wd * H / W            # never exceed the page width
-    wx = max(0.0, min(NW - Wd, ccx - Wd / 2))
-    wy = max(0.0, min(max(0.0, NH - Hd), ccy - Hd / 2))
+    wx = max(0.0, min(NW - Wd, ccx - Wd * EYE_X))   # place the ROI at the EYE_X/EYE_Y screen position
+    wy = max(0.0, min(max(0.0, NH - Hd), ccy - Hd * EYE_Y))   # (default 0.5,0.5 = centred = prior behaviour)
 crop = img.crop((int(wx), int(wy), int(wx + min(Wd, NW - wx)), int(wy + min(Hd, NH - wy))))
 if crop.size != (round(Wd), round(Hd)):         # window taller than the page → pad to the window box
     pad = Image.new("RGB", (round(Wd), round(Hd)), (8, 12, 20)); pad.paste(crop, (0, 0)); crop = pad
@@ -128,22 +139,22 @@ zoom_amt = a.zoom if a.zoom >= 0 else {"focus": 0.05, "highlight": 0.03, "plain"
 
 # ---- focus-style assets (mask + glow), computed only when needed ----
 if a.style == "focus":
-    darkblur = ImageEnhance.Brightness(base.filter(ImageFilter.GaussianBlur(16))).enhance(0.38)
+    darkblur = ImageEnhance.Brightness(base.filter(ImageFilter.GaussianBlur(s(16)))).enhance(0.38)
     accent = hex2rgb(a.accent)
-    feather = int(min(28, max(8, min(rw, rh) * 0.30)))
+    feather = int(min(s(28), max(s(8), min(rw, rh) * 0.30)))
     mask = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle(roi, radius=22, fill=255)
+    ImageDraw.Draw(mask).rounded_rectangle(roi, radius=s(22), fill=255)
     mask = mask.filter(ImageFilter.GaussianBlur(feather))
     ix = [roi[0] + feather, roi[1] + feather, roi[2] - feather, roi[3] - feather]
     if ix[2] > ix[0] and ix[3] > ix[1]:
         core = Image.new("L", (W, H), 0)
-        ImageDraw.Draw(core).rounded_rectangle(ix, radius=max(2, 22 - feather // 2), fill=255)
+        ImageDraw.Draw(core).rounded_rectangle(ix, radius=max(2, s(22) - feather // 2), fill=255)
         mask = ImageChops.lighter(mask, core)
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gpad = 16
+    gpad = s(16)
     ImageDraw.Draw(glow).rounded_rectangle([roi[0] - gpad, roi[1] - gpad, roi[2] + gpad, roi[3] + gpad],
-                                           radius=28, outline=accent + (255,), width=22)
-    glow = glow.filter(ImageFilter.GaussianBlur(26))
+                                           radius=s(28), outline=accent + (255,), width=s(22))
+    glow = glow.filter(ImageFilter.GaussianBlur(s(26)))
 elif a.style == "highlight":
     # ---- highlight-style assets: a yellow "marker paper" (multiply) + the sweep mask ----
     tint = ImageChops.multiply(base, Image.new("RGB", (W, H), hex2rgb(a.hl_color)))
@@ -157,7 +168,7 @@ elif a.style == "highlight":
         for (lx, ly, lw, lh) in lines_f:
             cw = max(0.0, min(lw, rem)); rem -= lw
             if cw > 1:
-                vpad = max(3, int(lh * 0.16)); mh = lh + 2 * vpad
+                vpad = max(s(3), int(lh * 0.16)); mh = lh + 2 * vpad
                 d.rounded_rectangle([lx, ly - vpad, lx + cw, ly - vpad + mh], radius=mh / 2, fill=255)
             if rem <= 0:
                 break
@@ -167,15 +178,15 @@ elif a.style == "highlight":
 srcpill = None
 if a.source:
     txt = f"via {a.source}"
-    font = load_font(26)
+    font = load_font(s(26))
     tmp_d = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
     l, t0, r, b = tmp_d.textbbox((0, 0), txt, font=font)
     tw, th = r - l, b - t0
-    padx, pady = 22, 14
+    padx, pady = s(22), s(14)
     pw, ph = tw + 2 * padx, th + 2 * pady
     srcpill = Image.new("RGBA", (pw, ph), (0, 0, 0, 0)); ds = ImageDraw.Draw(srcpill)
     ds.rounded_rectangle([0, 0, pw - 1, ph - 1], radius=ph // 2, fill=(11, 18, 32, 225))
-    ds.rounded_rectangle([0, 0, pw - 1, ph - 1], radius=ph // 2, outline=hex2rgb(a.ring) + (255,), width=2)
+    ds.rounded_rectangle([0, 0, pw - 1, ph - 1], radius=ph // 2, outline=hex2rgb(a.ring) + (255,), width=max(1, s(2)))
     ds.text((padx - l, pady - t0), txt, fill=(236, 240, 246, 255), font=font)
 
 
@@ -197,19 +208,19 @@ def annotation(progress):
     e = smooth(progress); col = ANN_COL + (255,)
     x0, y0, x1, y1 = roi
     if a.annotate == "underline":
-        ly = min(H - 2, y1 + max(6, int(rh * 0.14))); w = max(6, int(rh * 0.10))
+        ly = min(H - 2, y1 + max(s(6), int(rh * 0.14))); w = max(s(6), int(rh * 0.10))
         d.line([(x0, ly), (x0 + (x1 - x0) * e, ly)], fill=col, width=w)
     elif a.annotate == "circle":
-        pad = max(10, int(min(rw, rh) * 0.30))
+        pad = max(s(10), int(min(rw, rh) * 0.30))
         d.arc([x0 - pad, y0 - pad, x1 + pad, y1 + pad], -90, -90 + 360 * e,
-              fill=col, width=max(6, int(min(rw, rh) * 0.07)))
+              fill=col, width=max(s(6), int(min(rw, rh) * 0.07)))
     elif a.annotate == "arrow":
         tx, ty = x0, y0                                   # tip at the ROI's top-left corner
-        sx, sy = max(0, x0 - 240), max(0, y0 - 170)       # start up-and-left
+        sx, sy = max(0, x0 - s(240)), max(0, y0 - s(170)) # start up-and-left
         ex_, ey_ = sx + (tx - sx) * e, sy + (ty - sy) * e
-        d.line([(sx, sy), (ex_, ey_)], fill=col, width=10)
+        d.line([(sx, sy), (ex_, ey_)], fill=col, width=s(10))
         if e > 0.7:                                       # arrowhead lands once the shaft arrives
-            d.polygon([(tx, ty), (tx + 30, ty - 4), (tx - 4, ty + 30)], fill=col)
+            d.polygon([(tx, ty), (tx + s(30), ty - s(4)), (tx - s(4), ty + s(30))], fill=col)
     return ov
 
 
@@ -217,6 +228,13 @@ tmp = tempfile.mkdtemp()
 nf = max(1, int(round(a.dur * a.fps)))   # integer frame count drives BOTH seqs + -t (no frozen tail)
 DUR = nf / a.fps
 op = max(0.0, min(1.0, a.hl_opacity))
+# subject GLOW: a blurred, brightened copy of the ROI region — screen-blended back per frame so the
+# focused element BLOOMS (Leo's "make the subject glow"). Precomputed once; pulsed in the loop.
+bloom = None
+if a.glow > 0:
+    bloom = Image.new("RGB", (W, H), (0, 0, 0))
+    bloom.paste(base.crop(roi), (roi[0], roi[1]))
+    bloom = ImageEnhance.Brightness(bloom.filter(ImageFilter.GaussianBlur(s(34)))).enhance(1.6)
 for f in range(nf):
     t = f / a.fps
     z = 1.0 + zoom_amt * smooth(min(1.0, t / DUR))   # slow continuous push toward the ROI
@@ -234,19 +252,23 @@ for f in range(nf):
         frame = Image.composite(base, dim, mask).convert("RGBA")  # ROI sharp+bright, feathered
         g = glow.copy(); g.putalpha(g.getchannel("A").point(lambda v: int(v * 0.45 * blend)))
         frame = Image.alpha_composite(frame, g)
+    if bloom is not None and a.style in ("focus", "highlight"):   # pulse the subject glow (screen-blend)
+        gi = a.glow * (0.7 + 0.3 * math.sin(2 * math.pi * t / 1.6)) * smooth(min(1.0, t / 0.5))
+        rgb = frame.convert("RGB")
+        frame = Image.blend(rgb, ImageChops.screen(rgb, bloom), max(0.0, min(1.0, gi))).convert("RGBA")
     if TINT is not None:                                          # colour-connotation wash (subtle)
         frame = Image.blend(frame.convert("RGB"), Image.new("RGB", (W, H), TINT), 0.16).convert("RGBA")
     if a.annotate != "none":                                      # animated circle/arrow/underline on the ROI
         frame = Image.alpha_composite(frame, annotation((t - 0.3) / 0.6))
     frame = zoom_affine(frame.convert("RGB"), z).convert("RGBA")  # push toward ROI (page only)
     if srcpill is not None:                                       # pill is a FIXED annotation — after zoom
-        frame.alpha_composite(srcpill, (40, 36))
+        frame.alpha_composite(srcpill, (s(40), s(36)))
     frame.convert("RGB").save(os.path.join(tmp, f"{f:04d}.png"))
 
 
 def make_ring(D, color, nf, fps):
     """Rotating-comet emerald ring as an RGBA PNG sequence (matches render-broll2's look)."""
-    MARGIN, SS, N = 36, 2, 90
+    MARGIN, SS, N = s(36), 2, 90
     RC = D + 2 * MARGIN
     cs = RC * SS; ctr = cs / 2
     rc = hex2rgb(color)
@@ -272,8 +294,8 @@ def make_ring(D, color, nf, fps):
 
 page_seq = os.path.join(tmp, "%04d.png")
 if a.face and os.path.exists(a.face):
-    D = a.face_d
-    PADX, PADY = 48, H - D - 48                   # bottom-left, ~48px insets (matches render-broll2)
+    D = a.face_d if a.face_d else s(330)         # circle Ø in output px (auto-scales with RENDER_SCALE)
+    PADX, PADY = s(48), H - D - s(48)             # bottom-left, ~48px insets (matches render-broll2)
     # square-crop the face by its MIN dimension (portrait-safe — fixes the 0-byte bug)
     pr = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
                          "-show_entries", "stream=width,height", "-of", "csv=p=0", a.face],

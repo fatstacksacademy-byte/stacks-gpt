@@ -7,8 +7,12 @@ export type SavingsSequencedEntry = {
   bonus_amount: number
   base_apy: number
   interest_earned: number
-  total_earnings: number
-  effective_apy: number // annualized
+  total_earnings: number // net of fee_cost
+  effective_apy: number // annualized, net of fees
+  /** Net monthly-fee cost over the hold (0 when waived/no fee). Already
+   *  subtracted from total_earnings / effective_apy; surfaced so the card can
+   *  show the deduction explicitly. */
+  fee_cost: number
   hold_days: number
   tier: SavingsBonusTier
   bonus: SavingsBonus
@@ -50,17 +54,35 @@ function bestTier(bonus: SavingsBonus, availableBalance: number): SavingsBonusTi
 }
 
 /**
+ * Net monthly-fee cost over the bonus hold.
+ *
+ * Most business-checking bonuses waive the monthly fee for anyone holding the
+ * qualifying balance, so the net cost is $0 — those are flagged
+ * `fees.monthly_fee_waived`. When the fee is NOT waived at the deposit level
+ * (e.g. First Hawaiian: $25/mo, waived only at $50k but the bonus tiers are
+ * $10k/$20k), the fee is a real drag and gets netted out of the bonus. We
+ * charge one fee per statement cycle the account is funded (~30-day months).
+ */
+function feeCostFor(bonus: SavingsBonus): number {
+  const fee = bonus.fees?.monthly_fee ?? 0
+  if (fee <= 0 || bonus.fees?.monthly_fee_waived) return 0
+  const months = Math.max(1, Math.ceil(bonus.total_hold_days / 30))
+  return fee * months
+}
+
+/**
  * Calculate effective APY for a given bonus tier
- * effective_apy = (bonus + interest) / deposit * (365 / hold_days)
+ * effective_apy = (bonus + interest - fees) / deposit * (365 / hold_days)
  */
 function calcEffectiveApy(
   deposit: number,
   bonusAmount: number,
   baseApy: number,
   holdDays: number,
+  feeCost = 0,
 ): { effectiveApy: number; interestEarned: number; totalEarnings: number } {
   const interestEarned = Math.round(deposit * baseApy * (holdDays / 365))
-  const totalEarnings = bonusAmount + interestEarned
+  const totalEarnings = bonusAmount + interestEarned - feeCost
   const effectiveApy = (totalEarnings / deposit) * (365 / holdDays)
   return { effectiveApy, interestEarned, totalEarnings }
 }
@@ -84,6 +106,7 @@ export function runSavingsSequencer({
   currentHysaApy = 0,
   includeBusiness = false,
   includeBrokerage = false,
+  businessOnly = false,
   militaryAffiliated = false,
 }: {
   availableBalance: number
@@ -93,6 +116,9 @@ export function runSavingsSequencer({
   currentHysaApy?: number
   includeBusiness?: boolean
   includeBrokerage?: boolean
+  /** When true, show ONLY business bonuses — personal and brokerage are
+   * excluded regardless of includeBusiness/includeBrokerage. */
+  businessOnly?: boolean
   /** USAA / Navy Federal / AAFES-type offers gate on this. */
   militaryAffiliated?: boolean
 }): SavingsSequencerResult {
@@ -103,6 +129,7 @@ export function runSavingsSequencer({
     effectiveApy: number
     interestEarned: number
     totalEarnings: number
+    feeCost: number
   }[] = []
 
   for (const bonus of savingsBonuses) {
@@ -118,9 +145,15 @@ export function runSavingsSequencer({
       skipped.push({ bank_name: bonus.bank_name, reason: "Skipped by user" })
       continue
     }
-    // Business/brokerage filter
-    if (bonus.business && !includeBusiness) continue
-    if (bonus.brokerage && !includeBrokerage) continue
+    // Business/brokerage filter.
+    // Business-only mode is exclusive: show ONLY business bonuses (personal +
+    // brokerage are both hidden). Otherwise honor the include* toggles.
+    if (businessOnly) {
+      if (!bonus.business) continue
+    } else {
+      if (bonus.business && !includeBusiness) continue
+      if (bonus.brokerage && !includeBrokerage) continue
+    }
 
     // State filter: when no state is set, hide all state-restricted bonuses
     // (default to nationwide only — picking a state unlocks more, not fewer).
@@ -170,11 +203,15 @@ export function runSavingsSequencer({
       bonus.cooldown_months !== undefined &&
       bonus.eligibility?.lifetime_language !== true
 
+    // Net monthly-fee drag (0 for waived/no-fee bonuses) — applied to every
+    // tier's effective-APY math below so fees aren't silently ignored.
+    const feeCost = feeCostFor(bonus)
+
     let bestCandidate: { tier: SavingsBonusTier; effectiveApy: number; interestEarned: number; totalEarnings: number } | null = null
     if (isChurnable) {
       // Max APY: feeds parallel redeployment math
       for (const tier of affordableTiers) {
-        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus), feeCost)
         if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
           bestCandidate = { tier, ...result }
         }
@@ -185,7 +222,7 @@ export function runSavingsSequencer({
       // so walk from the top down.
       for (let i = affordableTiers.length - 1; i >= 0; i--) {
         const tier = affordableTiers[i]
-        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
+        const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus), feeCost)
         if (currentHysaApy > 0 && result.effectiveApy <= currentHysaApy) continue
         bestCandidate = { tier, ...result }
         break
@@ -196,7 +233,7 @@ export function runSavingsSequencer({
       // decided to take it).
       if (!bestCandidate) {
         for (const tier of affordableTiers) {
-          const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus))
+          const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus), feeCost)
           if (!bestCandidate || result.effectiveApy > bestCandidate.effectiveApy) {
             bestCandidate = { tier, ...result }
           }
@@ -216,7 +253,7 @@ export function runSavingsSequencer({
     }
 
     const { tier, effectiveApy, interestEarned, totalEarnings } = bestCandidate
-    candidates.push({ bonus, tier, effectiveApy, interestEarned, totalEarnings })
+    candidates.push({ bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost })
   }
 
   // Sort by effective APY descending
@@ -245,7 +282,7 @@ export function runSavingsSequencer({
     // Try to deploy to multiple bonuses simultaneously
     const toRemove: number[] = []
     for (let i = 0; i < remaining.length; i++) {
-      const { bonus, tier, effectiveApy, interestEarned, totalEarnings } = remaining[i]
+      const { bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost } = remaining[i]
       if (tier.min_deposit > freeCapital) continue
 
       rotation++
@@ -268,6 +305,7 @@ export function runSavingsSequencer({
         interest_earned: interestEarned,
         total_earnings: totalEarnings,
         effective_apy: effectiveApy,
+        fee_cost: feeCost,
         hold_days: practicalHoldDays(bonus),
         tier,
         bonus,

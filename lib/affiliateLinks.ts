@@ -33,8 +33,13 @@ export const affiliateLinks: Record<string, string> = {
 // Renderer-facing helper. Always returns a /go/<bonus_id> URL. The redirect
 // handler does the affiliate-vs-canonical resolution server-side so the
 // renderers never need to know which bonuses have affiliate URLs.
-export function applyUrl(bonusId: string): string {
-  return `/go/${encodeURIComponent(bonusId)}`
+//
+// `tierDeposit` is the min_deposit of the specific tier being shown. Offers
+// with per-tier enrollment links (e.g. Wells Fargo Initiate) use it so the CTA
+// lands on the right bonus instead of source_links[0].
+export function applyUrl(bonusId: string, tierDeposit?: number): string {
+  const base = `/go/${encodeURIComponent(bonusId)}`
+  return tierDeposit != null ? `${base}?tier=${tierDeposit}` : base
 }
 
 export function hasAffiliate(bonusId: string): boolean {

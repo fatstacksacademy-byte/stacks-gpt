@@ -26,11 +26,15 @@ broll-plan.json:
 }
 layout → page-focus --style:  plain (full hero + circle) | focus (blur+highlight region) | highlight (animated marker).
 Author segments by hand, or from article-index.ts (change-claims) + page-roi.py (tight ROI) + fetch-screenshots.ts.
-Output is 1920×1080 (page-focus renders at 1080; face spans are scaled/padded to match).
+Output is RENDER_SCALE-driven: default 3840×2160 (native 4K), RENDER_SCALE=1 → 1920×1080. The same env
+is inherited by the page-focus/motion-gfx subprocesses so every segment matches. NOTE: the FACE (A-roll)
+portion is only TRUE 4K if the source face is 4K — a 1080 face is scaled up to fill the 4K frame.
 """
 import argparse, json, os, subprocess, sys, tempfile
 
-W, H = 1920, 1080
+S = max(1, int(os.environ.get("RENDER_SCALE", "2")))   # default 2 = native 4K (matches page-focus/motion-gfx)
+os.environ["RENDER_SCALE"] = str(S)                    # lock children (page-focus/motion-gfx) to the SAME scale
+W, H = 1920 * S, 1080 * S
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE_FOCUS = os.path.join(HERE, "page-focus.py")
 MOTION_GFX = os.path.join(HERE, "motion-gfx.py")
@@ -121,6 +125,23 @@ def face_slice(start_f, nframes, out):  # NATIVE-res circle-cam source — page-
     check_frames(out, nframes)
 
 
+def split_compose(page_clip, face_clip, dur, i):
+    # SPLIT look: a big PORTRAIT of him (left, emerald border) beside the page region (right), on navy.
+    e2 = lambda x: int(x) // 2 * 2                       # libx264 needs even dims
+    PAD = 40 * S; em = RING.lstrip("#"); bw = max(4, 6 * S)
+    fw, fh, fx0, fy0 = e2(0.40 * W - PAD), e2(H - 2 * PAD), PAD, PAD               # face portrait, left
+    px0 = e2(0.40 * W + PAD // 2); pw, ph, py0 = e2(W - px0 - PAD), e2(H - 2 * PAD), PAD  # page, right
+    out = os.path.join(tmp, f"part_{i:03d}.mp4")
+    fc = (f"color=c=0x0B1220:s={W}x{H}:r={FPS}:d={dur:.4f}[bg];"
+          f"[0:v]scale={pw}:{ph}:force_original_aspect_ratio=increase,crop={pw}:{ph},setsar=1[pg];"
+          f"[1:v]scale={fw}:{fh}:force_original_aspect_ratio=increase,crop={fw}:{fh},setsar=1,"
+          f"drawbox=0:0:{fw}:{fh}:color=0x{em}:t={bw}[fcr];"
+          f"[bg][pg]overlay={px0}:{py0}[b1];[b1][fcr]overlay={fx0}:{fy0}[out]")
+    run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", page_clip, "-i", face_clip,
+         "-filter_complex", fc, "-map", "[out]", "-t", f"{dur:.4f}", *VENC, out], f"split compose {i}")
+    return out
+
+
 def render_seg(s, start_f, nframes, i):
     dur = nframes / FPS
     layout = s.get("layout", "plain")
@@ -130,8 +151,25 @@ def render_seg(s, start_f, nframes, i):
              "--spec", json.dumps(s.get("spec", {})), "--dur", f"{dur:.4f}", "--fps", str(FPS), "--out", out],
             f"motion-gfx seg {i}")
         return out
+    if layout == "split":   # big portrait of him (left) + the page region (right) — alternate to the circle
+        style = s.get("split_style", "focus")
+        image = expand(s.get("image") or s.get("hero"))
+        if not image or not os.path.exists(image):
+            sys.exit(f"build-broll: segment {i} (split) missing image/hero (got {image!r})")
+        roi = s.get("roi") or ("auto:0,0,1,1" if style == "plain" else None)
+        if not roi:
+            sys.exit(f"build-broll: segment {i} (split) needs a roi (run page-roi.py)")
+        page_clip = os.path.join(tmp, f"page_{i:03d}.mp4")
+        pc = ["python3", PAGE_FOCUS, "--image", image, "--style", style, "--roi", roi,
+              "--dur", f"{dur:.4f}", "--fps", str(FPS), "--out", page_clip]
+        if s.get("lines"): pc += ["--lines", s["lines"]]
+        if s.get("source"): pc += ["--source", s["source"]]
+        run(pc, f"page-focus(split) {i}")
+        slice_path = os.path.join(tmp, f"face_{i:03d}.mp4")
+        face_slice(start_f, nframes, slice_path)
+        return split_compose(page_clip, slice_path, dur, i)
     if layout not in ("plain", "focus", "highlight"):
-        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|gfx)")
+        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx)")
     image = expand(s.get("image") or s.get("hero"))
     if not image or not os.path.exists(image):
         sys.exit(f"build-broll: segment {i} ({layout}) missing image/hero (got {image!r})")

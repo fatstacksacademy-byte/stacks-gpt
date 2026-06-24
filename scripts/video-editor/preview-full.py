@@ -22,6 +22,8 @@ ap.add_argument("--sfx", default="assets/sfx")
 ap.add_argument("--lut", default="", help="optional .cube LUT for the brand grade")
 ap.add_argument("--no-vignette", action="store_true")
 ap.add_argument("--callout-dur", type=float, default=2.2)
+ap.add_argument("--beat-sync", action="store_true",
+                help="snap the music swell to the song's actual beats (needs librosa); else energy-sync to sections")
 a = ap.parse_args()
 
 plan = json.load(open(a.plan))
@@ -112,6 +114,7 @@ def sfx(*names):
 
 whoosh, riser = sfx("whoosh", "swoosh"), sfx("riser", "rise")
 hit_s, hl_s, drone_s = sfx("hit", "impact", "boom"), sfx("highlight", "ding", "tick"), sfx("drone", "pad")
+pop_s = sfx("pop", "shutter", "click")
 # WHERE the new pillar-4 SFX fire (importance-weighted — these moments are already gated/sparse):
 #   hit   = the RELEASE on each headline-bonus reveal (pairs after a riser, or stands alone)
 #   hl    = a soft tick when an emphasis CAPTION (a highlighted word) pops
@@ -120,11 +123,17 @@ NEG = re.compile(r"\b(GONE|WORSE|WORST|AVOID|WARNING|MISTAKE|DEAD|CAREFUL|CATCH|
 hit_t = list(reveal_t)
 hl_t = [c["t"] for c in caps if c.get("impact")]
 drone_t = [c["t"] for c in caps if c.get("impact") and NEG.search(c.get("text", ""))]
+pop_t = [c["t"] for c in calls]   # a soft "graphic pops in" pop on each gold-chip appearance (Leo)
 idx = n_ov  # next input index
-music_idx = []; whoosh_i = riser_i = hit_i = hl_i = drone_i = None
-for mf in [f.strip() for f in a.music.split(",")]:   # one OR MORE songs (per-subject mood) → mapped to sections
-    if mf and os.path.exists(mf):
-        idx += 1; music_idx.append(idx); inputs += ["-i", mf]
+music_slots = []; first_music = None; whoosh_i = riser_i = hit_i = hl_i = drone_i = pop_i = None
+for mf in [f.strip() for f in a.music.split(",")]:   # one OR MORE songs (per-subject mood) → mapped to sections;
+    if mf in ("-", "none", "off", "silence"):        # a "-" slot = NO music for that section span (Leo: silence elevates)
+        music_slots.append(None)
+    elif mf and os.path.exists(mf):
+        idx += 1; music_slots.append(idx); inputs += ["-i", mf]
+        if first_music is None:
+            first_music = mf
+music_idx = [s for s in music_slots if s is not None]   # the real (non-silent) inputs
 if whoosh and section_t:
     idx += 1; whoosh_i = idx; inputs += ["-i", whoosh]
 if riser and riser_t:
@@ -135,6 +144,8 @@ if hl_s and hl_t:
     idx += 1; hl_i = idx; inputs += ["-i", hl_s]
 if drone_s and drone_t:
     idx += 1; drone_i = idx; inputs += ["-i", drone_s]
+if pop_s and pop_t:
+    idx += 1; pop_i = idx; inputs += ["-i", pop_s]
 
 # --- video graph: normalize → [LUT] → smooth zoom-punch → slide-in overlays → [vignette] ---
 # Sub-pixel zoom: scale UP by the eased pulse, then center-crop. scale interpolates
@@ -166,17 +177,38 @@ if music_idx:
     rt = reveal_t[0] if reveal_t else -1
     base = f"if(gt(t,{sec1:.2f}),0.16,0.12)" if sec1 > 0 else "0.13"
     fout = max(dur - 3, 0)  # clamp: short clips would otherwise get a negative fade-out start
-    if len(music_idx) == 1:
-        # ONE bed across the clip + a per-topic DIP (a fade marks each section close)
-        dip = "".join(f"*if(between(t,{s - 0.3:.2f},{s + 0.4:.2f}),0.45,1)" for s in section_t)
-        core = f"({base}){dip}"
-        fc.append(f"[{music_idx[0]}:a]atrim=0:{dur:.2f},afade=t=in:st=0:d={min(2, dur):.2f},"
+    # BEAT-SYNC the music to the video's structure: at each topic shift, a smooth DIP-then-SWELL —
+    # the bed breathes down just before the cut, then PICKS UP into the new section (Leo: "the music
+    # picks up, marking the topic shift and making the next segment more exciting"). Triangular ramps.
+    beats = []
+    if a.beat_sync and first_music:   # detect the song's actual beats and snap the swell pickup to one
+        try:
+            import librosa
+            yb, sr = librosa.load(first_music, sr=22050, duration=min(dur + 2, 600))
+            _, _bf = librosa.beat.beat_track(y=yb, sr=sr)
+            beats = [float(b) for b in librosa.frames_to_time(_bf, sr=sr)]
+        except Exception as _e:
+            print(f"beat-sync: librosa failed ({_e}); using energy-sync", file=sys.stderr)
+
+    def _peak(s):                     # pickup ~0.45s after the shift; snap to nearest beat (≤0.6s) if beat-sync
+        p = s + 0.45
+        if beats:
+            nb = min(beats, key=lambda b: abs(b - p))
+            if abs(nb - p) <= 0.6:
+                p = nb
+        return p
+    peaks = [_peak(s) for s in section_t]
+    swell = "".join(f"*(1-0.40*max(0,1-abs(t-{pk - 0.75:.2f})/0.30)+0.42*max(0,1-abs(t-{pk:.2f})/0.55))" for pk in peaks)
+    if len(music_slots) == 1:
+        core = f"({base}){swell}"
+        fc.append(f"[{music_slots[0]}:a]atrim=0:{dur:.2f},afade=t=in:st=0:d={min(2, dur):.2f},"
                   f"afade=t=out:st={fout:.2f}:d={min(3, dur):.2f}[rawbed]")
     else:
-        # ONE SONG PER SUBJECT: map tracks to section spans round-robin; each fades out→in at the boundary
-        # (the song change IS the topic cue — Leo). No overlap-crossfade; the brief dip between is the breath.
+        # ONE SONG PER SUBJECT: map slots to section spans round-robin; each fades out→in at the boundary
+        # (the song change IS the topic cue — Leo). A None slot ('-') = that section runs with NO music.
         bounds = [0.0] + list(section_t) + [dur]
-        spans = [(bounds[k], bounds[k + 1], music_idx[k % len(music_idx)]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k] + 0.6]
+        spans = [(bounds[k], bounds[k + 1], music_slots[k % len(music_slots)]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k] + 0.6]
+        spans = [(s, e, mi) for (s, e, mi) in spans if mi is not None]   # drop SILENT ('-') spans
         if not spans:
             spans = [(0.0, dur, music_idx[0])]
         labels = []
@@ -186,7 +218,7 @@ if music_idx:
                       f"afade=t=out:st={max(0, dk - fo):.2f}:d={fo:.2f},adelay={int(s * 1000)}:all=1[mt{k}]")
             labels.append(f"mt{k}")
         fc.append("".join(f"[{l}]" for l in labels) + f"amix=inputs={len(labels)}:normalize=0:dropout_transition=0[rawbed]")
-        core = base   # the song change handles topic shifts; no extra dip
+        core = f"({base}){swell}"   # song change + the dip-then-swell both mark the topic shift
     volexpr = f"if(between(t,{rt - 0.2:.2f},{rt + 0.7:.2f}),0.02,{core})" if rt > 0 else core  # elevate-pause
     fc.append(f"[rawbed]volume='{volexpr}':eval=frame[mus]")
     alabels.append("mus")
@@ -210,6 +242,10 @@ if drone_i is not None:         # suspense bed under a downside word
     fc.append(f"[{drone_i}:a]asplit={len(drone_t)}" + "".join(f"[drs{j}]" for j in range(len(drone_t))))
     for j, t in enumerate(drone_t):
         fc.append(f"[drs{j}]adelay={int(t * 1000)}:all=1,volume=0.16[drd{j}]"); alabels.append(f"drd{j}")
+if pop_i is not None:           # soft "graphic appears" pop on each chip
+    fc.append(f"[{pop_i}:a]asplit={len(pop_t)}" + "".join(f"[ps{j}]" for j in range(len(pop_t))))
+    for j, t in enumerate(pop_t):
+        fc.append(f"[ps{j}]adelay={int(t * 1000)}:all=1,volume=0.18[pd{j}]"); alabels.append(f"pd{j}")
 amix_in = "".join(f"[{l}]" for l in alabels)
 fc.append(f"{amix_in}amix=inputs={len(alabels)}:normalize=0:dropout_transition=0[amx]")
 fc.append("[amx]alimiter=limit=0.9[aout]")  # headroom for AAC overshoot with the extra SFX layers
@@ -220,6 +256,7 @@ cmd = ["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(fc),
 print(f"sections={len(section_t)} callouts={len(calls)} punches={len(punches)} "
       f"whoosh={len(section_t) if whoosh_i else 0} riser={len(riser_t) if riser_i else 0} "
       f"hit={len(hit_t) if hit_i else 0} hl={len(hl_t) if hl_i else 0} drone={len(drone_t) if drone_i else 0} "
+      f"pop={len(pop_t) if pop_i else 0} "
       f"overlays={n_ov} music={len(music_idx) or 'n'} → {a.out}")
 r = subprocess.run(cmd, stderr=subprocess.PIPE)
 if r.returncode != 0:
