@@ -230,18 +230,19 @@ export function StacksOsCta({ totalBonuses }: { totalBonuses: number }) {
 
 // Bank-bonus sub-switcher. Credit cards are their own top-level pillar now, so
 // "Spending" is intentionally absent — these three are the bank categories.
-export function CategoryCrossNav({ current }: { current: "checking" | "savings" | "brokerage" }) {
+export function CategoryCrossNav({ current }: { current: "checking" | "savings" | "brokerage" | "business" }) {
   const links = [
-    { id: "checking", label: "Checking", emoji: "🏦", desc: "Direct-deposit bonuses" },
-    { id: "savings", label: "Savings", emoji: "💰", desc: "Park-cash bonuses + HYSA" },
-    { id: "brokerage", label: "Brokerage", emoji: "📈", desc: "Robinhood, Webull, Public, etc." },
+    { id: "checking", href: "/checking", label: "Checking", emoji: "🏦", desc: "Direct-deposit bonuses" },
+    { id: "savings", href: "/savings", label: "Savings", emoji: "💰", desc: "Park-cash bonuses + HYSA" },
+    { id: "business", href: "/business-bank-bonuses", label: "Business", emoji: "🏢", desc: "No LLC needed · 20%+ APY" },
+    { id: "brokerage", href: "/brokerage", label: "Brokerage", emoji: "📈", desc: "Robinhood, Webull, Public" },
   ] as const
   return (
-    <div className="bbs-cross" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 48 }}>
+    <div className="bbs-cross" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 48 }}>
       {links.map(l => {
         const active = l.id === current
         return (
-          <Link key={l.id} href={`/${l.id}`} style={{
+          <Link key={l.id} href={l.href} style={{
             padding: "16px 18px",
             background: active ? "#0d7c5f" : "#f8faf9",
             color: active ? "#fff" : "#111",
@@ -261,7 +262,10 @@ export function CategoryCrossNav({ current }: { current: "checking" | "savings" 
         )
       })}
       <style>{`
-        @media (max-width: 700px) {
+        @media (max-width: 900px) {
+          .bbs-cross { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 520px) {
           .bbs-cross { grid-template-columns: 1fr !important; }
         }
       `}</style>

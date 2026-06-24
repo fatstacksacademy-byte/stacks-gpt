@@ -69,6 +69,51 @@ export function getCategorizedBonuses() {
   return { personalChecking, personalSavings, businessChecking, businessSavings, brokerage }
 }
 
+/**
+ * All live business bank bonuses, split the same way the rest of the site
+ * gates: `nationwide` offers anyone can open (shown free, good for SEO) and
+ * `regional` state-restricted ones (revealed behind the email gate). Both are
+ * ranked by effective APY and derived from the catalog, so this stays current
+ * automatically as `savingsBonuses` changes.
+ */
+export function getBusinessBonuses() {
+  const liveBiz = savingsBonuses.filter(isLive).filter(isBusinessBonus)
+  const withApy = (b: any) => ({ bonus: b, effApy: effectiveApy(b) })
+  const nationwide = liveBiz.filter(isNationwide).map(withApy).sort((a, b) => b.effApy - a.effApy)
+  const regional = liveBiz.filter(b => !isNationwide(b)).map(withApy).sort((a, b) => b.effApy - a.effApy)
+  return { nationwide, regional }
+}
+
+export type BizBonusRow = {
+  id: string
+  bank: string
+  bonus: number
+  deposit: number
+  holdDays: number
+  effApy: number
+  monthlyFee: number | null
+  blurb: string
+}
+
+/** Flatten ranked business bonuses into serializable rows for client tables. */
+export function toBizBonusRows(list: { bonus: any; effApy: number }[]): BizBonusRow[] {
+  return list.map(({ bonus, effApy }) => {
+    const t = bonus.tiers[0]
+    const notes: string = bonus.eligibility?.eligibility_notes ?? ""
+    const blurb = notes.split(/\.\s/)[0]?.slice(0, 120) ?? ""
+    return {
+      id: bonus.id,
+      bank: shortBankName(bonus),
+      bonus: t.bonus_amount,
+      deposit: t.min_deposit,
+      holdDays: practicalHoldDays(bonus),
+      effApy: Math.round(effApy),
+      monthlyFee: bonus.fees?.monthly_fee ?? null,
+      blurb,
+    }
+  })
+}
+
 export function effectiveApy(savingsBonus: any): number {
   const t = savingsBonus.tiers[0]
   const holdDays = practicalHoldDays(savingsBonus)
