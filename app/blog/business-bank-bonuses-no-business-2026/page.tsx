@@ -133,6 +133,19 @@ export default function BusinessBankBonusesNoBusiness() {
           Always confirm the offer is live, net out any monthly fee, and check state eligibility before you apply.
         </p>
 
+        <div style={{ marginTop: 16, padding: "16px 20px", background: "#fff8ec", border: "1px solid #f5d899", borderRadius: 8 }}>
+          <p style={{ fontSize: 14, color: "#555", lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: "#111" }}>A bigger bonus is not a better rate.</strong> Many of these offers are
+            tiered: Wells Fargo pays $400 for a $2,500 balance or $825 for $25,000, and Chase pays $450, $600, or $900 as
+            you deposit more. The trap is that the <em>effective APY falls as the headline bonus climbs</em>, because the
+            cash you have to park grows faster than the payout does. Wells Fargo&apos;s $400 entry tier annualizes north of
+            80%, but its $825 tier is closer to 17% — and Chase&apos;s $450-on-$5k beats its $900-on-$15k on a pure return
+            basis. That is why the table above ranks every offer by its entry tier. Reach for a higher tier only when you
+            have idle cash that would otherwise sit in a sub-5% account: you pocket more total dollars, just at a lower
+            rate per dollar.
+          </p>
+        </div>
+
         <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111", margin: "32px 0 12px" }}>How to actually run it (without losing a bonus)</h2>
         <ol style={{ fontSize: 15, color: "#555", lineHeight: 1.8, paddingLeft: 22, margin: "0 0 12px" }}>
           <li>Confirm you qualify — any side income makes you a sole proprietor; apply with your SSN.</li>
