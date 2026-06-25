@@ -70,10 +70,25 @@ const savingsPosts: BlogPost[] = savingsBonuses
       ? `${formatMoney(minTier.bonus_amount)}–${formatMoney(maxTier.bonus_amount)}`
       : formatMoney(maxTier.bonus_amount)
     const accountLabel = isBrokerage ? "Brokerage" : isBusiness ? "Business Savings" : "Savings"
-    // Effective APY from lowest tier (most achievable)
+    // Effective APY per tier. The largest-bonus tier headlines the offer but
+    // carries the LOWEST effective APY — the required deposit grows faster than
+    // the bonus — so tiered offers show an APY range (and the low end matches
+    // the monthly-picks card, which leads with that headline tier). Annualizing
+    // a tiny brokerage referral produces a meaningless number, so brokerage
+    // titles omit the APY entirely.
     const holdDays = practicalHoldDays(b)
-    const interest = minTier.min_deposit * b.base_apy * (holdDays / 365)
-    const effApy = (((minTier.bonus_amount + interest) / minTier.min_deposit) * (365 / holdDays) * 100).toFixed(1)
+    const apyOf = (t: { min_deposit: number; bonus_amount: number }) =>
+      ((t.bonus_amount + t.min_deposit * b.base_apy * (holdDays / 365)) / t.min_deposit) *
+      (365 / holdDays) *
+      100
+    const headlineTier = b.tiers.reduce((acc, t) => (t.bonus_amount > acc.bonus_amount ? t : acc))
+    const loApy = Math.min(apyOf(headlineTier), apyOf(minTier)).toFixed(1)
+    const hiApy = Math.max(apyOf(headlineTier), apyOf(minTier)).toFixed(1)
+    const apyLabel = isBrokerage
+      ? ""
+      : hasTiers && loApy !== hiApy
+        ? ` (${loApy}%–${hiApy}% Effective APY)`
+        : ` (${apyOf(maxTier).toFixed(1)}% Effective APY)`
     const tags: string[] = [accountLabel, "Bank Bonus", "Nationwide"]
     if (isBusiness) tags.push("Business")
     if (isBrokerage) tags.push("Brokerage")
@@ -83,7 +98,7 @@ const savingsPosts: BlogPost[] = savingsBonuses
     const slugSuffix = isBrokerage ? "brokerage-bonus" : isBusiness ? "business-savings-bonus" : "savings-bonus"
     return {
       slug: slugify(`${bankShort}-${maxTier.bonus_amount}-${slugSuffix}`),
-      title: `${bankShort} ${amountLabel} ${accountLabel} Bonus (${effApy}% Effective APY) - 2026 Review`,
+      title: `${bankShort} ${amountLabel} ${accountLabel} Bonus${apyLabel} - 2026 Review`,
       excerpt: b.raw_excerpt || "",
       category: "Savings Bonuses" as const,
       tags,
