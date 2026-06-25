@@ -8,6 +8,7 @@ import DashboardGoalBar from "../components/DashboardGoalBar"
 import PushOptIn from "../components/PushOptIn"
 import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
 import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep } from "../../lib/bonusNextStep"
+import { savingsBonusForEntry } from "../../lib/data/savingsBonuses"
 import { getMilestoneDetail } from "../../lib/bonusSteps"
 import { track } from "../../lib/analytics"
 import CheckpointNav from "../components/CheckpointNav"
@@ -354,28 +355,36 @@ export default function HubClient({
     // 4) Savings entries: status === "active"
     for (const e of savingsEntries) {
       if (e.status !== "active") continue
-      const step = savingsEntryStep(e)
+      const requiresTransactions = savingsBonusForEntry(e)?.requires_transactions ?? null
+      const step = savingsEntryStep(e, { requiresTransactions })
       const expectedPayout = e.opened_date && e.holding_period_days
         ? addDaysISO(e.opened_date, e.holding_period_days)
         : null
       const openedAt = e.account_opened_at
       const fundedAt = e.funded_at
+      const txnsDoneAt = e.transactions_done_at
       const postedAt = e.bonus_posted_at
+      const txnsPending = !!requiresTransactions && !txnsDoneAt
       let advance: StartedBonus["advance"]
       if (!openedAt) advance = { label: "Mark account opened", run: async () => { await setSavingsMilestone(e.id, "account_opened_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "account_opened" }) } }
       else if (!fundedAt) advance = { label: "Mark funded", run: async () => { await setSavingsMilestone(e.id, "funded_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "funded" }) } }
+      else if (txnsPending) advance = { label: "Mark transactions done", run: async () => { await setSavingsMilestone(e.id, "transactions_done_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "transactions_done" }) } }
       else if (!postedAt) advance = { label: "Mark bonus posted", run: async () => { await setSavingsMilestone(e.id, "bonus_posted_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "bonus_posted" }) } }
       else advance = { label: "Mark complete", run: async () => { await updateSavingsEntry(e.id, { status: "completed" }); track("dashboard_bonus_advanced", { module: "savings", action: "completed" }) } }
       const checklist = withCurrent([
         { label: "Account opened", done: !!openedAt },
         { label: "Funded", done: !!fundedAt },
+        ...(requiresTransactions ? [{ label: requiresTransactions.count ? `${requiresTransactions.count} transactions` : "Transactions", done: !!txnsDoneAt }] : []),
         { label: "Bonus posted", done: !!postedAt },
         { label: "Complete", done: false },
       ])
       out.push({
         module: "savings",
         name: e.institution_name,
-        amount: e.expected_total_value ?? e.bonus_amount ?? 0,
+        // Show the pure bonus (matches the savings detail card's headline). The
+        // dashboard previously read expected_total_value (bonus + projected yield),
+        // so a $100 referral could read $999 on the tile while detail showed $100.
+        amount: e.bonus_amount ?? e.expected_total_value ?? 0,
         started_date: e.opened_date,
         nextStep: step.nextStep,
         deadline: step.deadline,

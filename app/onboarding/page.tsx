@@ -112,6 +112,20 @@ function OnboardingInner() {
     const savingsAmt = parseInt(savingsBalance.replace(/\D/g, "")) || 0
     const spendAmt = parseInt(monthlySpend.replace(/\D/g, "")) || 0
 
+    // Stash these answers so the post-signup WelcomeWizard can prefill them
+    // instead of asking the same questions over again (the user just entered
+    // them). Best-effort — survives the sign-up redirect via localStorage.
+    try {
+      localStorage.setItem("stacks:onboarding_prefill", JSON.stringify({
+        state: userState || null,
+        pay_frequency: frequency,
+        paycheck_amount: amt,
+        dd_slots: parseInt(ddSlots) || 1,
+        savings_balance: savingsAmt,
+        monthly_spend: spendAmt,
+      }))
+    } catch { /* localStorage unavailable — prefill is best-effort */ }
+
     // ── 1. Paycheck (checking / direct-deposit bonuses) ──
     const result = runSequencer({
       slots: parseInt(ddSlots) || 1,

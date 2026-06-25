@@ -234,16 +234,20 @@ export function spendingCardStep(c: OwnedCard): NextStepInfo {
 }
 
 // ─── Savings entries ─────────────────────────────────────────────────
-// Milestone-aware: progresses through five stages tied to the three
+// Milestone-aware: progresses through six stages tied to the four
 // `*_at` columns on savings_entries. Each stage has its own deadline and
 // `stage` identifier so the deadline-reminder cron sends one reminder per
 // stage rather than one per bonus for its lifetime.
 //
-//   stage="open"     → account_opened_at is null
-//   stage="fund"     → opened ✓ but funded_at is null
-//   stage="hold"     → funded ✓ but holding period still running
-//   stage="confirm"  → hold complete but bonus_posted_at is null
-//   stage="close"    → bonus posted, ready to rotate cash (no deadline)
+//   stage="open"         → account_opened_at is null
+//   stage="fund"         → opened ✓ but funded_at is null
+//   stage="transactions" → funded ✓ but the bonus's debit/card-spend
+//                          requirement isn't done. Only when the caller passes
+//                          requiresTransactions; surfaced before the passive
+//                          hold because it's the step users forget.
+//   stage="hold"         → funded ✓ but holding period still running
+//   stage="confirm"      → hold complete but bonus_posted_at is null
+//   stage="close"        → bonus posted, ready to rotate cash (no deadline)
 //
 // Falls back to legacy behavior (Hold until deadline) when none of the
 // milestone columns are populated AND no opened_date is set, which keeps
@@ -256,6 +260,9 @@ export function spendingCardStep(c: OwnedCard): NextStepInfo {
 const SOFT_OPEN_DAYS = 14
 const SOFT_FUND_DAYS = 14
 const SOFT_CONFIRM_DAYS = 7
+// Transaction-window fallback when the entry has no holding_period_days or
+// deadline to anchor to. Most txn windows are 60–90d; 60 is conservative.
+const SOFT_TXN_DAYS = 60
 
 function isoDay(value: string | null | undefined): string | null {
   if (!value) return null
@@ -263,7 +270,10 @@ function isoDay(value: string | null | undefined): string | null {
   return value.slice(0, 10)
 }
 
-export function savingsEntryStep(e: SavingsEntry): NextStepInfo {
+export function savingsEntryStep(
+  e: SavingsEntry,
+  opts?: { requiresTransactions?: { description: string; count?: number } | null },
+): NextStepInfo {
   const openedAt = isoDay(e.account_opened_at)
   const fundedAt = isoDay(e.funded_at)
   const bonusPostedAt = isoDay(e.bonus_posted_at)
@@ -288,6 +298,28 @@ export function savingsEntryStep(e: SavingsEntry): NextStepInfo {
       deadline: softDeadline,
       urgency: urgencyFor(softDeadline),
       stage: "fund",
+    }
+  }
+
+  // Stage 2.5 — funded, but the bonus also requires N debit/card transactions
+  // (or a card-spend total) during the maintenance window. Surfaced *before*
+  // the passive hold step because this is the action item users forget —
+  // holding the balance but never running the swipes silently forfeits the
+  // bonus, which is exactly why transactions_done_at exists. Only runs when
+  // the caller resolved the catalog's requires_transactions for this entry.
+  const txnReq = opts?.requiresTransactions
+  if (txnReq && !isoDay(e.transactions_done_at)) {
+    const softDeadline = e.holding_period_days
+      ? addDays(fundedAt, e.holding_period_days)
+      : (e.deadline ?? addDays(fundedAt, SOFT_TXN_DAYS))
+    const label = txnReq.count
+      ? `Run your ${txnReq.count} required transaction${txnReq.count !== 1 ? "s" : ""}`
+      : "Complete the card-spend requirement"
+    return {
+      nextStep: label,
+      deadline: softDeadline,
+      urgency: urgencyFor(softDeadline),
+      stage: "transactions",
     }
   }
 

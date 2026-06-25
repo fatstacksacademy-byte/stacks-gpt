@@ -99,23 +99,29 @@ export function getMilestoneDetail(
   record: CompletedBonus,
   payFrequency: string,
   paycheckAmount: number,
+  // Real, user-logged deposit progress. When supplied, the deposit-dependent
+  // milestones reflect ACTUAL logged deposits instead of a time-based estimate,
+  // so the checklist stays in sync with the deposit progress bar. Omit (the
+  // dashboard / sort callers do) to keep the legacy time-based estimate.
+  depositedActual?: number,
+  depositCountActual?: number,
 ): MilestoneDetail {
   const manualStep = (record as any).current_step as string | null | undefined
 
   // If already closed, everything complete
   if (record.closed_date) {
-    return buildMilestoneDetail("safe_to_close", false, bonus, record, payFrequency, paycheckAmount)
+    return buildMilestoneDetail("safe_to_close", false, bonus, record, payFrequency, paycheckAmount, depositedActual, depositCountActual)
   }
 
   // Check for legacy manual override and map it
   if (manualStep && manualStep !== "open") {
     const mapped = LEGACY_STEP_MAP[manualStep] ?? (manualStep as MilestoneKey)
-    return buildMilestoneDetail(mapped, true, bonus, record, payFrequency, paycheckAmount)
+    return buildMilestoneDetail(mapped, true, bonus, record, payFrequency, paycheckAmount, depositedActual, depositCountActual)
   }
 
   // Auto-calculate
-  const auto = autoCalculateMilestone(bonus, record, payFrequency, paycheckAmount)
-  return buildMilestoneDetail(auto, false, bonus, record, payFrequency, paycheckAmount)
+  const auto = autoCalculateMilestone(bonus, record, payFrequency, paycheckAmount, depositedActual, depositCountActual)
+  return buildMilestoneDetail(auto, false, bonus, record, payFrequency, paycheckAmount, depositedActual, depositCountActual)
 }
 
 /** Legacy wrapper — keep old callers working */
@@ -168,6 +174,8 @@ function autoCalculateMilestone(
   record: CompletedBonus,
   payFrequency: string,
   paycheckAmount: number,
+  depositedActual?: number,
+  depositCountActual?: number,
 ): MilestoneKey {
   const req = bonus.requirements
   const timeline = bonus.timeline
@@ -180,21 +188,41 @@ function autoCalculateMilestone(
 
   if (daysSinceOpen < 1) return "account_opened"
 
+  // Deposit-only / no-DD bonuses don't have a "Set Up Recurring Direct Deposit"
+  // phase to wait through.
+  const requiresDD = req?.direct_deposit_required !== false
   const daysPerPay = DAYS_PER_PAY[payFrequency] ?? 14
 
-  // First paycheck hasn't landed yet → still waiting for DD confirmation
-  if (daysSinceOpen < daysPerPay) return "dd_confirmed"
-
-  // Estimate funding completion
+  // Funding requirement (dollar total and/or a count of qualifying deposits).
+  const totalRequired = req?.min_direct_deposit_total ?? 0
+  const countRequired = req?.dd_count_required ?? 0
+  const hasTrackableReq = totalRequired > 0 || countRequired > 0
   let depositsNeeded = 1
-  if (req?.dd_count_required) {
-    depositsNeeded = req.dd_count_required
-  } else if (req?.min_direct_deposit_total && paycheckAmount > 0) {
-    depositsNeeded = Math.ceil(req.min_direct_deposit_total / paycheckAmount)
+  if (countRequired) {
+    depositsNeeded = countRequired
+  } else if (totalRequired && paycheckAmount > 0) {
+    depositsNeeded = Math.ceil(totalRequired / paycheckAmount)
   }
   const fundingDays = depositsNeeded * daysPerPay
 
-  if (daysSinceOpen < fundingDays) return "dd_confirmed"
+  // First paycheck hasn't landed yet → still waiting for DD confirmation.
+  // (Skip this dwell for non-DD bonuses — there's no recurring DD to confirm.)
+  if (requiresDD && daysSinceOpen < daysPerPay) return "dd_confirmed"
+
+  // Funding gate. When the caller supplies the user's REAL logged deposits,
+  // don't advance past "deposit requirement met" until those deposits actually
+  // satisfy the requirement — otherwise the checklist would tick the box while
+  // the deposit progress bar still reads $0. With no real data, fall back to the
+  // time-based estimate (unchanged legacy behavior).
+  const haveRealData = depositedActual !== undefined || depositCountActual !== undefined
+  if (hasTrackableReq && haveRealData) {
+    const dollarsMet = totalRequired > 0 ? (depositedActual ?? 0) >= totalRequired : true
+    const countMet = countRequired > 0 ? (depositCountActual ?? 0) >= countRequired : true
+    if (!(dollarsMet && countMet)) return "deposit_met" // active: funding in progress
+    // requirement genuinely met → fall through to posting timing
+  } else {
+    if (daysSinceOpen < fundingDays) return requiresDD ? "dd_confirmed" : "deposit_met"
+  }
 
   // Funding complete but bonus hasn't posted yet
   const bonusPostingDays = timeline?.bonus_posting_days_est ?? null
@@ -228,9 +256,12 @@ function buildMilestoneDetail(
   record: CompletedBonus,
   payFrequency: string,
   paycheckAmount: number,
+  depositedActual?: number,
+  depositCountActual?: number,
 ): MilestoneDetail {
   const req = bonus.requirements
   const timeline = bonus.timeline
+  const requiresDD = req?.direct_deposit_required !== false
   const daysPerPay = DAYS_PER_PAY[payFrequency] ?? 14
   const openedDate = new Date(record.opened_date + "T00:00:00")
   const today = new Date()
@@ -250,8 +281,17 @@ function buildMilestoneDetail(
     depositsNeeded = paycheckAmount > 0 ? Math.ceil(totalRequired / paycheckAmount) : 1
   }
 
-  const depositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
-  const depositedSoFar = Math.min(totalRequired, depositsSoFar * paycheckAmount)
+  // Prefer the user's REAL logged deposits when supplied so the checklist's
+  // numbers match the deposit progress bar; otherwise fall back to a time-based
+  // estimate (dashboard tiles / sort callers don't pass real data).
+  const haveRealData = depositedActual !== undefined || depositCountActual !== undefined
+  const estDepositsSoFar = Math.min(depositsNeeded, Math.max(0, Math.floor(daysSinceOpen / daysPerPay)))
+  const depositsSoFar = haveRealData
+    ? Math.min(depositsNeeded, depositCountActual ?? 0)
+    : estDepositsSoFar
+  const depositedSoFar = haveRealData
+    ? (totalRequired > 0 ? Math.min(totalRequired, depositedActual ?? 0) : (depositedActual ?? 0))
+    : Math.min(totalRequired, estDepositsSoFar * paycheckAmount)
 
   const milestoneIndex = MILESTONE_DEFS.findIndex((m) => m.key === currentMilestone)
 
@@ -277,6 +317,10 @@ function buildMilestoneDetail(
 
     let subtitle: string | null = null
     let completionNote: string | null = null
+    // Most labels come straight from MILESTONE_DEFS, but the DD step is
+    // relabeled for deposit-only / non-DD bonuses (no recurring payroll to set
+    // up — just a qualifying deposit).
+    let label = def.label
 
     switch (def.key) {
       case "account_opened":
@@ -287,13 +331,14 @@ function buildMilestoneDetail(
         break
 
       case "dd_confirmed":
+        if (!requiresDD) label = "Make a Qualifying Deposit"
         if (status === "completed") {
-          subtitle = "Recurring DD confirmed with employer"
+          subtitle = requiresDD ? "Recurring DD confirmed with employer" : "Qualifying deposit made"
           completionNote = totalRequired > 0
-            ? `Recurring direct deposit confirmed. ${Math.round((depositedSoFar / totalRequired) * 100)}% of deposit requirement met.`
-            : "Recurring direct deposit confirmed."
+            ? `${requiresDD ? "Recurring direct deposit confirmed" : "Qualifying deposit made"}. ${Math.round((depositedSoFar / totalRequired) * 100)}% of deposit requirement met.`
+            : (requiresDD ? "Recurring direct deposit confirmed." : "Qualifying deposit made.")
         } else if (status === "active") {
-          subtitle = "Route recurring payroll to this account"
+          subtitle = requiresDD ? "Route recurring payroll to this account" : "Make the qualifying deposit to this account"
         }
         break
 
@@ -342,7 +387,7 @@ function buildMilestoneDetail(
         break
     }
 
-    return { ...def, status, subtitle, completionNote }
+    return { ...def, label, status, subtitle, completionNote }
   })
 
   // Find the most recent completed milestone's celebration message

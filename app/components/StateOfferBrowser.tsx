@@ -52,17 +52,25 @@ export default function StateOfferBrowser({
   stateName: string
   reviewHrefs: Record<string, string>
 }) {
-  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
+  const { unlocked, hydrated, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const [view, setView] = useState<View>("bank")
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all")
   const [reqFilter, setReqFilter] = useState<ReqFilter>("all")
   const [scopeFilter, setScopeFilter] = useState<ScopeFilter>("all")
   const [page, setPage] = useState(1)
 
+  // Until the unlock state has hydrated (from localStorage / the Supabase
+  // session), assume unlocked. Otherwise the first paint renders the LOCKED
+  // view — email gate shown, local rows filtered out — and then visibly
+  // reshuffles a beat later for every signed-in / returning visitor. Honoring
+  // `hydrated` keeps the first paint matching the resolved state, so there's no
+  // flash when you land on the page after picking a state.
+  const effectiveUnlocked = unlocked || !hydrated
+
   const localCount = items.filter(it => isLocal(it, stateCode) && (view === "brokerage" ? it.category === "brokerage" : it.category !== "brokerage")).length
   const availableItems = useMemo(
-    () => unlocked ? items : items.filter(item => !isLocal(item, stateCode)),
-    [items, stateCode, unlocked],
+    () => effectiveUnlocked ? items : items.filter(item => !isLocal(item, stateCode)),
+    [items, stateCode, effectiveUnlocked],
   )
 
   const visible = useMemo(() => {
@@ -104,7 +112,7 @@ export default function StateOfferBrowser({
             Bonuses available in {stateName}
           </h2>
           <div style={{ fontSize: 13, color: "#777" }}>
-            {unlocked ? "State-specific offers appear first. Browse ten at a time." : "Nationwide offers stay open; state-specific offers unlock by email."}
+            {effectiveUnlocked ? "State-specific offers appear first. Browse ten at a time." : "Nationwide offers stay open; state-specific offers unlock by email."}
           </div>
         </div>
         <div style={{ display: "inline-flex", padding: 3, background: "#f2f4f3", borderRadius: 10 }}>
@@ -113,7 +121,7 @@ export default function StateOfferBrowser({
         </div>
       </div>
 
-      {!unlocked && localCount > 0 && (
+      {hydrated && !unlocked && localCount > 0 && (
         <div style={{ marginBottom: 16 }}>
           <CatalogUnlockGate
             count={localCount}
@@ -142,7 +150,7 @@ export default function StateOfferBrowser({
             <Chip active={reqFilter === "dd"} onClick={() => setReq("dd")}>Direct deposit</Chip>
             <Chip active={reqFilter === "no_dd"} onClick={() => setReq("no_dd")}>No direct deposit</Chip>
           </FilterGroup>
-          {unlocked && localCount > 0 && (
+          {effectiveUnlocked && localCount > 0 && (
             <FilterGroup label="Scope">
               <Chip active={scopeFilter === "all"} onClick={() => setScope("all")}>All</Chip>
               <Chip active={scopeFilter === "local"} onClick={() => setScope("local")}>{stateName} only ({localCount})</Chip>

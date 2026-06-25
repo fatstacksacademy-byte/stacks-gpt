@@ -4,6 +4,7 @@ import { sendEmail } from "../../../../lib/email/client"
 import { weeklyDigestHTML, weeklyDigestText, type DigestRow } from "../../../../lib/email/templates"
 import { alreadySent, recordSent } from "../../../../lib/email/preferences"
 import { bonuses as catalogBonuses } from "../../../../lib/data/bonuses"
+import { savingsBonusForEntry } from "../../../../lib/data/savingsBonuses"
 import {
   checkingBonusStep,
   customBonusStep,
@@ -161,7 +162,7 @@ async function buildDigestRows(
   }
 
   for (const e of savings.data ?? []) {
-    const step = savingsEntryStep(e)
+    const step = savingsEntryStep(e, { requiresTransactions: savingsBonusForEntry(e)?.requires_transactions ?? null })
     out.push({
       bonusName: e.institution_name,
       amount: e.expected_total_value ?? e.bonus_amount ?? 0,

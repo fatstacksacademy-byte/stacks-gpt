@@ -579,8 +579,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           </div>
         )}
 
-        {/* ── Projection Hero ── */}
-        {hasBalance && deployableCash > 0 && (() => {
+        {/* ── Projection Hero (Pro only — free tier shows nothing auto-generated) ── */}
+        {isPaid && hasBalance && deployableCash > 0 && (() => {
           const balance = deployableCash
           const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
           const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
@@ -734,6 +734,13 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 const catalogEntry = savingsBonusesCatalog.find(b => b.id === e.bonus_name)
                 const offerLink = catalogEntry?.source_links?.[0] ?? null
 
+                // Free "is this bonus actually worth it vs just leaving the cash
+                // in your HYSA?" — the same opportunity-cost compare the Pro
+                // sequencer does, surfaced on every tracked bonus (NOT Pro-gated).
+                const bonusAmt = e.bonus_amount ?? 0
+                const hysaWouldEarn = deposit > 0 && holdDays > 0 && currentApy > 0 ? deposit * currentApy * (holdDays / 365) : null
+                const hysaEdge = hysaWouldEarn != null ? bonusAmt - hysaWouldEarn : null
+
                 return (
                   <div key={e.id} style={{ background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14, padding: "20px 24px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
@@ -750,6 +757,14 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
                           {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
                         </div>
+                        {hysaEdge != null && hysaWouldEarn != null ? (
+                          <div style={{ fontSize: 12, marginTop: 4, color: hysaEdge > 0 ? "#0d7c5f" : "#dc2626", fontWeight: 600 }}>
+                            {hysaEdge > 0 ? "+" : ""}{money(Math.round(hysaEdge))} vs your {pct(currentApy)} HYSA
+                            <span style={{ color: "#bbb", fontWeight: 400 }}> · it would earn {money(Math.round(hysaWouldEarn))} on {money(deposit)} over {holdDays}d</span>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 11, marginTop: 4, color: "#bbb" }}>Add your HYSA APY in your profile to see the edge over just leaving the cash there</div>
+                        )}
                       </div>
                       <div style={{ textAlign: "right" }}>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(e.bonus_amount ?? 0)}</div>
