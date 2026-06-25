@@ -67,7 +67,9 @@ export default function BusinessBonusesBrowsePage() {
           <BusinessBonusUnlock freeRows={freeRows} gatedRows={gatedRows} source="business_browse" />
           <p style={{ fontSize: 13, color: "#aaa", margin: "12px 0 0" }}>
             Effective APY annualizes a one-time bonus over the days you hold the cash, so a $400-on-$2k-for-90-days
-            beats a $400-on-$5k-for-90-days. Always confirm the offer is live, net out any monthly fee, and check
+            beats a $400-on-$5k-for-90-days. Tiered offers are ranked by their <em>entry</em> tier — a bigger advertised
+            bonus needs far more cash and pays a lower rate (Wells Fargo&apos;s $825-for-$25k tier yields roughly 17% vs.
+            about 83% on its $400-for-$2.5k entry). Always confirm the offer is live, net out any monthly fee, and check
             state eligibility before you apply.
           </p>
         </Section>

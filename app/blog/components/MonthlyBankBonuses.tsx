@@ -10,6 +10,8 @@ import {
   type MonthlyBankPicks,
 } from "../../../lib/data/monthlyBankPicks"
 import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
+import { isBrokerageBonus } from "../../../lib/data/bonusCategories"
+import { applyUrl } from "../../../lib/affiliateLinks"
 import AffiliateDisclosure from "./AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
@@ -23,6 +25,7 @@ type ResolvedPick =
   | {
       kind: "checking" | "business-checking"
       rank: number
+      bonusId: string
       bankShort: string
       articleTitle?: string
       bonusAmount: number
@@ -35,12 +38,14 @@ type ResolvedPick =
   | {
       kind: "savings"
       rank: number
+      bonusId: string
       bankShort: string
       articleTitle?: string
       bonusAmount: number
       minDeposit: number
       holdDays: number
       effApy: string
+      isBrokerage: boolean
       takeaway: string
       slug?: string
     }
@@ -70,6 +75,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
     return {
       kind: isBusiness ? "business-checking" : "checking",
       rank,
+      bonusId: p.bonusId,
       bankShort: displayName,
       articleTitle,
       bonusAmount: checking.bonus_amount,
@@ -83,24 +89,32 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
 
   const savings = getSavingsBonusById(p.bonusId)
   if (savings) {
-    const maxTier = savings.tiers[savings.tiers.length - 1]
-    const minTier = savings.tiers[0]
+    // Describe ONE tier across all three stats. We headline the largest-bonus
+    // tier (what the offer is known for), so the effective APY must be that
+    // tier's rate too — never pair a big bonus with a smaller tier's flattering
+    // APY. Higher tiers pay more dollars but a lower rate, because the bonus
+    // rarely scales as fast as the required deposit.
+    const headlineTier = savings.tiers.reduce((a, b) =>
+      b.bonus_amount > a.bonus_amount ? b : a,
+    )
     const holdDays = practicalHoldDays(savings)
-    const interest = minTier.min_deposit * savings.base_apy * (holdDays / 365)
+    const interest = headlineTier.min_deposit * savings.base_apy * (holdDays / 365)
     const effApy = (
-      ((minTier.bonus_amount + interest) / minTier.min_deposit) *
+      ((headlineTier.bonus_amount + interest) / headlineTier.min_deposit) *
       (365 / holdDays) *
       100
     ).toFixed(1)
     return {
       kind: "savings",
       rank,
+      bonusId: p.bonusId,
       bankShort: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
       articleTitle,
-      bonusAmount: maxTier.bonus_amount,
-      minDeposit: maxTier.min_deposit,
+      bonusAmount: headlineTier.bonus_amount,
+      minDeposit: headlineTier.min_deposit,
       holdDays,
       effApy,
+      isBrokerage: isBrokerageBonus(savings),
       takeaway: p.takeaway,
       slug,
     }
@@ -214,6 +228,12 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
               style={{ fontSize: 13, color: "#999", textDecoration: "none" }}
             >
               Savings
+            </Link>
+            <Link
+              href="/blog/business-bank-bonuses-no-business-2026"
+              style={{ fontSize: 13, color: "#999", textDecoration: "none" }}
+            >
+              Business
             </Link>
             <Link href="/blog" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
               Reviews
@@ -431,7 +451,15 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                   <>
                     <Stat label="Min deposit" value={money(r.minDeposit)} />
                     <Stat label="Hold" value={`${r.holdDays} days`} />
-                    <Stat label="Effective APY" value={`${r.effApy}%`} good />
+                    {r.isBrokerage ? (
+                      <Stat
+                        label="Bonus return"
+                        value={`${Math.round((r.bonusAmount / r.minDeposit) * 100)}% in ${r.holdDays}d`}
+                        good
+                      />
+                    ) : (
+                      <Stat label="Effective APY" value={`${r.effApy}%`} good />
+                    )}
                   </>
                 )}
               </div>
@@ -471,7 +499,24 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                   flexWrap: "wrap",
                 }}
               >
-                {r.slug ? (
+                <a
+                  href={applyUrl(r.bonusId)}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  style={{
+                    display: "inline-block",
+                    padding: "10px 20px",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    background: "#0d7c5f",
+                    color: "#fff",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                  }}
+                >
+                  Open account &rarr;
+                </a>
+                {r.slug && (
                   <Link
                     href={`/blog/${r.slug}`}
                     style={{
@@ -479,21 +524,72 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                       padding: "10px 20px",
                       fontSize: 14,
                       fontWeight: 700,
-                      background: "#0d7c5f",
-                      color: "#fff",
+                      background: "#fff",
+                      color: "#0d7c5f",
+                      border: "1px solid #0d7c5f",
                       borderRadius: 10,
                       textDecoration: "none",
                     }}
                   >
                     Read full review &rarr;
                   </Link>
-                ) : (
-                  <span style={{ fontSize: 13, color: "#bbb" }}>Full review coming soon</span>
                 )}
               </div>
             </article>
           ))}
         </div>
+
+        <Link href="/blog/business-bank-bonuses-no-business-2026" style={{ textDecoration: "none" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              padding: "20px 24px",
+              background: "#fff",
+              border: "1px solid #e8e8e8",
+              borderRadius: 14,
+              marginBottom: 48,
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "#888",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  marginBottom: 6,
+                }}
+              >
+                Got a business — or a side hustle?
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: "#111", lineHeight: 1.3 }}>
+                Business checking pays the biggest bonuses in banking — no LLC required
+              </div>
+              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "8px 0 0" }}>
+                As a sole proprietor you can stack $400&ndash;$900+ business bonuses — the equivalent
+                of 20%+ APY on FDIC-insured cash.
+              </p>
+            </div>
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#fff",
+                background: "#0d7c5f",
+                borderRadius: 10,
+                padding: "12px 20px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              See business bonuses &rarr;
+            </span>
+          </div>
+        </Link>
 
         <div style={{ marginBottom: 48 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 12px" }}>
@@ -620,6 +716,12 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
             style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}
           >
             Full 2026 ranking
+          </Link>
+          <Link
+            href="/blog/business-bank-bonuses-no-business-2026"
+            style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}
+          >
+            Business bank bonuses
           </Link>
         </div>
       </main>
