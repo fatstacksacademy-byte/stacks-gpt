@@ -108,6 +108,8 @@ export function runSavingsSequencer({
   includeBrokerage = false,
   businessOnly = false,
   militaryAffiliated = false,
+  prioritize = "apy",
+  horizonDays = 1095,
 }: {
   availableBalance: number
   completedBonusIds?: string[]
@@ -121,16 +123,38 @@ export function runSavingsSequencer({
   businessOnly?: boolean
   /** USAA / Navy Federal / AAFES-type offers gate on this. */
   militaryAffiliated?: boolean
+  /**
+   * Optimization objective for tier selection AND deployment order.
+   * - "apy" (default): rank by effective APY; churnable bonuses take their
+   *   highest-APY tier so capital frees fastest for more rotations.
+   * - "amount": rank by raw bonus dollars; every bonus takes the biggest
+   *   absolute payout it can afford (still gated on beating the user's HYSA).
+   *   This is the "biggest bonus even if lower APY" mode the savings page's
+   *   sort toggle drives — it changes the plan, not just the card order.
+   */
+  prioritize?: "apy" | "amount"
+  /**
+   * How far out (in days) to plan. New deployments never START past this
+   * window, which both bounds the projection to the displayed horizon and
+   * gives churnable bonuses a finite span to redeploy into after cooldown.
+   * Default 1095 (3 years) so even 24-month-cooldown bonuses can recur once.
+   */
+  horizonDays?: number
 }): SavingsSequencerResult {
   const skipped: { bank_name: string; reason: string }[] = []
-  const candidates: {
+  type Candidate = {
     bonus: SavingsBonus
     tier: SavingsBonusTier
     effectiveApy: number
     interestEarned: number
     totalEarnings: number
     feeCost: number
-  }[] = []
+    isChurnable: boolean
+    /** Days to wait after the hold ends before this bonus can be redeployed
+     *  (null = one-and-done, never redeploys). */
+    cooldownDays: number | null
+  }
+  const candidates: Candidate[] = []
 
   for (const bonus of savingsBonuses) {
     if (bonus.expired) {
@@ -208,7 +232,11 @@ export function runSavingsSequencer({
     const feeCost = feeCostFor(bonus)
 
     let bestCandidate: { tier: SavingsBonusTier; effectiveApy: number; interestEarned: number; totalEarnings: number } | null = null
-    if (isChurnable) {
+    // In "amount" mode the user has explicitly asked for the biggest absolute
+    // payout, so even churnable bonuses take their highest affordable tier
+    // (the one-and-done branch below) rather than the capital-efficient
+    // highest-APY tier.
+    if (isChurnable && prioritize !== "amount") {
       // Max APY: feeds parallel redeployment math
       for (const tier of affordableTiers) {
         const result = calcEffectiveApy(tier.min_deposit, tier.bonus_amount, bonus.base_apy, practicalHoldDays(bonus), feeCost)
@@ -253,16 +281,35 @@ export function runSavingsSequencer({
     }
 
     const { tier, effectiveApy, interestEarned, totalEarnings } = bestCandidate
-    candidates.push({ bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost })
+    // ~30-day months, consistent with feeCostFor() and the rest of the app.
+    const cooldownDays = isChurnable ? (bonus.cooldown_months as number) * 30 : null
+    candidates.push({ bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost, isChurnable, cooldownDays })
   }
 
-  // Sort by effective APY descending
-  candidates.sort((a, b) => b.effectiveApy - a.effectiveApy)
+  // Rank candidates by the chosen objective: effective APY by default, or raw
+  // bonus dollars when the user wants the biggest absolute payout.
+  const byObjective = (a: Candidate, b: Candidate) =>
+    prioritize === "amount"
+      ? b.tier.bonus_amount - a.tier.bonus_amount || b.effectiveApy - a.effectiveApy
+      : b.effectiveApy - a.effectiveApy
+  candidates.sort(byObjective)
 
-  // Build parallel deployment plan
-  // At each time step, deploy capital across as many bonuses as possible
+  // Build the deployment plan.
+  // Capital rotates: as each hold ends, the freed cash redeploys into the next
+  // best bonus. Churnable bonuses re-enter the pool once their cooldown elapses
+  // (tracked in `pending`), so the same bank can recur across the horizon —
+  // this is what makes business/personal churn bonuses show up again after
+  // their cooldown instead of appearing exactly once. New deployments never
+  // START past `horizonDays`, which keeps the projection bounded and the loop
+  // finite.
   const entries: SavingsSequencedEntry[] = []
   const remaining = [...candidates]
+  // Churn redeploys waiting on their cooldown window to expire before they can
+  // re-enter `remaining`.
+  const pending: { cand: Candidate; availableDay: number }[] = []
+  // Bonuses deployed at least once — so we don't mislabel a time-contended
+  // bonus as "can't afford" in the skip list.
+  const everDeployed = new Set<string>()
   let rotation = 0
 
   // Track active deployments: when capital frees up
@@ -270,10 +317,30 @@ export function runSavingsSequencer({
   const active: ActiveDeploy[] = []
   let currentDay = 0
 
-  while (remaining.length > 0) {
-    // Free up any capital from ended deployments
-    const freed = active.filter(a => a.endDay <= currentDay)
-    for (const f of freed) active.splice(active.indexOf(f), 1)
+  // Each rotation advances time by >0 days and capital/horizon are finite, so
+  // this can't trip in practice — it's just a backstop against a logic slip
+  // spinning forever.
+  let guard = 0
+  const GUARD_MAX = 10000
+
+  while ((remaining.length > 0 || pending.length > 0) && currentDay < horizonDays) {
+    if (++guard > GUARD_MAX) break
+
+    // Free up capital from holds that have ended by now.
+    for (let i = active.length - 1; i >= 0; i--) {
+      if (active[i].endDay <= currentDay) active.splice(i, 1)
+    }
+
+    // Promote any churn redeploys whose cooldown has elapsed back into the pool.
+    for (let i = pending.length - 1; i >= 0; i--) {
+      if (pending[i].availableDay <= currentDay) {
+        remaining.push(pending[i].cand)
+        pending.splice(i, 1)
+      }
+    }
+    // Keep the deployable pool ordered by the chosen objective so freshly
+    // promoted redeploys slot in against the other candidates correctly.
+    remaining.sort(byObjective)
 
     // Available capital = total balance minus what's currently locked
     const locked = active.reduce((s, a) => s + a.amount, 0)
@@ -282,10 +349,12 @@ export function runSavingsSequencer({
     // Try to deploy to multiple bonuses simultaneously
     const toRemove: number[] = []
     for (let i = 0; i < remaining.length; i++) {
-      const { bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost } = remaining[i]
+      const cand = remaining[i]
+      const { bonus, tier, effectiveApy, interestEarned, totalEarnings, feeCost } = cand
       if (tier.min_deposit > freeCapital) continue
 
       rotation++
+      everDeployed.add(bonus.id)
       const startDay = currentDay
       const endDay = startDay + practicalHoldDays(bonus)
 
@@ -319,24 +388,41 @@ export function runSavingsSequencer({
       active.push({ endDay, amount: tier.min_deposit })
       freeCapital -= tier.min_deposit
       toRemove.push(i)
+
+      // Churnable bonus: schedule its next eligibility after the cooldown,
+      // provided that re-entry still lands inside the planning horizon.
+      if (cand.isChurnable && cand.cooldownDays != null) {
+        const nextDay = endDay + cand.cooldownDays
+        if (nextDay < horizonDays) pending.push({ cand, availableDay: nextDay })
+      }
     }
 
     // Remove deployed candidates
     for (let i = toRemove.length - 1; i >= 0; i--) remaining.splice(toRemove[i], 1)
 
     if (toRemove.length === 0) {
-      // No bonuses could be deployed — advance to the next capital release
-      if (active.length > 0) {
-        const nextFree = Math.min(...active.map(a => a.endDay))
-        currentDay = nextFree
-      } else {
-        // No active deployments and can't deploy anything — skip remaining
-        for (const r of remaining) {
-          skipped.push({ bank_name: r.bonus.bank_name, reason: `Need $${r.tier.min_deposit.toLocaleString()} but only $${freeCapital.toLocaleString()} available` })
-        }
-        break
-      }
+      // Nothing deployed this tick — jump to the next moment something changes:
+      // a hold ending (capital frees) or a cooldown expiring.
+      const nextActive = active.length ? Math.min(...active.map(a => a.endDay)) : Infinity
+      const nextPending = pending.length ? Math.min(...pending.map(p => p.availableDay)) : Infinity
+      const nextEvent = Math.min(nextActive, nextPending)
+      if (!isFinite(nextEvent)) break // nothing will free or reopen — done
+      currentDay = nextEvent
     }
+  }
+
+  // Anything still queued that never got a capital slot inside the horizon:
+  // surface it honestly rather than dropping it silently. These are affordable
+  // on their own but got crowded out by higher-ranked bonuses for the whole
+  // window — distinct from the "can't afford the minimum" skips above.
+  const reportedSkip = new Set<string>()
+  for (const r of remaining) {
+    if (everDeployed.has(r.bonus.id) || reportedSkip.has(r.bonus.id)) continue
+    reportedSkip.add(r.bonus.id)
+    skipped.push({
+      bank_name: r.bonus.bank_name,
+      reason: `Didn't fit the ${Math.round(horizonDays / 30)}-month plan — capital stayed committed to higher-ranked bonuses`,
+    })
   }
 
   // Sort entries by start_day for clean display

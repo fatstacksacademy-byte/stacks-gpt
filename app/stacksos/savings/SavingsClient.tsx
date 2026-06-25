@@ -281,6 +281,10 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
         includeBrokerage: showBrokerage,
         businessOnly,
         militaryAffiliated,
+        // "Bonus $" sort drives the whole plan, not just card order: tier
+        // selection takes the biggest absolute payout and the 12-month
+        // projection re-sequences around it.
+        prioritize: recSort,
       })
     : { entries: [] as SavingsSequencedEntry[], total_earnings: 0, total_days: 0, skipped: [] as { bank_name: string; reason: string }[] }
 
@@ -289,13 +293,24 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
   // rotation table) stays consistent.
   // Hide anything the user *just* clicked start on — the DB write is still
   // in-flight, and we don't want the card to sit there looking unresponsive.
+  // One action card per bonus. A churnable bonus can be sequenced several
+  // times across the plan (each rotation after its cooldown); the 12-month
+  // projection table shows every rotation, but the "Start" cards shouldn't list
+  // the same bank twice. Entries arrive start_day-ascending, so the first
+  // occurrence is the earliest rotation — keep that one.
+  const seenRecIds = new Set<string>()
+  const uniqueRecEntries = sequencerResult.entries.filter((e) => {
+    if (seenRecIds.has(e.id)) return false
+    seenRecIds.add(e.id)
+    return true
+  })
   const recSearchQ = recSearch.trim().toLowerCase()
-  const filteredEntries = sequencerResult.entries
+  const filteredEntries = uniqueRecEntries
     .filter((e) => !justStartedIds.has(e.id))
     .filter((e) => !recSearchQ || e.bank_name.toLowerCase().includes(recSearchQ))
-    // Display ordering. The sequencer already ranks by effective APY; when the
-    // user picks "Bonus $", re-sort by raw bonus dollars (tie-break on APY).
-    // Pure presentation — doesn't change the sequencer's capital-allocation plan.
+    // Display ordering. The sequencer already ranks by the chosen objective;
+    // mirror it here so card order matches the plan. "Bonus $" sorts by raw
+    // bonus dollars (tie-break on APY); "Effective APY" sorts by APY.
     .slice()
     .sort((a, b) =>
       recSort === "amount"
@@ -584,11 +599,14 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           const balance = deployableCash
           const year1Entries = sequencerResult.entries.filter(e => e.start_day < 365)
           const year2Entries = sequencerResult.entries.filter(e => e.start_day >= 365 && e.start_day < 730)
-          let y1Bonus = 0, y1Interest = 0, y1Incremental = 0, y2Bonus = 0, y2Interest = 0
+          const year3Entries = sequencerResult.entries.filter(e => e.start_day >= 730 && e.start_day < 1095)
+          let y1Bonus = 0, y1Interest = 0, y1Incremental = 0, y2Bonus = 0, y2Interest = 0, y3Bonus = 0, y3Interest = 0
           for (const e of year1Entries) { y1Bonus += e.bonus_amount; y1Interest += e.interest_earned; y1Incremental += e.incremental_vs_hysa }
           for (const e of year2Entries) { y2Bonus += e.bonus_amount; y2Interest += e.interest_earned }
+          for (const e of year3Entries) { y3Bonus += e.bonus_amount; y3Interest += e.interest_earned }
           const y1Total = y1Bonus + y1Interest
           const y2Total = y2Bonus + y2Interest
+          const y3Total = y3Bonus + y3Interest
           const taxRate = 0.20
           const taxReserve = Math.round((y1Total + totalEarned) * taxRate)
 
@@ -628,6 +646,18 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{money(y2Total)}</div>
                       </div>
                     )}
+                    {y3Total > 0 && (
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 600 }}>Year 3</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{money(y3Total)}</div>
+                      </div>
+                    )}
+                    {(y2Total > 0 || y3Total > 0) && (
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 600 }}>3-Year Total</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(y1Total + y2Total + y3Total)}</div>
+                      </div>
+                    )}
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", fontWeight: 600 }}>Earned so far</div>
                       <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(totalEarned)}</div>
@@ -664,8 +694,10 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                           </tr>
                         </thead>
                         <tbody>
-                          {[...year1Entries, ...year2Entries].map((e, i) => (
-                            <tr key={e.id} style={{ borderBottom: "1px solid #e8f5e9", background: e.start_day >= 365 ? "#fafafa" : "transparent" }}>
+                          {[...year1Entries, ...year2Entries, ...year3Entries].map((e, i) => (
+                            // Key on id+rotation, not id alone — a churnable bonus
+                            // recurs across the plan, so id repeats across rows.
+                            <tr key={`${e.id}-${e.rotation}`} style={{ borderBottom: "1px solid #e8f5e9", background: e.start_day >= 365 ? "#fafafa" : "transparent" }}>
                               <td style={{ padding: "8px", color: "#bbb", fontWeight: 700 }}>{i + 1}</td>
                               <td style={{ padding: "8px", color: "#111", fontWeight: 600 }}>{e.bank_name}</td>
                               <td style={{ padding: "8px", color: "#555" }}>{fmtShortDate(addDaysToDate(today, e.start_day))}</td>
@@ -678,10 +710,10 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                             </tr>
                           ))}
                           <tr style={{ background: "#e6f5f0" }}>
-                            <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Total</td>
-                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(y1Bonus + y2Bonus)}</td>
-                            <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(y1Interest + y2Interest)}</td>
-                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 800 }}>{money(y1Total + y2Total)}</td>
+                            <td colSpan={5} style={{ padding: "8px", fontWeight: 700, color: "#111" }}>Total (3 yr)</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 700 }}>{money(y1Bonus + y2Bonus + y3Bonus)}</td>
+                            <td style={{ padding: "8px", color: "#555", textAlign: "right", fontWeight: 600 }}>{money(y1Interest + y2Interest + y3Interest)}</td>
+                            <td style={{ padding: "8px", color: "#0d7c5f", textAlign: "right", fontWeight: 800 }}>{money(y1Total + y2Total + y3Total)}</td>
                             <td style={{ padding: "8px" }}></td>
                           </tr>
                         </tbody>
@@ -1175,7 +1207,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
               </div>
               <div>
                 <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Bonuses available</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{sequencerResult.entries.length}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#111" }}>{uniqueRecEntries.length}</div>
               </div>
             </div>
 

@@ -20,7 +20,7 @@ type Breakdown = {
 }
 
 /**
- * 12-month projection breakdown — shown when the user toggles the
+ * 3-year projection breakdown — shown when the user toggles the
  * "Projection" tab on the dashboard. Lifetime/in-progress numbers live
  * in DashboardGoalBar now, so this card focuses on per-module breakdown.
  */
@@ -46,7 +46,7 @@ export default function PortfolioCard({
       className="portfolio-card"
     >
       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.75 }}>
-        12-Month Projection
+        3-Year Projection
       </div>
       <div
         className="portfolio-total"

@@ -28,6 +28,29 @@ import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedC
 import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
 import type { CompletedBonus } from "../../lib/churn"
 
+// How far out the dashboard projects, in days/months. Was 12 months; now a
+// 3-year view so multi-year rotations and churnable bonuses (which recur after
+// their cooldown) are all reflected in one figure.
+const PROJECTION_DAYS = 1095
+const PROJECTION_MONTHS = 36
+
+type ProjBreakdownItem = { label: string; amount: number; note?: string }
+
+/**
+ * Collapse breakdown items that share a label into one row (summing amounts),
+ * keeping them sorted by amount desc. A bonus that churns several times across
+ * the 3-year horizon would otherwise list the same bank two or three times.
+ */
+function aggregateByLabel(items: ProjBreakdownItem[]): ProjBreakdownItem[] {
+  const map = new Map<string, ProjBreakdownItem>()
+  for (const it of items) {
+    const existing = map.get(it.label)
+    if (existing) existing.amount += it.amount
+    else map.set(it.label, { ...it })
+  }
+  return [...map.values()].sort((a, b) => b.amount - a.amount)
+}
+
 const PAYS_PER_MONTH: Record<string, number> = {
   weekly: 4.33,
   biweekly: 2.17,
@@ -126,7 +149,7 @@ export default function HubClient({
     if (!onboarded && !hasCompletedOnboarding) setShowWizard(true)
   }, [initialProfile])
 
-  // ─── 12-month projections (per-module) ────────────────────────────
+  // ─── 3-year projections (per-module) ──────────────────────────────
   const paycheckProjection = useMemo(() => {
     const result: SequencerResult = runSequencer({
       slots: profile.dd_slots,
@@ -139,11 +162,11 @@ export default function HubClient({
     const allBonuses: SequencedBonus[] = result.slots
       .flat()
       .filter((e) => e.type === "bonus") as SequencedBonus[]
-    const bonuses12mo = allBonuses.filter((b) => b.start_week * 7 <= 365)
-    const total = bonuses12mo.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount ?? 0), 0)
-    const items = [...bonuses12mo]
-      .sort((a, b) => (b.net_bonus ?? b.bonus_amount ?? 0) - (a.net_bonus ?? a.bonus_amount ?? 0))
-      .map((b) => ({ label: b.bank_name, amount: b.net_bonus ?? b.bonus_amount ?? 0 }))
+    const horizonBonuses = allBonuses.filter((b) => b.start_week * 7 <= PROJECTION_DAYS)
+    const total = horizonBonuses.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount ?? 0), 0)
+    const items = aggregateByLabel(
+      horizonBonuses.map((b) => ({ label: b.bank_name, amount: b.net_bonus ?? b.bonus_amount ?? 0 })),
+    )
     return { total, monthlyIncome: Math.round(getTotalMonthlyIncome(profile)), items }
   }, [profile])
 
@@ -158,10 +181,16 @@ export default function HubClient({
       includeBrokerage: true,
       militaryAffiliated: profile.military_affiliated === true,
     })
-    const items = [...(result.entries ?? [])]
-      .sort((a, b) => (b.total_earnings ?? 0) - (a.total_earnings ?? 0))
-      .map((e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) }))
-    return { total: Math.round(result.total_earnings ?? 0), items }
+    // Count every rotation that STARTS within the projection horizon. This is a
+    // 3-year dashboard figure, matching the paycheck/spending projections — the
+    // sequencer rotates churnable bonuses across the same horizon, so a bank can
+    // legitimately recur (aggregateByLabel folds those into one breakdown row).
+    const inHorizon = (result.entries ?? []).filter((e) => e.start_day < PROJECTION_DAYS)
+    const items = aggregateByLabel(
+      inHorizon.map((e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) })),
+    )
+    const total = inHorizon.reduce((s, e) => s + (e.total_earnings ?? 0), 0)
+    return { total: Math.round(total), items }
   }, [savingsProfile, profile.state, profile.military_affiliated])
 
   const spendingProjection = useMemo(() => {
@@ -180,36 +209,36 @@ export default function HubClient({
     }
     const overrides = spendingProfile?.cpp_overrides ?? null
     const sequenced = sequenceCards(creditCardBonuses, monthlySpend, profile.state ?? null, pace, useTravel, overrides, profile.military_affiliated === true)
-    const year1List = sequenced.filter((s) => s.cumulative_months <= 12)
-    const year1 = year1List.reduce((sum, s) => sum + s.net_value, 0)
+    const horizonList = sequenced.filter((s) => s.cumulative_months <= PROJECTION_MONTHS)
+    const horizonTotal = horizonList.reduce((sum, s) => sum + s.net_value, 0)
     // "Effective APY" for a card SUB = annualized return on the required
     // spend (the capital you route through the card). Mirrors the savings
     // formula: return ÷ capital × annualization factor.
     //   return_on_spend = net_value / min_spend  (from the sequencer)
     //   effApy          = return_on_spend × (12 / months_to_complete)
-    const apyFor = (s: typeof year1List[number]): number | null =>
+    const apyFor = (s: typeof horizonList[number]): number | null =>
       s.card.min_spend > 0 && s.months_to_complete > 0
         ? s.return_on_spend * (12 / s.months_to_complete)
         : null
-    const items = [...year1List]
-      .sort((a, b) => b.net_value - a.net_value)
-      .map((s) => {
+    const items = aggregateByLabel(
+      horizonList.map((s) => {
         const apy = apyFor(s)
         return { label: s.card.card_name, amount: Math.round(s.net_value), note: apy != null ? fmtApy(apy) : undefined }
-      })
+      }),
+    )
     // Blended module APY: spend-weighted average of the per-card APYs, so the
     // headline reflects where the capital actually goes.
     let weightedSpend = 0
     let weightedApy = 0
-    for (const s of year1List) {
+    for (const s of horizonList) {
       const apy = apyFor(s)
       if (apy != null) { weightedApy += apy * s.card.min_spend; weightedSpend += s.card.min_spend }
     }
     const effectiveApy = weightedSpend > 0 ? weightedApy / weightedSpend : null
-    return { total: Math.round(year1), items, effectiveApy }
+    return { total: Math.round(horizonTotal), items, effectiveApy }
   }, [spendingProfile, profile.state, profile.military_affiliated])
 
-  const portfolio12mo =
+  const portfolio36mo =
     paycheckProjection.total + savingsProjection.total + spendingProjection.total
 
   // ─── Started bonuses across all 4 sources ─────────────────────────
@@ -580,7 +609,7 @@ export default function HubClient({
         </div>
 
         <DashboardGoalBar
-          projection12mo={portfolio12mo}
+          projection36mo={portfolio36mo}
           inProgress={inProgressValue}
           lifetimeEarned={lifetimeEarned}
         />
@@ -642,7 +671,7 @@ export default function HubClient({
 
         {view === "projection" && (
           <PortfolioCard
-            total={portfolio12mo}
+            total={portfolio36mo}
             breakdown={[
               { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
               { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items, note: spendingProjection.effectiveApy != null ? fmtApy(spendingProjection.effectiveApy) : undefined },
