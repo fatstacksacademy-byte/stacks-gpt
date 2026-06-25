@@ -6,11 +6,11 @@
  * itself moves behind a tab; this bar keeps the numbers glanceable.
  */
 export default function DashboardGoalBar({
-  projection12mo,
+  projection36mo,
   inProgress,
   lifetimeEarned,
 }: {
-  projection12mo: number
+  projection36mo: number
   inProgress: number
   lifetimeEarned: number
 }) {
@@ -30,7 +30,7 @@ export default function DashboardGoalBar({
       }}
       className="goal-bar"
     >
-      <Stat label="Stack potential · 12 mo" value={projection12mo} emphasis />
+      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis />
       <Divider />
       <Stat label="In progress" value={inProgress} />
       <Divider />
