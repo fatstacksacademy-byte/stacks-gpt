@@ -191,7 +191,10 @@ def parse_spans(spec, slate=False):
 
 
 def main():
-    FPS = a.fps or round(eval(probe("-select_streams", "v:0", "-show_entries", "stream=r_frame_rate") or "24/1"))
+    # ffprobe (8.x) can emit a trailing comma on csv=p=0 → "24/1,"; parse the fraction safely (no eval)
+    rfr = (probe("-select_streams", "v:0", "-show_entries", "stream=r_frame_rate") or "24/1").split(",")[0].strip() or "24/1"
+    _num, _, _den = rfr.partition("/")
+    FPS = a.fps or round(float(_num) / float(_den or "1"))
     total = float(probe("-show_entries", "format=duration") or 0)
     if not total:
         sys.exit("cut-single: could not probe the export duration")
