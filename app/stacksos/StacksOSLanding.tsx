@@ -326,6 +326,52 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
           />
         </div>
+        <p style={{ fontSize: 13, color: "#aaa", fontStyle: "italic", margin: "16px 0 0", lineHeight: 1.5 }}>
+          Heads up: this walkthrough is from an earlier build. A fresh demo showing all the new
+          features — the savings &amp; credit-card sequencers, 0% APR arbitrage, and the debt
+          tools — is being recorded and will be posted here soon.
+        </p>
+      </section>
+
+      {/* ── SCREENSHOTS: checking + savings ── */}
+      <section className="lp-section" style={{ maxWidth: 1000, margin: "0 auto" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+          Not just checking — savings too
+        </h2>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 auto 36px", maxWidth: 620, lineHeight: 1.6 }}>
+          The catalog and sequencers cover checking, savings, and brokerage bonuses — ranked by
+          what actually pays you most, for your state and your cash.
+        </p>
+        <div className="lp-compare" style={{ gap: 24 }}>
+          <figure style={{ margin: 0 }}>
+            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+              <Image
+                src="/demo-checking-bonuses.jpg"
+                width={1650}
+                height={1080}
+                alt="Stacks OS catalog showing checking bonuses available in Georgia, each with its direct-deposit requirement"
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+            <figcaption style={{ fontSize: 13, color: "#888", textAlign: "center", marginTop: 12 }}>
+              <strong style={{ color: "#111" }}>Checking bonuses</strong> for your state — every requirement spelled out
+            </figcaption>
+          </figure>
+          <figure style={{ margin: 0 }}>
+            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+              <Image
+                src="/demo-savings-bonuses.jpg"
+                width={1650}
+                height={1080}
+                alt="Stacks OS savings sequencer showing savings and brokerage bonuses ranked by effective APY with a 12-month projected total"
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+            <figcaption style={{ fontSize: 13, color: "#888", textAlign: "center", marginTop: 12 }}>
+              <strong style={{ color: "#111" }}>Savings &amp; brokerage bonuses</strong> ranked by effective APY
+            </figcaption>
+          </figure>
+        </div>
       </section>
 
       {/* ── FAQ ── */}
