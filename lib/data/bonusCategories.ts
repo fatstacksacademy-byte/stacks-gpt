@@ -84,6 +84,12 @@ export function getBusinessBonuses() {
   return { nationwide, regional }
 }
 
+export type BizBonusTier = {
+  deposit: number
+  bonus: number
+  effApy: number
+}
+
 export type BizBonusRow = {
   id: string
   bank: string
@@ -93,12 +99,25 @@ export type BizBonusRow = {
   effApy: number
   monthlyFee: number | null
   blurb: string
+  /** Every deposit/bonus tier, so the table can show all the options. */
+  tiers: BizBonusTier[]
 }
 
 /** Flatten ranked business bonuses into serializable rows for client tables. */
 export function toBizBonusRows(list: { bonus: any; effApy: number }[]): BizBonusRow[] {
   return list.map(({ bonus, effApy }) => {
     const t = bonus.tiers[0]
+    const holdDays = practicalHoldDays(bonus)
+    const tiers: BizBonusTier[] = bonus.tiers.map((tier: any) => ({
+      deposit: tier.min_deposit,
+      bonus: tier.bonus_amount,
+      effApy: Math.round(
+        ((tier.bonus_amount + tier.min_deposit * (bonus.base_apy || 0) * (holdDays / 365)) /
+          tier.min_deposit) *
+          (365 / holdDays) *
+          100,
+      ),
+    }))
     const notes: string = bonus.eligibility?.eligibility_notes ?? ""
     const blurb = notes.split(/\.\s/)[0]?.slice(0, 120) ?? ""
     return {
@@ -106,10 +125,11 @@ export function toBizBonusRows(list: { bonus: any; effApy: number }[]): BizBonus
       bank: shortBankName(bonus),
       bonus: t.bonus_amount,
       deposit: t.min_deposit,
-      holdDays: practicalHoldDays(bonus),
+      holdDays,
       effApy: Math.round(effApy),
       monthlyFee: bonus.fees?.monthly_fee ?? null,
       blurb,
+      tiers,
     }
   })
 }
