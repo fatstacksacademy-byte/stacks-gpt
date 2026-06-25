@@ -46,7 +46,7 @@ type Props = {
 }
 
 export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) {
-  const { unlocked, unlocking, error: unlockError, unlock } = useCatalogUnlock()
+  const { unlocked, hydrated, unlocking, error: unlockError, unlock } = useCatalogUnlock()
   const searchParams = useSearchParams()
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "")
   const [stateCode, setStateCode] = useState<string>("")
@@ -187,7 +187,10 @@ export default function FilterableCatalog({ initialItems, reviewHrefs }: Props) 
   const lockedLocal = stateCode
     ? sorted.filter(item => item.availability === "state_restricted" && item.eligibleStates?.includes(stateCode))
     : []
-  const stateGated = lockedLocal.length > 0 && !unlocked && !profileState
+  // Require `hydrated` before gating: until the unlock state resolves from
+  // localStorage / the session, don't flash the email gate or yank the local
+  // rows out from under a signed-in / returning visitor.
+  const stateGated = lockedLocal.length > 0 && hydrated && !unlocked && !profileState
   const visibleSorted = stateGated ? sorted.filter(item => !lockedLocal.includes(item)) : sorted
 
   // ── Active filter chips ─────────────────────────────────────────

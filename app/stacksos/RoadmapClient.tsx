@@ -2253,7 +2253,6 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         )
                       }
 
-                      const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount)
                       const req = b.requirements
                       const fees = b.fees
 
@@ -2266,6 +2265,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
                       const bonusDeposits = deposits.filter(d => d.bonus_id === b.id)
                       const depositedSoFar = bonusDeposits.reduce((s, d) => s + d.amount, 0)
+
+                      // Pass the REAL logged deposits into the milestone engine so the
+                      // checklist can't tick "Deposit Requirement Met" while the deposit
+                      // bar below still reads $0 — the two now share one source of truth.
+                      const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount, depositedSoFar, bonusDeposits.length)
 
                       const isDetailsExpanded = expandedDetails === b.id
 
@@ -2322,15 +2326,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               )}
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                              {/* Applied — always complete once a bonus is in progress */}
-                              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                                <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                    <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                </div>
-                                <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
-                              </div>
+                              {/* No hardcoded "Applied" row: a catalog-tracked bonus
+                                  (markBonusStarted) and an approved-then-opened bonus
+                                  (approveApplication) both land here with current_step=null,
+                                  so we can't truthfully claim the user "Applied". Let the
+                                  real first milestone ("Account Opened") lead instead. */}
                               {milestoneDetail.milestones
                                 .filter((m) => m.key !== "safe_to_close")
                                 .map((m) => {

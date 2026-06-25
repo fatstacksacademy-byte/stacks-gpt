@@ -9,6 +9,30 @@ import type { UserProfile, PayFrequency } from "../../lib/profileTypes"
 
 type Step = "paycheck" | "savings" | "spending" | "done"
 
+const PREFILL_KEY = "stacks:onboarding_prefill"
+
+// Answers captured in the pre-signup onboarding projection (see
+// app/onboarding/page.tsx). Read here so a freshly-signed-up user isn't asked
+// the same questions a second time.
+type OnboardingPrefill = {
+  state?: string | null
+  pay_frequency?: PayFrequency
+  paycheck_amount?: number
+  dd_slots?: number
+  savings_balance?: number
+  monthly_spend?: number
+}
+
+function readOnboardingPrefill(): OnboardingPrefill | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = localStorage.getItem(PREFILL_KEY)
+    return raw ? (JSON.parse(raw) as OnboardingPrefill) : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * First-visit onboarding wizard. Three steps, all required (enter 0 to opt out):
  *   1. Paycheck (required) — state, frequency, paycheck amount, DD slots
@@ -30,21 +54,31 @@ export default function WelcomeWizard({
 }) {
   const [step, setStep] = useState<Step>("paycheck")
 
-  useEffect(() => { track("wizard_started") }, [])
+  // Prefill from the pre-signup onboarding answers (if the user came through
+  // that flow) so we don't re-ask. `prefilled` lets the savings/spending steps
+  // count the values as already-entered so the user can click straight through.
+  const [prefill] = useState<OnboardingPrefill | null>(readOnboardingPrefill)
+  const prefilled = !!prefill
+
+  useEffect(() => {
+    track("wizard_started")
+    // Consume the prefill once it's been read into state.
+    if (prefill) { try { localStorage.removeItem(PREFILL_KEY) } catch { /* ignore */ } }
+  }, [])
 
   // ── Paycheck state ──
-  const [state, setState] = useState(initialProfile.state ?? "")
-  const [payFreq, setPayFreq] = useState<PayFrequency>(initialProfile.pay_frequency)
-  const [paycheck, setPaycheck] = useState<number>(initialProfile.paycheck_amount)
-  const [ddSlots, setDdSlots] = useState<number>(initialProfile.dd_slots)
+  const [state, setState] = useState(prefill?.state ?? initialProfile.state ?? "")
+  const [payFreq, setPayFreq] = useState<PayFrequency>(prefill?.pay_frequency ?? initialProfile.pay_frequency)
+  const [paycheck, setPaycheck] = useState<number>(prefill?.paycheck_amount ?? initialProfile.paycheck_amount)
+  const [ddSlots, setDdSlots] = useState<number>(prefill?.dd_slots ?? initialProfile.dd_slots)
 
   // ── Savings state ──
-  const [savBalance, setSavBalance] = useState<number>(0)
+  const [savBalance, setSavBalance] = useState<number>(prefill?.savings_balance ?? 0)
   const [savApy, setSavApy] = useState<number>(0)
   const [savingSaving, setSavingSaving] = useState(false)
 
   // ── Spending state ──
-  const [monthlySpend, setMonthlySpend] = useState<number>(0)
+  const [monthlySpend, setMonthlySpend] = useState<number>(prefill?.monthly_spend ?? 0)
   const [rewardsVal, setRewardsVal] = useState<"cashback" | "points">("cashback")
 
   async function savePaycheck() {
@@ -144,6 +178,7 @@ export default function WelcomeWizard({
             savApy={savApy}
             setSavApy={setSavApy}
             saving={savingSaving}
+            prefilled={prefilled}
             onSave={() => saveSavings(false)}
             onBack={() => setStep("paycheck")}
           />
@@ -155,6 +190,7 @@ export default function WelcomeWizard({
             setMonthlySpend={setMonthlySpend}
             rewardsVal={rewardsVal}
             setRewardsVal={setRewardsVal}
+            prefilled={prefilled}
             onSave={() => saveSpending(false)}
             onBack={() => setStep("savings")}
           />
@@ -256,6 +292,7 @@ function SavingsStep({
   savApy,
   setSavApy,
   saving,
+  prefilled,
   onSave,
   onBack,
 }: {
@@ -264,12 +301,14 @@ function SavingsStep({
   savApy: number
   setSavApy: (n: number) => void
   saving: boolean
+  prefilled?: boolean
   onSave: () => void
   onBack: () => void
 }) {
   // Require a deliberate entry (0 is fine) so savings bonuses get surfaced
-  // instead of silently skipped.
-  const [touched, setTouched] = useState(false)
+  // instead of silently skipped. A prefilled value (from onboarding) already
+  // counts as deliberate, so the user can continue without re-touching.
+  const [touched, setTouched] = useState(!!prefilled)
   return (
     <>
       <EyebrowText>
@@ -304,6 +343,7 @@ function SpendingStep({
   setMonthlySpend,
   rewardsVal,
   setRewardsVal,
+  prefilled,
   onSave,
   onBack,
 }: {
@@ -311,12 +351,14 @@ function SpendingStep({
   setMonthlySpend: (n: number) => void
   rewardsVal: "cashback" | "points"
   setRewardsVal: (v: "cashback" | "points") => void
+  prefilled?: boolean
   onSave: () => void
   onBack: () => void
 }) {
   // Require a deliberate entry (0 is fine) so credit-card bonuses get surfaced
-  // instead of silently skipped.
-  const [touched, setTouched] = useState(false)
+  // instead of silently skipped. A prefilled value (from onboarding) already
+  // counts as deliberate, so the user can continue without re-touching.
+  const [touched, setTouched] = useState(!!prefilled)
   return (
     <>
       <EyebrowText>

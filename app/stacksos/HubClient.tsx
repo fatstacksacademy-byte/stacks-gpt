@@ -381,7 +381,10 @@ export default function HubClient({
       out.push({
         module: "savings",
         name: e.institution_name,
-        amount: e.expected_total_value ?? e.bonus_amount ?? 0,
+        // Show the pure bonus (matches the savings detail card's headline). The
+        // dashboard previously read expected_total_value (bonus + projected yield),
+        // so a $100 referral could read $999 on the tile while detail showed $100.
+        amount: e.bonus_amount ?? e.expected_total_value ?? 0,
         started_date: e.opened_date,
         nextStep: step.nextStep,
         deadline: step.deadline,
