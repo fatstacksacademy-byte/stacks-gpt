@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fatstacks.local/video-editor/clipmap.schema.json",
+  "title": "Video clipmap (2-pass ffmpeg compositor spec)",
+  "description": "Declarative description of a 2-pass ffmpeg composite. pass1 lays clips over a base + ducked voice + bed music; pass2 layers alpha overlays, comet-border face squares, a greenscreen outro, and whip-pan cut transitions on top of pass1's output. Consumed by build-clipmap.py.",
+  "type": "object",
+  "required": ["total_duration", "fps", "width", "height", "pass1", "pass2"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": { "type": "string" },
+    "video": { "type": "string" },
+    "description": { "type": "string" },
+    "total_duration": { "type": "number", "exclusiveMinimum": 0 },
+    "fps": { "type": "integer", "minimum": 1 },
+    "width": { "type": "integer", "minimum": 1 },
+    "height": { "type": "integer", "minimum": 1 },
+    "pass1": {
+      "type": "object",
+      "required": ["base", "music", "voice_duck", "clips"],
+      "additionalProperties": true,
+      "properties": {
+        "base": { "type": "string", "minLength": 1 },
+        "music": {
+          "type": "object",
+          "required": ["file", "vol", "fades"],
+          "additionalProperties": true,
+          "properties": {
+            "file": { "type": "string", "minLength": 1 },
+            "vol": { "type": "number", "minimum": 0 },
+            "stream_loop": { "type": "integer", "minimum": -1 },
+            "fades": {
+              "type": "object",
+              "required": ["in", "out"],
+              "additionalProperties": false,
+              "properties": {
+                "in": { "$ref": "#/$defs/fade" },
+                "out": { "$ref": "#/$defs/fade" }
+              }
+            }
+          }
+        },
+        "voice_duck": {
+          "type": "object",
+          "required": ["window", "gain"],
+          "additionalProperties": false,
+          "properties": {
+            "window": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "gain": { "type": "number", "minimum": 0 }
+          }
+        },
+        "clips": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/clip" }
+        }
+      }
+    },
+    "pass2": {
+      "type": "object",
+      "required": ["alpha_overlays", "splits", "cuts", "gs_composite"],
+      "additionalProperties": true,
+      "properties": {
+        "base_from_pass1": { "type": "string", "minLength": 1 },
+        "whip": { "type": "string", "minLength": 1 },
+        "border": { "type": "string", "minLength": 1 },
+        "whip_dur": { "type": "number", "exclusiveMinimum": 0 },
+        "alpha_overlays": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/clip" }
+        },
+        "splits": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "description": "[start, dur]",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "cuts": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 }
+        },
+        "gs_composite": { "$ref": "#/$defs/clip" }
+      }
+    }
+  },
+  "$defs": {
+    "fade": {
+      "type": "object",
+      "required": ["start", "dur"],
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "number", "minimum": 0 },
+        "dur": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "clip": {
+      "type": "object",
+      "required": ["file", "start", "dur"],
+      "additionalProperties": true,
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "start": { "type": "number", "minimum": 0 },
+        "dur": { "type": "number", "exclusiveMinimum": 0 },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "Thresholds for qc-audio.py post-render audio QC. dBFS/LUFS in decibels. Edit here, not in code.",
+  "target_lufs": -14,
+  "lufs_band": 1.0,
+  "tp_max": -1.0,
+  "hot_margin_db": 9.0,
+  "abs_peak_dbfs": -0.5,
+  "hot_window_sec": 1.0,
+  "_hot_note": "hot_window is RELATIVE: flags a ~1s window whose RMS is hot_margin_db over the program median (the 'one loud insert' case), robust to overall loudness. abs_peak_dbfs is a separate true-clip guard.",
+  "tail_seconds": 2.0,
+  "tail_click_thresh": 0.30,
+  "tail_rms_drop_db": 12,
+  "drift_frames": 1,
+  "fps": 24.0,
+  "lufs_band_note": "lufs_band can be widened to ~1.5 if -14.0 +/-1.0 is too tight for a hand-mixed master"
+}

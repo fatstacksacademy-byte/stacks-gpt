@@ -1,5 +1,10 @@
 # Virtual Editor — EDL → DaVinci Resolve, zero edit-tokens
 
+> **QC toolkit:** see [`QC-TOOLKIT.md`](QC-TOOLKIT.md) — 9 gates that make Claude verify a cut
+> (exact-frame, audio, overlay-timing, positions, safe file ops) **before you ever see it**.
+> Background + rationale in `VIDEO-EDIT-PROCESS-AUDIT.md` (repo root). Run `verify-frames.py`
+> + `qc-audio.py` before calling any cut done.
+
 Turns a `VIDEO-EDL-*.md` + the spoken transcript into a fully-laid DaVinci Resolve
 Studio timeline: branded title cards, full-screen earning graphics, transparent
 lower-thirds, screen B-roll, **clean line captions, gold number callouts, SFX on

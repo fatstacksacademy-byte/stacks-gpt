@@ -1,0 +1,98 @@
+{
+  "$schema": "./clipmap.schema.json",
+  "video": "biz-20apy",
+  "description": "Declarative clipmap for the biz-20apy produced video. Port of /tmp/v8_p1.py (pass1: base + clips + music+duck) and /tmp/v8_p2.py (pass2: alpha overlays + comet-border splits + greenscreen outro + whip-pan cuts). Reconstructed by build-clipmap.py. Source of truth was the pure-ffmpeg 2-pass compositor.",
+  "total_duration": 737.189,
+  "fps": 24,
+  "width": 1920,
+  "height": 1080,
+  "pass1": {
+    "base": "/tmp/v8_base.mp4",
+    "music": {
+      "file": "/Users/nathaniel/stacks-gpt/assets/music/kmacleod-inspired.mp3",
+      "vol": 0.0245,
+      "stream_loop": 2,
+      "fades": {
+        "in": { "start": 0.0, "dur": 1.5 },
+        "out": { "start": 734.689, "dur": 2.2 }
+      }
+    },
+    "voice_duck": {
+      "window": [469.26, 487.97],
+      "gain": 0.45
+    },
+    "clips": [
+      { "file": "/tmp/cold_wb.mp4", "start": 0.7, "dur": 3.5 },
+      { "file": "/tmp/cold_ally.mp4", "start": 7.6, "dur": 4.4 },
+      { "file": "/tmp/chase_cold.mp4", "start": 13.7, "dur": 4.8, "note": "Chase $400 bonus FIRST (he says '$400 bonus')" },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/gfx/01-coldopen-400.mp4", "start": 18.5, "dur": 4.0, "note": "73% APY graphic AFTER, when he says '70% APY difference'" },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/chase_split.mp4", "start": 192.35, "dur": 25.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/gfx/03-formula.mp4", "start": 218.0, "dur": 6.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/gfx/04-lineup-core.mp4", "start": 236.98, "dur": 7.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/proj25k_split.mp4", "start": 244.38, "dur": 11.0 },
+      { "file": "/tmp/gfx_google.mp4", "start": 266.5, "dur": 11.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/fsablog_split.mp4", "start": 282.25, "dur": 20.5 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/state_split.mp4", "start": 303.91, "dur": 6.1 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/fsatool_split.mp4", "start": 310.0, "dur": 9.41 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_offer_split.mp4", "start": 330.3, "dur": 10.708 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_yourself_split.mp4", "start": 341.8, "dur": 22.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_soleprop_split.mp4", "start": 365.0, "dur": 12.5 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_ein_split.mp4", "start": 378.0, "dur": 13.0 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_taxssn_split.mp4", "start": 395.5, "dur": 14.5 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_business_split.mp4", "start": 414.6, "dur": 21.4166 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/cap_revenue_split.mp4", "start": 443.8, "dur": 22.0 },
+      { "file": "/tmp/v4/insert_banner3.mp4", "start": 469.26, "dur": 18.709 },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/fee_split.mp4", "start": 528.0, "dur": 19.0, "note": "Chase fee waiver @8:52 ($2k min-balance highlight + ways)" },
+      { "file": "/tmp/tx_cutout.mp4", "start": 593.0, "dur": 14.0, "note": "qualifying-transaction METHODS (static, whole hl) @9:53" },
+      { "file": "/tmp/blog_full.mp4", "start": 670.0, "dur": 9.0, "note": "best business bonuses (full-frame) @11:10" },
+      { "file": "/tmp/stackos_full.mp4", "start": 679.0, "dur": 11.0, "note": "StackOS hero card (full-frame) @11:19" },
+      { "file": "/Users/nathaniel/stacks-gpt/build/biz-20apy/broll/stackos_split.mp4", "start": 690.0, "dur": 12.0, "note": "StackOS square cutout, cut to full @11:42" }
+    ]
+  },
+  "pass2": {
+    "base_from_pass1": "/tmp/v9_clips.mp4",
+    "whip": "/tmp/whip.mov",
+    "border": "/tmp/sq_border.mov",
+    "whip_dur": 0.33,
+    "alpha_overlays": [
+      { "file": "/tmp/emoji_pops.mov", "start": 71.5, "dur": 10.0 },
+      { "file": "/tmp/num_pops.mov", "start": 25.0, "dur": 5.6 },
+      { "file": "/tmp/coverage_list.mov", "start": 48.0, "dur": 15.0 },
+      { "file": "/tmp/sections/s1.mov", "start": 64.5, "dur": 3.8 },
+      { "file": "/tmp/sections/s2.mov", "start": 88.5, "dur": 3.8 },
+      { "file": "/tmp/sections/s3.mov", "start": 154.0, "dur": 3.8 },
+      { "file": "/tmp/sections/s4.mov", "start": 257.5, "dur": 3.8 },
+      { "file": "/tmp/sections/s5.mov", "start": 319.5, "dur": 3.8 },
+      { "file": "/tmp/sections/s6.mov", "start": 508.5, "dur": 3.8 },
+      { "file": "/tmp/transfers_anim.mov", "start": 614.0, "dur": 9.5 }
+    ],
+    "splits": [
+      [192.35, 25.0],
+      [244.38, 11.0],
+      [282.25, 20.5],
+      [303.91, 6.1],
+      [310.0, 9.41],
+      [330.3, 10.708],
+      [341.8, 22.0],
+      [365.0, 12.5],
+      [378.0, 13.0],
+      [395.5, 14.5],
+      [414.6, 21.4166],
+      [443.8, 22.0],
+      [528.0, 19.0],
+      [690.0, 12.0]
+    ],
+    "cuts": [
+      0.7, 4.2, 7.6, 12.0, 13.7, 18.5, 22.5, 192.35, 217.35, 218.0, 224.0, 236.98, 244.18, 255.38,
+      266.5, 277.5, 282.25, 302.75, 303.91, 310.0, 319.41, 330.3, 341.008, 341.8, 363.8, 365.0, 377.5, 378.0,
+      391.0, 395.5, 410.0, 414.6, 436.017, 443.8, 465.8, 469.26, 487.969, 528.0, 547.0, 593.0, 607.0,
+      670.0, 679.0, 690.0, 702.0
+    ],
+    "gs_composite": {
+      "file": "/tmp/gs_composite.mp4",
+      "start": 721.5,
+      "dur": 11.0,
+      "note": "green-screen outro: $4,652 monitor + matted Nathaniel in front @12:02"
+    }
+  }
+}

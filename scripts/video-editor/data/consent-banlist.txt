@@ -1,0 +1,24 @@
+# consent-banlist.txt
+# Lowercase substrings that flag a cookie/consent/privacy banner in a source screenshot.
+# Used by assert-clean-source.py against OCR text. One phrase per line; blank lines and
+# lines starting with '#' are ignored. Matching is case-insensitive substring + a few
+# OCR-glyph normalizations (e.g. dollar/asterisk) applied by the tool, not here.
+accept all
+accept cookies
+accept all cookies
+we value your privacy
+got it
+onetrust
+manage preferences
+manage cookies
+reject all
+privacy choices
+cookie
+cookies
+your privacy
+privacy policy
+necessary cookies
+do not sell
+consent
+this site uses cookies
+allow all
