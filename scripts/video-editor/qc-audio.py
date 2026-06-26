@@ -60,6 +60,10 @@ except Exception as e:  # pragma: no cover
     sys.exit(2)
 
 SR = 48000  # analysis sample rate (mono)
+# AVERAGING downmix (not ffmpeg's summing -ac 1, which DOUBLES correlated/center-panned
+# content and invents phantom clipping). aformat upmixes mono->stereo first so this is
+# safe for any input; pan then averages so mono peak <= max channel peak.
+DOWNMIX = "aformat=channel_layouts=stereo,pan=mono|c0=0.5*c0+0.5*c1"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SPEC = os.path.join(HERE, "qc-spec.json")
 
@@ -127,7 +131,7 @@ def decode_mono(path, ss=None, t=None):
         cmd += ["-ss", f"{ss}"]
     if t is not None:
         cmd += ["-t", f"{t}"]
-    cmd += ["-i", path, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"]
+    cmd += ["-i", path, "-af", DOWNMIX, "-ar", str(SR), "-f", "f32le", "-"]
     p = run(cmd)
     if p.returncode != 0 and not p.stdout:
         raise RuntimeError(p.stderr.decode("utf-8", "replace"))
@@ -285,10 +289,11 @@ def main(argv=None):
     band = float(spec.get("lufs_band", 1.0))
     tp_max = float(spec["tp_max"])
     hot_margin_db = float(spec.get("hot_margin_db", 9.0))      # a window this many LU over the program = a hot insert
-    abs_peak_dbfs = float(spec.get("abs_peak_dbfs", -0.5))     # absolute clip guard (true-over)
+    abs_peak_dbfs = float(spec.get("abs_peak_dbfs", -0.1))     # true digital-clip guard (near 0 dBFS)
     hot_win = float(spec.get("hot_window_sec", 1.0))
     tail_sec = float(spec.get("tail_seconds", 2.0))
     click_thr = float(spec["tail_click_thresh"])
+    click_ratio_max = float(spec.get("tail_click_ratio", 15.0))  # click = max step this many x the median step
     rms_drop = float(spec["tail_rms_drop_db"])
     drift_frames = float(spec["drift_frames"])
     fps = float(spec.get("fps", 24.0))
@@ -356,8 +361,14 @@ def main(argv=None):
     ss = max(0.0, total_sec - tail_sec)
     tail = decode_mono(args.master, ss=ss, t=tail_sec)
     if tail.size > SR // 10:
-        max_diff = float(np.abs(np.diff(tail)).max())
-        click_hit = max_diff > click_thr
+        diffs = np.abs(np.diff(tail))
+        max_diff = float(diffs.max())
+        med_diff = float(np.median(diffs)) + 1e-9
+        click_ratio = max_diff / med_diff
+        # a real click is a SPIKE: one step both absolutely large AND a gross outlier vs
+        # the tail's own sample-to-sample motion. This is loudness-invariant — a loud-but-
+        # smooth fade has a high median diff too, so its ratio stays low (no false click).
+        click_hit = (max_diff > click_thr) and (click_ratio > click_ratio_max)
         # rms cliff: compare last 100ms vs the 1s before it. Only count it as a
         # glitch (not a natural fade-to-silence) if the preceding 1s was program.
         chunk = int(0.1 * SR)
@@ -373,17 +384,19 @@ def main(argv=None):
         cliff_hit = (drop > rms_drop) and (prev_db > -45.0) and (last_db < -55.0)
         passed = not (click_hit or cliff_hit)
         bits = []
-        bits.append(f"max|diff|={max_diff:.4f} (thr {click_thr})"
+        bits.append(f"max|diff|={max_diff:.4f} ratio={click_ratio:.0f}x (thr {click_thr}/{click_ratio_max:.0f}x)"
                     + (" CLICK" if click_hit else ""))
         bits.append(f"rms drop {drop:.1f}dB last100ms (thr {rms_drop})"
                     + (" CLIFF" if cliff_hit else ""))
         detail = "; ".join(bits)
         results["tail_glitch"] = {
             "measured": {"max_abs_diff": round(max_diff, 4),
+                         "click_ratio": round(click_ratio, 1),
                          "rms_drop_db": round(drop, 2),
                          "prev_rms_dbfs": round(prev_db, 2),
                          "last_rms_dbfs": round(last_db, 2)},
             "threshold": {"tail_click_thresh": click_thr,
+                          "tail_click_ratio": click_ratio_max,
                           "tail_rms_drop_db": rms_drop,
                           "tail_seconds": tail_sec},
             "pass": bool(passed), "detail": detail,
@@ -466,8 +479,8 @@ def speechband_offset(master, source):
     def envelope(path):
         # bandpass to speech, decode mono, take per-10ms RMS envelope
         cmd = ["ffmpeg", "-hide_banner", "-nostats", "-i", path,
-               "-af", "highpass=f=300,lowpass=f=3400",
-               "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"]
+               "-af", f"{DOWNMIX},highpass=f=300,lowpass=f=3400",
+               "-ar", str(SR), "-f", "f32le", "-"]
         p = run(cmd)
         a = np.frombuffer(p.stdout, dtype=np.float32).astype(np.float64)
         hop = int(0.01 * SR)
