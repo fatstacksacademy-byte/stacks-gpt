@@ -1061,7 +1061,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   // front (E*TRADE-style) and flips in place to its live tracker once started; an
   // already-working bonus shows its tracker and can flip to review requirements.
   // Working cards render here, so they're suppressed from "Currently working on".
-  const slotBonusIds = new Set(workingBonuses.map(w => w.bonus.id))
+  // The slot grid is Pro-only, so on the free tier it never renders — keep this
+  // empty there, otherwise active bonuses would be hidden from BOTH places and
+  // free users would lose their in-progress tracker entirely.
+  const slotBonusIds = new Set(isPaid ? workingBonuses.map(w => w.bonus.id) : [])
   type HeroSlot =
     | { kind: "working"; working: typeof inProgress[number] }
     | { kind: "open"; hb: typeof heroBonuses[number]; heroIdx: number }
