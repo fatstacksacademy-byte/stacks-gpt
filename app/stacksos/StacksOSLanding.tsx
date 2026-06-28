@@ -316,20 +316,20 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           See it in action
         </h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>A quick walkthrough of how Stacks OS works.</p>
+        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>A 90-second look at how Stacks OS works.</p>
         <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
           <iframe
-            src="https://www.youtube.com/embed/cS9xRWycQQk"
-            title="Stacks OS Demo"
+            src="https://www.youtube.com/embed/lVsb8fMmuDc"
+            title="Stacks OS — 90-second overview"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
           />
         </div>
-        <p style={{ fontSize: 13, color: "#aaa", fontStyle: "italic", margin: "16px 0 0", lineHeight: 1.5 }}>
-          Heads up: this walkthrough is from an earlier build. A fresh demo showing all the new
-          features — the savings &amp; credit-card sequencers, 0% APR arbitrage, and the debt
-          tools — is being recorded and will be posted here soon.
+        <p style={{ fontSize: 14, margin: "16px 0 0" }}>
+          <a href="https://youtu.be/vJcZPt2KWY8" target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>
+            Want the full tour? Watch the complete walkthrough →
+          </a>
         </p>
       </section>
 
