@@ -13,6 +13,7 @@ import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompleted
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
+import { DD_SOURCES } from "../../lib/ddSources"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
 import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
@@ -199,17 +200,6 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "biweekly", label: "Every 2 weeks", desc: "26 paychecks/year" },
   { value: "semimonthly", label: "Twice a month", desc: "24 paychecks/year" },
   { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
-]
-
-// Common sources people route a qualifying "direct deposit" from, for the
-// optional "which DD worked?" capture on the Bonus Posted step. The search is
-// free-text, so this list is just fast-pick suggestions, not an allow-list.
-const DD_SOURCES = [
-  "Chase", "Bank of America", "Wells Fargo", "Citi", "Capital One", "U.S. Bank",
-  "PNC", "TD Bank", "Truist", "Ally", "SoFi", "Discover", "American Express",
-  "Fidelity", "Charles Schwab", "Vanguard", "Robinhood", "Betterment",
-  "PayPal", "Cash App", "Venmo", "Wise", "Chime", "Varo", "Current",
-  "Navy Federal", "USAA", "Gusto (payroll)", "ADP (payroll)", "Deel (payroll)",
 ]
 
 export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {

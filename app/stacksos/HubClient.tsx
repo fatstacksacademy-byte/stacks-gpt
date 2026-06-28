@@ -283,8 +283,12 @@ export default function HubClient({
         !r.bonus_received && r.current_step !== "applied"
           ? {
               label: "Mark bonus received",
-              run: async () => {
-                await markBonusPosted(r.id, r.actual_amount ?? cat.bonus_amount ?? 0, todayISO())
+              // Capture which direct-deposit source triggered it (optional) — same
+              // data point as the sequencer's Bonus Posted step.
+              ddCapture: true,
+              run: async (ddMethod?: string | null) => {
+                await markBonusPosted(r.id, r.actual_amount ?? cat.bonus_amount ?? 0, todayISO(), ddMethod ?? null)
+                if (ddMethod) track("dd_method_recorded", { bonus_id: r.bonus_id, dd_method: ddMethod, source: "dashboard" })
                 track("dashboard_bonus_advanced", { module: "paycheck", action: "bonus_received" })
               },
             }

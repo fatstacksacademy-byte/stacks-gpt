@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
+import { DD_SOURCES, DD_EMPLOYER } from "../../lib/ddSources"
 import PortalStacksBadge from "./PortalStacksBadge"
 
 /**
@@ -20,8 +21,12 @@ import PortalStacksBadge from "./PortalStacksBadge"
 export type AdvanceAction = {
   /** Button label, e.g. "Mark bonus received". */
   label: string
+  /** When true, the list first prompts for which direct-deposit source worked
+   *  (optional) and passes it to run() — same data point as the sequencer's
+   *  Bonus Posted step. */
+  ddCapture?: boolean
   /** Performs the mutation. The list calls onChanged() after it resolves. */
-  run: () => Promise<void>
+  run: (ddMethod?: string | null) => Promise<void>
 }
 
 export type ChecklistItem = {
@@ -91,6 +96,11 @@ export default function StartedBonusesList({
 }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [busyKey, setBusyKey] = useState<string | null>(null)
+  // "Which DD worked?" prompt: which card is asking, plus the picker state.
+  const [ddPromptKey, setDdPromptKey] = useState<string | null>(null)
+  const [ddValue, setDdValue] = useState("")
+  const [ddSearchOpen, setDdSearchOpen] = useState(false)
+  const [ddSearch, setDdSearch] = useState("")
 
   function toggle(key: string) {
     setExpanded((prev) => {
@@ -101,11 +111,28 @@ export default function StartedBonusesList({
     })
   }
 
-  async function runAdvance(key: string, advance: AdvanceAction) {
+  function resetDdPrompt() {
+    setDdPromptKey(null); setDdValue(""); setDdSearchOpen(false); setDdSearch("")
+  }
+
+  // Advances that capture a DD source first open the inline picker; the rest run
+  // straight away.
+  function clickAdvance(key: string, advance: AdvanceAction) {
+    if (busyKey) return
+    if (advance.ddCapture) {
+      setDdValue(""); setDdSearchOpen(false); setDdSearch("")
+      setDdPromptKey(prev => (prev === key ? null : key))
+      return
+    }
+    runAdvance(key, advance)
+  }
+
+  async function runAdvance(key: string, advance: AdvanceAction, ddMethod?: string | null) {
     if (busyKey) return
     setBusyKey(key)
     try {
-      await advance.run()
+      await advance.run(ddMethod)
+      resetDdPrompt()
       onChanged?.()
     } finally {
       setBusyKey(null)
@@ -271,7 +298,7 @@ export default function StartedBonusesList({
                   </div>
                   {b.advance && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!) }}
+                      onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
                       disabled={isBusy}
                       className="sbl-advance"
                       style={{
@@ -287,7 +314,7 @@ export default function StartedBonusesList({
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {isBusy ? "Saving…" : b.advance.label}
+                      {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
                     </button>
                   )}
                 </div>
@@ -295,6 +322,54 @@ export default function StartedBonusesList({
                   ›
                 </span>
               </div>
+
+              {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
+              {ddPromptKey === key && b.advance && (
+                <div style={{ borderTop: "1px solid #f0f0f0", background: "#f0fdf4", padding: "12px 18px" }}>
+                  <div style={{ fontSize: 12, color: "#166534", fontWeight: 600, marginBottom: 8 }}>
+                    Which deposit triggered it? <span style={{ color: "#9ca3af", fontWeight: 400 }}>(optional — helps track what works)</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                    <button onClick={(e) => { e.stopPropagation(); setDdValue(ddValue === DD_EMPLOYER ? "" : DD_EMPLOYER); setDdSearchOpen(false); setDdSearch("") }}
+                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddValue === DD_EMPLOYER ? "1.5px solid #0d7c5f" : "1px solid #ddd", background: ddValue === DD_EMPLOYER ? "#e6f5f0" : "#fff", color: ddValue === DD_EMPLOYER ? "#0d7c5f" : "#555" }}>
+                      {ddValue === DD_EMPLOYER ? "✓ " : ""}Employer / payroll
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); setDdSearchOpen(v => !v); setDdValue("") }}
+                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? "1.5px solid #2563eb" : "1px solid #ddd", background: ddSearchOpen ? "#eff6ff" : "#fff", color: ddSearchOpen ? "#2563eb" : "#555" }}>
+                      Other source…
+                    </button>
+                    {!ddSearchOpen && ddValue && ddValue !== DD_EMPLOYER && (
+                      <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>via {ddValue}</span>
+                    )}
+                  </div>
+                  {ddSearchOpen && (
+                    <div style={{ marginTop: 8 }}>
+                      <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Search bank, brokerage, or app…"
+                        style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" }} />
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                        {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
+                          <button key={s} onClick={(e) => { e.stopPropagation(); setDdSearch(s) }}
+                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "1.5px solid #2563eb" : "1px solid #e0e0e0", background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "#eff6ff" : "#fff", color: "#555" }}>
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                    <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, ddSearchOpen ? ddSearch.trim() : ddValue) }}
+                      disabled={isBusy}
+                      style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, background: color.fg, color: "#fff", border: "none", borderRadius: 8, cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1 }}>
+                      {isBusy ? "Saving…" : "Save & mark received"}
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, null) }}
+                      disabled={isBusy}
+                      style={{ padding: "8px 14px", fontSize: 12, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                      Skip
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Expanded drawer — full checklist + link into the module */}
               {isOpen && (
@@ -330,7 +405,7 @@ export default function StartedBonusesList({
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     {b.advance && (
                       <button
-                        onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!) }}
+                        onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
                         disabled={isBusy}
                         style={{
                           fontSize: 13, fontWeight: 700, color: "#fff", background: color.fg,
@@ -338,7 +413,7 @@ export default function StartedBonusesList({
                           cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1,
                         }}
                       >
-                        {isBusy ? "Saving…" : b.advance.label}
+                        {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
                       </button>
                     )}
                     <a
