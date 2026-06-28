@@ -9,7 +9,7 @@ import { bonuses as allBonuses } from "../../lib/data/bonuses"
 import { blogContent } from "../../lib/data/blogContent"
 import { getPostByBonusId } from "../../lib/data/blogPosts"
 import { getChurnStatus, fmtShortDate, ChurnStatus, CompletedBonus } from "../../lib/churn"
-import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus, markBonusApplied, approveApplication, markBonusPosted } from "../../lib/completedBonuses"
+import { getCompletedBonuses, markBonusStarted, markBonusClosed, deleteCompletedBonus, markBonusApplied, approveApplication, markBonusPosted, updateOpenedDate } from "../../lib/completedBonuses"
 import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequencer"
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
@@ -201,6 +201,17 @@ const FREQ_OPTIONS: { value: PayFrequency; label: string; desc: string }[] = [
   { value: "monthly", label: "Once a month", desc: "12 paychecks/year" },
 ]
 
+// Common sources people route a qualifying "direct deposit" from, for the
+// optional "which DD worked?" capture on the Bonus Posted step. The search is
+// free-text, so this list is just fast-pick suggestions, not an allow-list.
+const DD_SOURCES = [
+  "Chase", "Bank of America", "Wells Fargo", "Citi", "Capital One", "U.S. Bank",
+  "PNC", "TD Bank", "Truist", "Ally", "SoFi", "Discover", "American Express",
+  "Fidelity", "Charles Schwab", "Vanguard", "Robinhood", "Betterment",
+  "PayPal", "Cash App", "Venmo", "Wise", "Chime", "Varo", "Current",
+  "Navy Federal", "USAA", "Gusto (payroll)", "ADP (payroll)", "Deel (payroll)",
+]
+
 export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail: string; userId: string; isPaid: boolean }) {
   const { profile, setProfile, loaded } = useProfile()
   const [mounted, setMounted] = useState(false)
@@ -283,6 +294,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [stepDateValue, setStepDateValue] = useState(todayStr())
   const [stepBonusReceived, setStepBonusReceived] = useState(true)
   const [stepActualAmount, setStepActualAmount] = useState("")
+  // "Bonus Posted" → which DD source worked. "" = unanswered; otherwise
+  // "Employer / payroll" or a financial-institution name. ddSearchOpen reveals
+  // the institution search when the user picks "Other source".
+  const [ddMethodValue, setDdMethodValue] = useState("")
+  const [ddSearchOpen, setDdSearchOpen] = useState(false)
+  const [ddSearch, setDdSearch] = useState("")
   const [editingCloseDateId, setEditingCloseDateId] = useState<string | null>(null)
   const [editingCloseDateVal, setEditingCloseDateVal] = useState("")
 
@@ -301,6 +318,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [comboMode, setComboMode] = useState<Record<string, boolean>>({})
   const [bonusSearch, setBonusSearch] = useState("")
   const [flippedHeroes, setFlippedHeroes] = useState<Set<string>>(new Set())
+  // Hero flip card: which bonus id is mid-"start" flip animation (front → tracker).
+  const [startingId, setStartingId] = useState<string | null>(null)
   const [matchingCustomId, setMatchingCustomId] = useState<string | null>(null)
   const [alreadyHadBonusId, setAlreadyHadBonusId] = useState<string | null>(null)
   // Application tracking: when a pending application's "Approved" is clicked we
@@ -468,6 +487,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     setActionBonus(null)
   }
 
+  // "Start working on it" — one-tap start straight from the hero card's offer
+  // front. Marks the bonus in-progress (so the hero card flips in place to its
+  // live checklist) and animates the flip. The open date defaults to today and
+  // can be corrected from the checklist's "Account Opened" step afterward.
+  async function handleStartWorking(bonus: Bonus) {
+    setStartingId(bonus.id)
+    try {
+      // Let the flip-out animation play before the slot swaps to its tracker.
+      await new Promise(resolve => setTimeout(resolve, 240))
+      await markBonusStarted(userId, bonus.id, todayStr())
+      track("bonus_started", { module: "paycheck", source: "hero_flip", bonus_id: bonus.id, amount: bonus.bonus_amount })
+      await loadRecords()
+    } finally {
+      setStartingId(null)
+    }
+  }
+
+  function toggleHeroFlip(id: string) {
+    setFlippedHeroes(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
   // ── Application flow ──────────────────────────────────────────────────────
   // "I applied" creates a pending record; the decision (approved/denied/pending)
   // is then recorded from the active tracker card.
@@ -491,14 +535,29 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     await loadRecords()
   }
 
-  // Confirm the "Bonus Posted" step — captures the real amount + posting date.
+  // Confirm the "Bonus Posted" step — captures the real amount + posting date
+  // + (optionally) which direct-deposit source actually triggered it.
   async function handleConfirmPosted(bonusId: string) {
     const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
     if (!record) return
     const bonus = allBonuses.find(x => x.id === bonusId)
     const parsed = stepActualAmount ? parseInt(stepActualAmount.replace(/\D/g, "")) : NaN
     const amount = Number.isFinite(parsed) && parsed > 0 ? parsed : (bonus?.bonus_amount ?? 0)
-    await markBonusPosted(record.id, amount, stepDateValue)
+    const ddMethod = ddSearchOpen ? ddSearch.trim() : ddMethodValue
+    if (ddMethod) {
+      track("dd_method_recorded", { bonus_id: bonusId, dd_method: ddMethod, bank: bonus?.bank_name ?? null })
+    }
+    await markBonusPosted(record.id, amount, stepDateValue, ddMethod || null)
+    setPendingStepDate(null)
+    setDdMethodValue(""); setDdSearchOpen(false); setDdSearch("")
+    await loadRecords()
+  }
+
+  // Correct the recorded account-open date from the tracker's "✎" affordance.
+  async function handleConfirmOpenDate(bonusId: string) {
+    const record = completedRecords.find(r => r.bonus_id === bonusId && !r.closed_date)
+    if (!record) return
+    await updateOpenedDate(record.id, stepDateValue)
     setPendingStepDate(null)
     await loadRecords()
   }
@@ -997,6 +1056,728 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const currentBonus = workingBonuses[0] ?? available[0] ?? null
   const queueItems = allAvailable.slice(openSlots, openSlots + 3)
 
+  // ── Unified hero "slot" model ──────────────────────────────────────────────
+  // Each income slot is ONE flip card: an open slot shows the offer/requirements
+  // front (E*TRADE-style) and flips in place to its live tracker once started; an
+  // already-working bonus shows its tracker and can flip to review requirements.
+  // Working cards render here, so they're suppressed from "Currently working on".
+  const slotBonusIds = new Set(workingBonuses.map(w => w.bonus.id))
+  type HeroSlot =
+    | { kind: "working"; working: typeof inProgress[number] }
+    | { kind: "open"; hb: typeof heroBonuses[number]; heroIdx: number }
+  const slotCards: HeroSlot[] = [
+    ...workingBonuses.map((working) => ({ kind: "working" as const, working })),
+    ...heroBonuses.map((hb, heroIdx) => ({ kind: "open" as const, hb, heroIdx })),
+  ]
+
+  const fmtOfferExpiry = (iso: string | null | undefined): string | null => {
+    if (!iso) return null
+    const d = new Date(iso + "T00:00:00")
+    if (Number.isNaN(d.getTime())) return null
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+  }
+  const prettyProduct = (pt: string | null | undefined): string =>
+    (pt ?? "checking").split(/[\s_+]+/).filter(Boolean)
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" + ")
+
+  // The scannable "front" of a hero card: labeled offer summary + numbered
+  // requirements. Pure presentation; reused for open slots and the flip side of
+  // an active tracker.
+  const renderOfferSummaryFace = (b: any, accentColor: string) => {
+    const catO = catalogOverrides[b.id] ?? {}
+    const r = b.requirements ?? {}
+    const effAmt = catO.bonus_amount ?? b.bonus_amount
+    const effDdTotal = catO.min_dd_total ?? r.min_direct_deposit_total
+    const effWindow = catO.deposit_window_days ?? r.deposit_window_days ?? 90
+    const expiry = fmtOfferExpiry(b.expiration_date)
+    const steps: { label: string; detail?: string }[] = []
+    steps.push({ label: `Open a new ${prettyProduct(b.product_type)} account at ${b.bank_name}` })
+    if (r.min_opening_deposit > 0) steps.push({ label: `Deposit $${r.min_opening_deposit.toLocaleString()} to open the account` })
+    if (effDdTotal) steps.push({ label: `Receive $${Number(effDdTotal).toLocaleString()}+ in direct deposits within ${effWindow} days`, detail: r.dd_count_required ? `Split across ${r.dd_count_required} deposits` : undefined })
+    else if (r.min_direct_deposit_per_deposit) steps.push({ label: `Make ${r.dd_count_required ?? 1} direct deposit${(r.dd_count_required ?? 1) > 1 ? "s" : ""} of $${r.min_direct_deposit_per_deposit.toLocaleString()}+ each`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
+    else if (r.direct_deposit_required) steps.push({ label: "Set up direct deposit from your employer or payroll" })
+    if (r.debit_transactions_required) steps.push({ label: `Make ${r.debit_transactions_required} qualifying debit-card purchases`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
+    if (r.billpay_required) steps.push({ label: "Pay at least one bill via online bill pay" })
+    if (r.min_balance > 0) steps.push({ label: `Maintain a $${r.min_balance.toLocaleString()} average daily balance` })
+    if (b.timeline?.must_remain_open_days) steps.push({ label: `Keep the account open ${b.timeline.must_remain_open_days} days`, detail: (b.fees?.early_closure_fee ?? 0) > 0 ? `$${b.fees.early_closure_fee} early-closure fee if closed sooner` : undefined })
+    const specRow = (label: string, value: React.ReactNode) => (
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, padding: "9px 0", borderBottom: "1px solid #f2f2f2" }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", width: 124, flexShrink: 0 }}>{label}</div>
+        <div style={{ flex: 1 }}>{value}</div>
+      </div>
+    )
+    return (
+      <div>
+        <div style={{ marginTop: 4 }}>
+          {specRow("Bonus amount", <span style={{ fontSize: 30, fontWeight: 800, color: accentColor, lineHeight: 1 }}>{money(effAmt)}</span>)}
+          {specRow("Account type", <span style={{ fontSize: 15, color: "#333" }}>{prettyProduct(b.product_type)}</span>)}
+          {expiry && specRow("Offer expires", <span style={{ fontSize: 15, color: "#333" }}>{expiry}</span>)}
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10 }}>Bonus requirements</div>
+        <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+          {steps.map((s, i) => (
+            <li key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+              <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: "#f1f5f9", color: accentColor, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+              <div>
+                <div style={{ fontSize: 14, color: "#1a1a1a", lineHeight: 1.4 }}>{s.label}</div>
+                {s.detail && <div style={{ fontSize: 12, color: "#999", marginTop: 1 }}>{s.detail}</div>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
+  // Renders one in-progress (standard, catalog) bonus tracker card. Extracted so
+  // it can serve as the back face of the hero flip card AND the Currently-working-on
+  // list without duplicating ~570 lines of checklist/deposit/notes logic.
+  const renderStandardWorkingCard = ({ bonus: b, churnStatus }: typeof inProgress[number]) => {
+                      const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+                      if (!record) return null
+
+                      // ── Application pending: applied but no decision recorded yet ──
+                      // The bonus lives here (occupying a slot) until the user marks
+                      // approved (→ enter open date) or denied (→ back to available).
+                      if (record.current_step === "applied") {
+                        const isApprovingThis = approvingId === record.id
+                        const lockedSteps = [
+                          "Account Opened",
+                          "Set Up Recurring Direct Deposit",
+                          "Deposit Requirement Met",
+                          "Bonus Posted",
+                        ]
+                        return (
+                          <div key={b.id} style={{
+                            background: "#fff",
+                            border: "2px solid #d97706",
+                            borderRadius: 14, overflow: "hidden",
+                            boxShadow: "0 2px 12px rgba(217,119,6,0.06)",
+                          }}>
+                            {/* Header */}
+                            <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                              <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                                <span style={{ fontSize: 10, color: "#d97706", background: "#fef3c7", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
+                              </div>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                            </div>
+
+                            {/* Checklist preview — Applied done, rest locked until approved */}
+                            <div style={{ padding: "16px 24px 0" }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+                                  <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  </div>
+                                  <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
+                                </div>
+                                {lockedSteps.map((label) => (
+                                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+                                    <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, border: "2px solid #e5e5e5", background: "transparent" }} />
+                                    <span style={{ fontSize: 14, color: "#ccc" }}>{label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Decision panel */}
+                            <div style={{ padding: "14px 24px 20px" }}>
+                              {!isApprovingThis ? (
+                                <>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>What happened with your application?</div>
+                                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                    <button onClick={() => { setApprovingId(record.id); setApplyDateValue(todayStr()) }}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                      Approved
+                                    </button>
+                                    <button onClick={() => handleDenyApplication(record.id)}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#b91c1c", border: "1px solid #fecaca", borderRadius: 8, cursor: "pointer" }}>
+                                      Denied
+                                    </button>
+                                    <button disabled
+                                      title="No decision yet — check back when you hear from the bank"
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#fef3c7", color: "#d97706", border: "1px solid #fde68a", borderRadius: 8, cursor: "default" }}>
+                                      Still pending
+                                    </button>
+                                  </div>
+                                  <div style={{ fontSize: 12, color: "#bbb", marginTop: 10 }}>Denied applications go back to your recommendations.</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>When did the account open?</div>
+                                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                                    <input type="date" value={applyDateValue} onChange={(e) => setApplyDateValue(e.target.value)}
+                                      style={{ padding: "9px 12px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                    <button onClick={() => handleApproveApplication(record.id, b, applyDateValue)}
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                      Confirm open date
+                                    </button>
+                                    <button onClick={() => setApprovingId(null)}
+                                      style={{ padding: "10px 14px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      }
+
+                      const req = b.requirements
+                      const fees = b.fees
+
+                      // Deposit math
+                      const totalRequired = req?.min_direct_deposit_total ?? 0
+                      const openedDate = new Date(record.opened_date + "T00:00:00")
+                      const today = new Date(); today.setHours(0, 0, 0, 0)
+                      const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
+                      const windowDays = req?.deposit_window_days ?? 90
+                      const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
+                      const bonusDeposits = deposits.filter(d => d.bonus_id === b.id)
+                      const depositedSoFar = bonusDeposits.reduce((s, d) => s + d.amount, 0)
+
+                      // Pass the REAL logged deposits into the milestone engine so the
+                      // checklist can't tick "Deposit Requirement Met" while the deposit
+                      // bar below still reads $0 — the two now share one source of truth.
+                      const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount, depositedSoFar, bonusDeposits.length)
+
+                      const isDetailsExpanded = expandedDetails === b.id
+
+                      // Fee avoidance info
+                      const hasFee = fees?.monthly_fee && fees.monthly_fee > 0
+                      const feeWaiverText = fees?.monthly_fee_waiver_text ?? null
+
+                      return (
+                        <div key={b.id} style={{
+                          background: "#fff",
+                          border: milestoneDetail.bonusPosted ? "1px solid #e0e0e0" : "2px solid #2563eb",
+                          borderRadius: 14, overflow: "hidden",
+                          boxShadow: milestoneDetail.bonusPosted ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
+                        }}>
+                          {/* ── Header: Bank + Amount ── */}
+                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                              {(b as any).expired && (
+                                <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, padding: "2px 8px" }}>Expired</span>
+                              )}
+                              {bestLink(b.source_links) && (
+                                <a href={applyUrl(b.id)} target="_blank" rel="noreferrer"
+                                  style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                                  View offer
+                                </a>
+                              )}
+                              {getPostByBonusId(b.id) && (
+                                <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
+                                  style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
+                                  Read review
+                                </a>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                          </div>
+
+                          {/* ── Checklist ── */}
+                          <div style={{ padding: "16px 24px 0" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Steps to unlock {money(b.bonus_amount)}</div>
+                              {/* Undo: go back one step */}
+                              {milestoneDetail.currentMilestone !== "account_opened" && (
+                                <button onClick={() => {
+                                  const stepOrder: MilestoneKey[] = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted", "safe_to_close"]
+                                  const currentIdx = stepOrder.indexOf(milestoneDetail.currentMilestone)
+                                  if (currentIdx > 0) {
+                                    handleMilestoneOverride(b.id, stepOrder[currentIdx - 1])
+                                  }
+                                }}
+                                  style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
+                                  Undo
+                                </button>
+                              )}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              {/* No hardcoded "Applied" row: a catalog-tracked bonus
+                                  (markBonusStarted) and an approved-then-opened bonus
+                                  (approveApplication) both land here with current_step=null,
+                                  so we can't truthfully claim the user "Applied". Let the
+                                  real first milestone ("Account Opened") lead instead. */}
+                              {milestoneDetail.milestones
+                                .filter((m) => m.key !== "safe_to_close")
+                                .map((m) => {
+                                const isCompleted = m.status === "completed"
+                                const isActive = m.status === "active"
+
+                                const handleCheck = () => {
+                                  if (isCompleted) return
+                                  if (m.key === "bonus_posted") {
+                                    // Prompt for the real amount + posting date instead of
+                                    // silently assuming the full advertised figure.
+                                    setPendingStepDate({ id: b.id, type: "posted" })
+                                    setStepDateValue(todayStr())
+                                    setStepActualAmount(String(b.bonus_amount))
+                                    setDdMethodValue(""); setDdSearchOpen(false); setDdSearch("")
+                                    return
+                                  }
+                                  // dd_confirmed is now a real user-visible step —
+                                  // the "Set up recurring direct deposit" action.
+                                  const progression: MilestoneKey[] = [
+                                    "account_opened",
+                                    "dd_confirmed",
+                                    "deposit_met",
+                                    "bonus_posted",
+                                  ]
+                                  const clickedIdx = progression.indexOf(m.key as MilestoneKey)
+                                  if (clickedIdx >= 0 && clickedIdx < progression.length - 1) {
+                                    handleMilestoneOverride(b.id, progression[clickedIdx + 1])
+                                  }
+                                }
+
+                                return (
+                                  <div key={m.key}
+                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: isCompleted ? "default" : "pointer", borderRadius: 6 }}
+                                    onClick={handleCheck}>
+                                    <div style={{
+                                      width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                      border: isCompleted ? "none" : `2px solid ${isActive ? "#2563eb" : "#d4d4d4"}`,
+                                      background: isCompleted ? "#0d7c5f" : "transparent",
+                                      display: "flex", alignItems: "center", justifyContent: "center",
+                                    }}>
+                                      {isCompleted && (
+                                        <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                          <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <span style={{
+                                      fontSize: 14,
+                                      color: isCompleted ? "#888" : isActive ? "#111" : "#bbb",
+                                      fontWeight: isActive ? 600 : 400,
+                                      textDecoration: isCompleted ? "line-through" : "none",
+                                    }}>
+                                      {m.label}
+                                    </span>
+                                    {m.key === "account_opened" && isCompleted && record.opened_date && (
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                        <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(record.opened_date)}</span>
+                                        <button onClick={(e) => { e.stopPropagation(); setPendingStepDate({ id: b.id, type: "open" }); setStepDateValue(record.opened_date) }}
+                                          title="Edit open date"
+                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                                      </span>
+                                    )}
+                                    {m.key === "bonus_posted" && isCompleted && (
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                                        {record.bonus_posted_date && <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(record.bonus_posted_date)}</span>}
+                                        {record.actual_amount != null && <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>{money(record.actual_amount)}</span>}
+                                        {record.dd_method && <span style={{ fontSize: 10, color: "#666", background: "#f3f4f6", padding: "1px 7px", borderRadius: 99 }}>via {record.dd_method}</span>}
+                                        <button onClick={(e) => { e.stopPropagation(); setPendingStepDate({ id: b.id, type: "posted" }); setStepDateValue(record.bonus_posted_date ?? todayStr()); setStepActualAmount(String(record.actual_amount ?? b.bonus_amount)); setDdMethodValue(record.dd_method ?? ""); setDdSearchOpen(false); setDdSearch("") }}
+                                          title="Edit posted details"
+                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                                      </span>
+                                    )}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                            {/* Inline "Account Opened" date editor — correct the open date */}
+                            {pendingStepDate?.id === b.id && pendingStepDate?.type === "open" && (
+                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", marginBottom: 8 }}>When did this account open?</div>
+                                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                                  <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
+                                    style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                  <button onClick={() => handleConfirmOpenDate(b.id)}
+                                    style={{ padding: "9px 16px", fontSize: 13, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                    Save date
+                                  </button>
+                                  <button onClick={() => setPendingStepDate(null)}
+                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                            {/* Inline "Bonus Posted" prompt — real amount + posting date */}
+                            {pendingStepDate?.id === b.id && pendingStepDate?.type === "posted" && (
+                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 8 }}>Bonus posted — confirm the details</div>
+                                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+                                  <div>
+                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Date posted</div>
+                                    <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
+                                      style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                  </div>
+                                  <div>
+                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Amount received</div>
+                                    <div style={{ position: "relative" }}>
+                                      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                      <input type="number" value={stepActualAmount} onChange={(e) => setStepActualAmount(e.target.value)}
+                                        placeholder={String(b.bonus_amount)}
+                                        style={{ width: 120, padding: "8px 10px 8px 20px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
+                                    </div>
+                                  </div>
+                                </div>
+                                {/* Which direct-deposit source actually triggered the bonus —
+                                    a forward-looking data point on what works per bank. */}
+                                <div style={{ marginTop: 12 }}>
+                                  <div style={{ fontSize: 11, color: "#999", marginBottom: 6 }}>
+                                    Which deposit triggered it? <span style={{ color: "#bbb" }}>(optional — helps track what works)</span>
+                                  </div>
+                                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                                    <button onClick={() => { setDdMethodValue(ddMethodValue === "Employer / payroll" ? "" : "Employer / payroll"); setDdSearchOpen(false); setDdSearch("") }}
+                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddMethodValue === "Employer / payroll" ? "1.5px solid #0d7c5f" : "1px solid #ddd", background: ddMethodValue === "Employer / payroll" ? "#e6f5f0" : "#fff", color: ddMethodValue === "Employer / payroll" ? "#0d7c5f" : "#555" }}>
+                                      {ddMethodValue === "Employer / payroll" ? "✓ " : ""}Employer / payroll
+                                    </button>
+                                    <button onClick={() => { setDdSearchOpen(v => !v); setDdMethodValue("") }}
+                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? "1.5px solid #2563eb" : "1px solid #ddd", background: ddSearchOpen ? "#eff6ff" : "#fff", color: ddSearchOpen ? "#2563eb" : "#555" }}>
+                                      Other source…
+                                    </button>
+                                    {!ddSearchOpen && ddMethodValue && ddMethodValue !== "Employer / payroll" && (
+                                      <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>via {ddMethodValue}</span>
+                                    )}
+                                  </div>
+                                  {ddSearchOpen && (
+                                    <div style={{ marginTop: 8 }}>
+                                      <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} placeholder="Search bank, brokerage, or app…"
+                                        style={{ width: "100%", maxWidth: 320, padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
+                                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                                        {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
+                                          <button key={s} onClick={() => setDdSearch(s)}
+                                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "1.5px solid #2563eb" : "1px solid #e0e0e0", background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "#eff6ff" : "#fff", color: "#555" }}>
+                                            {s}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                                  <button onClick={() => handleConfirmPosted(b.id)}
+                                    style={{ padding: "9px 16px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                    Confirm
+                                  </button>
+                                  <button onClick={() => setPendingStepDate(null)}
+                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* ── Deposits ── */}
+                          {totalRequired > 0 && !milestoneDetail.bonusPosted && (
+                            <div style={{ padding: "12px 24px 0" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
+                                  Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
+                                </span>
+                                <button onClick={() => { setAddingDeposit(addingDeposit === b.id ? null : b.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
+                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
+                                  +
+                                </button>
+                              </div>
+                              {/* Progress bar */}
+                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: bonusDeposits.length > 0 ? 8 : 0 }}>
+                                <div style={{
+                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
+                                  width: `${totalRequired > 0 ? Math.min(100, (depositedSoFar / totalRequired) * 100) : 0}%`,
+                                  transition: "width 0.3s ease",
+                                }} />
+                              </div>
+                              {/* Deposit entries */}
+                              {bonusDeposits.length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                  {bonusDeposits.map((d) => (
+                                    <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                        <button onClick={() => handleDeleteDeposit(d.id)}
+                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {/* Inline add form */}
+                              {addingDeposit === b.id && (
+                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
+                                  <div style={{ position: "relative", flex: 1 }}>
+                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                                      placeholder="Amount" />
+                                  </div>
+                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
+                                  <button onClick={() => handleAddDeposit(b.id)}
+                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
+                                    Add
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* ── Qualifying transactions checkbox ──
+                              Only renders when the bonus's requirements actually
+                              include debit_transactions_required. State persists
+                              in localStorage. */}
+                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (() => {
+                            const txMet = !!transactionsMet[b.id]
+                            return (
+                              <div
+                                onClick={() => toggleTransactionsMet(b.id)}
+                                style={{ padding: "10px 24px 0", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
+                                title={txMet ? "Click to uncheck" : "Click when you've completed the qualifying transactions"}
+                              >
+                                <div style={{
+                                  width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                  border: txMet ? "none" : "2px solid #7c3aed",
+                                  background: txMet ? "#0d7c5f" : "transparent",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                }}>
+                                  {txMet && (
+                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span style={{ fontSize: 12, color: txMet ? "#888" : "#7c3aed", fontWeight: 600, textDecoration: txMet ? "line-through" : "none" }}>
+                                  {req.debit_transactions_required} qualifying transactions met
+                                  {!txMet && windowDays > 0 && (
+                                    <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>
+                                      (within {windowDays} days)
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            )
+                          })()}
+
+                          {/* ── Urgency ── */}
+                          {!milestoneDetail.bonusPosted && windowDays > 0 && (
+                            <div style={{
+                              padding: "10px 24px 0",
+                              fontSize: 12,
+                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
+                              fontWeight: daysRemaining <= 30 ? 600 : 400,
+                            }}>
+                              {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
+                            </div>
+                          )}
+
+                          {/* ── Actions ── */}
+                          {milestoneDetail.bonusPosted && !keptOpen.includes(b.id) && (
+                            <div style={{ padding: "16px 24px 0" }}>
+                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                                <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                                  Mark account closed
+                                </button>
+                                <button onClick={async () => {
+                                  const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+                                  if (record) await markKeptOpen(record.id, true)
+                                  setKeptOpen(prev => [...prev, b.id])
+                                }}
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                  Keep open
+                                </button>
+                                <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
+                                  Closing the account starts your cooldown period for this bonus.
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {!milestoneDetail.bonusPosted && (
+                            <div style={{ padding: "14px 24px 0" }}>
+                              <button onClick={() => {
+                                const ecf = b.fees?.early_closure_fee ?? 0
+                                const holdDays = b.timeline?.must_remain_open_days
+                                let msg = "Are you sure you want to close this account before the bonus posts?"
+                                if (ecf > 0) msg += `\n\nWarning: There is a $${ecf} early closure fee.`
+                                if (holdDays) msg += `\n\nThe account should remain open for ${holdDays} days.`
+                                if (!confirm(msg)) return
+                                setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("")
+                              }}
+                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
+                                Mark as closed
+                              </button>
+                            </div>
+                          )}
+
+                          {/* ── Fees & how to avoid (expandable) ── */}
+                          <div style={{ padding: "10px 24px 0" }}>
+                            <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
+                              style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
+                              Fees &amp; how to avoid
+                            </button>
+                            {expandedFees === b.id && (
+                              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
+                                {hasFee ? (
+                                  <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${fees.monthly_fee}/month</div>
+                                    {feeWaiverText && (
+                                      <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                                )}
+                                {fees?.early_closure_fee > 0 && (
+                                  <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* ── What counts as direct deposit (expandable) ── */}
+                          {(() => {
+                            const ddMethods = blogContent[b.id]?.ddMethods
+                            if (!ddMethods || ddMethods.length === 0) return null
+                            const isOpen = expandedDD === b.id
+                            return (
+                              <div style={{ padding: "10px 24px 0" }}>
+                                <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
+                                  style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                                  <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                                  What counts as direct deposit
+                                </button>
+                                {isOpen && (
+                                  <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 5, paddingBottom: 4 }}>
+                                    {ddMethods.map((dd, i) => (
+                                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                        <span style={{
+                                          fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
+                                          color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                        }}>
+                                          {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
+                                        </span>
+                                        <div>
+                                          <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
+                                          {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })()}
+
+                          {/* ── Bonus details (expandable) ── */}
+                          <div style={{ padding: "10px 24px 4px" }}>
+                            <button
+                              onClick={() => setExpandedDetails(isDetailsExpanded ? null : b.id)}
+                              style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                              {isDetailsExpanded ? "Hide details" : "Bonus details"}
+                            </button>
+                          </div>
+
+                          {isDetailsExpanded && (
+                            <div style={{ padding: "0 24px 8px", marginTop: 4 }}>
+                              {/* Fee avoidance */}
+                              {hasFee && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Avoid monthly fee</div>
+                                  {feeWaiverText ? (
+                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                  ) : (
+                                    <div style={{ fontSize: 12, color: "#666" }}>${fees.monthly_fee}/month fee applies</div>
+                                  )}
+                                </div>
+                              )}
+                              {!hasFee && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f" }}>No monthly fee</div>
+                                </div>
+                              )}
+
+                              {/* Qualification window */}
+                              {windowDays > 0 && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Qualification window</div>
+                                  <div style={{ fontSize: 12, color: "#666" }}>Complete within {windowDays} days of account opening.</div>
+                                </div>
+                              )}
+
+                              {/* Other requirements */}
+                              {req?.other_requirements_text && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Requirements</div>
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{req.other_requirements_text}</div>
+                                </div>
+                              )}
+
+                              {/* Eligibility notes */}
+                              {b.eligibility?.eligibility_notes && (
+                                <div style={{ marginBottom: 12 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Eligibility</div>
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
+                                </div>
+                              )}
+
+                              {/* Screening */}
+                              <div style={{ display: "flex", gap: 16, fontSize: 11, color: "#999" }}>
+                                {b.screening?.chex_sensitive && <span>ChexSystems: {b.screening.chex_sensitive}</span>}
+                                {b.screening?.hard_pull !== null && b.screening?.hard_pull !== undefined && <span>Hard pull: {b.screening.hard_pull ? "Yes" : "No"}</span>}
+                              </div>
+
+                              <div style={{ fontSize: 11, color: "#bbb", marginTop: 8 }}>Requirements are set by the bank and may change.</div>
+
+                              {/* Notes */}
+                              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Your notes</div>
+                                  {editingNote !== b.id && (
+                                    <button onClick={() => { setEditingNote(b.id); setNoteText(bonusNotes[b.id] ?? "") }}
+                                      style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                                      {bonusNotes[b.id] ? "Edit" : "Add note"}
+                                    </button>
+                                  )}
+                                </div>
+                                {editingNote === b.id ? (
+                                  <div>
+                                    <textarea value={noteText} onChange={e => setNoteText(e.target.value)}
+                                      placeholder="Add a reminder, tracking info, or anything useful..."
+                                      style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, resize: "vertical", minHeight: 50, boxSizing: "border-box" as const, fontFamily: "inherit", color: "#333" }} />
+                                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                                      <button onClick={() => handleSaveNote(b.id)}
+                                        style={{ fontSize: 11, padding: "4px 12px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>Save</button>
+                                      <button onClick={() => setEditingNote(null)}
+                                        style={{ fontSize: 11, padding: "4px 12px", background: "none", color: "#999", border: "1px solid #e0e0e0", borderRadius: 4, cursor: "pointer" }}>Cancel</button>
+                                    </div>
+                                  </div>
+                                ) : bonusNotes[b.id] ? (
+                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{bonusNotes[b.id]}</div>
+                                ) : (
+                                  <div style={{ fontSize: 11, color: "#ccc" }}>No notes yet</div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* ── Edit terms / Remove ── */}
+                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <button onClick={() => openEditCatalogTerms(b.id)}
+                              style={{ fontSize: 11, color: Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "#d97706" : "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              {Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "Edited terms ✎" : "Edit terms"}
+                            </button>
+                            <button onClick={() => handleDelete(b.id)}
+                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )
+  }
+
   if (!mounted || loadingRecords) {
     return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
   }
@@ -1007,6 +1788,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         .rm-topbar { padding: 14px 32px; }
         .rm-topbar-email { font-size: 12px; color: #bbb; }
         .rm-content { padding: 28px 32px 80px; }
+        /* Hero slot flip: each income slot flips in place from its requirements
+           summary to its live checklist when started. */
+        .hero-slot { perspective: 1600px; margin-bottom: 20px; }
+        .hero-flip { transition: transform 0.24s ease, opacity 0.24s ease; transform-origin: center; backface-visibility: hidden; }
+        .hero-flip.flipping { transform: rotateY(90deg); opacity: 0.15; }
         @media (max-width: 768px) {
           .rm-topbar { padding: 12px 16px; }
           .rm-topbar-email { display: none; }
@@ -1455,12 +2241,46 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             })()}
 
             {/* ── HERO: Action Cards (one per open income slot) ── */}
-            {isPaid && heroBonuses.map((hb, heroIdx) => {
+            {isPaid && slotCards.map((slot) => {
+              // ── Active tracker slot ──────────────────────────────────────────
+              // A bonus that's already started renders its live checklist here, in
+              // the same slot it was recommended in. Flip it to review requirements.
+              if (slot.kind === "working") {
+                const w = slot.working
+                return (
+                  <div key={`slot-${w.bonus.id}`} className="hero-slot">
+                    <div className={`hero-flip${startingId === w.bonus.id ? " flipping" : ""}`}>
+                      {flippedHeroes.has(w.bonus.id) ? (
+                        <div style={{ background: "#fff", border: "2px solid #2563eb", borderRadius: 16, padding: "26px 28px 24px", boxShadow: "0 2px 12px rgba(37,99,235,0.05)" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, gap: 12 }}>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{w.bonus.bank_name}</div>
+                            <button onClick={() => toggleHeroFlip(w.bonus.id)}
+                              style={{ fontSize: 12, fontWeight: 600, color: "#2563eb", background: "none", border: "1px solid #2563eb", borderRadius: 8, padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
+                              ← Back to checklist
+                            </button>
+                          </div>
+                          {renderOfferSummaryFace(w.bonus, "#2563eb")}
+                        </div>
+                      ) : (
+                        <>
+                          {renderStandardWorkingCard(w)}
+                          <button onClick={() => toggleHeroFlip(w.bonus.id)}
+                            style={{ fontSize: 12, fontWeight: 600, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "8px 2px 0" }}>
+                            ↻ View requirements
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              const hb = slot.hb
+              const heroIdx = slot.heroIdx
               const accentColor = heroIdx === 0 ? "#0d7c5f" : "#2563eb"
-              return hb.kind === "custom" ? (
+              const face = hb.kind === "custom" ? (
                 // Custom bonus hero card
-                <div key={hb.bonus.id} style={{
-                  background: "#fff", border: "2px solid #7c3aed", borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                <div style={{
+                  background: "#fff", border: "2px solid #7c3aed", borderRadius: 16, padding: "36px 32px",
                   boxShadow: "0 4px 24px rgba(124,58,237,0.08)",
                 }}>
                   {heroBonuses.length > 1 && (
@@ -1507,8 +2327,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 </div>
               ) : (
                 // Standard bonus hero card
-                <div key={hb.bonus.id} style={{
-                  background: "#fff", border: `2px solid ${accentColor}`, borderRadius: 16, padding: "36px 32px", marginBottom: 20,
+                <div style={{
+                  background: "#fff", border: `2px solid ${accentColor}`, borderRadius: 16, padding: "36px 32px",
                   boxShadow: heroIdx === 0 ? "0 4px 24px rgba(13,124,95,0.08)" : "0 4px 24px rgba(37,99,235,0.06)",
                 }}>
                   {heroBonuses.length > 1 && (
@@ -1517,147 +2337,54 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em", flex: 1 }}>
-                      {(() => {
-                        const effAmt = (catalogOverrides[hb.bonus.id] ?? {}).bonus_amount ?? hb.bonus.bonus_amount
-                        return totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(effAmt)} Is Ready` : `Your First ${money(effAmt)} Is Ready`
-                      })()}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                        {totalEarned > 0 || heroIdx > 0 ? "Your next bonus" : "Your first bonus"} · ready to start
+                      </div>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: "#111", lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 4 }}>
+                        {hb.bonus.bank_name}
+                      </div>
                     </div>
-                    <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 4 }}>
-                      <button
-                        onClick={() => openEditCatalogTerms(hb.bonus.id)}
-                        title="Customize bonus terms"
-                        style={{ fontSize: 12, fontWeight: 600, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
-                      >
-                        {Object.keys(catalogOverrides[hb.bonus.id] ?? {}).length > 0 ? "Edited ✎" : "Edit terms"}
-                      </button>
-                      <button
-                        onClick={() => setFlippedHeroes(prev => {
-                          const next = new Set(prev)
-                          next.has(hb.bonus.id) ? next.delete(hb.bonus.id) : next.add(hb.bonus.id)
-                          return next
-                        })}
-                        title={flippedHeroes.has(hb.bonus.id) ? "Show offer overview" : "Show step-by-step guide"}
-                        style={{ fontSize: 12, fontWeight: 600, color: accentColor, background: "none", border: `1px solid ${accentColor}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}
-                      >
-                        {flippedHeroes.has(hb.bonus.id) ? "← Back" : "How to do this →"}
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => openEditCatalogTerms(hb.bonus.id)}
+                      title="Customize bonus terms"
+                      style={{ fontSize: 12, fontWeight: 600, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, marginTop: 4 }}
+                    >
+                      {Object.keys(catalogOverrides[hb.bonus.id] ?? {}).length > 0 ? "Edited ✎" : "Edit terms"}
+                    </button>
                   </div>
                   {(() => {
-                    const heroApplyLink = (() => { const l = bestLink(hb.bonus.source_links); return l ? applyUrl(hb.bonus.id) : null })()
-                    return flippedHeroes.has(hb.bonus.id) ? (
-                    // ── BACK: step-by-step guide ────────────────────────────
-                    <div style={{ marginTop: 20 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 14 }}>
-                        How to earn this bonus
-                      </div>
-                      <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
-                        {(() => {
-                          const r = hb.bonus.requirements ?? {}
-                          const steps: { label: string; detail?: string }[] = []
-                          steps.push({ label: `Open a new ${hb.bonus.product_type ?? "checking"} account at ${hb.bonus.bank_name}`, detail: heroApplyLink ? `Apply at ${hb.bonus.bank_name}'s website` : undefined })
-                          if (r.min_opening_deposit > 0) steps.push({ label: `Fund with at least $${r.min_opening_deposit.toLocaleString()} to open` })
-                          if (r.min_direct_deposit_total) {
-                            steps.push({ label: `Receive $${r.min_direct_deposit_total.toLocaleString()}+ in direct deposits within ${r.deposit_window_days ?? 90} days`, detail: r.dd_count_required ? `Split across ${r.dd_count_required} deposits` : undefined })
-                          } else if (r.min_direct_deposit_per_deposit) {
-                            steps.push({ label: `Make ${r.dd_count_required ?? 1} direct deposit${(r.dd_count_required ?? 1) > 1 ? "s" : ""} of $${r.min_direct_deposit_per_deposit.toLocaleString()}+ each`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
-                          } else if (r.direct_deposit_required) {
-                            steps.push({ label: "Set up direct deposit from your employer or payroll" })
-                          }
-                          if (r.debit_transactions_required) steps.push({ label: `Make ${r.debit_transactions_required} qualifying debit card purchases`, detail: r.deposit_window_days ? `within ${r.deposit_window_days} days` : undefined })
-                          if (r.billpay_required) steps.push({ label: "Pay at least one bill via online bill pay" })
-                          if (r.min_balance > 0) steps.push({ label: `Maintain $${r.min_balance.toLocaleString()} average daily balance`, detail: "Bonus is based on balance maintained, not just deposited" })
-                          if (hb.bonus.timeline?.must_remain_open_days) steps.push({ label: `Keep the account open for ${hb.bonus.timeline.must_remain_open_days} days`, detail: hb.bonus.fees?.early_closure_fee > 0 ? `$${hb.bonus.fees.early_closure_fee} early closure fee if closed sooner` : undefined })
-                          steps.push({ label: `Collect your ${money(hb.bonus.bonus_amount)} bonus`, detail: hb.bonus.timeline?.bonus_posting_days_est ? `Posted within ~${hb.bonus.timeline.bonus_posting_days_est} days of completing requirements` : "Posted after requirements are met" })
-                          if (r.other_requirements_text) steps.push({ label: "Additional details", detail: r.other_requirements_text })
-                          return steps.map((s, i) => (
-                            <li key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                              <span style={{ flexShrink: 0, width: 24, height: 24, borderRadius: "50%", background: accentColor, color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                {i + 1}
-                              </span>
-                              <div>
-                                <div style={{ fontSize: 14, fontWeight: 600, color: "#111", lineHeight: 1.4 }}>{s.label}</div>
-                                {s.detail && <div style={{ fontSize: 12, color: "#888", marginTop: 2, lineHeight: 1.5 }}>{s.detail}</div>}
-                              </div>
-                            </li>
-                          ))
-                        })()}
-                      </ol>
-                      {heroApplyLink && (
-                        <a href={heroApplyLink} target="_blank" rel="noreferrer"
-                          style={{ display: "inline-block", marginTop: 20, padding: "14px 28px", fontSize: 15, fontWeight: 700, background: accentColor, color: "#fff", borderRadius: 12, textDecoration: "none" }}>
-                          Apply now →
-                        </a>
-                      )}
-                      {hb.bonus.raw_excerpt && (
-                        <div style={{ marginTop: 16, fontSize: 12, color: "#888", lineHeight: 1.6, fontStyle: "italic", borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
-                          &ldquo;{hb.bonus.raw_excerpt}&rdquo;
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                  // ── FRONT: offer overview ────────────────────────────────
+                    return (
+                  // ── FRONT: scannable offer + requirements summary (E*TRADE-style) ──
                   <>{(() => {
                     const catO = catalogOverrides[hb.bonus.id] ?? {}
-                    const effDdTotal = catO.min_dd_total ?? hb.bonus.requirements?.min_direct_deposit_total
-                    const effWindowDays = catO.deposit_window_days ?? hb.bonus.requirements?.deposit_window_days ?? 90
                     const effNotes = catO.notes ?? null
                     const hasOverride = Object.keys(catO).length > 0
 
                     return (
                       <>
-                        <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
-                          {hb.velocity ? `Earns $${Math.round(hb.velocity)}/week — highest return for your paycheck` : "You qualify based on your paycheck"}
-                          {hasOverride && <span style={{ marginLeft: 8, fontSize: 11, color: "#d97706", fontWeight: 600 }}>· terms customized</span>}
-                        </div>
-                        <div style={{ marginTop: 20, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
+                        <div style={{ fontSize: 13, color: "#888", marginTop: 4, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                           <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
-                          <div style={{ fontSize: 14, color: "#666" }}>
-                            Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}
-                          </div>
+                          <span>{hb.velocity ? `Earns ~$${Math.round(hb.velocity)}/week on your paycheck` : "You qualify based on your paycheck"}</span>
+                          <span>· Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}</span>
+                          {hasOverride && <span style={{ color: "#d97706", fontWeight: 600 }}>· terms customized</span>}
                         </div>
-                        {effNotes && <div style={{ fontSize: 13, color: "#555", marginTop: 8, fontStyle: "italic" }}>{effNotes}</div>}
-                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                          {effDdTotal && (
-                            <div style={{ fontSize: 14, color: "#555" }}>
-                              Deposit ${effDdTotal.toLocaleString()} in {effWindowDays} days using your regular paycheck
-                            </div>
-                          )}
-                          {!effDdTotal && hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                            <div style={{ fontSize: 14, color: "#555" }}>
-                              Make {hb.bonus.requirements.dd_count_required ?? "a"} direct deposit{(hb.bonus.requirements.dd_count_required ?? 0) > 1 ? "s" : ""} of ${hb.bonus.requirements.min_direct_deposit_per_deposit.toLocaleString()}+ each
-                            </div>
-                          )}
-                          {!effDdTotal && !hb.bonus.requirements?.min_direct_deposit_per_deposit && (
-                            <div style={{ fontSize: 14, color: "#555" }}>Set up direct deposit to qualify</div>
-                          )}
-                    {hb.bonus.requirements?.debit_transactions_required && (
-                      <div style={{ fontSize: 14, color: "#555" }}>
-                        + {hb.bonus.requirements.debit_transactions_required} qualifying transactions required
-                      </div>
-                    )}
-                    {/* Show all tiers if this is a tiered bonus */}
-                    {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
-                      <div style={{ marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
-                          const isSelected = hb.bonus.bonus_amount === t.bonus
-                          return (
-                            <div key={t.bonus} style={{
-                              fontSize: 11, padding: "3px 8px", borderRadius: 6,
-                              border: isSelected ? "1.5px solid #0d7c5f" : "1px solid #e0e0e0",
-                              color: isSelected ? "#0d7c5f" : "#999",
-                              fontWeight: isSelected ? 700 : 400,
-                              background: isSelected ? "#f0faf5" : "transparent",
-                            }}>
-                              ${t.bonus} at ${t.min_dd_total.toLocaleString()} DD
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
+                        <div style={{ marginTop: 18 }}>
+                          {renderOfferSummaryFace(hb.bonus, accentColor)}
+                        </div>
+                        {effNotes && <div style={{ fontSize: 13, color: "#555", marginTop: 12, fontStyle: "italic" }}>{effNotes}</div>}
+                        {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
+                          <div style={{ marginTop: 10, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
+                              const isSelected = hb.bonus.bonus_amount === t.bonus
+                              return (
+                                <div key={t.bonus} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, border: isSelected ? `1.5px solid ${accentColor}` : "1px solid #e0e0e0", color: isSelected ? accentColor : "#999", fontWeight: isSelected ? 700 : 400, background: isSelected ? "#f6faf8" : "transparent" }}>
+                                  ${t.bonus} at ${t.min_dd_total.toLocaleString()} DD
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
 
                   {/* Min opening deposit pill — separate concept from min_balance,
                       this is what you have to put in on day 1, not maintain. */}
@@ -1799,25 +2526,30 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             {combo.selfOverride.note}
                           </div>
                         )}
-                        <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                        <div style={{ marginTop: 18, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                          <button onClick={() => handleStartWorking(hb.bonus)} disabled={startingId === hb.bonus.id}
+                            title="Start tracking this bonus — the card flips to your step-by-step checklist"
+                            style={{ padding: "16px 30px", fontSize: 16, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 12, cursor: startingId === hb.bonus.id ? "wait" : "pointer", opacity: startingId === hb.bonus.id ? 0.7 : 1 }}>
+                            {startingId === hb.bonus.id ? "Starting…" : "Start working on it →"}
+                          </button>
                           {ctaLink && (
                             <a href={ctaLink} target="_blank" rel="noreferrer"
-                              style={{ padding: "16px 36px", fontSize: 16, fontWeight: 700, background: accentColor, color: "#fff", border: "none", borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
-                              {ctaLabel}
+                              style={{ padding: "15px 24px", fontSize: 15, fontWeight: 700, background: "none", color: accentColor, border: `1.5px solid ${accentColor}`, borderRadius: 12, textDecoration: "none", textAlign: "center" as const, display: "inline-block" }}>
+                              {isCombo ? ctaLabel : "Open your account ↗"}
                             </a>
                           )}
                           <button onClick={() => handleMarkApplied(hb.bonus)}
-                            title="Track this bonus — you'll record the decision (approved / denied / pending) next"
-                            style={{ padding: "16px 24px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                            title="I already applied — track the approval decision next"
+                            style={{ padding: "12px 14px", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer" }}>
                             I applied
                           </button>
                           <button onClick={() => setAlreadyHadBonusId(alreadyHadBonusId === hb.bonus.id ? null : hb.bonus.id)}
                             title="Record as already completed so we stop recommending it"
-                            style={{ padding: "16px 20px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 12, cursor: "pointer" }}>
+                            style={{ padding: "12px 14px", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer" }}>
                             {alreadyHadBonusId === hb.bonus.id ? "Cancel" : "Already had"}
                           </button>
                           <button onClick={() => handleSkip(hb.bonus.id)}
-                            style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                            style={{ padding: "12px 14px", fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer" }}>
                             Not now
                           </button>
                         </div>
@@ -1861,6 +2593,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   })()}
                 </div>
               )
+              return (
+                <div key={`slot-${hb.bonus.id}`} className="hero-slot">
+                  <div className={`hero-flip${startingId === hb.bonus.id ? " flipping" : ""}`}>{face}</div>
+                </div>
+              )
             })}
 
             {/* ══════════════════════════════════════════════════════════════════
@@ -1869,9 +2606,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                  ══════════════════════════════════════════════════════════════════ */}
             {(() => {
               const rawActive = inProgress
-              // Filter out kept-open bonuses, sort posted ones to bottom
+              // Filter out kept-open bonuses AND any already shown as a flip card in
+              // the slot grid above (so each active bonus appears exactly once),
+              // sort posted ones to bottom.
               const activeBonuses = [...rawActive]
-                .filter(({ bonus: b }) => !keptOpen.includes(b.id))
+                .filter(({ bonus: b }) => !keptOpen.includes(b.id) && !slotBonusIds.has(b.id))
                 .sort((a, b) => {
                 const recA = completedRecords.find(r => r.bonus_id === a.bonus.id && !r.closed_date)
                 const recB = completedRecords.find(r => r.bonus_id === b.bonus.id && !r.closed_date)
@@ -2157,580 +2896,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         </div>
                       )
                     })}
-                    {activeBonuses.map(({ bonus: b, churnStatus }) => {
-                      const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
-                      if (!record) return null
-
-                      // ── Application pending: applied but no decision recorded yet ──
-                      // The bonus lives here (occupying a slot) until the user marks
-                      // approved (→ enter open date) or denied (→ back to available).
-                      if (record.current_step === "applied") {
-                        const isApprovingThis = approvingId === record.id
-                        const lockedSteps = [
-                          "Account Opened",
-                          "Set Up Recurring Direct Deposit",
-                          "Deposit Requirement Met",
-                          "Bonus Posted",
-                        ]
-                        return (
-                          <div key={b.id} style={{
-                            background: "#fff",
-                            border: "2px solid #d97706",
-                            borderRadius: 14, overflow: "hidden",
-                            boxShadow: "0 2px 12px rgba(217,119,6,0.06)",
-                          }}>
-                            {/* Header */}
-                            <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                              <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-                                <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
-                                <span style={{ fontSize: 10, color: "#d97706", background: "#fef3c7", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
-                              </div>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
-                            </div>
-
-                            {/* Checklist preview — Applied done, rest locked until approved */}
-                            <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                                  <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  </div>
-                                  <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
-                                </div>
-                                {lockedSteps.map((label) => (
-                                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                                    <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, border: "2px solid #e5e5e5", background: "transparent" }} />
-                                    <span style={{ fontSize: 14, color: "#ccc" }}>{label}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Decision panel */}
-                            <div style={{ padding: "14px 24px 20px" }}>
-                              {!isApprovingThis ? (
-                                <>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>What happened with your application?</div>
-                                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                                    <button onClick={() => { setApprovingId(record.id); setApplyDateValue(todayStr()) }}
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                      Approved
-                                    </button>
-                                    <button onClick={() => handleDenyApplication(record.id)}
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#b91c1c", border: "1px solid #fecaca", borderRadius: 8, cursor: "pointer" }}>
-                                      Denied
-                                    </button>
-                                    <button disabled
-                                      title="No decision yet — check back when you hear from the bank"
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#fef3c7", color: "#d97706", border: "1px solid #fde68a", borderRadius: 8, cursor: "default" }}>
-                                      Still pending
-                                    </button>
-                                  </div>
-                                  <div style={{ fontSize: 12, color: "#bbb", marginTop: 10 }}>Denied applications go back to your recommendations.</div>
-                                </>
-                              ) : (
-                                <>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>When did the account open?</div>
-                                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                                    <input type="date" value={applyDateValue} onChange={(e) => setApplyDateValue(e.target.value)}
-                                      style={{ padding: "9px 12px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
-                                    <button onClick={() => handleApproveApplication(record.id, b, applyDateValue)}
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                      Confirm open date
-                                    </button>
-                                    <button onClick={() => setApprovingId(null)}
-                                      style={{ padding: "10px 14px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      }
-
-                      const req = b.requirements
-                      const fees = b.fees
-
-                      // Deposit math
-                      const totalRequired = req?.min_direct_deposit_total ?? 0
-                      const openedDate = new Date(record.opened_date + "T00:00:00")
-                      const today = new Date(); today.setHours(0, 0, 0, 0)
-                      const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
-                      const windowDays = req?.deposit_window_days ?? 90
-                      const daysRemaining = Math.max(0, windowDays - daysSinceOpen)
-                      const bonusDeposits = deposits.filter(d => d.bonus_id === b.id)
-                      const depositedSoFar = bonusDeposits.reduce((s, d) => s + d.amount, 0)
-
-                      // Pass the REAL logged deposits into the milestone engine so the
-                      // checklist can't tick "Deposit Requirement Met" while the deposit
-                      // bar below still reads $0 — the two now share one source of truth.
-                      const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount, depositedSoFar, bonusDeposits.length)
-
-                      const isDetailsExpanded = expandedDetails === b.id
-
-                      // Fee avoidance info
-                      const hasFee = fees?.monthly_fee && fees.monthly_fee > 0
-                      const feeWaiverText = fees?.monthly_fee_waiver_text ?? null
-
-                      return (
-                        <div key={b.id} style={{
-                          background: "#fff",
-                          border: milestoneDetail.bonusPosted ? "1px solid #e0e0e0" : "2px solid #2563eb",
-                          borderRadius: 14, overflow: "hidden",
-                          boxShadow: milestoneDetail.bonusPosted ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
-                        }}>
-                          {/* ── Header: Bank + Amount ── */}
-                          <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
-                              {(b as any).expired && (
-                                <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, padding: "2px 8px" }}>Expired</span>
-                              )}
-                              {bestLink(b.source_links) && (
-                                <a href={applyUrl(b.id)} target="_blank" rel="noreferrer"
-                                  style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
-                                  View offer
-                                </a>
-                              )}
-                              {getPostByBonusId(b.id) && (
-                                <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
-                                  style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
-                                  Read review
-                                </a>
-                              )}
-                            </div>
-                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
-                          </div>
-
-                          {/* ── Checklist ── */}
-                          <div style={{ padding: "16px 24px 0" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Steps to unlock {money(b.bonus_amount)}</div>
-                              {/* Undo: go back one step */}
-                              {milestoneDetail.currentMilestone !== "account_opened" && (
-                                <button onClick={() => {
-                                  const stepOrder: MilestoneKey[] = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted", "safe_to_close"]
-                                  const currentIdx = stepOrder.indexOf(milestoneDetail.currentMilestone)
-                                  if (currentIdx > 0) {
-                                    handleMilestoneOverride(b.id, stepOrder[currentIdx - 1])
-                                  }
-                                }}
-                                  style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
-                                  Undo
-                                </button>
-                              )}
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                              {/* No hardcoded "Applied" row: a catalog-tracked bonus
-                                  (markBonusStarted) and an approved-then-opened bonus
-                                  (approveApplication) both land here with current_step=null,
-                                  so we can't truthfully claim the user "Applied". Let the
-                                  real first milestone ("Account Opened") lead instead. */}
-                              {milestoneDetail.milestones
-                                .filter((m) => m.key !== "safe_to_close")
-                                .map((m) => {
-                                const isCompleted = m.status === "completed"
-                                const isActive = m.status === "active"
-
-                                const handleCheck = () => {
-                                  if (isCompleted) return
-                                  if (m.key === "bonus_posted") {
-                                    // Prompt for the real amount + posting date instead of
-                                    // silently assuming the full advertised figure.
-                                    setPendingStepDate({ id: b.id, type: "posted" })
-                                    setStepDateValue(todayStr())
-                                    setStepActualAmount(String(b.bonus_amount))
-                                    return
-                                  }
-                                  // dd_confirmed is now a real user-visible step —
-                                  // the "Set up recurring direct deposit" action.
-                                  const progression: MilestoneKey[] = [
-                                    "account_opened",
-                                    "dd_confirmed",
-                                    "deposit_met",
-                                    "bonus_posted",
-                                  ]
-                                  const clickedIdx = progression.indexOf(m.key as MilestoneKey)
-                                  if (clickedIdx >= 0 && clickedIdx < progression.length - 1) {
-                                    handleMilestoneOverride(b.id, progression[clickedIdx + 1])
-                                  }
-                                }
-
-                                return (
-                                  <div key={m.key}
-                                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", cursor: isCompleted ? "default" : "pointer", borderRadius: 6 }}
-                                    onClick={handleCheck}>
-                                    <div style={{
-                                      width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                                      border: isCompleted ? "none" : `2px solid ${isActive ? "#2563eb" : "#d4d4d4"}`,
-                                      background: isCompleted ? "#0d7c5f" : "transparent",
-                                      display: "flex", alignItems: "center", justifyContent: "center",
-                                    }}>
-                                      {isCompleted && (
-                                        <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                          <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                      )}
-                                    </div>
-                                    <span style={{
-                                      fontSize: 14,
-                                      color: isCompleted ? "#888" : isActive ? "#111" : "#bbb",
-                                      fontWeight: isActive ? 600 : 400,
-                                      textDecoration: isCompleted ? "line-through" : "none",
-                                    }}>
-                                      {m.label}
-                                    </span>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                            {/* Inline "Bonus Posted" prompt — real amount + posting date */}
-                            {pendingStepDate?.id === b.id && pendingStepDate?.type === "posted" && (
-                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 8 }}>Bonus posted — confirm the details</div>
-                                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-                                  <div>
-                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Date posted</div>
-                                    <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
-                                      style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
-                                  </div>
-                                  <div>
-                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Amount received</div>
-                                    <div style={{ position: "relative" }}>
-                                      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                                      <input type="number" value={stepActualAmount} onChange={(e) => setStepActualAmount(e.target.value)}
-                                        placeholder={String(b.bonus_amount)}
-                                        style={{ width: 120, padding: "8px 10px 8px 20px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                                  <button onClick={() => handleConfirmPosted(b.id)}
-                                    style={{ padding: "9px 16px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                    Confirm
-                                  </button>
-                                  <button onClick={() => setPendingStepDate(null)}
-                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* ── Deposits ── */}
-                          {totalRequired > 0 && !milestoneDetail.bonusPosted && (
-                            <div style={{ padding: "12px 24px 0" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
-                                  Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
-                                </span>
-                                <button onClick={() => { setAddingDeposit(addingDeposit === b.id ? null : b.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
-                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
-                                  +
-                                </button>
-                              </div>
-                              {/* Progress bar */}
-                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: bonusDeposits.length > 0 ? 8 : 0 }}>
-                                <div style={{
-                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
-                                  width: `${totalRequired > 0 ? Math.min(100, (depositedSoFar / totalRequired) * 100) : 0}%`,
-                                  transition: "width 0.3s ease",
-                                }} />
-                              </div>
-                              {/* Deposit entries */}
-                              {bonusDeposits.length > 0 && (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                  {bonusDeposits.map((d) => (
-                                    <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
-                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
-                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
-                                        <button onClick={() => handleDeleteDeposit(d.id)}
-                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              {/* Inline add form */}
-                              {addingDeposit === b.id && (
-                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
-                                  <div style={{ position: "relative", flex: 1 }}>
-                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
-                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
-                                      placeholder="Amount" />
-                                  </div>
-                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
-                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
-                                  <button onClick={() => handleAddDeposit(b.id)}
-                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
-                                    Add
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* ── Qualifying transactions checkbox ──
-                              Only renders when the bonus's requirements actually
-                              include debit_transactions_required. State persists
-                              in localStorage. */}
-                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (() => {
-                            const txMet = !!transactionsMet[b.id]
-                            return (
-                              <div
-                                onClick={() => toggleTransactionsMet(b.id)}
-                                style={{ padding: "10px 24px 0", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
-                                title={txMet ? "Click to uncheck" : "Click when you've completed the qualifying transactions"}
-                              >
-                                <div style={{
-                                  width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                                  border: txMet ? "none" : "2px solid #7c3aed",
-                                  background: txMet ? "#0d7c5f" : "transparent",
-                                  display: "flex", alignItems: "center", justifyContent: "center",
-                                }}>
-                                  {txMet && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontSize: 12, color: txMet ? "#888" : "#7c3aed", fontWeight: 600, textDecoration: txMet ? "line-through" : "none" }}>
-                                  {req.debit_transactions_required} qualifying transactions met
-                                  {!txMet && windowDays > 0 && (
-                                    <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>
-                                      (within {windowDays} days)
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                            )
-                          })()}
-
-                          {/* ── Urgency ── */}
-                          {!milestoneDetail.bonusPosted && windowDays > 0 && (
-                            <div style={{
-                              padding: "10px 24px 0",
-                              fontSize: 12,
-                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
-                              fontWeight: daysRemaining <= 30 ? 600 : 400,
-                            }}>
-                              {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
-                            </div>
-                          )}
-
-                          {/* ── Actions ── */}
-                          {milestoneDetail.bonusPosted && !keptOpen.includes(b.id) && (
-                            <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                                <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                  Mark account closed
-                                </button>
-                                <button onClick={async () => {
-                                  const record = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
-                                  if (record) await markKeptOpen(record.id, true)
-                                  setKeptOpen(prev => [...prev, b.id])
-                                }}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
-                                  Keep open
-                                </button>
-                                <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
-                                  Closing the account starts your cooldown period for this bonus.
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          {!milestoneDetail.bonusPosted && (
-                            <div style={{ padding: "14px 24px 0" }}>
-                              <button onClick={() => {
-                                const ecf = b.fees?.early_closure_fee ?? 0
-                                const holdDays = b.timeline?.must_remain_open_days
-                                let msg = "Are you sure you want to close this account before the bonus posts?"
-                                if (ecf > 0) msg += `\n\nWarning: There is a $${ecf} early closure fee.`
-                                if (holdDays) msg += `\n\nThe account should remain open for ${holdDays} days.`
-                                if (!confirm(msg)) return
-                                setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("")
-                              }}
-                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
-                                Mark as closed
-                              </button>
-                            </div>
-                          )}
-
-                          {/* ── Fees & how to avoid (expandable) ── */}
-                          <div style={{ padding: "10px 24px 0" }}>
-                            <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
-                              style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                              <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
-                              Fees &amp; how to avoid
-                            </button>
-                            {expandedFees === b.id && (
-                              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
-                                {hasFee ? (
-                                  <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${fees.monthly_fee}/month</div>
-                                    {feeWaiverText && (
-                                      <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
-                                )}
-                                {fees?.early_closure_fee > 0 && (
-                                  <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${fees.early_closure_fee} — keep the account open until the holding period ends.</div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* ── What counts as direct deposit (expandable) ── */}
-                          {(() => {
-                            const ddMethods = blogContent[b.id]?.ddMethods
-                            if (!ddMethods || ddMethods.length === 0) return null
-                            const isOpen = expandedDD === b.id
-                            return (
-                              <div style={{ padding: "10px 24px 0" }}>
-                                <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
-                                  style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                                  <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
-                                  What counts as direct deposit
-                                </button>
-                                {isOpen && (
-                                  <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 5, paddingBottom: 4 }}>
-                                    {ddMethods.map((dd, i) => (
-                                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                        <span style={{
-                                          fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
-                                          color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
-                                        }}>
-                                          {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
-                                        </span>
-                                        <div>
-                                          <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
-                                          {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          })()}
-
-                          {/* ── Bonus details (expandable) ── */}
-                          <div style={{ padding: "10px 24px 4px" }}>
-                            <button
-                              onClick={() => setExpandedDetails(isDetailsExpanded ? null : b.id)}
-                              style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
-                              {isDetailsExpanded ? "Hide details" : "Bonus details"}
-                            </button>
-                          </div>
-
-                          {isDetailsExpanded && (
-                            <div style={{ padding: "0 24px 8px", marginTop: 4 }}>
-                              {/* Fee avoidance */}
-                              {hasFee && (
-                                <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Avoid monthly fee</div>
-                                  {feeWaiverText ? (
-                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
-                                  ) : (
-                                    <div style={{ fontSize: 12, color: "#666" }}>${fees.monthly_fee}/month fee applies</div>
-                                  )}
-                                </div>
-                              )}
-                              {!hasFee && (
-                                <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f" }}>No monthly fee</div>
-                                </div>
-                              )}
-
-                              {/* Qualification window */}
-                              {windowDays > 0 && (
-                                <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Qualification window</div>
-                                  <div style={{ fontSize: 12, color: "#666" }}>Complete within {windowDays} days of account opening.</div>
-                                </div>
-                              )}
-
-                              {/* Other requirements */}
-                              {req?.other_requirements_text && (
-                                <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Requirements</div>
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{req.other_requirements_text}</div>
-                                </div>
-                              )}
-
-                              {/* Eligibility notes */}
-                              {b.eligibility?.eligibility_notes && (
-                                <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Eligibility</div>
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
-                                </div>
-                              )}
-
-                              {/* Screening */}
-                              <div style={{ display: "flex", gap: 16, fontSize: 11, color: "#999" }}>
-                                {b.screening?.chex_sensitive && <span>ChexSystems: {b.screening.chex_sensitive}</span>}
-                                {b.screening?.hard_pull !== null && b.screening?.hard_pull !== undefined && <span>Hard pull: {b.screening.hard_pull ? "Yes" : "No"}</span>}
-                              </div>
-
-                              <div style={{ fontSize: 11, color: "#bbb", marginTop: 8 }}>Requirements are set by the bank and may change.</div>
-
-                              {/* Notes */}
-                              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Your notes</div>
-                                  {editingNote !== b.id && (
-                                    <button onClick={() => { setEditingNote(b.id); setNoteText(bonusNotes[b.id] ?? "") }}
-                                      style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                                      {bonusNotes[b.id] ? "Edit" : "Add note"}
-                                    </button>
-                                  )}
-                                </div>
-                                {editingNote === b.id ? (
-                                  <div>
-                                    <textarea value={noteText} onChange={e => setNoteText(e.target.value)}
-                                      placeholder="Add a reminder, tracking info, or anything useful..."
-                                      style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, resize: "vertical", minHeight: 50, boxSizing: "border-box" as const, fontFamily: "inherit", color: "#333" }} />
-                                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                                      <button onClick={() => handleSaveNote(b.id)}
-                                        style={{ fontSize: 11, padding: "4px 12px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>Save</button>
-                                      <button onClick={() => setEditingNote(null)}
-                                        style={{ fontSize: 11, padding: "4px 12px", background: "none", color: "#999", border: "1px solid #e0e0e0", borderRadius: 4, cursor: "pointer" }}>Cancel</button>
-                                    </div>
-                                  </div>
-                                ) : bonusNotes[b.id] ? (
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{bonusNotes[b.id]}</div>
-                                ) : (
-                                  <div style={{ fontSize: 11, color: "#ccc" }}>No notes yet</div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* ── Edit terms / Remove ── */}
-                          <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <button onClick={() => openEditCatalogTerms(b.id)}
-                              style={{ fontSize: 11, color: Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "#d97706" : "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
-                              {Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "Edited terms ✎" : "Edit terms"}
-                            </button>
-                            <button onClick={() => handleDelete(b.id)}
-                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
+                    {activeBonuses.map((item) => renderStandardWorkingCard(item))}
 
                   </div>
                 </div>
