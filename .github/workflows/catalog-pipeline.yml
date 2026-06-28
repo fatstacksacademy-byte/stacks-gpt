@@ -1,0 +1,174 @@
+name: Catalog pipeline (discover + verify + apply)
+
+# ONE daily run that does the whole catalog loop end-to-end:
+#
+#   1. discover:bonuses  → upsert new bonus leads to Supabase (discovery_leads)
+#   2. discover:cards    → upsert new card  leads to Supabase (discovery_leads)
+#   3. verify:bonuses    → refresh freshness + problem queue (Supabase)
+#   4. verify:cards      → same for cards
+#   5. catalog:apply-decisions → patch lib/data/*.ts with APPROVED triage edits
+#   6. catalog:promote-leads   → append APPROVED discovery leads as new entries
+#   7. → open ONE PR if lib/data/ changed; else exit clean
+#
+# Human-gated by design: steps 5–6 apply ONLY what you approved in /admin/review.
+# Nothing new or changed reaches the catalog without your sign-off.
+#
+# Replaces (retire these once this has run cleanly once on main):
+#   - discover-bonuses.yml
+#   - verify-cards.yml
+#   - nightly-catalog-pipeline.yml
+#
+# Per-step timeout-minutes + continue-on-error keep one slow/fragile phase
+# (discover regularly hit its 30-min ceiling; verify can OOM cold) from
+# starving or sinking the rest of the run.
+#
+# Required GitHub repo secrets:
+#   - NEXT_PUBLIC_SUPABASE_URL
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - ANTHROPIC_API_KEY
+
+on:
+  schedule:
+    # 12:00 UTC daily = 8am ET / 5am PT / 2am HST.
+    - cron: "0 12 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    # Cold verify alone can take ~50 min; discover adds ~30. Warm cache makes
+    # the common case far shorter. 150 is headroom for a fully-cold day.
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # PR body needs git log context
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Warm fetch cache across runs so we don't re-scrape every page nightly.
+      # Key includes the catalog files so it invalidates when they change.
+      - name: Restore verify cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/verify-bonuses
+            .cache/verify-cards
+          key: verify-cache-${{ hashFiles('lib/data/bonuses.ts', 'lib/data/savingsBonuses.ts', 'lib/data/creditCardBonuses.ts') }}-${{ github.run_id }}
+          restore-keys: |
+            verify-cache-${{ hashFiles('lib/data/bonuses.ts', 'lib/data/savingsBonuses.ts', 'lib/data/creditCardBonuses.ts') }}-
+            verify-cache-
+
+      # ─── Discover (leads → Supabase for review) ───────────────────────
+      - name: Discover bonuses
+        run: npm run discover:bonuses
+        timeout-minutes: 35
+        continue-on-error: true
+
+      - name: Discover cards
+        run: npm run discover:cards
+        timeout-minutes: 35
+        continue-on-error: true
+
+      # ─── Verify (refresh freshness + problem queues) ──────────────────
+      - name: Verify bonuses + persist
+        run: npm run verify:bonuses -- --persist
+        continue-on-error: true
+
+      - name: Verify cards + persist
+        run: npm run verify:cards -- --persist
+        continue-on-error: true
+
+      # ─── Apply ONLY what the admin approved in /admin/review ───────────
+      - name: Apply approved triage decisions
+        run: npm run catalog:apply-decisions -- --write
+
+      - name: Promote approved discovery leads
+        run: npm run catalog:promote-leads -- --write
+        continue-on-error: true
+
+      # ─── Detect catalog changes → open one PR ─────────────────────────
+      - name: Detect catalog changes
+        id: changes
+        run: |
+          if git diff --quiet lib/data/; then
+            echo "catalog_changed=false" >> "$GITHUB_OUTPUT"
+            echo "No catalog changes this run."
+          else
+            echo "catalog_changed=true" >> "$GITHUB_OUTPUT"
+            echo "Catalog changed — will open a PR."
+            git diff --stat lib/data/
+          fi
+
+      - name: No-op when nothing changed
+        if: steps.changes.outputs.catalog_changed == 'false'
+        run: echo "Nothing to commit."
+
+      - name: Open auto-apply PR
+        if: steps.changes.outputs.catalog_changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          branch="catalog/pipeline-$today-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add lib/data/
+
+          applied_count=$(jq '[.[] | select(.status=="applied")] | length' verification-output/apply-decisions-report.json 2>/dev/null || echo "?")
+
+          git commit -m "chore(catalog): pipeline auto-apply $today
+
+          Applied approved triage decisions + promoted approved discovery leads
+          from /admin/review. Review the diff and merge if it looks right.
+
+          Workflow: .github/workflows/catalog-pipeline.yml
+          Triggered by: ${{ github.event_name }}"
+
+          git push origin "$branch"
+
+          gh pr create \
+            --title "Catalog pipeline auto-apply: $today" \
+            --body "Automated catalog update from the unified pipeline.
+
+          ## What ran
+          1. \`discover:bonuses\` + \`discover:cards\` — new leads → Supabase \`discovery_leads\`
+          2. \`verify:bonuses\` + \`verify:cards\` — refreshed freshness + problem queues
+          3. \`catalog:apply-decisions --write\` — applied APPROVED triage edits
+          4. \`catalog:promote-leads --write\` — promoted APPROVED discovery leads
+
+          Everything here was approved by you in /admin/review. Review + merge.
+
+          Triggered by: \`${{ github.event_name }}\`" \
+            --base main \
+            --head "$branch"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-reports-${{ github.run_id }}
+          path: |
+            verification-output/*.json
+            verification-output/*.md
+          retention-days: 14
+          if-no-files-found: ignore

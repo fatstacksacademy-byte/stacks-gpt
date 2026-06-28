@@ -16,7 +16,24 @@ import { enrich, pickCanonical } from "./enrich"
 import { loadLeads, upsertLeads, writeQueue, writeDigest } from "./queue"
 import { applyApproved } from "./apply"
 import { log } from "./logger"
+import { upsertDiscoveryLeads, type DiscoveryLeadInput } from "../_shared/discovery-leads"
 import type { RawItem, SourceConfig, Lead } from "./types"
+
+/** Map a bonus Lead to the cross-machine discovery_leads row shape. */
+function bonusLeadToRow(l: Lead): DiscoveryLeadInput {
+  return {
+    lead_key: l.id,
+    name: l.product,
+    institution: l.bank,
+    bonus_amount: l.bonus_amount,
+    classification: l.classification,
+    confidence: l.confidence,
+    source_url: l.source_urls[0] ?? null,
+    canonical_url: l.canonical_url,
+    flags: l.flags,
+    payload: l,
+  }
+}
 
 // CLI
 const args = process.argv.slice(2)
@@ -162,10 +179,19 @@ async function main() {
   const newLeads = deduped.filter((l) => !existingIds.has(l.id))
 
   const merged = upsertLeads(existing, deduped)
+  let persistedCount = 0
+  let persistSkipped = false
   if (!FLAG_DRY) {
     writeQueue(merged)
     const digestPath = writeDigest(newLeads)
     log("info", "run.digest_written", { digestPath, newLeads: newLeads.length })
+
+    // Cross-machine source of truth. The local leads.json above is now just a
+    // local-dev mirror; Supabase is what /admin/review and the promote step read.
+    const res = await upsertDiscoveryLeads("bonus", merged.map(bonusLeadToRow))
+    persistedCount = res.persisted
+    persistSkipped = res.skipped
+    log("info", "run.leads_persisted", { persisted: res.persisted, skipped: res.skipped, reason: res.reason })
   }
 
   await closeBrowser()
@@ -179,8 +205,13 @@ async function main() {
     `Claude calls: ${claudeCallsUsed()} used, ${claudeBudgetRemaining()} remaining`,
   )
   if (!FLAG_DRY) {
-    console.log(`Queue: review-queue/leads.json`)
+    console.log(`Queue (local mirror): review-queue/leads.json`)
     console.log(`Digest: review-queue/digests/`)
+    console.log(
+      persistSkipped
+        ? `Supabase discovery_leads: SKIPPED (see warning above)`
+        : `Supabase discovery_leads: persisted ${persistedCount} lead(s)`,
+    )
   } else {
     console.log(`(dry run — nothing written)`)
   }

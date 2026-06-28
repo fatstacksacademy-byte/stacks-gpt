@@ -18,27 +18,29 @@
  * new bonuses regularly and pushes them."
  */
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs"
+import { join } from "node:path"
+// Auto-load .env.local when present (local dev). On CI the workflow injects env.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local")
+
 import { closeBrowser } from "../_shared/playwright"
 import { dedupCheck, type Lead } from "./dedup"
 import { enrichLead, type EnrichmentResult } from "./enrich"
 import { appendEntry } from "./file-mutator"
+import { loadApprovedLeads, stampLeadDisposition } from "../_shared/discovery-leads"
 
-const ROOT = "/Users/nathaniel/stacks-gpt"
-const LEADS_PATH = `${ROOT}/review-queue/leads.json`
-const OUT_DIR = `${ROOT}/verification-output`
+const ROOT = process.cwd()
+const LEADS_PATH = join(ROOT, "review-queue", "leads.json")
+const OUT_DIR = join(ROOT, "verification-output")
 
 const args = process.argv.slice(2)
 const WRITE = args.includes("--write")
 const LIMIT = Number(args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? 0) || 0
-
-// Read env from .env.local (script context — no Next.js loader).
-for (const line of readFileSync(`${ROOT}/.env.local`, "utf8").split("\n")) {
-  const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/)
-  if (!m) continue
-  let v = m[2]
-  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1)
-  if (!process.env[m[1]]) process.env[m[1]] = v
-}
+// Where approved leads come from. Supabase is the cross-machine source of truth
+// (CI + the prod /admin/review UI write here); "local" keeps the old leads.json
+// flow for offline local runs.
+const SOURCE = (args.find((a) => a.startsWith("--source="))?.split("=")[1] ?? "supabase") as
+  | "supabase"
+  | "local"
 
 type Outcome = {
   lead_id: string
@@ -53,12 +55,22 @@ type Outcome = {
 
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
-  const leads = JSON.parse(readFileSync(LEADS_PATH, "utf8")) as Lead[]
 
-  let approved = leads.filter((l) => (l as any).status === "approved")
+  // Bonus leads only for now — card promotion uses the discover-cards renderer
+  // and is a separate follow-up. Approved card leads stay queued until then.
+  let approved: Lead[]
+  let localLeads: Lead[] | null = null
+  if (SOURCE === "local") {
+    localLeads = JSON.parse(readFileSync(LEADS_PATH, "utf8")) as Lead[]
+    approved = localLeads.filter((l) => (l as any).status === "approved")
+  } else {
+    const rows = await loadApprovedLeads("bonus")
+    approved = rows.map((r) => r.payload as Lead)
+  }
   if (LIMIT > 0) approved = approved.slice(0, LIMIT)
 
-  console.log(`Mode: ${WRITE ? "WRITE (mutate files + leads.json)" : "DRY RUN (preview only)"}`)
+  console.log(`Source: ${SOURCE}`)
+  console.log(`Mode: ${WRITE ? "WRITE (mutate catalog + stamp source)" : "DRY RUN (preview only)"}`)
   console.log(`Approved leads to process: ${approved.length}`)
   console.log("")
 
@@ -132,33 +144,37 @@ async function main() {
       reason: `Wrote entry ${(enrichment.entry as any).id} to ${enrichment.target_file}`,
       targetFile: enrichment.target_file,
     })
-
-    // Stage 4: stamp lead status if writing.
-    if (WRITE) {
-      ;(lead as any).status = "applied"
-      ;(lead as any).decided_at = new Date().toISOString()
-      ;(lead as any).decided_by = "promote-approved-leads"
-      ;(lead as any).decision_notes = `Applied → ${enrichment.target_file} entry ${(enrichment.entry as any).id} (${enrichment.mechanic})`
-    }
   }
 
   await closeBrowser()
 
-  // Stamp dismissed leads too, when writing.
+  // Stamp every terminal disposition back onto the source of truth, when writing.
   if (WRITE) {
-    for (const o of outcomes) {
-      if (o.result !== "dismissed" && o.result !== "snoozed") continue
-      const lead = leads.find((l) => l.id === o.lead_id) as any
-      if (!lead) continue
-      lead.status = o.result
-      lead.decided_at = new Date().toISOString()
-      lead.decided_by = "promote-approved-leads"
-      lead.decision_notes = `${o.stage} → ${o.reason}${o.matchedId ? ` (matched ${o.matchedId})` : ""}`
+    const terminal = (r: Outcome["result"]): r is "applied" | "dismissed" | "snoozed" =>
+      r === "applied" || r === "dismissed" || r === "snoozed"
+    const stamped = outcomes.filter((o) => terminal(o.result))
+    if (SOURCE === "supabase") {
+      for (const o of stamped) {
+        await stampLeadDisposition("bonus", o.lead_id, {
+          status: o.result as "applied" | "dismissed" | "snoozed",
+          decision_notes: `${o.stage} → ${o.reason}${o.matchedId ? ` (matched ${o.matchedId})` : ""}`,
+        })
+      }
+      console.log(`\nStamped ${stamped.length} disposition(s) in Supabase discovery_leads.`)
+    } else if (localLeads) {
+      for (const o of stamped) {
+        const lead = localLeads.find((l) => l.id === o.lead_id) as any
+        if (!lead) continue
+        lead.status = o.result
+        lead.decided_at = new Date().toISOString()
+        lead.decided_by = "promote-approved-leads"
+        lead.decision_notes = `${o.stage} → ${o.reason}${o.matchedId ? ` (matched ${o.matchedId})` : ""}`
+      }
+      const tmp = `${LEADS_PATH}.tmp.${process.pid}.${Date.now()}`
+      writeFileSync(tmp, JSON.stringify(localLeads, null, 2))
+      renameSync(tmp, LEADS_PATH)
+      console.log(`\nUpdated leads.json with dispositions.`)
     }
-    const tmp = `${LEADS_PATH}.tmp.${process.pid}.${Date.now()}`
-    writeFileSync(tmp, JSON.stringify(leads, null, 2))
-    renameSync(tmp, LEADS_PATH)
-    console.log(`\nUpdated leads.json with dispositions.`)
   }
 
   // Report.

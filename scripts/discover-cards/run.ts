@@ -27,8 +27,10 @@
  * new cards per run, UA is StackOS-BonusBot/1.0.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs"
+import { createHash } from "node:crypto"
 import { join } from "node:path"
 import { fetchPage, closeBrowser } from "../_shared/playwright"
+import { upsertDiscoveryLeads, type DiscoveryLeadInput } from "../_shared/discovery-leads"
 import {
   creditCardBonuses,
   type CreditCardBonus,
@@ -138,6 +140,29 @@ function normalizeName(s: string): string {
     .replace(/[^a-z0-9 ]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
+}
+
+/** Stable dedupe key for a card lead (sha1 of the normalized card name). */
+function cardLeadKey(cardName: string): string {
+  return createHash("sha1").update(normalizeName(cardName)).digest("hex").slice(0, 12)
+}
+
+/** Map a card Proposal to the cross-machine discovery_leads row shape. */
+function cardProposalToRow(p: Proposal): DiscoveryLeadInput {
+  return {
+    lead_key: cardLeadKey(p.card_name),
+    name: p.card_name,
+    institution: p.issuer,
+    bonus_amount: p.bonus_amount,
+    classification: "credit_card_bonus",
+    // Cards have no native confidence score — derive a coarse one from flags
+    // so the review queue can sort cleanest-first.
+    confidence: p.flags.length === 0 ? 0.8 : 0.4,
+    source_url: p.source_lead_url,
+    canonical_url: p.offer_link,
+    flags: p.flags,
+    payload: p,
+  }
 }
 
 function cardAlreadyInCatalog(cardName: string): boolean {
@@ -406,10 +431,25 @@ async function main() {
   ]
   writeFileSync(join(OUT_DIR, "cards-proposed.md"), md.join("\n"))
 
+  // Persist proposals to the cross-machine review queue (Supabase). This is the
+  // human-gated path: cards land in /admin/review for approval rather than
+  // auto-appending to the catalog. (--apply still force-appends, for local use.)
+  let cardPersist = { persisted: 0, skipped: false as boolean }
+  if (!DRY_RUN) {
+    cardPersist = await upsertDiscoveryLeads("card", proposals.map(cardProposalToRow))
+  }
+
   await closeBrowser()
 
   if (DRY_RUN || !APPLY) {
-    console.log(`\nProposals: ${proposals.length}. Review ${join(OUT_DIR, "cards-proposed.md")} and re-run with --apply to append clean entries to the catalog.`)
+    if (!DRY_RUN) {
+      console.log(
+        cardPersist.skipped
+          ? `\nSupabase discovery_leads: SKIPPED (see warning above)`
+          : `\nSupabase discovery_leads: persisted ${cardPersist.persisted} card lead(s) for review at /admin/review`,
+      )
+    }
+    console.log(`Proposals: ${proposals.length}. Review them in /admin/review (or ${join(OUT_DIR, "cards-proposed.md")}); re-run with --apply to force-append clean entries to the catalog.`)
     return
   }
 
