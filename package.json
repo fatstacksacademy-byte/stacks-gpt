@@ -31,6 +31,9 @@
     "yt:velocity": "tsx scripts/yt-research/velocity.ts",
     "yt:recent": "tsx scripts/yt-research/recent-top.ts",
     "yt:inspect": "tsx scripts/yt-research/inspect.ts",
+    "ga:report": "tsx scripts/ga/run.ts",
+    "ga:props": "tsx scripts/ga/discover.ts",
+    "ga:auth": "tsx scripts/ga/auth.ts",
     "linksync:auth": "tsx scripts/link-sync/auth.ts",
     "linksync:scan": "tsx scripts/link-sync/run.ts scan",
     "linksync:apply": "tsx scripts/link-sync/run.ts apply",
@@ -39,10 +42,17 @@
     "yt:mine-tx": "tsx scripts/yt-research/my-transcripts.ts",
     "yt:analytics": "tsx scripts/yt-research/my-analytics.ts",
     "yt:compare": "tsx scripts/yt-research/compare-ids.ts",
+    "yt:outliers": "tsx scripts/yt-research/outlier-finder.ts",
+    "yt:watch": "tsx scripts/yt-research/channel-monitor.ts",
+    "yt:velocity-launch": "tsx scripts/yt-research/launch-velocity.ts",
     "thumb:research": "tsx scripts/yt-research/thumb-lab.ts",
     "thumb:refs": "tsx scripts/yt-research/ref-thumbs.ts",
     "thumb:stills": "python3 scripts/thumb-gen/grab_stills.py",
-    "thumb": "python3 scripts/thumb-gen/generate.py"
+    "thumb": "python3 scripts/thumb-gen/generate.py",
+    "vid:archive": "python3 scripts/video-editor/archive-video.py",
+    "vid:archive-list": "python3 scripts/video-editor/archive-video.py --list",
+    "skit": "python3 scripts/video-editor/skit.py",
+    "skit:villain": "python3 scripts/video-editor/make-placeholder-villain.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

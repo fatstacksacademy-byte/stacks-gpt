@@ -3988,12 +3988,12 @@ export const blogContent: Record<string, BlogContent> = {
     summary: "SoFi Invest's portal bonus pays $50–$150 for a $100 deposit with a 30-day hold — one of the lowest capital requirements of any brokerage bonus. The exact amount fluctuates day-to-day in the Rakuten/Swagbucks portal, so check before you apply. When it's at $150, that's a 150% return in 30 days on $100. Even at $50 it's hard to argue with.",
     strategy: "Go through Rakuten or Swagbucks to find the current SoFi Invest offer before opening — the portal amount changes frequently ($50–$150 range). Click through the portal link, open a SoFi Active Investing brokerage account, deposit $100 in net-new funds, make at least one $50 trade, and hold for 30 days. Bonus posts roughly 1 week after the hold. Total time to cash: ~40 days. Buy a broad-market ETF during the hold so your $100 isn't sitting idle.",
     bestFor: "New churners who want a fast win with minimal capital. The $100 deposit is the lowest bar of any bonus on this site. Also works as a starter brokerage account if you want SoFi's platform anyway.",
-    pros: ["Only $100 deposit required — lowest capital bar of any brokerage bonus on this site", "30-day hold is extremely short", "$50–$150 portal bonus is all profit on $100", "SoFi also gives all new customers a free stock worth up to $1,000 (typically $3–$20 in practice — still free money)"],
+    pros: ["Only $100 deposit required — lowest capital bar of any brokerage bonus on this site", "30-day hold is extremely short", "$50–$150 portal bonus is all profit on $100", "Separate native 'Claw' offer: a $50 deposit gets you a free stock worth up to $1,000 — that $1,000 is a probabilistic ceiling, not a requirement; most get $3–$20, still free money"],
     cons: ["Portal amount fluctuates — check Rakuten/Swagbucks the day you apply, it may be at $50", "0% cash APY — buy an ETF during the hold or you're losing to inflation", "One-time bonus (lifetime language)", "SoFi's brokerage platform is less polished than Schwab/Fidelity"],
     comparison: "On a pure percentage basis, SoFi Invest is the highest-yield bonus on the site even at the $50 floor — 50% return on $100 in 30 days crushes every savings bonus in effective APY. The ceiling ($150) makes it even better. The absolute dollar amount is low, so this is a starter play or portfolio filler, not a wealth builder — but the free stock sweetens it further.",
     faqs: [
       { q: "How do I find the current portal rate?", a: "Check Rakuten or Swagbucks before applying — the SoFi Invest offer fluctuates between $50 and $150. The rate you lock in when you click through is what you'll earn, so verify it before you open the account." },
-      { q: "What is the free stock offer?", a: "SoFi gives all new Active Investing customers a free stock valued at up to $1,000. In practice the vast majority of recipients get $3–$20, but it's a probabilistic grant — some people get much more. It's separate from the portal bonus and requires no additional action." },
+      { q: "What is the free stock offer?", a: "SoFi's native 'Claw' offer gives all new Active Investing customers a free stock valued at up to $1,000 — and you only need to deposit $50 within 45 days to qualify. The $1,000 is a probabilistic ceiling, not a deposit requirement (SoFi's own stated odds of getting the full $1,000 are ~0.03%), so the vast majority of recipients get $3–$20. It's separate from the portal bonus and stacks on top of it." },
       { q: "Do I have to actively trade?", a: "Yes — the portal offer requires a $50 trade in addition to the $100 deposit. Buy a broad-market ETF like VTI or SPY and hold it for 30 days. You can sell after the bonus posts." },
       { q: "Can I withdraw my $100 after the bonus posts?", a: "Yes. Once the 30-day hold ends and the bonus credits (~1 week later), you can sell your position and withdraw everything." },
     ],
@@ -4014,22 +4014,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "What counts as a qualifying transaction?", a: "Debit card purchases, ACH transactions (both directions), incoming wires, and QuickAccept payments. ATM withdrawals and internal transfers do NOT count." },
       { q: "How do I avoid the $15 monthly fee?", a: "Keep an average daily balance of $2,000+. The bonus requirements (depositing $2k+ and maintaining) already meet this, so the fee is effectively waived during the bonus period." },
     ],
-    relatedSlugs: ["bofa-business-advantage-750-savings-bonus", "u-s-bank-business-platinum-1200-savings-bonus"],
-  },
-
-  "bofa-biz-savings-750": {
-    summary: "Bank of America Business Advantage pays $400 or $750 depending on whether you deposit $5,000 or $15,000 within 30 days. Maintain for 60 days. Stacks beautifully with BofA Preferred Rewards — the combined BofA + Merrill balance from this deposit can push you into Platinum Honors tier (75% boost on travel rewards, 3.5% cash back on cards).",
-    strategy: "Open BofA Business Advantage Banking online. Deposit $15,000 in net-new funds within 30 days and maintain for 60 days. Make sure your business cards are BofA — the Preferred Rewards uplift on your personal cards is where the real long-term value lives. Target the $750 tier; the $400 tier is fine but leaves obvious money on the table if you have the cash.",
-    bestFor: "BofA customers (especially Preferred Rewards tier pursuers), and anyone with $15k+ in business funds who'd benefit from consolidating at BofA. Weak standalone play; strong if you care about Preferred Rewards.",
-    pros: ["Stacks with Preferred Rewards for lifetime cumulative value", "$750 is competitive among big-bank business bonuses", "BofA's business platform is reasonably capable", "Two tiers for flexible sizing"],
-    cons: ["$16 monthly fee on Business Advantage, waivable with $5k balance", "Requires business documentation (EIN, LLC paperwork)", "Best value is locked behind the BofA/Merrill ecosystem", "Ineligible if you've had BofA business checking recently"],
-    comparison: "BofA $750 at $15k is a tie with Chase $750 at $20k — BofA wins on deposit efficiency. But Chase's business platform features (QuickAccept, integration with Chase Ink cards) are stronger if you don't care about Preferred Rewards.",
-    faqs: [
-      { q: "What is Preferred Rewards?", a: "BofA's tiered loyalty program that boosts credit card rewards based on combined BofA + Merrill balances. $20k = Gold, $50k = Platinum, $100k = Platinum Honors (75% reward boost)." },
-      { q: "Does business checking count toward Preferred Rewards?", a: "Yes. Business Advantage Banking balances count toward your Preferred Rewards tier calculation, combined with personal BofA + Merrill balances." },
-      { q: "Do I need an LLC?", a: "No — sole proprietors can qualify. But LLCs and corporations have smoother account-opening experiences." },
-    ],
-    relatedSlugs: ["chase-business-checking-750-savings-bonus", "merrill-edge-1500-savings-bonus"],
+    relatedSlugs: ["bank-of-america-750-business-savings-bonus", "u-s-bank-business-platinum-1200-business-savings-bonus"],
   },
 
   "usbank-biz-savings-1200": {
@@ -4044,67 +4029,7 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "What counts as a qualifying transaction?", a: "Debit card purchases, ACH transfers (both directions), and incoming wires. ATM withdrawals and internal transfers do not count." },
       { q: "Can I downgrade from Platinum after the bonus?", a: "Yes — U.S. Bank allows product changes. Most churners downgrade to Silver Business Checking after the bonus window ends to avoid the $30 monthly fee on Platinum." },
     ],
-    relatedSlugs: ["chase-business-checking-750-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
-  },
-
-  "wells-fargo-biz-savings-825": {
-    summary: "Wells Fargo Initiate Business Checking pays $400 on a $2,500 deposit or $825 on a $25,000 deposit — but these are TWO SEPARATE OFFERS with different enrollment URLs, not tiers of one offer. The $400 tier is one of the highest-effective-APY business bonuses anywhere (~97% annualized). The $825 tier is better for anyone with real working capital.",
-    strategy: "Pick your tier first, then use the correct enrollment URL — /businesscheckinga for $400 or /businesscheckingb for $825. Open Initiate Business Checking, deposit the tier amount by day 30, and maintain the minimum daily collected balance through day 60. No transaction requirement. The effective APY math strongly favors the $400 tier if you can only afford one: $400 on $2,500 held 60 days is roughly 97% annualized.",
-    bestFor: "Anyone with a business entity. The $400 tier is perfect for side hustlers and new LLCs — $2,500 is a realistic amount to park. The $825 tier only makes sense if you already have $25k of working capital sitting somewhere.",
-    pros: ["$400 tier has exceptional effective APY (~97% annualized)", "No transaction requirements — just balance-based", "Short 60-day maintenance period", "Wells Fargo branches are ubiquitous"],
-    cons: ["$10/mo fee (rising to $15/mo in March 2026), waivable with $500 minimum daily balance", "Two separate URLs — easy to enroll in the wrong offer and get no bonus", "Expires July 7, 2026", "Wells Fargo's online business banking is clunky compared to Chase"],
-    comparison: "The $400 tier is the highest effective APY of any business bonus — it's a no-brainer if you can afford $2,500 for 60 days. The $825 tier at $25k is roughly 19.8% effective APY, which beats Chase's $750 at $20k (~22%) but loses to U.S. Bank's $1,200 at $25k (~29%).",
-    faqs: [
-      { q: "Which URL do I use?", a: "Use accountoffers.wellsfargo.com/businesscheckinga for the $400 tier ($2,500 balance) or accountoffers.wellsfargo.com/businesscheckingb for the $825 tier ($25,000 balance). Using the wrong URL means no bonus." },
-      { q: "Can I take both tiers?", a: "No — these are two variants of the same offer. You get one or the other, not both. Pick based on how much you're willing to park." },
-      { q: "Do I need to make any transactions?", a: "No. This bonus is purely balance-based — no debit card purchases or DD required." },
-    ],
-    relatedSlugs: ["chase-business-checking-750-savings-bonus", "u-s-bank-business-platinum-1200-savings-bonus"],
-  },
-
-  "citi-biz-savings-2000": {
-    summary: "Citi Business Checking pays $300 to $2,000 across five tiers, topping out at $2,000 on a $200,000 deposit. Available in only 7 states (NY, NJ, CA, DC, FL, IL, VA). The top tier is the largest business checking bonus on the site, but the 7-state footprint limits who can claim it.",
-    strategy: "Confirm you're in an eligible state. Open Citi Business Checking online or in-branch, deposit net-new funds within 45 days, and maintain the tier minimum for 45 days after funding. Pick the tier your working capital allows — each step up (e.g., $20k → $50k → $100k) roughly doubles the bonus, so scaling up is efficient if you have the cash.",
-    bestFor: "Businesses in the 7 eligible states with $20k+ in working capital. Especially strong for businesses with $100k+ — the $1,500 and $2,000 tiers are dramatically better than competitors at those deposit levels.",
-    pros: ["Up to $2,000 — largest business checking bonus available", "Five tiers for flexible sizing", "Citi's business platform includes good international wire support", "Short 45-day maintenance window"],
-    cons: ["Only 7 states (NY, NJ, CA, DC, FL, IL, VA)", "Top tier requires $200k — out of reach for most small businesses", "Business account opening requires in-person visit in some states", "Citi's online business banking is dated"],
-    comparison: "At $50k, Citi's $1,000 ties U.S. Bank's $1,200 at $25k on bonus size but requires 2x the deposit. Citi wins only at the top tiers ($100k+) where no other big bank matches. For the median small business, U.S. Bank or Chase are simpler options.",
-    faqs: [
-      { q: "Which states are eligible?", a: "NY, NJ, CA, DC, FL, IL, and VA. If your business address isn't in one of these, you can't qualify." },
-      { q: "Can I open online?", a: "Some states allow online opening; others require in-branch. Citi's application flow will route you accordingly based on your state." },
-      { q: "What's the monthly fee?", a: "$25/mo on Citi Business Checking, waivable with a $5,000 average daily balance. The bonus requirements already satisfy the waiver." },
-    ],
-    relatedSlugs: ["u-s-bank-business-platinum-1200-savings-bonus", "chase-business-checking-750-savings-bonus"],
-  },
-
-  "huntington-biz-savings-1000": {
-    summary: "Huntington Unlimited Plus Business Checking pays $200, $400, or $1,000 depending on deposit size ($2k, $10k, or $20k). Available in 13 states across the Midwest and Mid-Atlantic. The $1,000 at $20k tier is competitive, but Huntington is less well-known nationally so this bonus flies under the radar.",
-    strategy: "Confirm you're in an eligible state (OH, MI, IL, IN, PA, KY, WV, CO, MN, SC, WI, NC, SD). Open Unlimited Plus Business Checking online or in-branch. Deposit net-new funds within 60 days. The $20k tier's $1,000 bonus is the target — lower tiers have weaker effective rates.",
-    bestFor: "Businesses in Huntington's 13-state footprint, especially in Ohio and Michigan where Huntington's branch presence is strongest. Also good for anyone who wants a less-churned bonus (easier approval than Chase or BofA for repeat customers).",
-    pros: ["Less-churned bonus = easier approval for customers with many existing accounts", "Up to $1,000 is competitive", "60-day funding window is generous", "Huntington's mobile app is decent"],
-    cons: ["13-state footprint limits eligibility", "$20 monthly fee on Unlimited Plus, waivable with $10k balance", "Lower tiers have weak effective APY", "Requires real business documentation"],
-    comparison: "Huntington $1,000 at $20k is roughly comparable to BofA's $750 at $15k on effective APY. Huntington wins on geography if you're in OH/MI/IN where their presence is dense. BofA or Chase win if you want platform polish.",
-    faqs: [
-      { q: "Which states is Huntington in?", a: "OH, MI, IL, IN, PA, KY, WV, CO, MN, SC, WI, NC, SD. Strongest presence in Ohio and Michigan." },
-      { q: "Do I need 5+ transactions like Chase?", a: "No — Huntington's bonus is balance-based only. No transaction requirement." },
-      { q: "Can I downgrade after the bonus?", a: "Yes. Huntington allows product changes, so you can move to Business Checking 100 (no monthly fee) after the bonus window ends." },
-    ],
-    relatedSlugs: ["chase-business-checking-750-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
-  },
-
-  "mt-bank-biz-savings-1500": {
-    summary: "M&T Tailored Business Checking pays $300 to $1,500 across four tiers, topping out at $1,500 on a $100,000 deposit. The structure is unusual — the balance requirement is measured in the THIRD month after opening, not immediately. Available in 9 Mid-Atlantic states.",
-    strategy: "Open M&T Tailored Business Checking and fund within 90 days. Unlike most bonuses, M&T measures your balance in the THIRD month after account opening — so you can deposit late, as long as the tier amount is there when they check. Target the $100k tier for $1,500 if you have the working capital; otherwise $30k ($750) is a reasonable middle option.",
-    bestFor: "Mid-Atlantic businesses (NY, NJ, PA, MD, DC, DE, VA, CT, WV) with flexible cash flow. The delayed balance measurement means you don't have to commit the full deposit on day 1 — useful if your working capital fluctuates seasonally.",
-    pros: ["Up to $1,500 is strong", "Delayed balance measurement (month 3) gives flexibility", "Four tiers for sizing", "M&T's online banking is solid for the region"],
-    cons: ["9-state footprint (NY, NJ, PA, MD, DC, DE, VA, CT, WV)", "$25 monthly fee on Tailored, waivable with $10k balance", "Longer 90-day qualification window requires planning", "Limited national presence means fewer ATM/branch options if you travel"],
-    comparison: "M&T's $1,500 at $100k is below U.S. Bank's $1,200 at $25k and Citi's $1,500 at $100k — the bonus-to-deposit ratio is weaker here. But the delayed balance measurement makes the capital commitment less painful than a strict 30-day funding requirement.",
-    faqs: [
-      { q: "When does M&T check my balance?", a: "The balance is measured in the third calendar month after account opening. Open in March and they check your balance in June." },
-      { q: "What if my balance dips after the measurement month?", a: "Once the measurement month has passed, you've qualified for that tier's bonus. Withdrawing in the fourth month is fine — just don't withdraw early and re-deposit in time for the check." },
-      { q: "Which states?", a: "NY, NJ, PA, MD, DC, DE, VA, CT, WV. Strongest in the Mid-Atlantic corridor." },
-    ],
-    relatedSlugs: ["citi-business-2000-savings-bonus", "bofa-business-advantage-750-savings-bonus"],
+    relatedSlugs: ["chase-business-checking-750-business-savings-bonus", "bank-of-america-750-business-savings-bonus"],
   },
 
   "greenfi-75-checking-2026": {

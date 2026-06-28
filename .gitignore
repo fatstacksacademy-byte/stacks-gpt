@@ -57,3 +57,9 @@ scratch/
 
 # env-var checklist with secret names; keep out of source control
 PRIME_TIME_SETUP.md
+
+# local video-production media + research artifacts — run off the local
+# machine, not used by the deployed web app; keep out of the repo
+/assets/
+*.pdf
+/scripts/yt-research/

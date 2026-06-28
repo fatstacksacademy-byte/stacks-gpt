@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     q: "Can I get a bank bonus if I have a ChexSystems record?",
-    a: "Yes. Many banks have low ChexSystems sensitivity and will approve you even with negative marks. Capital One, Varo, Chime, SoFi, Citi, Wells Fargo, and 316 Financial are all known for approving applicants regardless of ChexSystems history. Start with these banks while you work on cleaning up your report.",
+    a: "Yes. Several banks have low ChexSystems sensitivity or don't check it at all. Chime, Varo, SoFi, and 316 Financial are widely reported to approve applicants with little regard to ChexSystems history, and Capital One is considered lenient (though reports vary on whether it checks ChexSystems at all). Start with the most lenient options while you work on cleaning up your report. Bigger banks like Citi and Wells Fargo do screen banking history, and Citi is reported to be sensitive to a high number of recent applications, so treat those as less certain if you have negative marks.",
   },
   {
     q: "How do I get my free ChexSystems report?",
@@ -321,11 +321,11 @@ export default function ChexSystemsGuide() {
             </div>
             <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 10, padding: "16px 20px" }}>
               {[
-                { name: "Capital One", note: "Does not use ChexSystems at all. Uses a proprietary internal system. One of the safest options if you have banking history issues." },
+                { name: "Capital One", note: "Widely reported as lenient and unlikely to deny standard 360 accounts over ChexSystems, though sources conflict on whether it pulls ChexSystems at all. One of the safer options if you have banking history issues." },
                 { name: "Varo", note: "Online-only neobank. Known for approving applicants with ChexSystems records. No minimum balance or monthly fees." },
                 { name: "Chime", note: "Second-chance friendly fintech. Explicitly markets to people who have been denied elsewhere." },
                 { name: "SoFi", note: "Fintech bank with lenient screening. SoFi checks ChexSystems but has a very low threshold for denial." },
-                { name: "Citi", note: "Major bank with surprisingly low ChexSystems sensitivity. Citi generally focuses more on credit history than banking history." },
+                { name: "Citi", note: "Lenient on negative banking history, but inquiry-sensitive: a high number of recent new-account applications (community reports cite roughly 9-10 in a few months) can trigger a denial. Fine for occasional applications; riskier mid-churn." },
                 { name: "Wells Fargo", note: "Despite being a major bank, Wells Fargo is known for approving applicants with minor ChexSystems items. Serious fraud flags may still cause denial." },
                 { name: "316 Financial", note: "Small institution with lenient screening. Good option for those building their banking history back up." },
               ].map(bank => (
@@ -495,7 +495,7 @@ export default function ChexSystemsGuide() {
             <p style={{ margin: "0 0 12px" }}>
               You have the same FCRA rights with EWS as you do with ChexSystems. You can request a free annual report from
               Early Warning Services at <span style={{ color: "#0d7c5f" }}>earlywarning.com</span> or by calling{" "}
-              <span style={{ color: "#0d7c5f" }}>800-325-7775</span>. If you were denied a bank account and the adverse
+              <span style={{ color: "#0d7c5f" }}>1-800-745-1560</span>. If you were denied a bank account and the adverse
               action notice mentions Early Warning Services, pull your EWS report in addition to your ChexSystems report.
             </p>
             <p style={{ margin: 0 }}>

@@ -9,10 +9,14 @@ export default function DashboardGoalBar({
   projection36mo,
   inProgress,
   lifetimeEarned,
+  potentialLocked = false,
 }: {
   projection36mo: number
   inProgress: number
   lifetimeEarned: number
+  /** Free tier: the 3-yr "Stack potential" is a Pro projection — show it locked,
+   *  not the dollar figure (the underlying sequenced bonuses are Pro-only). */
+  potentialLocked?: boolean
 }) {
   return (
     <div
@@ -30,7 +34,7 @@ export default function DashboardGoalBar({
       }}
       className="goal-bar"
     >
-      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis />
+      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis locked={potentialLocked} />
       <Divider />
       <Stat label="In progress" value={inProgress} />
       <Divider />
@@ -45,7 +49,7 @@ export default function DashboardGoalBar({
   )
 }
 
-function Stat({ label, value, emphasis = false }: { label: string; value: number; emphasis?: boolean }) {
+function Stat({ label, value, emphasis = false, locked = false }: { label: string; value: number; emphasis?: boolean; locked?: boolean }) {
   return (
     <div style={{ flex: 1, minWidth: 110 }}>
       <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", opacity: 0.75 }}>
@@ -60,7 +64,11 @@ function Stat({ label, value, emphasis = false }: { label: string; value: number
           lineHeight: 1.1,
         }}
       >
-        ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+        {locked ? (
+          <span style={{ fontSize: emphasis ? 18 : 16, opacity: 0.92 }}>🔒 Pro</span>
+        ) : (
+          `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+        )}
       </div>
     </div>
   )

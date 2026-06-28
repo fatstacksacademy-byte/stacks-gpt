@@ -17,6 +17,12 @@ const TOKEN_URL = "https://oauth2.googleapis.com/token"
 const API = "https://www.googleapis.com/youtube/v3"
 
 export const YT_SCOPE = "https://www.googleapis.com/auth/youtube.force-ssl"
+/** Read-only channel analytics (retention, traffic sources). Needed for yt:analytics. */
+export const YT_ANALYTICS_SCOPE = "https://www.googleapis.com/auth/yt-analytics.readonly"
+/** Read-only website Google Analytics 4 (GA4 Data API). Needed for ga:report. */
+export const GA_ANALYTICS_SCOPE = "https://www.googleapis.com/auth/analytics.readonly"
+/** All scopes the refresh token should carry, space-separated for the consent URL. */
+export const YT_SCOPES = [YT_SCOPE, YT_ANALYTICS_SCOPE, GA_ANALYTICS_SCOPE].join(" ")
 
 function requireEnv(name: string): string {
   const v = process.env[name]

@@ -612,6 +612,7 @@ export default function HubClient({
           projection36mo={portfolio36mo}
           inProgress={inProgressValue}
           lifetimeEarned={lifetimeEarned}
+          potentialLocked={!isPaid}
         />
 
         <PushOptIn />
@@ -670,14 +671,42 @@ export default function HubClient({
         )}
 
         {view === "projection" && (
-          <PortfolioCard
-            total={portfolio36mo}
-            breakdown={[
-              { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
-              { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items, note: spendingProjection.effectiveApy != null ? fmtApy(spendingProjection.effectiveApy) : undefined },
-              { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
-            ]}
-          />
+          isPaid ? (
+            <PortfolioCard
+              total={portfolio36mo}
+              breakdown={[
+                { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
+                { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items, note: spendingProjection.effectiveApy != null ? fmtApy(spendingProjection.effectiveApy) : undefined },
+                { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
+              ]}
+            />
+          ) : (
+            // Free tier: the 3-yr projection is built from the Pro sequencers — don't
+            // leak the number; show the same upgrade nudge used on the sequencer pages.
+            <div style={{
+              background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+              padding: "20px 22px", marginBottom: 24,
+              display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
+            }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                  Pro feature
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                  See your 3-year stack projection
+                </div>
+                <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                  Pro ranks and sequences every checking, savings, and card bonus for your paycheck and balance — and projects what your stack is worth over three years.
+                </div>
+              </div>
+              <a href="/onboarding" style={{
+                fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
+              }}>
+                Upgrade to Pro →
+              </a>
+            </div>
+          )
         )}
 
         {view === "history" && <HistoricalWinsList wins={historicalWins} />}
