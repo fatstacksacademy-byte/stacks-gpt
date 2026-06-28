@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
 import { runIntroAprArbitrage } from "../../../lib/introAprArbitrage"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
@@ -21,6 +21,222 @@ function purchaseIntroCards(): AprCard[] {
   return creditCardBonuses
     .filter(c => !c.expired && (c.intro_apr?.purchase_apr_months ?? 0) > 0)
     .sort((a, b) => (b.intro_apr!.purchase_apr_months ?? 0) - (a.intro_apr!.purchase_apr_months ?? 0))
+}
+
+// ── Best-0%-cards finder ──────────────────────────────────────────────
+// Browse and rank every live 0% card by the metric that matters for *this*
+// strategy — length of the 0% window — with a purchase-vs-balance-transfer
+// lens, no-annual-fee filter, and a few alternate sorts (lowest go-to APR,
+// lowest annual/BT fee).
+type AprMode = "purchase" | "bt"
+type AprSort = "length" | "goto" | "af" | "btfee"
+
+function introMonths(c: AprCard, mode: AprMode): number {
+  return (mode === "purchase" ? c.intro_apr?.purchase_apr_months : c.intro_apr?.bt_apr_months) ?? 0
+}
+
+function gotoLow(c: AprCard): number {
+  return c.intro_apr?.go_to_apr_low ?? c.intro_apr?.go_to_apr_high ?? Infinity
+}
+
+function gotoDisplay(c: AprCard): string {
+  const lo = c.intro_apr?.go_to_apr_low
+  const hi = c.intro_apr?.go_to_apr_high
+  if (lo != null && hi != null) return `${lo}–${hi}%`
+  if (hi != null) return `up to ${hi}%`
+  if (lo != null) return `${lo}%+`
+  return "—"
+}
+
+function hasOfferLink(c: AprCard): boolean {
+  // Many catalog entries (esp. small credit unions) ship without an offer URL.
+  // /go/<id> 404s for those, so only render an Apply link when it's real.
+  return /^https?:\/\//i.test(c.offer_link?.trim() ?? "")
+}
+
+function bonusDisplay(c: AprCard): string {
+  if (!c.bonus_amount || c.bonus_amount <= 0) return "—"
+  return c.bonus_currency === "cash"
+    ? `$${c.bonus_amount.toLocaleString()}`
+    : `${c.bonus_amount.toLocaleString()} pts`
+}
+
+function rankIntroCards(mode: AprMode, sort: AprSort, noAF: boolean, query: string): AprCard[] {
+  const q = query.trim().toLowerCase()
+  const byLength = (a: AprCard, b: AprCard) => introMonths(b, mode) - introMonths(a, mode)
+  return creditCardBonuses
+    .filter(c => !c.expired && introMonths(c, mode) > 0)
+    .filter(c => (noAF ? (c.annual_fee ?? 0) === 0 : true))
+    .filter(c => (q ? `${c.card_name} ${c.issuer}`.toLowerCase().includes(q) : true))
+    .sort((a, b) => {
+      switch (sort) {
+        case "goto": return gotoLow(a) - gotoLow(b) || byLength(a, b)
+        case "af": return (a.annual_fee ?? 0) - (b.annual_fee ?? 0) || byLength(a, b)
+        case "btfee": return (a.intro_apr?.bt_fee_pct ?? Infinity) - (b.intro_apr?.bt_fee_pct ?? Infinity) || byLength(a, b)
+        default: return byLength(a, b) || (a.annual_fee ?? 0) - (b.annual_fee ?? 0)
+      }
+    })
+}
+
+const ISSUER_COLORS: Record<string, string> = {
+  chase: "#117aca", amex: "#2671b9", american_express: "#2671b9",
+  citi: "#003a72", capital_one: "#004977", wells_fargo: "#b3122a", bofa: "#012169",
+  bank_of_america: "#012169", discover: "#f37021", us_bank: "#0c2074", barclays: "#00aeef",
+}
+function thumbColor(seed: string): string {
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
+  return `hsl(${h % 360}, 42%, 38%)`
+}
+function CardArt({ card }: { card: AprCard }) {
+  const box: React.CSSProperties = { width: 46, height: 30, borderRadius: 5, flexShrink: 0, overflow: "hidden", border: "1px solid #ececec" }
+  if (card.image_url) {
+    return (
+      <div style={{ ...box, background: "#f7f7f7", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <img src={card.image_url} alt="" aria-hidden loading="lazy" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+      </div>
+    )
+  }
+  const key = card.issuer?.toLowerCase().replace(/\s+/g, "_") ?? ""
+  const bg = ISSUER_COLORS[key] || thumbColor(card.issuer || card.card_name)
+  const initials = (card.issuer || card.card_name).split(/[\s_]+/).slice(0, 2).map(w => w[0]?.toUpperCase() ?? "").join("")
+  return (
+    <div aria-hidden style={{ ...box, background: bg, color: "#fff", display: "flex", alignItems: "flex-end", padding: 4, fontSize: 10, fontWeight: 800 }}>
+      {initials}
+    </div>
+  )
+}
+
+const ABS_CAP = 40
+
+function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
+  const [mode, setMode] = useState<AprMode>("purchase")
+  const [sort, setSort] = useState<AprSort>("length")
+  const [noAF, setNoAF] = useState(false)
+  const [query, setQuery] = useState("")
+
+  const ranked = useMemo(() => rankIntroCards(mode, sort, noAF, query), [mode, sort, noAF, query])
+  const shown = ranked.slice(0, ABS_CAP)
+
+  function pickMode(next: AprMode) {
+    setMode(next)
+    if (next === "purchase" && sort === "btfee") setSort("length")
+    track("intro_apr_finder_mode", { mode: next })
+  }
+
+  const metricLabel = mode === "purchase" ? "0% purchases" : "0% balance transfer"
+
+  return (
+    <div style={{ ...card, marginBottom: 26 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
+        <div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: 0 }}>Best 0% cards right now</h2>
+          <div style={{ fontSize: 13, color: "#888", marginTop: 3 }}>
+            Ranked by the length of the 0% window — the metric that actually drives this play. {ranked.length} live cards.
+          </div>
+        </div>
+        {/* Purchase vs balance-transfer lens */}
+        <div style={{ display: "flex", gap: 4, background: "#f4f4f4", border: "1px solid #e6e6e6", borderRadius: 7, padding: 3 }}>
+          {(["purchase", "bt"] as const).map(m => {
+            const active = mode === m
+            return (
+              <button key={m} onClick={() => pickMode(m)}
+                style={{ padding: "6px 14px", fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#666", background: active ? ACCENT : "transparent", border: "none", borderRadius: 5, cursor: "pointer" }}>
+                {m === "purchase" ? "0% Purchases" : "0% Balance Transfer"}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search card or issuer…"
+          style={{ ...input, width: "auto", flex: "1 1 200px", minWidth: 160 }}
+        />
+        <select value={sort} onChange={e => setSort(e.target.value as AprSort)} style={{ ...select, width: "auto", minWidth: 170 }}>
+          <option value="length">Sort: longest 0% window</option>
+          <option value="goto">Sort: lowest go-to APR</option>
+          <option value="af">Sort: lowest annual fee</option>
+          {mode === "bt" && <option value="btfee">Sort: lowest transfer fee</option>}
+        </select>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
+          <input type="checkbox" checked={noAF} onChange={e => setNoAF(e.target.checked)} />
+          No annual fee
+        </label>
+      </div>
+
+      {/* Table */}
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ borderBottom: "1px solid #e8e8e8", textAlign: "left", color: "#888" }}>
+              <th style={th}>Card</th>
+              <th style={{ ...th, textAlign: "right" }}>{metricLabel}</th>
+              <th style={{ ...th, textAlign: "right" }}>Go-to APR</th>
+              <th style={{ ...th, textAlign: "right" }}>Annual fee</th>
+              {mode === "bt"
+                ? <th style={{ ...th, textAlign: "right" }}>Transfer fee</th>
+                : <th style={{ ...th, textAlign: "right" }}>Welcome</th>}
+              <th style={{ ...th, textAlign: "right" }} />
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map(c => (
+              <tr key={c.id} style={{ borderBottom: "1px solid #f4f4f4" }}>
+                <td style={td}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <CardArt card={c} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 230 }}>{c.card_name}</div>
+                      <div style={{ fontSize: 11, color: "#aaa", textTransform: "capitalize" }}>{(c.issuer || "").replace(/_/g, " ")}</div>
+                    </div>
+                  </div>
+                </td>
+                <td style={{ ...td, textAlign: "right" }}>
+                  <span style={{ fontWeight: 800, color: ACCENT, fontSize: 15 }}>{introMonths(c, mode)}</span>
+                  <span style={{ fontSize: 11, color: "#bbb" }}> mo</span>
+                </td>
+                <td style={{ ...td, textAlign: "right", color: "#666" }}>{gotoDisplay(c)}</td>
+                <td style={{ ...td, textAlign: "right", color: (c.annual_fee ?? 0) === 0 ? ACCENT : "#444" }}>
+                  {(c.annual_fee ?? 0) === 0 ? "None" : `$${c.annual_fee}`}
+                </td>
+                {mode === "bt"
+                  ? <td style={{ ...td, textAlign: "right", color: "#666" }}>{c.intro_apr?.bt_fee_pct != null ? `${c.intro_apr.bt_fee_pct}%` : "—"}</td>
+                  : <td style={{ ...td, textAlign: "right", color: "#666" }}>{bonusDisplay(c)}</td>}
+                <td style={{ ...td, textAlign: "right", whiteSpace: "nowrap" }}>
+                  {mode === "purchase" && (
+                    <button onClick={() => onUse(c.id)}
+                      style={{ fontSize: 12, fontWeight: 600, color: ACCENT, background: "#eef9f4", border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: "5px 10px", cursor: "pointer", marginRight: 6 }}>
+                      Model it →
+                    </button>
+                  )}
+                  {hasOfferLink(c) && (
+                    <a href={applyUrl(c.id)} target="_blank" rel="noreferrer"
+                       onClick={() => track("intro_apr_finder_apply", { card: c.card_name, mode })}
+                       style={{ fontSize: 12, fontWeight: 600, color: "#666", textDecoration: "none" }}>
+                      Apply
+                    </a>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {shown.length === 0 && (
+              <tr><td style={{ ...td, color: "#999", padding: "20px 8px" }} colSpan={6}>No 0% cards match those filters.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {ranked.length > ABS_CAP && (
+        <div style={{ fontSize: 12, color: "#999", marginTop: 10 }}>
+          Showing the top {ABS_CAP} of {ranked.length}. Search or add a filter to narrow it down.
+        </div>
+      )}
+    </div>
+  )
 }
 
 const label: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5, display: "block" }
@@ -47,6 +263,15 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
   const [annualFee, setAnnualFee] = useState(0)
 
   const selectedCard = cards.find(c => c.id === selectedCardId) ?? null
+  const calcRef = useRef<HTMLHeadingElement>(null)
+
+  function modelCard(cardId: string) {
+    applyCard(cardId)
+    track("intro_apr_finder_use", { card: cardId })
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => calcRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }))
+    }
+  }
 
   // Prefill the user's real HYSA APY from their Savings profile.
   useEffect(() => {
@@ -91,7 +316,17 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
     <div>
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 32px" }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 6 }}>0% Intro-APR Float Calculator</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 6 }}>0% APR Cards</h1>
+        <p style={{ color: "#666", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
+          Find the longest 0% intro-APR cards — for purchases or balance transfers — ranked by the length of the
+          no-interest window, not just cashback or travel value. Pick one, then model exactly what that float is worth below.
+        </p>
+
+        <BestZeroAprCards onUse={modelCard} />
+
+        <h2 ref={calcRef} style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 32, marginBottom: 6, scrollMarginTop: 16 }}>
+          What a 0% window is worth — float calculator
+        </h2>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
           Ride a card&apos;s 0% intro APR, pay only the minimum, and leave the cash that would have paid the bill
           in your HYSA earning interest. The bank floats your balance for free. This shows what that float is worth —
