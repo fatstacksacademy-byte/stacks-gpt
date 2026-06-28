@@ -15,6 +15,12 @@ it works directly on what you actually said (ad-lib friendly).
 Removes = front-trim (optional) + dead-space compression (silencedetect, pauses > --max-pause)
   + pause-gated restart/retake removal + "excuse me" cuts + --slates + --manual-cuts.
 Keeps = complement → the cut. --dry writes keeps.json + review.md WITHOUT touching Resolve.
+
+Two opt-in pacing controls (both default OFF → output byte-identical to before):
+  --keep-laughter   protect loud, word-less reaction beats (laughter / a beat of disbelief)
+                    the dead-air remover would otherwise cut. Carved out of the removals.
+  --clamp-gap SECS  AFTER the keep-list is final, normalize pacing — trim every RETAINED gap
+                    longer than SECS down to SECS (a uniform floor, not silence removal).
 """
 import argparse, json, os, re, subprocess, sys
 
@@ -40,6 +46,21 @@ ap.add_argument("--min-cover", type=float, default=0.70)
 ap.add_argument("--short-max", type=float, default=5.0)
 ap.add_argument("--max-span", type=float, default=12.0)
 ap.add_argument("--whisper-model", default="medium.en")
+# --- OPT-IN pacing/reaction features (both default to today's behaviour) ---
+ap.add_argument("--keep-laughter", action="store_true",
+                help="protect non-speech reaction beats (laughter / a beat of disbelief) the dead-air remover "
+                     "would otherwise cut: loud audio (> noise floor + --laugh-margin dB) for >= --laugh-min s "
+                     "with NO Whisper words over it. OFF by default (output byte-identical).")
+ap.add_argument("--laugh-margin", type=float, default=12.0,
+                help="a reaction span must sit this many dB ABOVE the silence noise floor (default 12)")
+ap.add_argument("--laugh-min", type=float, default=0.4,
+                help="minimum length of a protected non-speech reaction span, seconds (default 0.4)")
+ap.add_argument("--laugh-pad", type=float, default=0.10,
+                help="extra padding kept around a protected reaction span, seconds (default 0.10)")
+ap.add_argument("--clamp-gap", type=float, default=0.0,
+                help="0 = OFF. After the keep-list is final, NORMALIZE pacing: every RETAINED gap between "
+                     "kept clips longer than this is trimmed down to this many seconds (uniform floor). "
+                     "Distinct from --max-pause (silence REMOVAL); this evens out what survives.")
 ap.add_argument("--dry", action="store_true", help="compute the cut + write keeps.json/review.md, skip Resolve")
 a = ap.parse_args()
 
@@ -85,6 +106,116 @@ def detect_silences(wav, noise, d):
         m = re.search(r"silence_end: ([-\d.]+)", line)
         if m and st is not None: sils.append((max(0, st), float(m.group(1)))); st = None
     return sils
+
+
+def measure_noise_floor(wav, energy, sils):
+    """The silence noise floor in dBFS — what 'silence' actually measures at, so a reaction span
+    can be judged RELATIVE to it (mic/room-independent). We look at the per-window RMS inside the
+    stretches silencedetect called silence and take a LOW percentile, NOT the mean: a soft
+    reaction (laugh/gasp) can be embedded inside one of those "silences" (silencedetect swallowed
+    it because its peaks stayed under the noise bar), and averaging it in would inflate the floor
+    and hide the very thing --keep-laughter exists to protect. The 20th percentile of the silent
+    windows is the true room floor even when a reaction sits in the span. Falls back to
+    volumedetect's mean (biased down) when there are no silences. Returns dBFS (negative)."""
+    if sils and energy:
+        floor_windows = [db for t, db in energy
+                         if any(s <= t < e for s, e in sils)]
+        if floor_windows:
+            floor_windows.sort()
+            return floor_windows[len(floor_windows) // 5]  # 20th percentile = the genuine floor
+    p = subprocess.run(["ffmpeg", "-hide_banner", "-i", wav, "-af", "volumedetect",
+                        "-f", "null", "-"], capture_output=True, text=True)
+    for line in p.stderr.splitlines():
+        m = re.search(r"mean_volume:\s*([-\d.]+)", line)
+        if m: return float(m.group(1)) - 6.0  # mean is over the whole file (incl. speech) → bias down
+    return -55.0
+
+
+def frame_energy(wav, hop=0.05):
+    """Per-window RMS energy of the wav as (time, dbfs) pairs, sampled every `hop` seconds.
+    Uses ffmpeg astats with asetnsamples so each metadata frame is one window — the same
+    RMS the silence detector reasons about, just sampled densely so we can find LOUD spans
+    (not just quiet ones). Returns [] if astats emits nothing (degrades to no reactions)."""
+    sr = 16000
+    win = max(1, int(round(sr * hop)))
+    p = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", wav,
+                        "-af", f"aresample={sr},asetnsamples=n={win}:p=0,"
+                               "astats=metadata=1:reset=1:measure_perchannel=none:measure_overall=RMS_level,"
+                               "ametadata=print:key=lavfi.astats.Overall.RMS_level",
+                        "-f", "null", "-"], capture_output=True, text=True)
+    out, t = [], 0.0
+    for line in p.stderr.splitlines():
+        m = re.search(r"pts_time:([-\d.]+)", line)
+        if m:
+            try: t = float(m.group(1))
+            except ValueError: pass
+            continue
+        m = re.search(r"lavfi\.astats\.Overall\.RMS_level=([-\d.]+)", line)
+        if m:
+            try: out.append((t, float(m.group(1))))
+            except ValueError: pass
+    return out
+
+
+def detect_reactions(energy, words, floor_db, margin, min_len, hop=0.05):
+    """Non-speech reaction beats to PROTECT from the dead-air remover: contiguous windows whose
+    RMS sits clearly ABOVE the noise floor (floor + `margin` dB) for >= `min_len` seconds, but
+    over which Whisper transcribed NO word (a laugh, a gasp, a beat of disbelief — vocal energy,
+    no text). These would otherwise read as 'not speech' and be compressed away. Conservative:
+    every span must clear BOTH the loudness and the duration bar and overlap zero words.
+    `energy` is the per-window [(t, dbfs)] from frame_energy (shared with the floor estimate).
+    Returns [(start, end, peak_db)] (no padding yet — caller pads)."""
+    if not energy:
+        return []
+    thresh = floor_db + margin
+    # collapse the per-window 'is-loud' mask into contiguous loud runs
+    runs, run_s, peak = [], None, -120.0
+    for i, (t, db) in enumerate(energy):
+        if db >= thresh:
+            if run_s is None: run_s, peak = t, db
+            else: peak = max(peak, db)
+        else:
+            if run_s is not None:
+                runs.append((run_s, t, peak)); run_s, peak = None, -120.0
+    if run_s is not None:
+        runs.append((run_s, energy[-1][0] + hop, peak))
+
+    def has_word(s, e):  # any transcribed word overlapping this span?
+        return any(w["end"] > s and w["start"] < e for w in words)
+
+    out = []
+    for s, e, pk in runs:
+        if e - s + hop >= min_len and not has_word(s, e):
+            out.append((s, e + hop, pk))  # +hop: the last loud window extends ~one hop past its pts
+    return out
+
+
+def clamp_retained_gaps(keeps, sils, limit):
+    """Pacing NORMALIZATION (NOT silence removal). The dead-air remover only compresses pauses
+    LONGER than --max-pause; shorter ones (and the --pad breath it leaves around the ones it did
+    compress) survive into the cut. Over a long take those RETAINED gaps still vary — some beats
+    breathe 0.5s, others 0.25s — and the pacing feels uneven. With --clamp-gap SECS we put a
+    UNIFORM FLOOR on them: every gap of silence that SURVIVED inside a kept segment and is longer
+    than SECS is trimmed back to exactly SECS. We trim from the END of the gap (keep SECS of
+    breath after the previous word) and return the extra spans to remove — fed back through
+    complement(), so the same removal machinery keeps the audio/video lock exact. Reports the
+    clamped gaps as [(gap_start, gap_end, kept_to)] for review.md.
+
+    Distinct from --max-pause: that REMOVES dead air over a threshold; this EVENS OUT what's left
+    (it can only ever shorten a retained gap, never lengthen, and never touches speech)."""
+    extra, report = [], []
+    keep_iv = sorted((s, e) for s, e in keeps if e > s)
+    for ss, se in sils:
+        for ks, ke in keep_iv:
+            # the portion of this silence that actually survived into the cut (inside a keep)
+            gs, ge = max(ss, ks), min(se, ke)
+            if ge - gs > limit + 1e-6:
+                cut_s = gs + limit          # keep `limit` of breath at the head of the gap
+                cut_e = ge                  # trim the rest of the retained silence
+                if cut_e - cut_s > 1e-6:
+                    extra.append((cut_s, cut_e))
+                    report.append((gs, ge, limit))
+    return extra, report
 
 
 def _lcs(a, b):
@@ -178,6 +309,28 @@ def complement(removes, total):
     return keeps, merged
 
 
+def _subtract_spans(removes, protect):
+    """Carve each `protect` span OUT of every span in `removes` (so the protected audio survives
+    into the cut). A removal that straddles a protected span is split into the bits on either
+    side; one fully inside a protected span is dropped. Used only by --keep-laughter (protect=[]
+    everywhere else, in which case this returns `removes` unchanged)."""
+    if not protect: return removes
+    prot = sorted((s, e) for s, e in protect if e > s)
+    out = []
+    for s, e in removes:
+        pieces = [(s, e)]
+        for ps, pe in prot:
+            nxt = []
+            for a0, b0 in pieces:
+                if pe <= a0 or ps >= b0:      # no overlap → keep the removal piece as-is
+                    nxt.append((a0, b0)); continue
+                if a0 < ps: nxt.append((a0, ps))   # bit before the protected span
+                if pe < b0: nxt.append((pe, b0))   # bit after the protected span
+            pieces = nxt
+        out += [(a0, b0) for a0, b0 in pieces if b0 - a0 > 1e-6]
+    return out
+
+
 def parse_spans(spec, slate=False):
     out = []
     for tok in (t.strip() for t in spec.split(",") if t.strip()):
@@ -216,30 +369,71 @@ def main():
     retakes = detect_retakes(words, sils, a.max_span)
     excuses = detect_excuse_me(words, sils)
 
+    # (A) --keep-laughter: find loud, word-less reaction beats to PROTECT (opt-in; [] when off,
+    # so the removes list below is byte-identical to today's). Padded so we don't shave the edges.
+    reactions, floor_db = [], None
+    if a.keep_laughter:
+        energy = frame_energy(GM_WAV)
+        floor_db = measure_noise_floor(GM_WAV, energy, sils)
+        for rs, re_, pk in detect_reactions(energy, words, floor_db, a.laugh_margin, a.laugh_min):
+            reactions.append((max(0.0, rs - a.laugh_pad), min(total, re_ + a.laugh_pad), pk))
+
     removes = []
     if a.front_trim > 0: removes.append((0.0, a.front_trim))
     removes += parse_spans(a.slates, slate=True) + parse_spans(a.manual_cuts)
     removes += [(s, e) for s, e, *_ in retakes] + excuses
     sil_cuts = 0
+    sil_removes = []
     for s, e in sils:
-        if e - s > MAX_PAUSE: removes.append((s + PAD, e - PAD)); sil_cuts += 1
+        if e - s > MAX_PAUSE: sil_removes.append((s + PAD, e - PAD)); sil_cuts += 1
+    if reactions:
+        # Carve protected reactions out of the DEAD-AIR removals ONLY — never out of an explicit
+        # front-trim / slate / manual-cut, nor a retake/excuse the detector cut on purpose (a loud
+        # word-less burst inside one of those must STAY cut, not get resurrected back into the take).
+        sil_removes = _subtract_spans(sil_removes, [(rs, re_) for rs, re_, _ in reactions])
+    removes += sil_removes
     keeps, merged = complement(removes, total)
+
+    # (B) --clamp-gap: pacing normalization on what SURVIVED — feed the extra trims back through
+    # complement() so the audio/video lock stays exact (opt-in; [] when off → keeps unchanged).
+    clamped = []
+    if a.clamp_gap > 0:
+        # Don't let pacing-clamp shave a protected reaction: drop reaction regions from the silence
+        # list it evens out (it still tightens the dead air right up to / after the reaction).
+        clamp_sils = _subtract_spans(sils, [(rs, re_) for rs, re_, _ in reactions]) if reactions else sils
+        extra, clamped = clamp_retained_gaps(keeps, clamp_sils, a.clamp_gap)
+        if extra:
+            keeps, merged = complement(removes + extra, total)
     kept = sum(e - s for s, e in keeps)
 
     # ---- review file (+ keeps.json for --dry / downstream) ----
     with open(f"{BUILD}/review.md", "w", encoding="utf-8") as f:
         f.write(f"# {OUT_TIMELINE} review — {fmt(kept)} kept of {fmt(total)} raw\n\n")
+        extra_summary = ""  # only when an opt-in feature fired → off-by-default lines stay byte-identical
+        if reactions: extra_summary += f" · {len(reactions)} reaction beats protected"
+        if clamped: extra_summary += f" · {len(clamped)} gaps clamped to {a.clamp_gap:g}s"
         f.write(f"{len(keeps)} segments · {len(retakes)} retakes cut · {len(excuses)} 'excuse me' cuts · "
-                f"{sil_cuts} dead-air gaps compressed\n\n## Retakes removed (abandoned → kept)\n")
+                f"{sil_cuts} dead-air gaps compressed{extra_summary}\n\n## Retakes removed (abandoned → kept)\n")
         for cs, ce, ab, rt in retakes:
             f.write(f"- **{fmt(cs)}–{fmt(ce)}** ({ce-cs:.1f}s)  ❌ “{ab[:80]}”  →  ✅ “{rt[:60]}…”\n")
         f.write("\n## Dead-air gaps compressed (>2s)\n")
         for s, e in sils:
             if e - s > 2.0: f.write(f"- {fmt(s)}  {e-s:.1f}s of silence\n")
-    json.dump({"export": EXPORT, "fps": FPS, "total": total, "kept": kept,
+        if reactions:  # (A) --keep-laughter audit — every protected non-speech beat
+            f.write(f"\n## Reaction beats protected (--keep-laughter, floor {floor_db:.1f}dB + "
+                    f"{a.laugh_margin:g}dB, ≥{a.laugh_min:g}s)\n")
+            for rs, re_, pk in reactions:
+                f.write(f"- **{fmt(rs)}–{fmt(re_)}** ({re_-rs:.1f}s)  🔊 peak {pk:.1f}dB, no words — kept\n")
+        if clamped:  # (B) --clamp-gap audit — every retained gap that got normalized
+            f.write(f"\n## Retained gaps clamped (--clamp-gap {a.clamp_gap:g}s)\n")
+            for gs, ge, lim in clamped:
+                f.write(f"- {fmt(gs)}  {ge-gs:.1f}s gap → {lim:g}s\n")
+    payload = {"export": EXPORT, "fps": FPS, "total": total, "kept": kept,
                "keeps": [[s, e] for s, e in keeps], "removes": [[s, e] for s, e in merged],
-               "retakes": [[cs, ce, ab, rt] for cs, ce, ab, rt in retakes], "excuses": [[s, e] for s, e in excuses]},
-              open(f"{BUILD}/keeps.json", "w"), indent=2)
+               "retakes": [[cs, ce, ab, rt] for cs, ce, ab, rt in retakes], "excuses": [[s, e] for s, e in excuses]}
+    if reactions: payload["reactions"] = [[rs, re_, pk] for rs, re_, pk in reactions]  # opt-in keys only
+    if clamped: payload["clamped_gaps"] = [[gs, ge, lim] for gs, ge, lim in clamped]
+    json.dump(payload, open(f"{BUILD}/keeps.json", "w"), indent=2)
 
     print(f"export {fmt(total)} → cut {fmt(kept)}  ·  {len(keeps)} segs · {len(retakes)} retakes · "
           f"{len(excuses)} excuse-me · {sil_cuts} gaps  ·  {FPS}fps", flush=True)

@@ -1,0 +1,27 @@
+{
+  "name": "fsa-remotion-gfx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code-driven motion graphics for the Fat Stacks Academy video pipeline. React/TS components rendered headlessly to ALPHA-channel .mov overlays (ProRes 4444) that drop onto Resolve V2-V5 or composite via ffmpeg. Zero-token at render time (pure code). Brand identity ported from ../lib/brand.json so graphics match thumbnails.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "node render.mjs",
+    "smoke": "node render.mjs --spec '{\"comp\":\"Callout\",\"props\":{\"value\":\"$1,500\",\"label\":\"bonus\"}}' --duration 2 --out out/callout-smoke.mov"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "@remotion/renderer": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.0"
+  }
+}

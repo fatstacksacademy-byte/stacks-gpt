@@ -1,0 +1,11 @@
+{
+  "_comment": "Style philosophy for a PRODUCT DEMO / tool walkthrough (e.g. the Stacks OS demo). The screen is the star, so the face/zoom theatrics step back and the explainer graphics step forward: steps + value cards over flashy reveals, almost no emphasis captions (the UI carries it), gentle SFX, warm-neutral grade, focused music. Inherits the global brand kit; only BIASES selection.",
+  "name": "demo",
+  "pacing": "deliberate",
+  "zoom_frequency": "off",
+  "sfx_intensity": "subtle",
+  "emphasis_density": "off",
+  "favored_gfx": ["steps", "value", "checklist"],
+  "tint_default": "warm",
+  "music_mood": "focused"
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "Style philosophy for the HYSA-DEFECTION frame ('why I left my bank / HYSA'). The highest-volume YT lane (262K median): the energy is calm-but-urgent, the proof is the payload (20-73% vs the genre's 4.3%), and the look leans documentary — fewer gimmicky zooms, captions only on the few lines that matter, a clean/cool grade. Inherits the global brand kit; only BIASES selection.",
+  "name": "hysa-defection",
+  "pacing": "deliberate",
+  "zoom_frequency": "low",
+  "sfx_intensity": "subtle",
+  "emphasis_density": "sparse",
+  "favored_gfx": ["bignum", "bars", "checklist"],
+  "tint_default": "cool",
+  "music_mood": "inspired"
+}

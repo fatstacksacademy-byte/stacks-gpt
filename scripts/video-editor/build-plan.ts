@@ -13,6 +13,14 @@
  *       --edl VIDEO-EDL-best-cards-june-2026.md \
  *       --transcript scripts/video-editor/data/best-cards-june-2026.transcript.md \
  *       --out scripts/video-editor/build/best-cards-june-2026
+ *
+ * Optional per-format STYLE (opt-in, default = today's behavior):
+ *       --style hysa-defection        (loads styles/<name>.json — see styles/README.md)
+ *   A style is a "philosophy" layer ABOVE the global brand kit: it BIASES which way
+ *   the plan leans (zoom cadence, emphasis-caption density) and records the rest of the
+ *   look (favored gfx, music mood, tint) into plan.meta.style for the renderers to read.
+ *   It renders nothing and never rewrites the planner. With NO --style, output is
+ *   byte-identical to before.
  */
 
 import * as fs from 'node:fs';
@@ -80,6 +88,75 @@ function resolveBroll(beat: Beat): string | null {
   return null;
 }
 
+// ── Per-format style philosophy (opt-in via --style) ────────────────────────
+// A style sits ABOVE the global brand kit (lib/brand.json never changes): it biases
+// HOW this *kind* of video leans (pacing/zoom/SFX/captions/gfx/tint/music) so every
+// new video of a type inherits the same look. See styles/README.md for the schema.
+//
+// We bias only two axes here (the ones that live in this planner) and RECORD the rest
+// into plan.meta.style for the downstream renderers to honor — build-plan does NOT
+// render, so it can't (and shouldn't) act on tint/music/sfx/gfx itself.
+
+interface Style {
+  name: string;
+  pacing?: string;
+  zoom_frequency?: string; // off | low | normal | high
+  sfx_intensity?: string; // off | subtle | normal | punchy
+  emphasis_density?: string; // off | sparse | normal | dense
+  favored_gfx?: string[];
+  tint_default?: string;
+  music_mood?: string;
+}
+
+// zoom_frequency → minimum seconds between KEPT `zoom` beats (Infinity = drop all;
+// 0 = keep every EDL zoom = today's behavior). Mirrors the README "reveals ≥18s apart"
+// rule: `low` is stricter, `high` lets the EDL decide.
+const ZOOM_MIN_GAP: Record<string, number> = { off: Infinity, low: 24, normal: 12, high: 0 };
+// emphasis_density → keep-fraction of the (sparse) emphasis caption track. 1 = keep all
+// = today's behavior; `sparse` keeps every other one; `off` drops the burn track entirely.
+// (captions.srt — the CC / MagicSubtitle source — is ALWAYS full; this only thins the burn.)
+const EMPHASIS_KEEP: Record<string, number> = { off: 0, sparse: 0.5, normal: 1, dense: 1 };
+
+const STYLE_ENUMS: Record<string, Record<string, true>> = {
+  zoom_frequency: { off: true, low: true, normal: true, high: true },
+  sfx_intensity: { off: true, subtle: true, normal: true, punchy: true },
+  emphasis_density: { off: true, sparse: true, normal: true, dense: true },
+  pacing: { deliberate: true, measured: true, energetic: true, rapid: true },
+};
+
+/** Thin loader + validator. Throws a clean, actionable error on a bad name/shape so a
+ *  typo in --style fails fast instead of silently emitting an un-biased plan. */
+function loadStyle(name: string): Style {
+  const dir = path.join(__dirname, 'styles');
+  const file = path.join(dir, `${name}.json`);
+  if (!fs.existsSync(file)) {
+    let avail = '';
+    try {
+      avail = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.replace(/\.json$/, '')).join(', ');
+    } catch {
+      /* dir may not exist in a stripped checkout */
+    }
+    throw new Error(`unknown --style "${name}" (no styles/${name}.json)${avail ? ` — available: ${avail}` : ''}`);
+  }
+  let raw: any;
+  try {
+    raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (e) {
+    throw new Error(`--style "${name}": styles/${name}.json is not valid JSON (${(e as Error).message})`);
+  }
+  if (!raw || typeof raw !== 'object') throw new Error(`--style "${name}": styles/${name}.json must be a JSON object`);
+  if (typeof raw.name !== 'string' || !raw.name) throw new Error(`--style "${name}": missing required string field "name"`);
+  // Validate the enum axes (a wrong value would silently no-op a bias → fail loudly).
+  for (const [field, allowed] of Object.entries(STYLE_ENUMS)) {
+    const v = raw[field];
+    if (v !== undefined && !(typeof v === 'string' && allowed[v]))
+      throw new Error(`--style "${name}": "${field}" must be one of ${Object.keys(allowed).join(' | ')} (got ${JSON.stringify(v)})`);
+  }
+  if (raw.favored_gfx !== undefined && !(Array.isArray(raw.favored_gfx) && raw.favored_gfx.every((g: any) => typeof g === 'string')))
+    throw new Error(`--style "${name}": "favored_gfx" must be an array of template names`);
+  return raw as Style;
+}
+
 function main() {
   const edlPath = arg('edl');
   const outDir = arg('out');
@@ -88,6 +165,9 @@ function main() {
   const ti = process.argv.indexOf('--transcript');
   const trPath = ti >= 0 ? process.argv[ti + 1] : null;
   if (!wordsPath && !trPath) throw new Error('need --transcript <md> or --words <clean-words.json>');
+  // Opt-in style philosophy. Absent → null → every bias below is a no-op (today's path).
+  const si = process.argv.indexOf('--style');
+  const style: Style | null = si >= 0 && process.argv[si + 1] ? loadStyle(process.argv[si + 1]) : null;
   fs.mkdirSync(outDir, { recursive: true });
 
   const beats = parseEDL(fs.readFileSync(edlPath, 'utf8'));
@@ -161,11 +241,51 @@ function main() {
     }
   }
 
+  // ── STYLE BIAS 1 — zoom cadence ────────────────────────────────────────────
+  // A "deliberate / documentary" style wants fewer punch-ins; a "punchy" style keeps
+  // them all. We thin the EDL's per-beat `zoom` FX token by a min-gap from the style
+  // (Infinity = drop every zoom). We only touch `zoom`; all other FX tokens pass through.
+  // No style → zoomGap 0 → every zoom kept → byte-identical fx arrays.
+  const zoomGap = style?.zoom_frequency ? (ZOOM_MIN_GAP[style.zoom_frequency] ?? 0) : 0;
+  let zoomsDropped = 0;
+  if (zoomGap > 0) {
+    let lastZoomT: number | null = null;
+    for (const p of plan) {
+      if (!p.fx.includes('zoom')) continue;
+      // Keep this zoom only if it's the first kept one AND we aren't dropping all
+      // (Infinity = `off`), and it clears the min-gap from the last kept zoom.
+      if (zoomGap !== Infinity && (lastZoomT === null || p.t - lastZoomT >= zoomGap)) {
+        lastZoomT = p.t;
+      } else {
+        p.fx = p.fx.filter((f) => f !== 'zoom');
+        zoomsDropped++;
+      }
+    }
+  }
+
   // Retention layer: captions (emphasis-only by default; --captions full for subtitles)
   // + gold number callouts from the words.
   const cmi = process.argv.indexOf('--captions');
   const captionMode = cmi >= 0 && process.argv[cmi + 1] === 'full' ? 'full' : 'emphasis';
-  const captions = buildCaptions(words, captionMode);
+  let captions = buildCaptions(words, captionMode);
+
+  // ── STYLE BIAS 2 — emphasis-caption density ────────────────────────────────
+  // Thin the SPARSE on-screen burn track (emphasis mode only) toward the style's
+  // density: keep a fraction of the lines (every Nth), evenly. `off` clears them,
+  // `dense`/`normal` keep all. This NEVER touches captions.srt (the CC / MagicSubtitle
+  // source is written full below, regardless). No style or --captions full → untouched.
+  const keepFrac = style?.emphasis_density ? (EMPHASIS_KEEP[style.emphasis_density] ?? 1) : 1;
+  const emphasisDropped = (() => {
+    if (captionMode !== 'emphasis' || keepFrac >= 1) return 0;
+    const before = captions.length;
+    if (keepFrac <= 0) captions = [];
+    else {
+      const step = Math.round(1 / keepFrac); // 0.5 → every 2nd, 0.33 → every 3rd
+      captions = captions.filter((_, i) => i % step === 0);
+    }
+    return before - captions.length;
+  })();
+
   const callouts = detectCallouts(words);
   markChips(callouts); // gold chip reserved for the headline bonus, ≤1 per 10s
   // captions.srt = YouTube-CC / MagicSubtitle source → ALWAYS full, regardless of the
@@ -186,10 +306,29 @@ function main() {
   for (let i = 1; i < revs.length; i++)
     if (revs[i].t - revs[i - 1].t < 6) warn.push(`reveals <6s apart @ ${revs[i].t}s — risers/zooms may stack`);
 
+  // Record the chosen style + its resolved biases so the renderers can honor the rest
+  // of the look (favored gfx, music mood, tint, sfx, pacing) without re-loading the file.
+  // Omitted entirely when no --style → meta is byte-identical to before.
+  const styleMeta = style
+    ? {
+        style: {
+          name: style.name,
+          pacing: style.pacing ?? null,
+          zoom_frequency: style.zoom_frequency ?? null,
+          sfx_intensity: style.sfx_intensity ?? null,
+          emphasis_density: style.emphasis_density ?? null,
+          favored_gfx: style.favored_gfx ?? [],
+          tint_default: style.tint_default ?? null,
+          music_mood: style.music_mood ?? null,
+          applied: { zoom_min_gap_s: zoomGap, zooms_dropped: zoomsDropped, emphasis_keep_frac: keepFrac, emphasis_dropped: emphasisDropped },
+        },
+      }
+    : {};
+
   fs.writeFileSync(
     path.join(outDir, 'plan.json'),
     JSON.stringify(
-      { meta: { edl: edlPath, transcript: wordsPath ?? trPath, duration, beats: plan.length, captions: captions.length, callouts: callouts.length, sections: sections.length }, beats: plan, sections, captions, callouts },
+      { meta: { edl: edlPath, transcript: wordsPath ?? trPath, duration, beats: plan.length, captions: captions.length, callouts: callouts.length, sections: sections.length, ...styleMeta }, beats: plan, sections, captions, callouts },
       null,
       2
     )
@@ -216,6 +355,12 @@ function main() {
   console.log(`✓ wrote plan.json (${plan.length} beats) + review.md → ${outDir}`);
   console.log(`  ${plan.length - low} clean, ${low} flagged for review`);
   console.log(`  + ${captions.length} caption lines (captions.srt) · ${callouts.length} gold callouts`);
+  if (style)
+    console.log(
+      `  ◇ style "${style.name}" → zoom ${style.zoom_frequency ?? '—'} (dropped ${zoomsDropped}), ` +
+        `emphasis ${style.emphasis_density ?? '—'} (dropped ${emphasisDropped}); ` +
+        `recorded music=${style.music_mood ?? '—'} tint=${style.tint_default ?? '—'} gfx=[${(style.favored_gfx ?? []).join(',')}]`
+    );
   if (warn.length) {
     console.log('  ⚠ plan audit:');
     warn.forEach((w) => console.log(`    - ${w}`));

@@ -21,6 +21,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { creditCardBonuses } from '../../lib/data/creditCardBonuses';
+import { lookup, loadIndex, DEFAULT_ROOT, type AssetRecord } from './lib/asset-index';
 
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const args = process.argv.slice(2);
@@ -32,6 +33,13 @@ const outPath = flag('out', 'broll-plan.json');
 const shotsDir = flag('shots-dir', path.join(path.dirname(outPath), 'shots'));
 const SEG = parseFloat(flag('seg-dur', '9'));
 const GAP = parseFloat(flag('min-gap', '4'));     // face breathing room between b-roll segments
+// --use-library: before proposing a fresh offer-page screenshot, reuse a high-confidence asset from
+// the standing library (assets/library, indexed by lib/asset-index.ts). Opt-in + no-ops when the
+// library is empty, so default output is unchanged. --library-root overrides where the index lives;
+// --library-min sets the confidence bar a match must clear to be reused (default 0.6).
+const USE_LIBRARY = has('use-library');
+const LIBRARY_ROOT = path.resolve(flag('library-root', DEFAULT_ROOT));
+const LIBRARY_MIN = (() => { const v = parseFloat(flag('library-min', '0.6')); return Number.isFinite(v) && v >= 0 ? v : 0.6; })();
 if (!transcript || !facePath) { console.error('usage: draft-plan.ts --transcript <whisper.json> --face <face.mp4> --out <plan.json> [--shots]'); process.exit(1); }
 
 // ---- transcript → words + sentences ----
@@ -64,6 +72,37 @@ function cardInWindow(t0: number, t1: number) {
   return best;
 }
 
+// ---- standing asset library (opt-in) ----
+// Load the index ONCE. When --use-library is off, or the library is empty/unbuilt, this stays an
+// empty array and libraryHero() always returns null → every code path below behaves exactly as
+// before (additive, zero behavior change by default). When on, a card intro can reuse a proven,
+// already-cleared hero from the bin instead of re-screenshotting the offer page each video.
+const libraryIndex: AssetRecord[] = USE_LIBRARY ? loadIndex(LIBRARY_ROOT) : [];
+if (USE_LIBRARY) console.log(libraryIndex.length ? `📚 asset library: ${libraryIndex.length} indexed (root ${path.relative(process.cwd(), LIBRARY_ROOT)}, min ${LIBRARY_MIN})` : `📚 --use-library on but the index is empty (${path.relative(process.cwd(), LIBRARY_ROOT)}) — falling back to fetch-screenshots`);
+/** A confident library hero for this card (image-kind, score ≥ min), else null. Queries the card's
+ *  name + id so OCR'd card-art ("CHASE SAPPHIRE PREFERRED") and folder/filename tags both count. */
+// brand/generic tokens are shared across many cards ("Chase … Preferred") — they must NOT alone
+// qualify a reuse, or a sibling card's art (Ink Business Preferred vs Sapphire Preferred) clears the bar.
+const GENERIC_CARD_TOK = new Set(
+  'chase citi amex american express capital one bank america us bank wells fargo discover sofi bilt card cards credit business preferred reserve plus cash unlimited rewards points the a of'.split(' ')
+);
+function libraryHero(card: { id: string; name: string }): AssetRecord | null {
+  if (!libraryIndex.length) return null;
+  const hits = lookup(`${card.name} ${card.id.replace(/[-_]+/g, ' ')}`, { index: libraryIndex, kind: 'image', minScore: LIBRARY_MIN, n: 1 });
+  const rec = hits[0]?.record;
+  if (!rec) return null;
+  // Guard: the reused asset must contain a DISTINCTIVE (non-brand) token of this card — else a
+  // sibling card sharing only generic tokens could be stamped on as the wrong hero.
+  const distinctive = `${card.name} ${card.id.replace(/[-_]+/g, ' ')}`
+    .toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/)
+    .filter((t) => t.length >= 3 && !GENERIC_CARD_TOK.has(t));
+  if (distinctive.length) {
+    const hay = `${rec.file} ${rec.caption ?? ''} ${(rec.tags ?? []).join(' ')}`.toLowerCase();
+    if (!distinctive.some((t) => hay.includes(t))) return null; // wrong card's art — fall back to a fresh shot
+  }
+  return rec;
+}
+
 // ---- change claims (→ article highlight) ----
 const CHANGE = /\b(going away|no longer|discontinu\w*|gone|expir\w*|ending|ends?\b|bumped|raised|increased|boost\w*|up to|highest ever|best ever|doubled|tripled|overhaul\w*|revamp\w*|refresh\w*|brand[- ]?new|just (added|launched|changed)|lowered|reduced|cut|used to|previously)\b/i;
 
@@ -75,7 +114,7 @@ const SITES: { re: RegExp; label: string; url: string; why: string }[] = [
   { re: /\b(link in the description|write ?up|the full list|on (my|the) (site|website)|fatstacksacademy)\b/i, label: 'site-blog', url: 'https://fatstacksacademy.com/blog', why: 'site / write-up mention' },
 ];
 
-type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string };
+type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string; lib?: string };
 const proposed: Seg[] = [];
 const sectBounds = [...sections, faceDur];
 
@@ -84,7 +123,12 @@ for (let i = 0; i < sections.length; i++) {
   const t0 = sections[i], t1 = sectBounds[i + 1] ?? faceDur;
   const card = cardInWindow(t0, Math.min(t1, t0 + 60));
   if (!card) continue;
-  proposed.push({ start: +(t0 + 0.4).toFixed(2), end: +Math.min(t0 + 0.4 + SEG, t1 - 0.3, faceDur).toFixed(2), layout: 'plain', url: card.url, cardId: card.id, label: card.id, status: 'needs-screenshot', why: `intro to ${card.name}` });
+  // Prefer a confident library hero (already cleared) over a fresh offer-page screenshot. When the
+  // library is off/empty libraryHero() is null → the seg is identical to before (needs-screenshot).
+  const hero = libraryHero(card);
+  const introSeg: Seg = { start: +(t0 + 0.4).toFixed(2), end: +Math.min(t0 + 0.4 + SEG, t1 - 0.3, faceDur).toFixed(2), layout: 'plain', url: card.url, cardId: card.id, label: card.id, status: 'needs-screenshot', why: `intro to ${card.name}` };
+  if (hero) { introSeg.image = hero.file; introSeg.status = 'ready'; introSeg.lib = path.basename(hero.file); introSeg.why = `intro to ${card.name} — reused library asset ${path.basename(hero.file)}`; }
+  proposed.push(introSeg);
   // first sentence in this section with a hero figure → a focus on that figure on the offer page
   const figSent = sentences.find(s => s.t >= t0 && s.t < t1 && /(\$[\d,]+|\b\d{2,3},?\d{3}\b|\b\d{2,3}k\b|\b\d{1,3}%)/i.test(s.text));
   if (figSent && figSent.t > t0 + SEG) proposed.push({ start: +figSent.t.toFixed(2), end: +Math.min(figSent.t + SEG, t1 - 0.3, faceDur).toFixed(2), layout: 'focus', url: card.url, cardId: card.id, label: card.id, phrase: figSent.text.slice(0, 160), status: 'needs-screenshot', why: `bonus/figure reveal for ${card.name}` });
@@ -149,7 +193,10 @@ function pyRoi(image: string, phrase: string) {
 }
 if (has('shots')) {
   fs.mkdirSync(shotsDir, { recursive: true });
-  const cardIds = [...new Set(segs.filter(s => s.cardId).map(s => s.cardId!))];
+  // Capture a card's offer page if ANY of its segs still needs a shot (not filled from the library).
+  // A card can have a lib-filled intro AND a focus seg that still needs a screenshot — keep it then.
+  // With --use-library off, no seg has s.lib, so this equals "every card with a seg" — unchanged.
+  const cardIds = [...new Set(segs.filter(s => s.cardId && !s.lib).map(s => s.cardId!))];
   const urlPairs = [...new Map(segs.filter(s => s.label && s.url && !s.cardId).map(s => [s.label!, `${s.label}=${s.url}`])).values()];
   const fsArgs = ['--out', shotsDir];
   if (cardIds.length) fsArgs.push('--cards', cardIds.join(','));
@@ -161,6 +208,7 @@ if (has('shots')) {
   const shotOf = (label: string, full = false) => { const m = manifest.find(x => x.label === label && x.ok); return m?.files?.find((f: string) => f.includes(full ? '--full' : '--viewport')) || m?.files?.[0]; };
   for (const s of segs) {
     if (!s.label) continue;
+    if (s.lib) continue;   // already filled from the library — never overwrite a reused asset
     const vp = shotOf(s.label, false), full = shotOf(s.label, true);
     if (!vp) continue;
     s.image = vp;
@@ -175,8 +223,9 @@ fs.writeFileSync(outPath, JSON.stringify(plan, null, 2));
 
 // ---- summary ----
 const byStatus = (st: string) => segs.filter(s => s.status === st).length;
+const reused = segs.filter(s => s.lib).length;   // 0 unless --use-library resolved a hero (additive)
 const md = [`# draft b-roll plan — ${segs.length} segments (${(segs.reduce((a, s) => a + (s.end - s.start), 0) / faceDur * 100).toFixed(0)}% coverage)`, '',
-  `ready: ${byStatus('ready')} · needs-screenshot: ${byStatus('needs-screenshot')} · needs-article: ${byStatus('needs-article')} · needs-roi: ${byStatus('needs-roi')}`, '',
+  `ready: ${byStatus('ready')} · needs-screenshot: ${byStatus('needs-screenshot')} · needs-article: ${byStatus('needs-article')} · needs-roi: ${byStatus('needs-roi')}` + (reused ? ` · reused from library: ${reused}` : ''), '',
   ...segs.map(s => `- **${Math.floor(s.start / 60)}:${String(Math.floor(s.start % 60)).padStart(2, '0')}** ${s.layout.padEnd(9)} [${s.status}] — ${s.why}`)].join('\n');
 fs.writeFileSync(outPath.replace(/\.json$/, '') + '.md', md);
 console.log(`\n${md}\n`);
