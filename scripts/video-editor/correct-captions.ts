@@ -25,6 +25,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { correctWords, correctText, type Change } from './lib/lexicon';
+import { loadEnvLocal } from './lib/env';
+
+loadEnvLocal(); // pick up ANTHROPIC_API_KEY from .env.local for the optional --llm pass
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);

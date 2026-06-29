@@ -89,6 +89,26 @@ HERE = Path(__file__).resolve().parent
 VISION = HERE / "build" / "vision-roi"
 SWIFT_SRC = HERE / "vision-roi.swift"
 
+
+def _load_env_local():
+    """Pick up ANTHROPIC_API_KEY from the repo's gitignored .env.local (or .env) so
+    the optional --llm vision judge works without the user exporting it. Walks up
+    from this file; only fills vars NOT already set (a shell export always wins)."""
+    for d in [HERE, *HERE.parents]:
+        for name in (".env.local", ".env"):
+            f = d / name
+            if f.exists():
+                for raw in f.read_text().splitlines():
+                    line = raw.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, _, v = line.partition("=")
+                    k = k.strip().removeprefix("export ").strip()
+                    v = v.strip().strip('"').strip("'")
+                    if k and k not in os.environ:
+                        os.environ[k] = v
+                return  # nearest env file wins
+
 # ── defaults (tunable via flags) ──────────────────────────────────────────────
 FACE_COVER_MAX = 0.20   # an overlay may cover at most 20% of the face area before FAIL
 EDGE_Z = 3.0            # border edge-energy this many SDs over interior baseline = clipping flag
@@ -534,6 +554,7 @@ def main(argv=None):
                          "FAILING beats' frames (so a failing report stays inspectable) and "
                          "delete passing ones.")
     args = ap.parse_args(argv)
+    _load_env_local()  # so --llm picks up ANTHROPIC_API_KEY from .env.local
 
     if not os.path.exists(args.plan):
         eprint(f"FATAL: no plan at {args.plan}")

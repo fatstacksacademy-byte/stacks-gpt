@@ -57,6 +57,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseTranscript, Aligner, type Word } from './lib/transcript';
+import { loadEnvLocal } from './lib/env';
+
+loadEnvLocal(); // pick up ANTHROPIC_API_KEY from .env.local for the optional --llm parse
 
 // ── tiny CLI parsing (house style: manual process.argv, no arg lib for TS) ──────
 function arg(name: string): string | undefined {
