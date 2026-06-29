@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import type { BrowserContext } from "playwright"
+import type { BrowserContext, Page } from "playwright"
 import { createHash } from "node:crypto"
 import { existsSync, mkdirSync } from "node:fs"
 import { tmpdir } from "node:os"
@@ -21,6 +21,43 @@ const { chromium } = require("playwright-extra") as {
 }
 const stealth = require("puppeteer-extra-plugin-stealth")()
 chromium.use(stealth)
+
+// Errors that mean "the browser / context / page went away" — expected during
+// teardown, or when Chromium crashes mid-run (OOM on a memory-starved CI runner
+// after ~1k page loads). We recover from these instead of letting them abort a
+// 1000+ item verify run.
+const BROWSER_GONE_RX =
+  /(Target (page, context or browser )?(has been )?closed|Target closed|Session closed|Browser has been closed|browser has (been closed|disconnected)|Execution context was destroyed|Protocol error|cdpSession)/i
+
+function isBrowserGone(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err)
+  return BROWSER_GONE_RX.test(msg)
+}
+
+// playwright-extra's stealth plugin fires CDP commands on each new page
+// asynchronously (navigator.webdriver hiding, WebGL spoofing, etc.). If the
+// target closes mid-flight — Chromium crash, or our own page.close() — that
+// send() rejects with no owner, and Node's default unhandled-rejection policy
+// kills the whole process with exit 1. That's exactly what aborted the
+// 2026-06-28 weekly run at bonus 176/267, before persist could write anything.
+// Swallow the browser-teardown class (the corresponding fetch already returned
+// a fetch_error through our own try/catch) and preserve fail-fast for real bugs.
+let _rejectionGuardInstalled = false
+function installRejectionGuard(): void {
+  if (_rejectionGuardInstalled) return
+  _rejectionGuardInstalled = true
+  process.on("unhandledRejection", (reason) => {
+    if (isBrowserGone(reason)) {
+      console.warn(
+        `[playwright] swallowed post-teardown rejection: ${reason instanceof Error ? reason.message : String(reason)}`,
+      )
+      return
+    }
+    console.error("Unhandled rejection:", reason)
+    process.exit(1)
+  })
+}
+installRejectionGuard()
 
 export type FetchResult = {
   url: string
@@ -53,6 +90,9 @@ const REAL_CHROME_HEADERS: Record<string, string> = {
 
 let _context: BrowserContext | null = null
 let _contextUA: string | null = null
+// Single-flight latch: CONCURRENCY parallel fetches must not each launch a
+// context — concurrent launches race on Chromium's user-data-dir lock.
+let _launching: Promise<BrowserContext> | null = null
 
 // Persistent profile dir so cookies/consent banners persist across runs —
 // boosts stealth (sites trust returning-visitor cookies) and avoids
@@ -88,21 +128,81 @@ async function launchContext(userAgent: string): Promise<BrowserContext> {
   })
 }
 
-export async function getContext(userAgent: string = DEFAULT_UA): Promise<BrowserContext> {
+async function ensureContext(userAgent: string): Promise<BrowserContext> {
   if (_context && _contextUA === userAgent) return _context
   if (_context) {
-    await _context.close()
+    // UA changed — drop the old context before launching the replacement.
+    try {
+      await _context.close()
+    } catch {}
     _context = null
+    _contextUA = null
   }
-  _context = await launchContext(userAgent)
+  const ctx = await launchContext(userAgent)
+  // When Chromium crashes (OOM on CI after ~1k page loads) the persistent
+  // context emits 'close'. Null our handle so the next getContext() relaunches
+  // a fresh browser instead of handing back the dead one — the cause of the
+  // fetch_error cascade we saw at bonus 168→176 on 2026-06-28.
+  ctx.once("close", () => {
+    if (_context === ctx) {
+      _context = null
+      _contextUA = null
+    }
+  })
+  _context = ctx
   _contextUA = userAgent
-  return _context
+  return ctx
+}
+
+export async function getContext(userAgent: string = DEFAULT_UA): Promise<BrowserContext> {
+  // Fast path: a live context with the right UA and no launch in flight.
+  if (!_launching && _context && _contextUA === userAgent) return _context
+  // Coalesce concurrent callers behind one launch. The assignment is atomic
+  // w.r.t. other callers — JS runs this synchronously up to the await below, so
+  // a second caller always observes the in-flight latch rather than re-launching.
+  if (!_launching) _launching = ensureContext(userAgent)
+  try {
+    return await _launching
+  } finally {
+    _launching = null
+  }
 }
 
 export async function closeBrowser() {
-  if (_context) await _context.close()
+  _launching = null
+  const ctx = _context
   _context = null
   _contextUA = null
+  if (ctx) {
+    try {
+      await ctx.close()
+    } catch {}
+  }
+}
+
+/**
+ * Open a page, recovering from a context that died between getContext() and
+ * newPage() — Chromium can crash a tick before its 'close' event fires, so the
+ * cached context may still look live. On a browser-gone error we relaunch once;
+ * any other error propagates to the caller's try/catch.
+ */
+async function newPageResilient(userAgent: string | undefined): Promise<Page> {
+  const ua = userAgent ?? DEFAULT_UA
+  let ctx = await getContext(ua)
+  try {
+    return await ctx.newPage()
+  } catch (err) {
+    if (!isBrowserGone(err)) throw err
+    // Force a relaunch: null the handle only if it's still the dead one (an
+    // identity guard so we never clobber a context another fetch just launched).
+    if (_context === ctx) {
+      _context = null
+      _contextUA = null
+    }
+    ctx.close().catch(() => {})
+    ctx = await getContext(ua)
+    return await ctx.newPage()
+  }
 }
 
 /**
@@ -122,8 +222,18 @@ export async function fetchRenderedHtml(
   url: string,
   opts: { userAgent?: string; timeoutMs?: number; waitForSelector?: string } = {},
 ): Promise<{ ok: boolean; status: number; html: string; finalUrl: string; error?: string }> {
-  const ctx = await getContext(opts.userAgent ?? DEFAULT_UA)
-  const page = await ctx.newPage()
+  let page: Page
+  try {
+    page = await newPageResilient(opts.userAgent)
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      html: "",
+      finalUrl: url,
+      error: err instanceof Error ? err.message : String(err),
+    }
+  }
   try {
     const response = await page.goto(url, {
       waitUntil: "domcontentloaded",
@@ -155,7 +265,7 @@ export async function fetchRenderedHtml(
       error: err instanceof Error ? err.message : String(err),
     }
   } finally {
-    await page.close()
+    await page.close().catch(() => {})
   }
 }
 
@@ -165,9 +275,23 @@ export async function fetchRenderedHtml(
  * survives this, naive Playwright doesn't.
  */
 async function fetchOnce(url: string, timeoutMs: number, userAgent: string | undefined): Promise<FetchResult> {
-  const ctx = await getContext(userAgent)
-  const page = await ctx.newPage()
   const fetchedAt = new Date().toISOString()
+  let page: Page
+  try {
+    page = await newPageResilient(userAgent)
+  } catch (err) {
+    return {
+      url,
+      ok: false,
+      status: 0,
+      finalUrl: url,
+      redirected: false,
+      textContent: "",
+      htmlHash: "",
+      fetchedAt,
+      error: err instanceof Error ? err.message : String(err),
+    }
+  }
 
   try {
     const response = await page.goto(url, {
@@ -236,7 +360,7 @@ async function fetchOnce(url: string, timeoutMs: number, userAgent: string | und
       error: err instanceof Error ? err.message : String(err),
     }
   } finally {
-    await page.close()
+    await page.close().catch(() => {})
   }
 }
 
