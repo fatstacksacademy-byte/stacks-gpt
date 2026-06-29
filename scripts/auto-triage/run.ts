@@ -29,7 +29,7 @@ const WRITE = args.includes("--write")
 const KIND = (args.find((a) => a.startsWith("--kind="))?.split("=")[1] ?? "all") as "leads" | "mismatches" | "all"
 const LIMIT_LEADS = Number(args.find((a) => a.startsWith("--limit-leads="))?.split("=")[1] ?? 0) || 0
 const LIMIT_MM = Number(args.find((a) => a.startsWith("--limit-mismatches="))?.split("=")[1] ?? 0) || 0
-const CONCURRENCY = 3
+const CONCURRENCY = 5
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { persistSession: false },
@@ -81,6 +81,34 @@ async function loadMismatches(vt: string, dt: string, idcol: string, namecol: st
   return LIMIT_MM > 0 ? out.slice(0, LIMIT_MM) : out
 }
 
+// Persist ONE decision immediately. Incremental writes mean a mid-run timeout
+// (the step is time-boxed) keeps everything decided so far instead of losing it.
+async function applyDecision(d: Decision): Promise<void> {
+  const v = d.verdict
+  if (v.decision === "escalate") return
+  const now = new Date().toISOString()
+  if (d.kind === "lead") {
+    await sb.from("discovery_leads").update({
+      status: v.decision === "approve" ? "approved" : "rejected",
+      decided_by: "auto-triage", decided_at: now,
+      decision_notes: `auto-triage (${v.confidence}): ${v.reason}`, updated_at: now,
+    }).eq("id", d.ref)
+  } else {
+    const table = d.kind === "bonus-mismatch" ? "verification_decisions" : "card_verification_decisions"
+    const idcol = d.kind === "bonus-mismatch" ? "bonus_id" : "card_id"
+    await sb.from(table).insert({
+      [idcol]: d.ref, field_path: d.field,
+      verdict: v.decision === "approve" ? "approved" : "dismissed",
+      // from_value lets apply-decisions confirm the catalog still holds the value
+      // we judged against (race protection) before it patches.
+      from_value: d.from ?? null,
+      to_value: v.decision === "approve" ? (v.corrected_value ?? d.to ?? null) : null,
+      decided_by: "auto-triage",
+      notes: `auto-triage (${v.confidence}): ${v.reason}`,
+    })
+  }
+}
+
 async function main() {
   console.log(`auto-triage — ${WRITE ? "WRITE" : "DRY RUN"} | kind=${KIND}`)
   const decisions: Decision[] = []
@@ -99,7 +127,9 @@ async function main() {
             bonus_amount: l.bonus_amount, classification: l.classification,
             pageOk: pg.ok, pageText: pg.text, finalUrl: pg.finalUrl,
           })
-          decisions.push({ kind: "lead", ref: l.id, label: `${l.institution ?? "?"} — ${l.name}`, verdict })
+          const dec: Decision = { kind: "lead", ref: l.id, label: `${l.institution ?? "?"} — ${l.name}`, verdict }
+          decisions.push(dec)
+          if (WRITE) await applyDecision(dec)
           console.log(`  [lead/${verdict.decision}/${verdict.confidence}] ${l.institution ?? "?"} — ${String(l.name).slice(0, 50)} :: ${verdict.reason}`)
         }),
       ),
@@ -130,7 +160,9 @@ async function main() {
               verdict = { ...verdict, decision: "dismiss", reason: `page confirms stored value → dismissed. ${verdict.reason}` }
             }
           }
-          decisions.push({ kind, ref: m.id, label: m.name, field: m.field, from: m.from, to: m.to, verdict })
+          const dec: Decision = { kind, ref: m.id, label: m.name, field: m.field, from: m.from, to: m.to, verdict }
+          decisions.push(dec)
+          if (WRITE) await applyDecision(dec)
           console.log(`  [${kind}/${verdict.decision}/${verdict.confidence}] ${String(m.name).slice(0, 40)} ${m.field}: ${JSON.stringify(m.from)}→${JSON.stringify(verdict.corrected_value ?? m.to)} :: ${verdict.reason}`)
         }),
       ),
@@ -143,36 +175,7 @@ async function main() {
 
   await closeBrowser()
 
-  // ── Apply (only with --write) ──
-  if (WRITE) {
-    for (const d of decisions) {
-      const v = d.verdict
-      if (v.decision === "escalate") continue
-      const now = new Date().toISOString()
-      if (d.kind === "lead") {
-        await sb.from("discovery_leads").update({
-          status: v.decision === "approve" ? "approved" : "rejected",
-          decided_by: "auto-triage", decided_at: now,
-          decision_notes: `auto-triage (${v.confidence}): ${v.reason}`, updated_at: now,
-        }).eq("id", d.ref)
-      } else {
-        const table = d.kind === "bonus-mismatch" ? "verification_decisions" : "card_verification_decisions"
-        const idcol = d.kind === "bonus-mismatch" ? "bonus_id" : "card_id"
-        await sb.from(table).insert({
-          [idcol]: d.ref, field_path: d.field,
-          verdict: v.decision === "approve" ? "approved" : "dismissed",
-          // from_value lets apply-decisions confirm the catalog still holds the
-          // value we judged against (race protection) before it patches.
-          from_value: d.from ?? null,
-          to_value: v.decision === "approve" ? (v.corrected_value ?? d.to ?? null) : null,
-          decided_by: "auto-triage",
-          notes: `auto-triage (${v.confidence}): ${v.reason}`,
-        })
-      }
-    }
-  }
-
-  // ── Report ──
+  // ── Report ── (decisions were already written incrementally above when --write)
   const tally = (k: Decision["kind"]) => {
     const ds = decisions.filter((d) => d.kind === k)
     const c = { approve: 0, dismiss: 0, escalate: 0 }

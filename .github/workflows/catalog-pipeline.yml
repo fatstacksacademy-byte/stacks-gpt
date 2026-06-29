@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     # Cold verify alone can take ~50 min; discover adds ~30. Warm cache makes
     # the common case far shorter. 150 is headroom for a fully-cold day.
-    timeout-minutes: 150
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
@@ -101,8 +101,14 @@ jobs:
       # Fetches each lead/mismatch's live page, adjudicates with Claude, then
       # dismisses noise, records page-confirmed fixes as approvals (→ the PR
       # below), and leaves only genuine ambiguity for /admin/review.
+      # Time-boxed: writes decisions incrementally, so if it hits the box it
+      # just stops with everything decided-so-far persisted, the step "fails"
+      # (continue-on-error), and apply/promote still run. The rest of the queue
+      # is picked up next run. A per-step box also means it can never consume the
+      # whole job budget (which cancelled the 2026-06-29 run mid-triage).
       - name: Auto-triage queue
         run: npm run auto-triage -- --write
+        timeout-minutes: 45
         continue-on-error: true
 
       # ─── Apply approved (auto-triage approvals + any admin review) ─────
