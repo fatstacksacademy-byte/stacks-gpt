@@ -36,10 +36,11 @@ export type Verdict = {
   corrected_value?: string | number | boolean | null
 }
 
-function parseVerdict(text: string): Verdict {
-  // Pull the first JSON object out of the response.
-  const m = text.match(/\{[\s\S]*\}/)
-  if (!m) return { decision: "escalate", confidence: "low", reason: "no JSON in model response" }
+function parseVerdict(text: string): Verdict | null {
+  // Strip markdown code fences Haiku sometimes wraps the JSON in.
+  const cleaned = text.replace(/```(?:json)?/gi, "")
+  const m = cleaned.match(/\{[\s\S]*\}/) // greedy: if JSON was truncated (no closing brace) this fails → null → retry
+  if (!m) return null
   try {
     const o = JSON.parse(m[0]) as Record<string, unknown>
     const decision = o.decision === "approve" || o.decision === "dismiss" ? o.decision : "escalate"
@@ -51,22 +52,31 @@ function parseVerdict(text: string): Verdict {
       corrected_value: (o.corrected_value as Verdict["corrected_value"]) ?? undefined,
     }
   } catch {
-    return { decision: "escalate", confidence: "low", reason: "unparseable model JSON" }
+    return null
   }
 }
 
 async function ask(system: string, user: string): Promise<Verdict> {
-  const resp = await client().messages.create({
-    model: MODEL,
-    max_tokens: 400,
-    system,
-    messages: [{ role: "user", content: user }],
-  })
-  const text = resp.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n")
-  return parseVerdict(text)
+  // max_tokens 800 (was 400 — verbose reasons truncated the JSON, the #1 cause
+  // of bogus "escalate"); retry once with a stricter format nudge before giving up.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const resp = await client().messages.create({
+      model: MODEL,
+      max_tokens: 800,
+      system:
+        attempt === 0
+          ? system
+          : `${system} Respond with ONLY the JSON object — no prose, no markdown fences — and keep "reason" to one short sentence.`,
+      messages: [{ role: "user", content: user }],
+    })
+    const text = resp.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("\n")
+    const v = parseVerdict(text)
+    if (v) return v
+  }
+  return { decision: "escalate", confidence: "low", reason: "unparseable model JSON after retry" }
 }
 
 const PAGE_CAP = 6000 // chars of page text we feed the model
