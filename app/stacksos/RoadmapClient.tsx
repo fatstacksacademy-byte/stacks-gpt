@@ -1185,15 +1185,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             <div style={{ padding: "14px 24px 20px" }}>
                               {!isApprovingThis ? (
                                 <>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>What happened with your application?</div>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 4 }}>What happened with your application?</div>
+                                  <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Most banks decide within a business day and email you — come back here to record it.</div>
                                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                                     <button onClick={() => { setApprovingId(record.id); setApplyDateValue(todayStr()) }}
                                       style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                                      Approved
+                                      ✓ Approved
                                     </button>
                                     <button onClick={() => handleDenyApplication(record.id)}
                                       style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#b91c1c", border: "1px solid #fecaca", borderRadius: 8, cursor: "pointer" }}>
-                                      Denied
+                                      ✗ Denied
                                     </button>
                                     <button disabled
                                       title="No decision yet — check back when you hear from the bank"
