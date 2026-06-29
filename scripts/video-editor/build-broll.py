@@ -42,6 +42,7 @@ REMOTION_DIR = os.path.join(HERE, "remotion")
 REMOTION_RENDER = os.path.join(REMOTION_DIR, "render.mjs")
 TRANSITION = os.path.join(HERE, "transition.py")
 PARTICLES = os.path.join(HERE, "particles.py")
+BEHIND = os.path.join(HERE, "behind.py")
 ap = argparse.ArgumentParser()
 ap.add_argument("--plan", required=True)
 ap.add_argument("--keep-tmp", action="store_true")
@@ -178,6 +179,21 @@ def render_seg(s, start_f, nframes, i):
              "-map", "[v]", "-frames:v", str(nframes), "-an", *VENC, out], f"remotion overlay {i}")
         check_frames(out, nframes)
         return out
+    if layout == "behind":   # asset composited BEHIND the matted talking head (he stays in FRONT of it)
+        image = expand(s.get("image") or s.get("hero"))
+        if not image or not os.path.exists(image):
+            sys.exit(f"build-broll: segment {i} (behind) missing image/hero (got {image!r})")
+        face = os.path.join(tmp, f"bface_{i:03d}.mp4")
+        face_part(start_f, nframes, face)                # room + him for this span
+        out = os.path.join(tmp, f"part_{i:03d}.mp4")
+        cmd = ["python3", BEHIND, "--face", face, "--asset", image, "--dur", f"{dur:.4f}", "--fps", str(FPS),
+               "--out", out, "--fit", s.get("fit", "full")]
+        for k in ("pos", "scale", "crossfade", "smooth"):
+            if s.get(k) is not None:
+                cmd += [f"--{k}", str(s[k])]
+        run(cmd, f"behind seg {i}")
+        check_frames(out, nframes)
+        return out
     if layout == "split":   # big portrait of him (left) + the page region (right) — alternate to the circle
         style = s.get("split_style", "focus")
         image = expand(s.get("image") or s.get("hero"))
@@ -196,7 +212,7 @@ def render_seg(s, start_f, nframes, i):
         face_slice(start_f, nframes, slice_path)
         return split_compose(page_clip, slice_path, dur, i)
     if layout not in ("plain", "focus", "highlight"):
-        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx|remotion)")
+        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx|remotion|behind)")
     image = expand(s.get("image") or s.get("hero"))
     if not image or not os.path.exists(image):
         sys.exit(f"build-broll: segment {i} ({layout}) missing image/hero (got {image!r})")
