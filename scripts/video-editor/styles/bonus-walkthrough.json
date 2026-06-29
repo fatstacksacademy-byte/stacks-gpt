@@ -1,0 +1,11 @@
+{
+  "_comment": "Style philosophy for the BONUS-WALKTHROUGH frame (best-cards / single-bonus deep dives). Dense, value-forward, punchy: rapid card reveals, gold callouts on every number, zoom-punches on each headline bonus, and emphasis captions on the hype words. This is the house default 'punchy money' feel — leaving --style off lands near here. Inherits the global brand kit; only BIASES selection.",
+  "name": "bonus-walkthrough",
+  "pacing": "energetic",
+  "zoom_frequency": "high",
+  "sfx_intensity": "punchy",
+  "emphasis_density": "normal",
+  "favored_gfx": ["value", "bars", "steps"],
+  "tint_default": "neutral",
+  "music_mood": "carefree"
+}

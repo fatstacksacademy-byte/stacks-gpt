@@ -6,6 +6,7 @@ import { upsertSavingsProfile } from "../../lib/savingsProfile"
 import { upsertSpendingProfile } from "../../lib/spendingProfile"
 import { track } from "../../lib/analytics"
 import type { UserProfile, PayFrequency } from "../../lib/profileTypes"
+import InfoTip from "./InfoTip"
 
 type Step = "paycheck" | "savings" | "spending" | "done"
 
@@ -266,7 +267,7 @@ function PaycheckStep({
         <DollarInput value={paycheck} onChange={setPaycheck} />
       </Field>
 
-      <Field label="Direct deposit slots" subtitle="Separate paychecks you can split (1 = typical)">
+      <Field label="How many paychecks can you split?" subtitle="Most people: 1" labelExtra={<InfoTip term="ddSlots" label="paychecks you can split" />}>
         <input
           type="number"
           min={1}
@@ -475,15 +476,17 @@ function BetaPill() {
 function Field({
   label,
   subtitle,
+  labelExtra,
   children,
 }: {
   label: string
   subtitle?: string
+  labelExtra?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <div style={{ fontSize: 13, color: "#333", fontWeight: 600, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, color: "#333", fontWeight: 600, marginBottom: 4, display: "inline-flex", alignItems: "center", gap: 5 }}>{label}{labelExtra}</div>
       {subtitle && <div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>{subtitle}</div>}
       {children}
     </div>

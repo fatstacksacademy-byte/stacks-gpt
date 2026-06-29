@@ -1,0 +1,71 @@
+{
+  "_comment": "Fat Stacks vs the banker — 'about to attack with a monthly fee, then kicked away' (Uncle-Dijon style). Swap villain.src for assets/jamie-dimon.png when you have a real cutout.",
+  "canvas": [1920, 1080],
+  "fps": 30,
+  "duration": 3.4,
+  "actors": [
+    {
+      "id": "villain",
+      "src": "assets/placeholder-banker.png",
+      "ease": "smooth",
+      "keys": [
+        {"t": 0.0,  "x": 2250, "y": 600, "scale": 0.98, "angle": 0,   "alpha": 1},
+        {"t": 0.65, "x": 1340, "y": 600, "scale": 0.98, "angle": 0,   "alpha": 1},
+        {"t": 2.10, "x": 1340, "y": 600, "scale": 0.98, "angle": 0,   "alpha": 1},
+        {"t": 2.22, "x": 1470, "y": 560, "scale": 0.98, "angle": 35,  "alpha": 1},
+        {"t": 2.90, "x": 2750, "y": 360, "scale": 0.9,  "angle": 520, "alpha": 1},
+        {"t": 3.05, "x": 2950, "y": 330, "scale": 0.9,  "angle": 560, "alpha": 0}
+      ]
+    },
+    {
+      "id": "hero",
+      "src": "assets/nathaniel-cutout.png",
+      "ease": "smooth",
+      "keys": [
+        {"t": 0.0,  "x": -360, "y": 600, "scale": 1.0,  "angle": 0, "alpha": 1},
+        {"t": 0.5,  "x": 560,  "y": 600, "scale": 1.0,  "angle": 0, "alpha": 1},
+        {"t": 1.95, "x": 520,  "y": 600, "scale": 1.0,  "angle": 0, "alpha": 1},
+        {"t": 2.18, "x": 920,  "y": 600, "scale": 1.08, "angle": 6, "alpha": 1},
+        {"t": 2.45, "x": 660,  "y": 600, "scale": 1.0,  "angle": 0, "alpha": 1},
+        {"t": 3.4,  "x": 660,  "y": 600, "scale": 1.0,  "angle": 0, "alpha": 1}
+      ]
+    }
+  ],
+  "labels": [
+    {
+      "id": "fee",
+      "text": "$12 MONTHLY FEE",
+      "font": "assets/fonts/Anton-Regular.ttf",
+      "size": 96, "color": "#ff2d2d", "stroke": "#ffffff", "strokew": 9,
+      "ease": "smooth",
+      "keys": [
+        {"t": 0.80, "x": 1150, "y": 430, "scale": 0.0,  "angle": -6, "alpha": 1},
+        {"t": 1.02, "x": 1150, "y": 430, "scale": 1.0,  "angle": -6, "alpha": 1},
+        {"t": 2.15, "x": 1150, "y": 430, "scale": 1.0,  "angle": -6, "alpha": 1},
+        {"t": 2.55, "x": 1160, "y": 410, "scale": 1.9,  "angle": 4,  "alpha": 0}
+      ]
+    },
+    {
+      "id": "nofee",
+      "text": "NO FEE FOR YOU",
+      "font": "assets/fonts/Anton-Regular.ttf",
+      "size": 120, "color": "#ffe14d", "stroke": "#111111", "strokew": 11,
+      "ease": "smooth",
+      "keys": [
+        {"t": 2.50, "x": 980, "y": 280, "scale": 0.0, "angle": -3, "alpha": 1},
+        {"t": 2.70, "x": 980, "y": 280, "scale": 1.0, "angle": -3, "alpha": 1},
+        {"t": 3.4,  "x": 980, "y": 280, "scale": 1.0, "angle": -3, "alpha": 1}
+      ]
+    }
+  ],
+  "sfx": [
+    {"t": 0.45, "file": "assets/sfx/whoosh.wav", "gain": 0.7},
+    {"t": 0.85, "file": "assets/sfx/pop.wav", "gain": 1.0},
+    {"t": 2.14, "file": "assets/sfx/hit.wav", "gain": 1.0},
+    {"t": 2.22, "file": "assets/sfx/pop.wav", "gain": 1.0},
+    {"t": 2.55, "file": "assets/sfx/highlight.wav", "gain": 0.9}
+  ],
+  "shake": [
+    {"t0": 2.14, "t1": 2.5, "amp": 28}
+  ]
+}

@@ -1,0 +1,8 @@
+# Remotion sub-project — never commit installed deps, rendered overlays, or the
+# copied font cache (fonts are sourced from ../../../../assets/fonts at render time).
+node_modules/
+out/
+public/fonts/
+.remotion/
+*.mov
+*.log

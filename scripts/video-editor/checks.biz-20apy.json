@@ -1,0 +1,14 @@
+{
+  "_doc": "Approved-element regression checks for biz-20apy. Re-run on EVERY new render so an approved fix can't silently regress. Add a row the moment Nathaniel signs off on something.",
+  "video_default": "/Users/nathaniel/Desktop/FILMING-KIT/biz-20apy/BIZ-20APY-PRODUCED-v22.mp4",
+  "checks": [
+    {"tc": "0:02", "label": "cold-open whiteboard centered", "expect": "whiteboard centered on the $15->$400 line; not too far left/high", "spoken": "cold open"},
+    {"tc": "0:18", "label": "Chase $400 bonus shown (not 73% gfx)", "expect": "Chase offer screen, $400 centered, no cookie box"},
+    {"tc": "8:51", "label": "fee panel centered", "expect": "whole 'Get built-in benefits' section centered; no grey dead space; $2,000 min highlighted", "spoken": "...waive the $15 monthly fee..."},
+    {"tc": "10:06", "label": "tx methods cutout", "expect": "full qualifying-transaction method line, NO right cutoff; highlight spans the 2 lines; static (no zoom)"},
+    {"tc": "11:19", "label": "StackOS hero full-frame", "expect": "StackOS hero card full-frame; NOT the blog list", "spoken": "...APY example..."},
+    {"tc": "11:42", "label": "StackOS square -> full cut", "expect": "square cutout cuts back to full screen here, not lingering in the square"},
+    {"tc": "12:06", "window_end": "12:11", "sample": "span", "label": "green-screen $4,652 monitor", "expect": "$4,652 monitor on LEFT, tall, NO grey margins; Nathaniel matted in front; RIGHT side clear for end-screen"},
+    {"tc": "7:49", "window_end": "8:08", "sample": "end", "label": "bed/letter insert END", "expect": "frozen thumbs-up + cheesy zoom; small TOP banner only; NO large center APPROVED stamp; less yellow"}
+  ]
+}

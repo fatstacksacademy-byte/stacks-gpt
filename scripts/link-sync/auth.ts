@@ -12,7 +12,7 @@ if (existsSync(".env.local")) process.loadEnvFile(".env.local")
 
 import { createServer } from "node:http"
 import { spawn } from "node:child_process"
-import { YT_SCOPE } from "./youtube"
+import { YT_SCOPES } from "./youtube"
 
 const PORT = 53682
 const REDIRECT = `http://127.0.0.1:${PORT}`
@@ -41,7 +41,7 @@ async function main() {
       client_id: clientId,
       redirect_uri: REDIRECT,
       response_type: "code",
-      scope: YT_SCOPE,
+      scope: YT_SCOPES,
       access_type: "offline",
       prompt: "consent", // force a refresh_token even on re-consent
     }).toString()
@@ -62,7 +62,7 @@ async function main() {
       else reject(new Error(`OAuth error: ${err ?? "no code returned"}`))
     })
     server.listen(PORT, () => {
-      console.log("\nOpening your browser to grant YouTube access…")
+      console.log("\nOpening your browser to grant YouTube + Google Analytics access…")
       console.log("If it doesn't open, paste this URL:\n\n" + authUrl + "\n")
       openBrowser(authUrl)
     })

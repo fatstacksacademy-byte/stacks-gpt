@@ -31,11 +31,15 @@ export type AnalyticsEvent =
   // 0% intro-APR float calculator
   | "intro_apr_card_selected"
   | "intro_apr_apply_click"
+  | "intro_apr_finder_mode"      // purchase vs balance-transfer lens in the 0% finder
+  | "intro_apr_finder_use"       // "Model it" — prefill the calculator from a finder row
+  | "intro_apr_finder_apply"     // Apply click from a finder row
   // Misc
   | "tax_summary_viewed"
   | "dashboard_tab_changed"
   | "dashboard_bonus_advanced"   // inline step-advance from a dashboard card
   | "pay_profile_saved"          // explicit Save on the Paycheck pay-profile panel
+  | "dd_method_recorded"         // which DD source triggered a bonus (Bonus Posted step)
 
 export function track(event: AnalyticsEvent, props?: Record<string, unknown>) {
   try {

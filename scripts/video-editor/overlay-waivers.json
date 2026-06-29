@@ -1,0 +1,4 @@
+{
+  "_comment": "Overlay ids listed here may FAIL check-overlays.py without blocking render. Use sparingly: a waiver means a human accepted a right-topic-wrong-asset or unanchored overlay. Prefer fixing the anchor/asset over waiving.",
+  "waived": []
+}

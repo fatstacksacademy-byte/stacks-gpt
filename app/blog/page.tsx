@@ -19,7 +19,6 @@ const articles: Article[] = [
     description: "My four favorite offers this month, ranked by value, difficulty, and how likely they are to stay available.",
     category: "Monthly Picks",
     date: "June 9, 2026",
-    featured: true,
   },
   {
     href: "/blog/best-credit-cards-june-2026",
@@ -86,8 +85,14 @@ const articles: Article[] = [
   },
 ]
 
-const featured = articles.find(article => article.featured)!
-const guides = articles.filter(article => !article.featured)
+// Sort newest-first so the blog always features the most recently published
+// article — not a pinned monthly post. An explicit `featured: true` still
+// wins if we ever want to hand-pin one; otherwise the newest article leads.
+const byDateDesc = [...articles].sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+)
+const featured = byDateDesc.find(article => article.featured) ?? byDateDesc[0]
+const guides = byDateDesc.filter(article => article !== featured)
 
 export default function BlogIndex() {
   return (
@@ -146,7 +151,7 @@ export default function BlogIndex() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
                 <span style={{ fontSize: 12, color: "#888" }}>{featured.date}</span>
-                <span style={{ fontSize: 14, color: "#fff", background: "#0d7c5f", borderRadius: 8, padding: "11px 17px", fontWeight: 750 }}>Read the latest picks →</span>
+                <span style={{ fontSize: 14, color: "#fff", background: "#0d7c5f", borderRadius: 8, padding: "11px 17px", fontWeight: 750 }}>{featured.category === "Monthly Picks" ? "Read the latest picks →" : "Read the article →"}</span>
               </div>
             </article>
           </Link>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import InfoTip from "../../components/InfoTip"
 import ElevatedBadge from "../../components/ElevatedBadge"
 import { getOwnedCards, addOwnedCard, updateOwnedCard, deleteOwnedCard, OwnedCard } from "../../../lib/ownedCards"
 import { getCardAccounts, type CardAccount } from "../../../lib/cardAccounts"
@@ -24,6 +25,7 @@ import VerifiedBadge from "../../components/VerifiedBadge"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode, type SequencedCard } from "../../../lib/ccSequencer"
+import { evaluateAllIssuers, type IssuerEligibility } from "../../../lib/issuerRules"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import { signupBonusValue, signupYearOneValue, subHeadline } from "../../../lib/data/cardSpendValue"
@@ -161,6 +163,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     [cardAccounts],
   )
 
+  // Issuers the user is hard-blocked with right now (5/24, 2/90, 7/12, 1/65…).
+  // Drives both the sequencer's approval filter and the note above the list.
+  const blockedIssuers: IssuerEligibility[] = useMemo(
+    () => evaluateAllIssuers(cardAccounts, null, todayStr()).filter(e => e.verdict === "deny"),
+    [cardAccounts],
+  )
+
   function resetForm() {
     setFCardName(""); setFIssuer(""); setFSignupBonus(""); setFAnnualFee(""); setFSpendReq("")
     setFSpendDeadline(""); setFOpenedDate(todayStr()); setFExpectedValue(""); setFActualValue("")
@@ -290,6 +299,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     benefitProfile,
     rankingMode,
     travelProgram || null,
+    { heldCards: cardAccounts, asOf: todayStr() },
   )
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => cardVisibleInRewardsMode(sc.card, rewardsMode, recSearchQ.length > 0))
@@ -550,6 +560,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
 
           {showRecommendations && (
             <>
+              {blockedIssuers.length > 0 && (
+                <div style={{ marginBottom: 10, padding: "9px 12px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, fontSize: 12.5, color: "#b91c1c", lineHeight: 1.5 }}>
+                  Hiding cards from <b>{blockedIssuers.map(b => b.label).join(", ")}</b> — you&rsquo;re likely auto-declined there right now
+                  ({blockedIssuers.map(b => b.reasons[0]?.rule).filter(Boolean).join(", ")}).{" "}
+                  <a href="/stacksos/cards" style={{ color: "#b91c1c", fontWeight: 600 }}>See the approval matrix →</a>
+                </div>
+              )}
               <div style={{ marginBottom: 10, position: "relative" }}>
                 <input
                   type="search"
@@ -1043,8 +1060,8 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
             </h2>
             <p style={{ fontSize: 13, color: "#5b21b6", margin: 0, lineHeight: 1.5 }}>
               {isPaid
-                ? "The recommended cards above are sequenced for your spend. Pick one and click “Start” — or use “+ Add a card I already have” to log cards already in your wallet."
-                : "Use “+ Add a card I already have” below to track signup bonuses, spend deadlines, and net value across your wallet."}
+                ? "Sorted best-first for you. Tap “Start” on any card above to begin tracking — or add one you already have."
+                : "Sorted best-first for you. Use “+ Add spending card / bonus” below to begin tracking — or add one you already have."}
             </p>
           </div>
         )}
@@ -1151,6 +1168,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                     <select value={fStatus} onChange={e => setFStatus(e.target.value as OwnedCard["status"])} style={{ ...selectStyle, width: "100%" }}>
                       {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>
+                    <div style={{ fontSize: 10, color: "#bbb", marginTop: 5, lineHeight: 1.4 }}>Most people leave this on Planned — it updates automatically as you progress.</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
@@ -1165,11 +1183,11 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Spend requirement</div>
+                    <div style={label}>Spend requirement <InfoTip tip="The total you must charge to the card within the deadline to earn the sign-up bonus (e.g. $4,000 in 3 months)." label="spend requirement" /></div>
                     <input type="number" value={fSpendReq} onChange={e => setFSpendReq(e.target.value)} style={inputStyle} placeholder="0" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Spend deadline</div>
+                    <div style={label}>Requirements deadline <InfoTip tip="The last day to finish the spend requirement and earn the bonus. Miss it and the bonus is forfeited." label="requirements deadline" /></div>
                     <input type="date" value={fSpendDeadline} onChange={e => setFSpendDeadline(e.target.value)} style={inputStyle} />
                   </div>
                 </div>
@@ -1289,7 +1307,7 @@ function CardRow({ card: c, spendCheck, userId, onEdit, onDelete, onStatusChange
             {c.signup_bonus_value != null && <span>Bonus: <strong>${c.signup_bonus_value.toLocaleString()}</strong></span>}
             {(c.annual_fee ?? 0) > 0 && <span>Fee: ${c.annual_fee}/yr</span>}
             {c.spend_requirement != null && <span>Spend: ${c.spend_requirement.toLocaleString()} req</span>}
-            {c.spend_deadline && <span>By: {c.spend_deadline}</span>}
+            {c.spend_deadline && <span>Requirements deadline: {c.spend_deadline}</span>}
           </div>
           {/* Spend feasibility indicator */}
           {spendCheck && c.spend_requirement != null && c.spend_requirement > 0 && (

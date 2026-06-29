@@ -48,6 +48,14 @@ ap.add_argument("--image", required=True)
 ap.add_argument("--roi", required=True, help="x,y,w,h (px) or auto:fx,fy,fw,fh (fractions)")
 ap.add_argument("--out", required=True)
 ap.add_argument("--style", choices=["focus", "highlight", "plain"], default="focus")
+ap.add_argument("--whole", action="store_true",
+                help="show the ENTIRE page fit-to-frame (letterboxed on brand bg) + highlight in place — no tight crop")
+ap.add_argument("--focus-in", type=float, default=0.5,
+                help="focus: seconds for the blur/dim to ease in (longer = page stays clear/readable longer before it blurs)")
+ap.add_argument("--dim", type=float, default=0.38,
+                help="focus: brightness of the de-emphasized area (1.0=no dim; raise toward ~0.7 for a SUBTLE, contextual blur)")
+ap.add_argument("--blur", type=float, default=16.0,
+                help="focus: gaussian blur px on the de-emphasized area (lower = softer/more readable surroundings)")
 ap.add_argument("--lines", default="", help="highlight: per-line boxes 'x,y,w,h;...' (from page-roi.py)")
 ap.add_argument("--dur", type=float, default=3.5)
 ap.add_argument("--fps", type=int, default=30)
@@ -102,32 +110,50 @@ ux0 = min(b[0] for b in lines_src); uy0 = min(b[1] for b in lines_src)
 ux1 = max(b[0] + b[2] for b in lines_src); uy1 = max(b[1] + b[3] for b in lines_src)
 uw, uh = max(1.0, ux1 - ux0), max(1.0, uy1 - uy0)
 ccx, ccy = ux0 + uw / 2, uy0 + uh / 2
-if a.style == "plain":
-    # "full hero": show the FULL width, anchored at the TOP of the region (so a tall page shows its
-    # headline/hero, not the vertical-centre comments band). A pass a sub-roi to start lower.
-    Wd = NW; Hd = Wd * H / W
-    wx = 0.0; wy = max(0.0, min(max(0.0, NH - Hd), uy0))
+if a.whole:
+    # show the ENTIRE page fit into the 16:9 frame; fill the letterbox with a blurred, darkened
+    # COVER of the same page (produced look, not dead black). highlight rides in place.
+    scale = min(W / NW, H / NH)
+    sw, sh = int(round(NW * scale)), int(round(NH * scale))
+    offx, offy = (W - sw) // 2, (H - sh) // 2
+    cs = max(W / NW, H / NH)
+    cw, ch = int(round(NW * cs)), int(round(NH * cs))
+    cover = img.resize((cw, ch)).crop(((cw - W) // 2, (ch - H) // 2, (cw - W) // 2 + W, (ch - H) // 2 + H))
+    bg = ImageEnhance.Brightness(cover.filter(ImageFilter.GaussianBlur(s(38)))).enhance(0.40)
+    bg.paste(img.resize((sw, sh)), (offx, offy))
+    img = bg
+
+    def place(b):  # native px → framed-frame px (full-page fit), clamped
+        x = b[0] * scale + offx; y = b[1] * scale + offy; w = b[2] * scale; h = b[3] * scale
+        x = max(0, min(W - 8, x)); y = max(0, min(H - 8, y))
+        w = max(20, min(W - x, w)); h = max(14, min(H - y, h))
+        return [int(x), int(y), int(w), int(h)]
 else:
-    fill = 0.66 if a.style == "focus" else 0.80   # target: content spans this much of the frame width
-    Wd = uw / fill; Hd = Wd * H / W
-    if uh > 0.46 * Hd:                            # tall (multi-line) content → widen so it fits w/ context
-        Hd = uh / 0.46; Wd = Hd * W / H
-    Wd = max(Wd, NW / 2.6)                        # cap zoom (don't over-enlarge a thin line)
-    Wd = min(Wd, NW); Hd = Wd * H / W            # never exceed the page width
-    wx = max(0.0, min(NW - Wd, ccx - Wd * EYE_X))   # place the ROI at the EYE_X/EYE_Y screen position
-    wy = max(0.0, min(max(0.0, NH - Hd), ccy - Hd * EYE_Y))   # (default 0.5,0.5 = centred = prior behaviour)
-crop = img.crop((int(wx), int(wy), int(wx + min(Wd, NW - wx)), int(wy + min(Hd, NH - wy))))
-if crop.size != (round(Wd), round(Hd)):         # window taller than the page → pad to the window box
-    pad = Image.new("RGB", (round(Wd), round(Hd)), (8, 12, 20)); pad.paste(crop, (0, 0)); crop = pad
-img = crop.resize((W, H))
-sxy = W / Wd                                    # native px → frame px (isotropic: W/Wd == H/Hd)
+    if a.style == "plain":
+        # "full hero": show the FULL width, anchored at the TOP of the region (so a tall page shows its
+        # headline/hero, not the vertical-centre comments band). A pass a sub-roi to start lower.
+        Wd = NW; Hd = Wd * H / W
+        wx = 0.0; wy = max(0.0, min(max(0.0, NH - Hd), uy0))
+    else:
+        fill = 0.66 if a.style == "focus" else 0.80   # target: content spans this much of the frame width
+        Wd = uw / fill; Hd = Wd * H / W
+        if uh > 0.46 * Hd:                            # tall (multi-line) content → widen so it fits w/ context
+            Hd = uh / 0.46; Wd = Hd * W / H
+        Wd = max(Wd, NW / 2.6)                        # cap zoom (don't over-enlarge a thin line)
+        Wd = min(Wd, NW); Hd = Wd * H / W            # never exceed the page width
+        wx = max(0.0, min(NW - Wd, ccx - Wd * EYE_X))   # place the ROI at the EYE_X/EYE_Y screen position
+        wy = max(0.0, min(max(0.0, NH - Hd), ccy - Hd * EYE_Y))   # (default 0.5,0.5 = centred = prior)
+    crop = img.crop((int(wx), int(wy), int(wx + min(Wd, NW - wx)), int(wy + min(Hd, NH - wy))))
+    if crop.size != (round(Wd), round(Hd)):         # window taller than the page → pad to the window box
+        pad = Image.new("RGB", (round(Wd), round(Hd)), (8, 12, 20)); pad.paste(crop, (0, 0)); crop = pad
+    img = crop.resize((W, H))
+    sxy = W / Wd                                    # native px → frame px (isotropic: W/Wd == H/Hd)
 
-
-def place(b):  # native px → framed-frame px, clamped in-frame
-    x = (b[0] - wx) * sxy; y = (b[1] - wy) * sxy; w = b[2] * sxy; h = b[3] * sxy
-    x = max(0, min(W - 8, x)); y = max(0, min(H - 8, y))
-    w = max(20, min(W - x, w)); h = max(14, min(H - y, h))
-    return [int(x), int(y), int(w), int(h)]
+    def place(b):  # native px → framed-frame px, clamped in-frame
+        x = (b[0] - wx) * sxy; y = (b[1] - wy) * sxy; w = b[2] * sxy; h = b[3] * sxy
+        x = max(0, min(W - 8, x)); y = max(0, min(H - 8, y))
+        w = max(20, min(W - x, w)); h = max(14, min(H - y, h))
+        return [int(x), int(y), int(w), int(h)]
 
 
 rx, ry, rw, rh = place(roi_src)
@@ -139,7 +165,7 @@ zoom_amt = a.zoom if a.zoom >= 0 else {"focus": 0.05, "highlight": 0.03, "plain"
 
 # ---- focus-style assets (mask + glow), computed only when needed ----
 if a.style == "focus":
-    darkblur = ImageEnhance.Brightness(base.filter(ImageFilter.GaussianBlur(s(16)))).enhance(0.38)
+    darkblur = ImageEnhance.Brightness(base.filter(ImageFilter.GaussianBlur(s(a.blur)))).enhance(a.dim)
     accent = hex2rgb(a.accent)
     feather = int(min(s(28), max(s(8), min(rw, rh) * 0.30)))
     mask = Image.new("L", (W, H), 0)
@@ -247,7 +273,7 @@ for f in range(nf):
     elif a.style == "plain":
         frame = base.convert("RGBA")                              # full hero, no blur/marker (just Ken-Burns + circle)
     else:
-        blend = smooth(t / 0.5)                       # dim/blur eases in over 0.5s
+        blend = smooth(t / a.focus_in)                # dim/blur eases in over --focus-in seconds
         dim = Image.blend(base, darkblur, blend)
         frame = Image.composite(base, dim, mask).convert("RGBA")  # ROI sharp+bright, feathered
         g = glow.copy(); g.putalpha(g.getchannel("A").point(lambda v: int(v * 0.45 * blend)))
@@ -273,7 +299,7 @@ def make_ring(D, color, nf, fps):
     cs = RC * SS; ctr = cs / 2
     rc = hex2rgb(color)
     rmid = (D / 2) * SS                           # band sits right on the circle edge
-    band = max(4, int(0.030 * D)) * SS
+    band = max(7, int(0.052 * D)) * SS
     bbox = [ctr - rmid, ctr - rmid, ctr + rmid, ctr + rmid]
     period = 2.0                                  # one comet revolution / 2s
     for f in range(nf):
@@ -284,9 +310,9 @@ def make_ring(D, color, nf, fps):
             th = i * seg
             dth = ((th - head + 180) % 360) - 180
             b = max(0.0, math.cos(math.radians(dth) / 2)) ** 6   # tight rotating highlight
-            al = int(64 + 191 * b)
+            al = int(130 + 125 * b)
             d.arc(bbox, th - 0.6, th + seg + 0.6, fill=rc + (al,), width=band)
-        layer = layer.filter(ImageFilter.GaussianBlur(SS * 2.4))  # glow
+        layer = layer.filter(ImageFilter.GaussianBlur(SS * 3.2))  # glow
         layer = layer.resize((RC, RC), Image.LANCZOS)
         layer.save(os.path.join(tmp, f"ring_{f:04d}.png"))
     return RC, MARGIN

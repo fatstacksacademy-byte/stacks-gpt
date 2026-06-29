@@ -1,5 +1,10 @@
 # Virtual Editor — EDL → DaVinci Resolve, zero edit-tokens
 
+> **QC toolkit:** see [`QC-TOOLKIT.md`](QC-TOOLKIT.md) — 9 gates that make Claude verify a cut
+> (exact-frame, audio, overlay-timing, positions, safe file ops) **before you ever see it**.
+> Background + rationale in `VIDEO-EDIT-PROCESS-AUDIT.md` (repo root). Run `verify-frames.py`
+> + `qc-audio.py` before calling any cut done.
+
 Turns a `VIDEO-EDL-*.md` + the spoken transcript into a fully-laid DaVinci Resolve
 Studio timeline: branded title cards, full-screen earning graphics, transparent
 lower-thirds, screen B-roll, **clean line captions, gold number callouts, SFX on
@@ -216,6 +221,25 @@ python3 scripts/video-editor/page-focus.py --image shots/articles/boost--full.pn
 ```
 The detector flags candidates and best-effort names the card; **you approve** before any insert is built.
 
+## Reusable asset library — `lib/asset-index.ts` (zero-token captioning)
+
+A standing, searchable **bin** of assets you've already cleared (card art, logos, SFX, screenshots)
+so the planner reuses a proven hero instead of re-sourcing every video. Captions + tags are generated
+**zero-token**: from the folder + filename, plus a **tesseract OCR pass** for text-bearing art (a card
+PNG that bakes in "CHASE SAPPHIRE PREFERRED" indexes itself). Dims come from a tiny stdlib header read
+(no `sharp` dependency). It also **ingests** any `assets-manifest.json` from `fetch-assets.ts`, carrying
+each item's **license + attribution** into the index so fetched-and-cleared assets join the same bin.
+
+```bash
+# index assets/library/** → assets/library/asset-index.json
+npx tsx scripts/video-editor/lib/asset-index.ts build               # default root: assets/library
+npx tsx scripts/video-editor/lib/asset-index.ts build /path/to/lib  # or a custom root
+# rank library assets for a query (token overlap over caption + tags + filename)
+npx tsx scripts/video-editor/lib/asset-index.ts find "chase sapphire" --n 5 [--kind image]
+```
+Library layout (one folder per kind keeps tags clean): `assets/library/cards/…`, `logos/…`, `sfx/…`.
+`lookup(query, {minScore})` is exported for other tools; `draft-plan.ts` consults it (next section).
+
 ## Draft the b-roll plan — `draft-plan.ts` (content-matched, you approve)
 
 Walks the cut's transcript and proposes a `broll-plan.json` matched to what you're saying, so it's
@@ -230,6 +254,10 @@ npx tsx scripts/video-editor/draft-plan.ts --transcript face.json --face face.mp
 # --shots also captures the offer/site screenshots (fetch-screenshots) and OCRs tight ROIs (page-roi),
 # so plain/focus/highlight segments come out 'ready':
 npx tsx scripts/video-editor/draft-plan.ts --transcript face.json --face face.mp4 --out draft-broll.json --shots
+# --use-library: before proposing a fresh offer-page screenshot, reuse a confident hero from the
+# standing library (see asset-index.ts above) — a card intro then comes out 'ready' with no capture.
+# Opt-in + no-ops when the library is empty/unbuilt; --library-root R, --library-min 0.6 (confidence bar).
+npx tsx scripts/video-editor/draft-plan.ts --transcript face.json --face face.mp4 --out draft-broll.json --use-library
 ```
 Status per segment: `ready` (screenshot + ROI filled) · `needs-screenshot` (bot-walled bank page — grab by
 hand) · `needs-article` (find the DoC/TPG URL) · `needs-roi`. Review/trim, resolve the `needs-*`, then

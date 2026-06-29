@@ -20,6 +20,7 @@ import {
   type UserBenefitProfile,
   type CardBenefit,
 } from "./cardBenefits"
+import { evaluateIssuer, normalizeIssuer, type HeldCard } from "./issuerRules"
 
 export type ValueBreakdown = {
   welcome_bonus: number       // bonus_amount × cpp
@@ -69,8 +70,24 @@ export function sequenceCards(
   rankingMode: CardRankingMode = "return_per_month",
   /** In Travel Mode, optionally keep only cards whose currency reaches this program. */
   targetTravelProgram?: string | null,
+  /** Opt-in approval awareness: when the user's held cards are provided, drop
+   *  cards from issuers that are a hard "deny" right now (e.g. every Chase card
+   *  while you're at 5/24, Amex during a 2/90 window). Omit to leave sequencing
+   *  bit-for-bit unchanged — no caller is affected until they pass this. */
+  eligibility?: { heldCards: HeldCard[]; asOf: string } | null,
 ): SequencedCard[] {
   const profile = benefitProfile ?? DEFAULT_BENEFIT_PROFILE
+
+  // Issuers the user is hard-blocked with right now, computed once per distinct
+  // catalog issuer (not per card). Empty unless eligibility + held cards given.
+  const blockedIssuers = new Set<string>()
+  if (eligibility && eligibility.heldCards.length > 0) {
+    for (const slug of new Set(cards.map(c => normalizeIssuer(c.issuer)))) {
+      if (slug && evaluateIssuer(slug, eligibility.heldCards, null, eligibility.asOf).verdict === "deny") {
+        blockedIssuers.add(slug)
+      }
+    }
+  }
   // Exclude cards with no actionable apply link — recommending them would
   // be misleading (the user has nowhere to click). The RWP-imported batch
   // ships with offer_link === "" until issuer URLs are filled in via
@@ -86,6 +103,8 @@ export function sequenceCards(
   const available = cards.filter(c => {
     if (c.expired) return false
     if (!c.offer_link || c.offer_link.length === 0) return false
+    // Approval gate: skip issuers the user is hard-blocked with (opt-in).
+    if (blockedIssuers.size > 0 && blockedIssuers.has(normalizeIssuer(c.issuer))) return false
     // State filter: when no state is set, hide all state-restricted cards
     // (default to nationwide only — picking a state unlocks more, not fewer).
     if (c.state_restricted && c.state_restricted.length > 0) {

@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import InfoTip from "../components/InfoTip"
 
 export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: string | null }) {
   const supabase = createClient()
@@ -214,8 +215,14 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Everything handled in one place
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
-        <p style={{ fontSize: 12, color: "#bbb", textAlign: "center", margin: "-36px 0 40px" }}>Everything below is <span style={{ fontWeight: 700, color: "#0d7c5f" }}>free</span>. <span style={{ fontWeight: 700, color: "#0d7c5f" }}>Pro</span>-tagged items add the sequencer on top.</p>
+        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 28px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
+        <div style={{
+          maxWidth: 620, margin: "0 auto 40px", padding: "14px 18px",
+          background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12,
+          fontSize: 13.5, color: "#15604a", lineHeight: 1.55, textAlign: "center",
+        }}>
+          Browsing the catalog, tracking your bonuses, and manual entry are <span style={{ fontWeight: 700 }}>free</span>. The <span style={{ fontWeight: 700 }}>Sequencer</span> <InfoTip term="sequencer" label="the Sequencer" /> — which ranks and schedules bonuses for you — and the multi-year projection are <span style={{ fontWeight: 700, color: "#0d7c5f" }}>Pro</span> (tagged below).
+        </div>
         <div className="lp-grid-2">
           {([
             { title: "Full researched bonus catalog", desc: "Every current offer with complete requirements — deposit amounts, deadlines, fees, and eligibility. No more digging through blogs, forums, and Reddit." },

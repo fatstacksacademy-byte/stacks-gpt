@@ -4947,7 +4947,7 @@ export const bonuses: any[] = [
     "bonus_amount": 500,
     "cooldown_months": 24,
     "tiers": [
-      { "bonus": 300, "min_dd_total": 2000 },
+      { "bonus": 400, "min_dd_total": 2000 },
       { "bonus": 500, "min_dd_total": 10000 }
     ],
     "requirements": {
@@ -4961,7 +4961,7 @@ export const bonuses: any[] = [
       "min_balance": 10000,
       "debit_transactions_required": 5,
       "billpay_required": null,
-      "other_requirements_text": "Deposit $10,000 in 30 days, maintain 60 days, 5 qualifying transactions in 90 days. Expires May 14, 2026."
+      "other_requirements_text": "Deposit $2,000 in 30 days for $400 (or $10,000 for $500), maintain 60 days, 5 qualifying transactions in 90 days. A separate enrollment link advertises $500 at $2,000 (YMMV — verify before relying on it). Expires July 15, 2026."
     },
     "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with $2,000 minimum daily balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -4970,7 +4970,7 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": ["HI"],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches; confirmed by HI residents). Note: Chase business CREDIT CARDS are obtainable in HI. Expires May 14, 2026. New business checking customers only."
+      "eligibility_notes": "Business checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches; confirmed by HI residents). Note: Chase business CREDIT CARDS are obtainable in HI. Expires July 15, 2026 (extended; was May 14). New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [

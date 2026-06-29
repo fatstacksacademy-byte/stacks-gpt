@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import InfoTip from "../../components/InfoTip"
 import { getSavingsEntries, addSavingsEntry, updateSavingsEntry, deleteSavingsEntry, setSavingsMilestone, SavingsEntry, type SavingsMilestone } from "../../../lib/savingsEntries"
 import LiquidityTimeline from "../../components/LiquidityTimeline"
 import { getSavingsProfile, upsertSavingsProfile, SavingsProfile, DEFAULT_SAVINGS_PROFILE } from "../../../lib/savingsProfile"
@@ -886,8 +887,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
             </h2>
             <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
               {isPaid
-                ? "The recommended offers below are ranked by effective APY for your balance. Tap the green “Start” button on one to begin — or add a custom one with “+ Add savings bonus” further down."
-                : "Add a savings bonus or HYSA you’re working on with “+ Add savings bonus / opportunity” below. Stacks tracks deposits, deadlines, and your lifetime earnings."}
+                ? "Sorted best-first for you. Tap “Start” on any offer below to begin tracking — or add one you already have."
+                : "Sorted best-first for you. Use “+ Add savings bonus / opportunity” below to begin tracking — or add one you already have."}
             </p>
           </div>
         )}
@@ -983,6 +984,11 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                               <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{rec.bank_name}</div>
+                              {idx === 0 && (
+                                <span style={{ fontSize: 9, color: "#1d4ed8", background: "#dbeafe", border: "1px solid #bfdbfe", padding: "1px 7px", borderRadius: 99, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                                  Recommended
+                                </span>
+                              )}
                               <VerifiedBadge state={verificationStates.get(rec.bonus.id)} />
                               {offerUrl && (
                                 <a href={offerUrl} target="_blank" rel="noreferrer"
@@ -1287,6 +1293,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                     <select value={fStatus} onChange={e => setFStatus(e.target.value as SavingsEntry["status"])} style={{ ...selectStyle, width: "100%" }}>
                       {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>
+                    <div style={{ fontSize: 10, color: "#bbb", marginTop: 5, lineHeight: 1.4 }}>Most people leave this on Planned — it updates automatically as you progress.</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
@@ -1295,17 +1302,17 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                     <input type="number" value={fBonusAmount} onChange={e => setFBonusAmount(e.target.value)} style={inputStyle} placeholder="0" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Deposit required</div>
+                    <div style={label}>Deposit required <InfoTip term="openingDeposit" label="opening deposit" /></div>
                     <input type="number" value={fDepositRequired} onChange={e => setFDepositRequired(e.target.value)} style={inputStyle} placeholder="0" />
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Holding period (days)</div>
+                    <div style={label}>Holding period (days) <InfoTip term="holdPeriod" label="holding period" /></div>
                     <input type="number" value={fHoldingDays} onChange={e => setFHoldingDays(e.target.value)} style={inputStyle} placeholder="90" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={label}>Deadline</div>
+                    <div style={label}>Requirements deadline <InfoTip tip="The last day to open, fund, and meet the bonus requirements. Miss it and the bonus is forfeited." label="requirements deadline" /></div>
                     <input type="date" value={fDeadline} onChange={e => setFDeadline(e.target.value)} style={inputStyle} />
                   </div>
                 </div>
@@ -1413,7 +1420,7 @@ function EntryRow({ entry: e, onEdit, onDelete, onStatusChange }: {
             {e.offer_apy != null && <span>APY: {(e.offer_apy * 100).toFixed(2)}%</span>}
             {e.promo_apy != null && <span>Promo: {(e.promo_apy * 100).toFixed(2)}%</span>}
             {holdLabel && <span>{holdLabel}</span>}
-            {e.deadline && <span>By: {e.deadline}</span>}
+            {e.deadline && <span>Requirements deadline: {e.deadline}</span>}
           </div>
           {/* Holding period callout for active entries */}
           {e.status === "active" && holdLabel && e.opened_date && (() => {

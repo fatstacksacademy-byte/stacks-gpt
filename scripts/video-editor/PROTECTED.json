@@ -1,0 +1,18 @@
+{
+  "_comment": "vsafe.py protection config. Globs are matched (case-sensitive) against the ABSOLUTE, resolved path of every candidate file. Absolute globs (starting with /) match literally; relative globs (starting with ** or *) match anywhere in the path. headroom multiplies the estimated output size for the render disk preflight. media_exts decides what gets routed to .vtrash instead of unlink. master_re groups files for prune by stripping a trailing -v<N> before the extension.",
+  "headroom": 3.0,
+  "protected_globs": [
+    "**/broll/**",
+    "**/broll-*/**",
+    "**/*-PRODUCED-v*.mp4",
+    "**/*-UPLOAD-*.mp4",
+    "**/BROLL-*REDACTED*/*",
+    "/Users/nathaniel/Desktop/FILMING-KIT/**"
+  ],
+  "deliverable_globs": [
+    "**/*-PRODUCED-v*.mp4",
+    "**/*-UPLOAD-*.mp4"
+  ],
+  "media_exts": [".mp4", ".mov", ".wav", ".m4a", ".png", ".jpg", ".jpeg", ".aif", ".aiff", ".mkv", ".mxf"],
+  "master_re": "^(?P<stem>.+)-v\\d+(?P<ext>\\.[A-Za-z0-9]+)$"
+}

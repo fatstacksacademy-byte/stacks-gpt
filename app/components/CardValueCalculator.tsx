@@ -16,6 +16,7 @@ import {
   type SpendingCategory,
 } from "../../lib/spendingCategories"
 import SpendingCategoryPicker from "./SpendingCategoryPicker"
+import InfoTip from "./InfoTip"
 
 const ACCENT = "#0d7c5f"
 const CORE = SPENDING_CATEGORY_DEFINITIONS.filter((c) => c.core)
@@ -271,6 +272,10 @@ export default function CardValueCalculator({
             ))}
           </div>
 
+          <div style={{ fontSize: 11, color: "#999", marginTop: 8, lineHeight: 1.5 }}>
+            These are example amounts — change them to match your real monthly spending for an accurate estimate.
+          </div>
+
           <div style={{ marginTop: 14 }}>
             <SpendingCategoryPicker
               selected={selectedKeys}
@@ -284,7 +289,10 @@ export default function CardValueCalculator({
         <div style={{ flex: "1 1 340px", minWidth: 300, display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <div style={{ ...card, flex: "1 1 140px", background: ACCENT, border: "none" }}>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Year 1 value</div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Year 1 value</span>
+                <InfoTip term="blendedReturn" label="blended return" />
+              </div>
               <div style={{ fontSize: 38, fontWeight: 800, color: "#fff", lineHeight: 1.1, marginTop: 4 }}>{money(result.year1)}</div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>bonus + credits + rewards{result.floatBenefit > 0 ? " + float" : ""} − fee</div>
             </div>
