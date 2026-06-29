@@ -102,6 +102,14 @@ const SEED_CARDS: { card_name: string; issuer_link: string }[] = [
   { card_name: "US Bank Cash Plus", issuer_link: "https://www.usbank.com/credit-cards/cash-plus-visa-signature-credit-card.html" },
   // Bilt
   { card_name: "Bilt Mastercard", issuer_link: "https://www.biltrewards.com/card" },
+  // Business cards — Chase business cards come through the issuer-index pass
+  // dynamically; Amex/Cap1/US Bank business pages are bot-blocked SPAs, so seed
+  // the high-value ones. Already-cataloged names dedupe out harmlessly.
+  { card_name: "Chase Ink Business Premier", issuer_link: "https://creditcards.chase.com/business-credit-cards/ink/premier" },
+  { card_name: "American Express Blue Business Cash", issuer_link: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/blue-business-cash-credit-card/" },
+  { card_name: "Capital One Spark Cash Plus", issuer_link: "https://www.capitalone.com/small-business/credit-cards/spark-cash-plus/" },
+  { card_name: "Capital One Spark Miles", issuer_link: "https://www.capitalone.com/small-business/credit-cards/spark-miles/" },
+  { card_name: "U.S. Bank Business Triple Cash Rewards", issuer_link: "https://www.usbank.com/business-banking/business-credit-cards/business-triple-cash-rewards-visa-business-card.html" },
 ]
 const UA = process.env.BONUS_BOT_UA || "StackOS-BonusBot/1.0 (+https://fatstacksacademy.com/bot)"
 const OUT_DIR = join(ROOT, "verification-output")

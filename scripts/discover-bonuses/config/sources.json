@@ -73,5 +73,12 @@
     "type": "sitemap",
     "url": "https://bankbonus.com/sitemap.xml",
     "enabled": true
+  },
+  {
+    "name": "doc-brokerage",
+    "type": "rss",
+    "url": "https://www.doctorofcredit.com/category/bonuses/brokerage-bonuses/feed/",
+    "enabled": true,
+    "max_items": 30
   }
 ]

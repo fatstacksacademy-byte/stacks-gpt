@@ -164,10 +164,19 @@ function dedupeByName(leads: IssuerLead[]): IssuerLead[] {
 // ─── Per-issuer scrapers ─────────────────────────────────────────────
 
 const CHASE_INDEX = "https://creditcards.chase.com/personal-credit-cards"
+const CHASE_BUSINESS_INDEX = "https://creditcards.chase.com/business-credit-cards"
 
 export async function scrapeChaseIndex(userAgent: string): Promise<IssuerLead[]> {
-  const html = await fetchHtml(CHASE_INDEX, userAgent)
-  if (!html) return []
+  // Scrape BOTH the personal and business index pages. The card-detail href
+  // shape + the regex below already cover /business-credit-cards/ink/…, so the
+  // Ink lineup (the core business-card churning target) flows through the same
+  // parser. Both are plain HTML — no SPA rendering needed.
+  const [personalHtml, businessHtml] = await Promise.all([
+    fetchHtml(CHASE_INDEX, userAgent),
+    fetchHtml(CHASE_BUSINESS_INDEX, userAgent),
+  ])
+  const html = `${personalHtml ?? ""}\n${businessHtml ?? ""}`
+  if (!html.trim()) return []
   // Chase's individual card detail pages have a TWO-segment shape under
   // a category root — both a brand AND a product:
   //   /cash-back-credit-cards/freedom/unlimited
