@@ -43,6 +43,8 @@ REMOTION_RENDER = os.path.join(REMOTION_DIR, "render.mjs")
 TRANSITION = os.path.join(HERE, "transition.py")
 PARTICLES = os.path.join(HERE, "particles.py")
 BEHIND = os.path.join(HERE, "behind.py")
+SKIT = os.path.join(HERE, "skit.py")
+VISION = os.path.join(HERE, "build", "vision-roi")   # face box (compiled swift) — drives face-aware placement
 ap = argparse.ArgumentParser()
 ap.add_argument("--plan", required=True)
 ap.add_argument("--keep-tmp", action="store_true")
@@ -138,6 +140,25 @@ def face_slice(start_f, nframes, out):  # NATIVE-res circle-cam source — page-
     check_frames(out, nframes)
 
 
+def face_placement(start_f, nframes):
+    """A safe overlay placement for this span so a chip never covers his face: 'bottom'
+    when the face sits in the upper half (the usual talking-head framing), else 'top'.
+    Samples one mid-span frame via build/vision-roi; falls back to 'bottom'."""
+    if not os.path.exists(VISION):
+        return "bottom"
+    png = os.path.join(tmp, "place_probe.png")
+    mid = (start_f + nframes // 2) / FPS
+    subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-ss", f"{mid:.3f}",
+                    "-i", FACE, "-frames:v", "1", png], capture_output=True)
+    try:
+        d = json.loads(subprocess.run([VISION, png], capture_output=True, text=True).stdout)
+        if d.get("face"):
+            return "bottom" if d["face"]["cy"] < d["h"] / 2 else "top"
+    except Exception:
+        pass
+    return "bottom"
+
+
 def split_compose(page_clip, face_clip, dur, i):
     # SPLIT look: a big PORTRAIT of him (left, emerald border) beside the page region (right), on navy.
     e2 = lambda x: int(x) // 2 * 2                       # libx264 needs even dims
@@ -167,7 +188,10 @@ def render_seg(s, start_f, nframes, i):
     if layout == "remotion":   # code-driven ANIMATED graphic (alpha) composited OVER the face span
         if not os.path.isdir(os.path.join(REMOTION_DIR, "node_modules")):
             sys.exit(f"build-broll: segment {i} (remotion) needs deps — run `npm install` in {REMOTION_DIR}")
-        spec = {"comp": s.get("comp", "Callout"), "props": s.get("props", {})}
+        props = dict(s.get("props", {}))
+        if not props.get("placement"):                 # face-aware: keep the chip off his face (unless set)
+            props["placement"] = face_placement(start_f, nframes)
+        spec = {"comp": s.get("comp", "Callout"), "props": props}
         alpha = os.path.join(tmp, f"rmtn_{i:03d}.mov")
         run(["node", REMOTION_RENDER, "--spec", json.dumps(spec), "--duration", f"{dur:.4f}",
              "--fps", str(FPS), "--scale", str(S), "--out", alpha], f"remotion render seg {i}")
@@ -194,6 +218,23 @@ def render_seg(s, start_f, nframes, i):
         run(cmd, f"behind seg {i}")
         check_frames(out, nframes)
         return out
+    if layout == "skit":   # cutout-cartoon SKIT (skit.py) overlaid over the talking head while he talks
+        spec = expand(s.get("spec") or s.get("image"))
+        if not spec or not os.path.exists(spec):
+            sys.exit(f"build-broll: segment {i} (skit) needs a skit spec json (got {spec!r})")
+        skit_mov = os.path.join(tmp, f"skit_{i:03d}.mov")
+        run(["python3", SKIT, spec, "--out", skit_mov, "--alpha", "--no-audio"], f"skit render seg {i}")
+        face = os.path.join(tmp, f"sface_{i:03d}.mp4")
+        face_part(start_f, nframes, face)
+        out = os.path.join(tmp, f"part_{i:03d}.mp4")
+        # play the skit over the face while it lasts, then the face alone (eof_action=pass);
+        # length is the segment's nframes. The skit's own SFX aren't carried — build-broll's
+        # audio is the one continuous A-roll track (add skit SFX in the audio pass if wanted).
+        run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", face, "-i", skit_mov,
+             "-filter_complex", f"[1:v]scale={W}:{H}[ov];[0:v][ov]overlay=0:0:eof_action=pass[v]",
+             "-map", "[v]", "-frames:v", str(nframes), "-an", *VENC, out], f"skit overlay {i}")
+        check_frames(out, nframes)
+        return out
     if layout == "split":   # big portrait of him (left) + the page region (right) — alternate to the circle
         style = s.get("split_style", "focus")
         image = expand(s.get("image") or s.get("hero"))
@@ -212,7 +253,7 @@ def render_seg(s, start_f, nframes, i):
         face_slice(start_f, nframes, slice_path)
         return split_compose(page_clip, slice_path, dur, i)
     if layout not in ("plain", "focus", "highlight"):
-        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx|remotion|behind)")
+        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx|remotion|behind|skit)")
     image = expand(s.get("image") or s.get("hero"))
     if not image or not os.path.exists(image):
         sys.exit(f"build-broll: segment {i} ({layout}) missing image/hero (got {image!r})")

@@ -121,6 +121,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--alpha", action="store_true", help="transparent .mov (overlay over talking head)")
     ap.add_argument("--bg", default="#101418", help="flat-mp4 background color (ignored with --alpha)")
+    ap.add_argument("--no-audio", action="store_true",
+                    help="render video only (skip the SFX/voice mix) — build-broll uses the global A-roll audio")
     a = ap.parse_args()
 
     spec = json.load(open(a.spec))
@@ -143,12 +145,16 @@ def main():
             bg = Image.new("RGBA", canvas, a.bg); bg.alpha_composite(fr); fr = bg.convert("RGB")
         fr.save(os.path.join(tmp, f"{fi:05d}.png"))
 
-    aud = os.path.join(tmp, "audio.wav")
-    build_audio(spec.get("sfx", []), spec.get("voice"), spec.get("voice_gain", 1.0), dur, aud)
     vcodec = ["-c:v", "qtrle", "-pix_fmt", "argb"] if a.alpha else \
              ["-c:v", "libx264", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p"]
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "%05d.png"),
-                    "-i", aud, *vcodec, "-c:a", "aac", "-b:a", "192k", "-shortest", a.out], check=True)
+    if a.no_audio:                                    # video-only (overlay use — no SFX/voice deps)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "%05d.png"),
+                        *vcodec, "-an", a.out], check=True)
+    else:
+        aud = os.path.join(tmp, "audio.wav")
+        build_audio(spec.get("sfx", []), spec.get("voice"), spec.get("voice_gain", 1.0), dur, aud)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "%05d.png"),
+                        "-i", aud, *vcodec, "-c:a", "aac", "-b:a", "192k", "-shortest", a.out], check=True)
     print(f"✅ {a.out}  ({n} frames @ {fps}fps · {dur:.2f}s · {canvas[0]}x{canvas[1]}{' · alpha' if a.alpha else ''})")
     shutil.rmtree(tmp, ignore_errors=True)
 

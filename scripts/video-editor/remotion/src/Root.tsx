@@ -13,6 +13,8 @@ import { GEO } from "./brand";
 import { Callout, calloutDefaults } from "./Callout";
 import { Value, valueDefaults } from "./Value";
 import { Bars, barsDefaults } from "./Bars";
+import { BigStat, bigStatDefaults } from "./BigStat";
+import { Lower, lowerDefaults } from "./Lower";
 
 const FPS = 30;
 const DEFAULT_FRAMES = 4 * FPS; // 4s default; render.mjs sets the real duration per spec.
@@ -46,6 +48,24 @@ export const RemotionRoot: React.FC = () => {
         width={GEO.width}
         height={GEO.height}
         defaultProps={barsDefaults}
+      />
+      <Composition
+        id="BigStat"
+        component={BigStat}
+        durationInFrames={Math.round(3 * FPS)}
+        fps={FPS}
+        width={GEO.width}
+        height={GEO.height}
+        defaultProps={bigStatDefaults}
+      />
+      <Composition
+        id="Lower"
+        component={Lower}
+        durationInFrames={DEFAULT_FRAMES}
+        fps={FPS}
+        width={GEO.width}
+        height={GEO.height}
+        defaultProps={lowerDefaults}
       />
     </>
   );

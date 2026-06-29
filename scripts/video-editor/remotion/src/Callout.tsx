@@ -19,19 +19,36 @@ import { C, FONT } from "./brand";
 import { BrandFonts } from "./fonts";
 import { formatCountUp } from "./util";
 
+export type Placement = "bottom" | "top" | "left" | "right" | "center";
 export type CalloutProps = {
   value: string;
   label?: string;
   accent?: "gold" | "green";
+  /** where the chip sits — defaults to a lower-third so it never covers a centred face.
+   *  build-broll overrides this per shot from the measured face box. */
+  placement?: Placement;
 };
 
 export const calloutDefaults: CalloutProps = {
   value: "$1,500",
   label: "bonus",
   accent: "gold",
+  placement: "bottom",
 };
 
-export const Callout: React.FC<CalloutProps> = ({ value, label, accent = "gold" }) => {
+/** Map a placement to AbsoluteFill flex positioning + a safe inset off the edge. */
+export const placementStyle = (p: Placement = "bottom"): React.CSSProperties => {
+  const PAD = 96;
+  switch (p) {
+    case "top": return { justifyContent: "flex-start", alignItems: "center", paddingTop: PAD };
+    case "left": return { justifyContent: "center", alignItems: "flex-start", paddingLeft: PAD };
+    case "right": return { justifyContent: "center", alignItems: "flex-end", paddingRight: PAD };
+    case "center": return { justifyContent: "center", alignItems: "center" };
+    default: return { justifyContent: "flex-end", alignItems: "center", paddingBottom: PAD }; // bottom
+  }
+};
+
+export const Callout: React.FC<CalloutProps> = ({ value, label, accent = "gold", placement = "bottom" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -54,7 +71,7 @@ export const Callout: React.FC<CalloutProps> = ({ value, label, accent = "gold" 
   const shown = formatCountUp(value, countProgress);
 
   return (
-    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
+    <AbsoluteFill style={{ ...placementStyle(placement), backgroundColor: "transparent" }}>
       <BrandFonts />
       <div
         style={{
