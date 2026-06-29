@@ -114,7 +114,28 @@ const SITES: { re: RegExp; label: string; url: string; why: string }[] = [
   { re: /\b(link in the description|write ?up|the full list|on (my|the) (site|website)|fatstacksacademy)\b/i, label: 'site-blog', url: 'https://fatstacksacademy.com/blog', why: 'site / write-up mention' },
 ];
 
-type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string; lib?: string };
+// Banks / fintechs likely NAMED but not in the card catalog → a logo b-roll (fetch-assets fills it).
+// Curated + high-precision (a transcript has no reliable casing for NER); approve-before-placing.
+const COMPANIES: { re: RegExp; name: string; domain: string }[] = [
+  { re: /\bally\b/i, name: 'Ally', domain: 'ally.com' },
+  { re: /\bwealthfront\b/i, name: 'Wealthfront', domain: 'wealthfront.com' },
+  { re: /\bbetterment\b/i, name: 'Betterment', domain: 'betterment.com' },
+  { re: /\bmarcus\b/i, name: 'Marcus by Goldman Sachs', domain: 'marcus.com' },
+  { re: /\bsofi\b/i, name: 'SoFi', domain: 'sofi.com' },
+  { re: /\bchime\b/i, name: 'Chime', domain: 'chime.com' },
+  { re: /\bvaro\b/i, name: 'Varo', domain: 'varomoney.com' },
+  { re: /\brobinhood\b/i, name: 'Robinhood', domain: 'robinhood.com' },
+  { re: /\bfidelity\b/i, name: 'Fidelity', domain: 'fidelity.com' },
+  { re: /\b(charles )?schwab\b/i, name: 'Charles Schwab', domain: 'schwab.com' },
+  { re: /\bvanguard\b/i, name: 'Vanguard', domain: 'vanguard.com' },
+  { re: /\bcash app\b/i, name: 'Cash App', domain: 'cash.app' },
+  { re: /\bvenmo\b/i, name: 'Venmo', domain: 'venmo.com' },
+  { re: /\bpaypal\b/i, name: 'PayPal', domain: 'paypal.com' },
+  { re: /\bcoinbase\b/i, name: 'Coinbase', domain: 'coinbase.com' },
+  { re: /\bacorns\b/i, name: 'Acorns', domain: 'acorns.com' },
+];
+
+type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string; lib?: string; assetKind?: 'logo' | 'concept'; assetQuery?: string; domain?: string };
 const proposed: Seg[] = [];
 const sectBounds = [...sections, faceDur];
 
@@ -148,6 +169,20 @@ for (const s of sentences) {
 for (const w of words) for (const site of SITES) {
   const win = words.slice(words.indexOf(w), words.indexOf(w) + 6).map(x => x.raw).join(' ');
   if (site.re.test(win)) { if (!proposed.some(p => p.label === site.label && Math.abs(p.start - w.t) < 20)) proposed.push({ start: +w.t.toFixed(2), end: +Math.min(w.t + SEG, faceDur).toFixed(2), layout: 'plain', url: site.url, label: site.label, status: 'needs-screenshot', why: site.why }); }
+}
+
+// COMPANY mentions (banks/fintechs not in the card catalog) → a logo b-roll (fetch-assets fills it).
+for (let i = 0; i < words.length; i++) {
+  const win = words.slice(i, i + 3).map(x => x.raw).join(' ');
+  for (const co of COMPANIES) {
+    if (!co.re.test(win)) continue;
+    const t = words[i].t;
+    if (proposed.some(p => Math.abs(p.start - t) < 20)) break;   // already covered nearby (card/site/another logo)
+    proposed.push({ start: +t.toFixed(2), end: +Math.min(t + Math.min(SEG, 5), faceDur).toFixed(2), layout: 'plain',
+      assetKind: 'logo', assetQuery: co.name, domain: co.domain, label: `logo-${co.domain}`,
+      status: 'needs-asset', why: `${co.name} mentioned — logo b-roll (run --shots → fetch-assets)` });
+    break;
+  }
 }
 
 // EXPLAINER moments → a full-screen motion-graphic (gfx). Detect the type + draft a best-effort spec
@@ -214,6 +249,20 @@ if (has('shots')) {
     s.image = vp;
     if (s.layout === 'plain') { s.status = 'ready'; }
     else if (s.phrase) { const r = pyRoi(full || vp, s.phrase); if (r) { s.roi = r.roi; if (r.lines) s.lines = r.lines; s.image = full || vp; s.status = 'ready'; } else s.status = 'needs-roi'; }
+  }
+  // company logos → fetch-assets (real Wikimedia/licensed marks + a manifest with attribution)
+  const logoSegs = segs.filter(s => s.status === 'needs-asset' && s.assetKind === 'logo' && s.assetQuery);
+  if (logoSegs.length) {
+    const specs = [...new Set(logoSegs.map(s => s.domain ? `${s.assetQuery}=${s.domain}` : s.assetQuery!))];
+    console.log(`🏢 fetching ${specs.length} logo(s) …`);
+    try { execFileSync('npx', ['tsx', path.join(HERE, 'fetch-assets.ts'), '--logos', specs.join(','), '--out', shotsDir], { stdio: 'inherit' }); }
+    catch { console.warn('  ⚠ some logos failed — those stay status:needs-asset'); }
+    let am: any[] = [];
+    try { am = JSON.parse(fs.readFileSync(path.join(shotsDir, 'assets-manifest.json'), 'utf8')); } catch { }
+    for (const s of logoSegs) {
+      const hit = am.find(a => a.kind === 'logo' && a.query === s.assetQuery);
+      if (hit?.file && fs.existsSync(hit.file)) { s.image = hit.file; s.status = 'ready'; }
+    }
   }
 }
 
