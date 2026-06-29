@@ -27,6 +27,12 @@ import { dedupCheck, type Lead } from "./dedup"
 import { enrichLead, type EnrichmentResult } from "./enrich"
 import { appendEntry } from "./file-mutator"
 import { loadApprovedLeads, stampLeadDisposition } from "../_shared/discovery-leads"
+import {
+  renderCatalogEntry,
+  appendCardEntries,
+  cardAlreadyInCatalog,
+  type Proposal,
+} from "../discover-cards/catalog-entry"
 
 const ROOT = process.cwd()
 const LEADS_PATH = join(ROOT, "review-queue", "leads.json")
@@ -56,8 +62,9 @@ type Outcome = {
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
 
-  // Bonus leads only for now — card promotion uses the discover-cards renderer
-  // and is a separate follow-up. Approved card leads stay queued until then.
+  // Bonus leads go through the dedup → Claude-enrich → append flow below.
+  // Approved CARD leads are handled separately afterwards (no enrichment — the
+  // discover-cards proposal already carries every field).
   let approved: Lead[]
   let localLeads: Lead[] | null = null
   if (SOURCE === "local") {
@@ -177,6 +184,54 @@ async function main() {
     }
   }
 
+  // ─── Card leads → catalog ─────────────────────────────────────────────────
+  // Card proposals are fully extracted at discovery time, so there's no Claude
+  // enrichment here — just dedup against the live catalog, render, append, stamp.
+  // Supabase-only: the local leads.json flow never carried card leads.
+  let cardApplied = 0
+  let cardDismissed = 0
+  if (SOURCE === "supabase") {
+    let cardRows = await loadApprovedLeads("card")
+    if (LIMIT > 0) cardRows = cardRows.slice(0, LIMIT)
+    const entries: string[] = []
+    const seen = new Set<string>()
+    const cardDisp: { lead_key: string; status: "applied" | "dismissed"; note: string }[] = []
+    for (const row of cardRows) {
+      const p = row.payload as Proposal
+      const name = (p?.card_name ?? row.name ?? "").trim()
+      const key = name.toLowerCase()
+      if (!name || !p?.offer_link) {
+        cardDisp.push({ lead_key: row.lead_key, status: "dismissed", note: "missing card_name/offer_link" })
+        cardDismissed++
+        console.log(`⏭  [card] ${name || "?"} — missing fields`)
+        continue
+      }
+      if (seen.has(key) || cardAlreadyInCatalog(name)) {
+        cardDisp.push({ lead_key: row.lead_key, status: "dismissed", note: "already in catalog / dup in batch" })
+        cardDismissed++
+        console.log(`⏭  [card] ${name} — already in catalog`)
+        continue
+      }
+      seen.add(key)
+      entries.push(renderCatalogEntry(p))
+      cardDisp.push({ lead_key: row.lead_key, status: "applied", note: "appended card entry" })
+      cardApplied++
+      console.log(`✅ [card] ${name}`)
+    }
+    if (WRITE) {
+      if (entries.length > 0) {
+        appendCardEntries(entries)
+        console.log(`\nAppended ${entries.length} approved card(s) to lib/data/creditCardBonuses.ts`)
+      }
+      for (const d of cardDisp) {
+        await stampLeadDisposition("card", d.lead_key, { status: d.status, decision_notes: d.note })
+      }
+      if (cardDisp.length) console.log(`Stamped ${cardDisp.length} card disposition(s) in Supabase.`)
+    } else if (entries.length > 0) {
+      console.log(`\n(dry-run) Would append ${entries.length} approved card(s) to the catalog.`)
+    }
+  }
+
   // Report.
   const counts = outcomes.reduce((acc: Record<string, number>, o) => {
     acc[o.result] = (acc[o.result] ?? 0) + 1
@@ -190,6 +245,8 @@ async function main() {
   console.log(`\n=== Summary ===`)
   console.log(`Claude calls (enrichment): ${claudeCalls}`)
   for (const [k, v] of Object.entries(counts)) console.log(`  ${k.padEnd(20)} ${v}`)
+  console.log(`  cards applied        ${cardApplied}`)
+  console.log(`  cards dismissed      ${cardDismissed}`)
   console.log(`\n  Dedup save rate: ${(((approved.length - claudeCalls) / Math.max(1, approved.length)) * 100).toFixed(0)}% of leads dismissed without spending Claude tokens.`)
   if (Object.keys(byStage).length > 0) {
     console.log(`\n=== Dismissals by stage ===`)

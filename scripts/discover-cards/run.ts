@@ -26,15 +26,18 @@
  * Guardrails: robots.txt respected, per-host 1.5s throttle, max 40
  * new cards per run, UA is StackOS-BonusBot/1.0.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs"
-import { createHash } from "node:crypto"
+import { writeFileSync, mkdirSync, existsSync } from "node:fs"
 import { join } from "node:path"
 import { fetchPage, closeBrowser } from "../_shared/playwright"
 import { upsertDiscoveryLeads, type DiscoveryLeadInput } from "../_shared/discovery-leads"
 import {
-  creditCardBonuses,
-  type CreditCardBonus,
-} from "../../lib/data/creditCardBonuses"
+  type Proposal,
+  normalizeName,
+  cardLeadKey,
+  cardAlreadyInCatalog,
+  renderCatalogEntry,
+  appendCardEntries,
+} from "./catalog-entry"
 import {
   extractAll,
   extractRewardsTiers,
@@ -111,41 +114,8 @@ type Lead = {
   issuer_link: string | null
 }
 
-type Proposal = {
-  card_name: string
-  issuer: string
-  offer_link: string
-  bonus_amount: number | null
-  bonus_currency: string | null
-  bonus_unit: string | null
-  min_spend: number | null
-  spend_months: number | null
-  annual_fee: number | null
-  intro_apr: {
-    purchase_apr_months: number | null
-    bt_apr_months: number | null
-    bt_fee_pct: number | null
-    go_to_apr_low: number | null
-    go_to_apr_high: number | null
-  } | null
-  rewards: ExtractedRewardsTier[]
-  source_lead_url: string
-  flags: string[]
-}
-
-function normalizeName(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/®|™|©/g, "")
-    .replace(/[^a-z0-9 ]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-}
-
-/** Stable dedupe key for a card lead (sha1 of the normalized card name). */
-function cardLeadKey(cardName: string): string {
-  return createHash("sha1").update(normalizeName(cardName)).digest("hex").slice(0, 12)
-}
+// Proposal, normalizeName, cardLeadKey, cardAlreadyInCatalog, renderCatalogEntry
+// and appendCardEntries now live in ./catalog-entry (shared with the promote step).
 
 /** Map a card Proposal to the cross-machine discovery_leads row shape. */
 function cardProposalToRow(p: Proposal): DiscoveryLeadInput {
@@ -163,22 +133,6 @@ function cardProposalToRow(p: Proposal): DiscoveryLeadInput {
     flags: p.flags,
     payload: p,
   }
-}
-
-function cardAlreadyInCatalog(cardName: string): boolean {
-  const norm = normalizeName(cardName)
-  if (!norm) return true
-  for (const c of creditCardBonuses as CreditCardBonus[]) {
-    const existing = normalizeName(c.card_name)
-    if (!existing) continue
-    if (existing === norm) return true
-    // Directional match only: a candidate is a dupe when its name is contained
-    // in an existing one (handles "Chase Sapphire" vs "Chase Sapphire Preferred").
-    // We deliberately do NOT match the reverse direction, which would wrongly
-    // drop longer/new variants like "Capital One Venture X" against "Capital One Venture".
-    if (norm.length >= 12 && existing.includes(norm)) return true
-  }
-  return false
 }
 
 function inferIssuer(url: string, cardName: string): string {
@@ -274,80 +228,6 @@ async function enrichLead(lead: Lead): Promise<Proposal | null> {
 
 function titleCase(s: string): string {
   return s.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
-}
-
-/** Render the intro_apr field on a catalog entry. Omitted entirely when
- *  the extractor found no intro offer — the schema treats missing as
- *  "no offer / not yet researched" and we don't want to invent zeros. */
-function renderIntroAprBlock(intro: Proposal["intro_apr"]): string {
-  if (!intro) return ""
-  const parts: string[] = []
-  if (intro.purchase_apr_months !== null) parts.push(`purchase_apr_months: ${intro.purchase_apr_months}`)
-  if (intro.bt_apr_months !== null) parts.push(`bt_apr_months: ${intro.bt_apr_months}`)
-  if (intro.bt_fee_pct !== null) parts.push(`bt_fee_pct: ${intro.bt_fee_pct}`)
-  if (intro.go_to_apr_low !== null) parts.push(`go_to_apr_low: ${intro.go_to_apr_low}`)
-  if (intro.go_to_apr_high !== null) parts.push(`go_to_apr_high: ${intro.go_to_apr_high}`)
-  if (parts.length === 0) return ""
-  return `\n    intro_apr: { ${parts.join(", ")} },`
-}
-
-// ─────────────────────────── auto-apply to catalog ───────────────────────────
-
-/**
- * Render a CreditCardBonus entry from a Proposal. Fields we couldn't extract
- * get null/defaults that a human can calibrate later — we don't invent data.
- */
-function renderCatalogEntry(p: Proposal): string {
-  const slug = normalizeName(p.card_name).replace(/\s+/g, "-").slice(0, 48)
-  const id = `${p.issuer.replace(/\s+/g, "-")}-${slug}-auto`
-  const isCash = !p.bonus_unit || p.bonus_unit === "$" || p.bonus_unit === "cashback"
-  const cpp = isCash ? 1 : 0.01
-
-  const rewards =
-    p.rewards.length > 0
-      ? "\n    rewards: [" +
-        p.rewards
-          .map(
-            (r) =>
-              `\n      { categories: ${JSON.stringify(r.categories)}, multiplier: ${r.multiplier}, unit: ${JSON.stringify(r.unit)} }`,
-          )
-          .join(",") +
-        "\n    ],"
-      : ""
-
-  return `
-  {
-    id: ${JSON.stringify(id)},
-    card_name: ${JSON.stringify(p.card_name)},
-    issuer: ${JSON.stringify(p.issuer)},
-    card_type: "personal",
-    bonus_amount: ${p.bonus_amount ?? 0},
-    bonus_currency: ${JSON.stringify(p.bonus_currency ?? (isCash ? "cash" : "points"))},
-    is_hotel_card: false,
-    cpp_value: ${cpp},
-    min_spend: ${p.min_spend ?? 0},
-    spend_months: ${p.spend_months ?? 3},
-    annual_fee: ${p.annual_fee ?? 0},
-    annual_fee_waived_first_year: false,
-    statement_credits_year1: 0,
-    offer_link: ${JSON.stringify(p.offer_link)},
-    expired: false,${renderIntroAprBlock(p.intro_apr)}
-    key_benefits: [${p.rewards.map((r) => JSON.stringify(`${r.multiplier}${r.unit === "%" ? "%" : "x"} ${r.categories.join("/")}`)).join(", ")}],${rewards}
-    // Auto-imported from ${p.source_lead_url} — verify before relying on: ${p.flags.join(", ") || "clean"}
-  },`
-}
-
-function appendCatalog(entries: string[]): void {
-  if (entries.length === 0) return
-  const src = readFileSync(CATALOG_PATH, "utf8")
-  const lastClose = src.lastIndexOf("]")
-  if (lastClose < 0) throw new Error("couldn't find catalog closing bracket")
-  const before = src.slice(0, lastClose)
-  const after = src.slice(lastClose)
-  const block =
-    "\n\n  // ─── AUTO-IMPORTED FROM RICHWITHPOINTS ──────────────────────────\n  // These entries came from the discover-cards scraper. Fields are conservative\n  // (null/defaults where the regex couldn't extract a value). Review and\n  // calibrate before treating as trusted data.\n" +
-    entries.join("\n")
-  writeFileSync(CATALOG_PATH, before + block + "\n" + after)
 }
 
 // ─────────────────────────── main ───────────────────────────
@@ -479,7 +359,7 @@ async function main() {
     return isCleanSub || isClean0Apr
   })
   const entries = worthApplying.map(renderCatalogEntry)
-  appendCatalog(entries)
+  appendCardEntries(entries)
 
   console.log(``)
   console.log(`Wrote ${proposals.length} proposals to ${join(OUT_DIR, "cards-proposed.json")}`)
