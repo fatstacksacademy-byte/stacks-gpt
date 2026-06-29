@@ -36,47 +36,46 @@ export type Verdict = {
   corrected_value?: string | number | boolean | null
 }
 
-function parseVerdict(text: string): Verdict | null {
-  // Strip markdown code fences Haiku sometimes wraps the JSON in.
-  const cleaned = text.replace(/```(?:json)?/gi, "")
-  const m = cleaned.match(/\{[\s\S]*\}/) // greedy: if JSON was truncated (no closing brace) this fails → null → retry
-  if (!m) return null
-  try {
-    const o = JSON.parse(m[0]) as Record<string, unknown>
-    const decision = o.decision === "approve" || o.decision === "dismiss" ? o.decision : "escalate"
-    const confidence = o.confidence === "high" || o.confidence === "medium" ? o.confidence : "low"
-    return {
-      decision,
-      confidence,
-      reason: typeof o.reason === "string" ? o.reason.slice(0, 280) : "",
-      corrected_value: (o.corrected_value as Verdict["corrected_value"]) ?? undefined,
-    }
-  } catch {
-    return null
-  }
+// Forced structured output. tool_choice makes the model return its verdict as a
+// schema-validated tool call, so "unparseable JSON" is impossible (it was the #1
+// cause of bogus escalations — text JSON kept truncating / wrapping in prose).
+const VERDICT_TOOL: Anthropic.Tool = {
+  name: "record_verdict",
+  description: "Record your adjudication verdict for this item.",
+  input_schema: {
+    type: "object",
+    properties: {
+      decision: { type: "string", enum: ["approve", "dismiss", "escalate"] },
+      confidence: { type: "string", enum: ["high", "medium", "low"] },
+      reason: { type: "string", description: "One short sentence." },
+      corrected_value: {
+        description: "For an approve: the page-confirmed correct value. Otherwise null.",
+      },
+    },
+    required: ["decision", "confidence", "reason"],
+  },
 }
 
 async function ask(system: string, user: string): Promise<Verdict> {
-  // max_tokens 800 (was 400 — verbose reasons truncated the JSON, the #1 cause
-  // of bogus "escalate"); retry once with a stricter format nudge before giving up.
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const resp = await client().messages.create({
-      model: MODEL,
-      max_tokens: 800,
-      system:
-        attempt === 0
-          ? system
-          : `${system} Respond with ONLY the JSON object — no prose, no markdown fences — and keep "reason" to one short sentence.`,
-      messages: [{ role: "user", content: user }],
-    })
-    const text = resp.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n")
-    const v = parseVerdict(text)
-    if (v) return v
+  const resp = await client().messages.create({
+    model: MODEL,
+    max_tokens: 800,
+    system,
+    tools: [VERDICT_TOOL],
+    tool_choice: { type: "tool", name: "record_verdict" },
+    messages: [{ role: "user", content: user }],
+  })
+  const tu = resp.content.find((b): b is Anthropic.ToolUseBlock => b.type === "tool_use")
+  if (!tu) return { decision: "escalate", confidence: "low", reason: "no tool_use in model response" }
+  const o = tu.input as Record<string, unknown>
+  const decision = o.decision === "approve" || o.decision === "dismiss" ? o.decision : "escalate"
+  const confidence = o.confidence === "high" || o.confidence === "medium" ? o.confidence : "low"
+  return {
+    decision,
+    confidence,
+    reason: typeof o.reason === "string" ? o.reason.slice(0, 280) : "",
+    corrected_value: (o.corrected_value as Verdict["corrected_value"]) ?? undefined,
   }
-  return { decision: "escalate", confidence: "low", reason: "unparseable model JSON after retry" }
 }
 
 const PAGE_CAP = 6000 // chars of page text we feed the model
@@ -109,7 +108,7 @@ export async function adjudicateLead(input: {
     `- "approve" ONLY if the page confirms a real, current signup/account-opening bonus worth cataloging.`,
     `- "dismiss" if it's not a signup bonus (Amex Offer, gift-card/shopping deal, portal, news), is expired, or the page doesn't confirm a genuine bonus.`,
     `- "escalate" if the page didn't load usefully or it's genuinely ambiguous.`,
-    `Return JSON: {"decision":"approve|dismiss|escalate","confidence":"high|medium|low","reason":"one sentence"}`,
+    `Call record_verdict with your decision, confidence, and a one-sentence reason.`,
   ].join("\n")
   return ask(system, user)
 }
@@ -141,7 +140,7 @@ export async function adjudicateMismatch(input: {
     `- "dismiss" if the scraper misread, OR the page confirms our stored value is already correct, OR the page shows a different card/tier, OR the field isn't really on this page.`,
     `- "escalate" if the page didn't load usefully or it's genuinely ambiguous.`,
     `CRITICAL: if your reasoning concludes the stored value is already correct, you MUST choose "dismiss", never "approve". Approve means "change the catalog".`,
-    `Return JSON: {"decision":"approve|dismiss|escalate","confidence":"high|medium|low","reason":"one sentence","corrected_value":<value or null>}`,
+    `Call record_verdict with your decision, confidence, a one-sentence reason, and (for approve) corrected_value.`,
   ].join("\n")
   return ask(system, user)
 }
