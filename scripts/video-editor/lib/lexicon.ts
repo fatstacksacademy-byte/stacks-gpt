@@ -33,6 +33,13 @@ interface SafeRule {
 
 interface CtxRule extends SafeRule {
   ctxOnly: true; // requires a CONTEXT_WORDS hit nearby
+  // Brand names that COLLIDE with everyday words (Bilt/bill, built, Chase/chase, Discover) need a
+  // stronger signal than "a finance word within 4 tokens" — real transcripts say "your current
+  // account", "they will bill you", "this chase example". When present, `adj`/`notPrev` override the
+  // broad nearby-context gate: the NEXT token's core must match `adj`, and the PREV must NOT match
+  // `notPrev`. Strict on purpose: missing a brand-casing is far cheaper than a wrong word in a caption.
+  adj?: RegExp;
+  notPrev?: RegExp;
 }
 
 // A token is "near finance" if one of these appears within CTX_WIN tokens.
@@ -54,7 +61,6 @@ const SAFE: SafeRule[] = [
   { re: /^ur$/i, to: 'UR', rule: 'acronym:UR' },
   { re: /^mr$/i, to: 'MR', rule: 'acronym:MR' },
   { re: /^venturex$/i, to: 'Venture X', rule: 'brand:VentureX' },
-  { re: /^chase$/i, to: 'Chase', rule: 'brand:Chase' },
   { re: /^varo$/i, to: 'Varo', rule: 'brand:Varo' },
   { re: /^chime$/i, to: 'Chime', rule: 'brand:Chime' }, // only literal sense is rare in his content
   { re: /^wealthfront$/i, to: 'Wealthfront', rule: 'brand:Wealthfront' },
@@ -64,15 +70,25 @@ const SAFE: SafeRule[] = [
 ];
 
 // ── CONTEXTUAL: only when a finance context word is nearby ───────────────────
+// Product nouns that disambiguate the collision brands (next-token must be one of these).
+const BILT_ADJ = /^(rewards?|card|cards|points?|mastercard|mc|app)$/i;
 const CONTEXTUAL: CtxRule[] = [
   { re: /^city$/i, to: 'Citi', rule: 'brand:Citi', ctxOnly: true }, // the #1 offender
   { re: /^citi$/i, to: 'Citi', rule: 'brand:Citi', ctxOnly: true },
-  { re: /^built$/i, to: 'Bilt', rule: 'brand:Bilt', ctxOnly: true },
-  { re: /^bill$/i, to: 'Bilt', rule: 'brand:Bilt', ctxOnly: true },
-  { re: /^current$/i, to: 'Current', rule: 'brand:Current', ctxOnly: true },
+  // built/bill → Bilt only with an adjacent Bilt product noun, and not after a verb/possessive
+  // marker ("I built a house", "they will bill you for").
+  { re: /^built$/i, to: 'Bilt', rule: 'brand:Bilt', ctxOnly: true, adj: BILT_ADJ,
+    notPrev: /^(i|we|you|they|he|she|it|who|has|have|had|was|were|is|are|be|been|being|just|recently|already|newly|custom|purpose|pre|well|self)$/i },
+  { re: /^bill$/i, to: 'Bilt', rule: 'brand:Bilt', ctxOnly: true, adj: BILT_ADJ,
+    notPrev: /^(the|a|an|your|my|his|her|their|our|will|would|to|pay|paid|paying|electric|phone|water|gas|cable|utility|medical|monthly|that|this|each|every|whole|entire|light)$/i },
+  // chase → Chase only when an actual Chase product/line follows (not the verb "chase the bonus").
+  { re: /^chase$/i, to: 'Chase', rule: 'brand:Chase', ctxOnly: true,
+    adj: /^(sapphire|ink|freedom|slate|flex|bank|card|cards|checking|savings|business|preferred|reserve|unlimited|aeroplan|southwest|united|marriott|world|ultimate|offer|app|mobile)$/i },
+  // discover → Discover only with a Discover product (not the verb "discover that …").
+  { re: /^discover$/i, to: 'Discover', rule: 'brand:Discover', ctxOnly: true,
+    adj: /^(card|it|bank|cashback|cash|checking|savings|miles)$/i },
   { re: /^sapphire$/i, to: 'Sapphire', rule: 'brand:Sapphire', ctxOnly: true },
   { re: /^ink$/i, to: 'Ink', rule: 'brand:Ink', ctxOnly: true },
-  { re: /^discover$/i, to: 'Discover', rule: 'brand:Discover', ctxOnly: true },
 ];
 
 const apply = (to: SafeRule['to'], m: RegExpMatchArray): string =>
@@ -127,10 +143,19 @@ export function correctWords<T extends { raw: string }>(
         break;
       }
     }
-    if (!rule && useCtx && nearContext(i)) {
+    if (!rule && useCtx) {
+      const nextCore = i + 1 < words.length ? splitAffix(words[i + 1].raw).core : '';
+      const prevCore = i - 1 >= 0 ? splitAffix(words[i - 1].raw).core : '';
       for (const r of CONTEXTUAL) {
         const m = core.match(r.re);
-        if (m) {
+        if (!m) continue;
+        // collision brands (adj/notPrev set) gate on the immediate neighbours; the rest on
+        // a same-sentence finance word within CTX_WIN.
+        const ok =
+          r.adj || r.notPrev
+            ? (!r.adj || r.adj.test(nextCore)) && !(r.notPrev && prevCore && r.notPrev.test(prevCore))
+            : nearContext(i);
+        if (ok) {
           fixed = apply(r.to, m);
           rule = r.rule;
           break;
