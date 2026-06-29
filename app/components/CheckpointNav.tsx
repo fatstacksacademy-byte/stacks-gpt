@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation"
 import StacksAccountMenu from "./StacksAccountMenu"
 
 const tabs = [
-  { label: "Dashboard", href: "/stacksos", exact: true },
-  { label: "Paycheck", href: "/stacksos/paycheck" },
-  { label: "Savings", href: "/stacksos/savings" },
-  { label: "Spending", href: "/stacksos/spending", beta: true },
-  { label: "Debt", href: "/stacksos/debt", beta: true },
-  { label: "0% APR", href: "/stacksos/intro-apr", beta: true },
-  { label: "Card Calc", href: "/stacksos/card-calculator", beta: true },
+  { label: "Dashboard", href: "/stacksos", exact: true, desc: "Your bonuses in progress and what to do next" },
+  { label: "Paycheck", href: "/stacksos/paycheck", desc: "Checking-account bonuses you earn with direct deposit" },
+  { label: "Savings", href: "/stacksos/savings", desc: "Savings & cash bonuses for money you park" },
+  { label: "Spending", href: "/stacksos/spending", beta: true, desc: "Credit-card welcome bonuses you earn by spending" },
+  { label: "Debt", href: "/stacksos/debt", beta: true, desc: "Plan the cheapest, fastest way to pay off debt" },
+  { label: "0% APR", href: "/stacksos/intro-apr", beta: true, desc: "Earn interest by floating cash on a 0%-APR card" },
+  { label: "Card Value", href: "/stacksos/card-calculator", beta: true, desc: "Estimate what a credit card is really worth for your spending" },
 ] as const
 
 // In-progress surfaces — visible as "coming soon" but still reachable while building.
@@ -74,6 +74,7 @@ export default function CheckpointNav() {
               <a
                 key={tab.href}
                 href={tab.href}
+                title={tab.desc}
                 style={{
                   padding: "10px 16px",
                   fontSize: 13,

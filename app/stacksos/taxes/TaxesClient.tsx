@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { createClient } from "../../../lib/supabase/client"
 import { bonuses as allBonuses } from "../../../lib/data/bonuses"
+import InfoTip from "../../components/InfoTip"
 
 const money = (n: number) => `$${Math.round(n).toLocaleString()}`
 
@@ -179,6 +180,24 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
         <p style={{ fontSize: 14, color: "#888", margin: "0 0 16px" }}>
           Bank bonuses are taxed as interest income (1099-INT). Credit card bonuses are generally not taxable. This page tracks what you should consider setting aside.
         </p>
+
+        {/* Why CC bonuses aren't taxed but bank bonuses are */}
+        <div
+          style={{
+            background: "#f6f8fa",
+            border: "1px solid #e8e8e8",
+            borderRadius: 10,
+            padding: "12px 16px",
+            marginBottom: 16,
+            fontSize: 12.5,
+            color: "#555",
+            lineHeight: 1.55,
+          }}
+        >
+          <strong style={{ color: "#0d7c5f" }}>Credit-card sign-up bonuses are treated as rebates</strong>{" "}
+          on your spending (not taxable). <strong style={{ color: "#111" }}>Bank / checking &amp; savings bonuses are
+          interest</strong> the bank reports on a 1099-INT (taxable). This is an estimate, not tax advice — confirm with a CPA.
+        </div>
 
         {/* Accuracy caveat */}
         <div

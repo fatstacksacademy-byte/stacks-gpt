@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import InfoTip from "../../components/InfoTip"
 import {
   getOwnedCards,
   updateOwnedCard,
@@ -312,7 +313,10 @@ function StandingPanel({ count524 }: { count524: number }) {
           {count524} / 5
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>Chase 5/24</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>Chase 5/24</span>
+            <InfoTip term="fiveTwentyFour" label="Chase 5/24" />
+          </div>
           <div style={{ fontSize: 12, color: tone, marginTop: 2 }}>{note}</div>
           <div style={{ fontSize: 10, color: "#bbb", marginTop: 2 }}>Personal cards opened in the last 24 months across all issuers.</div>
         </div>

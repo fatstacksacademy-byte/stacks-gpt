@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import InfoTip from "../../components/InfoTip"
 import { runIntroAprArbitrage } from "../../../lib/introAprArbitrage"
 import { creditCardBonuses } from "../../../lib/data/creditCardBonuses"
 import { getSavingsProfile } from "../../../lib/savingsProfile"
@@ -316,10 +317,14 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
     <div>
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 32px" }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 6 }}>0% APR Cards</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+          0% APR Cards <InfoTip term="introApr" label="0% intro APR" size={16} />
+        </h1>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
-          Find the longest 0% intro-APR cards — for purchases or balance transfers — ranked by the length of the
-          no-interest window, not just cashback or travel value. Pick one, then model exactly what that float is worth below.
+          The play in plain English: put everyday spending on a 0% intro-APR card, pay only the minimum, and keep the cash
+          you&apos;d have spent in your HYSA earning interest — then pay the card off in full before the 0% ends. Below, find the
+          longest 0% cards (for purchases or balance transfers), ranked by the length of the no-interest window, then model
+          exactly what that float is worth.
         </p>
 
         <BestZeroAprCards onUse={modelCard} />
@@ -327,11 +332,15 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
         <h2 ref={calcRef} style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 32, marginBottom: 6, scrollMarginTop: 16 }}>
           What a 0% window is worth — float calculator
         </h2>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
+        <p style={{ color: "#666", fontSize: 14, marginBottom: 12, maxWidth: 720, lineHeight: 1.55 }}>
           Ride a card&apos;s 0% intro APR, pay only the minimum, and leave the cash that would have paid the bill
           in your HYSA earning interest. The bank floats your balance for free. This shows what that float is worth —
           stacked on top of your everyday earn and welcome bonus — and how the interest <b>decays</b> the later in the
           promo you spend (which is why re-upping a fresh card every ~6 months keeps the rate high).
+        </p>
+        <p style={{ color: "#888", fontSize: 13, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
+          The 0% period usually starts when you open the card. Any balance left when it ends jumps to the regular APR —
+          pay it off before then.
         </p>
 
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "flex-start" }}>
@@ -423,6 +432,10 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
         {result.schedule.length > 0 && (
           <div style={{ ...card, marginTop: 22 }}>
             <div style={{ fontWeight: 700, color: "#111", marginBottom: 4 }}>The decaying float curve</div>
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>
+              Cash spent earlier in the 0% window sits in your savings longer, earning more — so spending later earns less.
+              That&apos;s why the return &ldquo;decays&rdquo; toward the end.
+            </div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 14 }}>
               Each month&apos;s spend floats in your HYSA until you pay the balance at the end of the promo. Spend early and it earns the
               full APY; spend late and there&apos;s barely any runway left — this is the whole reason to start a fresh 0% card mid-promo.
