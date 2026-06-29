@@ -414,21 +414,24 @@ function buildProposedEdits(results: CardResult[]): { id: string; path: string; 
   }
 
   for (const r of results) {
-    if (
-      r.pageSignal === "offer_dead" ||
-      r.pageSignal === "redirected_to_generic" ||
-      r.pageSignal === "card_name_mismatch" ||
-      r.pageSignal === "no_fields_extracted"
-    ) {
+    // offer_dead = the page genuinely 404'd → surface ONE "mark expired" edit.
+    if (r.pageSignal === "offer_dead") {
       tryPush(
         {
           id: r.id, path: "expired or offer_link",
           from: false, to: true,
-          reason: `Page signal: ${r.pageSignal}${r.error ? ` (${r.error})` : ""}. Verify + update offer_link or mark expired.`,
+          reason: `Page signal: offer_dead${r.error ? ` (${r.error})` : ""}. Verify + update offer_link or mark expired.`,
         },
         r.pageSignal,
       )
     }
+    // Field mismatches are only trustworthy when we actually loaded the right
+    // offer page. redirected_to_generic / card_name_mismatch / no_fields_extracted
+    // / fetch_error mean the scraper read the wrong page (or none), so every
+    // field "mismatch" off them is bogus — skip the row entirely instead of
+    // flooding the triage queue (these were ~300 of ~575 pending card edits on
+    // 2026-06-28). The row still persists with its page_signal for visibility.
+    if (r.pageSignal !== "ok") continue
     const escalateMap = new Map(r.escalations.map((e) => [e.field, e]))
     for (const f of r.fields) {
       if (f.status !== "mismatch") continue
