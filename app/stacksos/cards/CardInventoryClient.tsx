@@ -13,9 +13,15 @@ import {
   getCardAccounts,
   insertCardAccounts,
   deleteCardAccount,
+  updateCardAccount,
   type CardAccount,
 } from "../../../lib/cardAccounts"
 import type { CardAccountDraft } from "../../../lib/creditReportImport"
+import {
+  evaluateAllIssuers, VERDICT_RANK,
+  type HeldCard, type IssuerEligibility, type Verdict,
+} from "../../../lib/issuerRules"
+import { getCreditProfile, upsertCreditProfile, type CreditProfile } from "../../../lib/creditProfile"
 import { createClient } from "../../../lib/supabase/client"
 
 // ----------------------------------------------------------------------------
@@ -118,6 +124,7 @@ export default function CardInventoryClient() {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [asOf, setAsOf] = useState<string>("")
   const [cards, setCards] = useState<CardAccount[]>([])
+  const [profile, setProfile] = useState<CreditProfile | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -130,9 +137,10 @@ export default function CardInventoryClient() {
       setUserEmail(data.user?.email ?? null)
       setAsOf(todayISO())
       if (uid) {
-        const rows = await getCardAccounts(uid)
+        const [rows, prof] = await Promise.all([getCardAccounts(uid), getCreditProfile(uid)])
         if (cancelled) return
         setCards(rows)
+        setProfile(prof)
       }
       setLoading(false)
     })()
@@ -144,6 +152,11 @@ export default function CardInventoryClient() {
     if (!userId) return
     const rows = await getCardAccounts(userId)
     setCards(rows)
+  }
+
+  async function refreshProfile() {
+    if (!userId) return
+    setProfile(await getCreditProfile(userId))
   }
 
   if (loading) {
@@ -171,11 +184,15 @@ export default function CardInventoryClient() {
 
         <Five24Hero cards={cards} asOf={effectiveAsOf} />
 
+        <ApprovalMatrix cards={cards} profile={profile} asOf={effectiveAsOf} />
+
+        <CreditProfilePanel userId={userId} profile={profile} onSaved={refreshProfile} />
+
         <ImportSection userId={userId} onSaved={refresh} />
 
         <AddManualSection userId={userId} onSaved={refresh} />
 
-        <InventoryList cards={cards} onDeleted={refresh} />
+        <InventoryList cards={cards} onChanged={refresh} />
 
         <GuardrailFooter />
       </div>
@@ -587,8 +604,9 @@ function AddManualSection({ userId, onSaved }: { userId: string | null; onSaved:
 // 4. Inventory list
 // ----------------------------------------------------------------------------
 
-function InventoryList({ cards, onDeleted }: { cards: CardAccount[]; onDeleted: () => Promise<void> }) {
+function InventoryList({ cards, onChanged }: { cards: CardAccount[]; onChanged: () => Promise<void> }) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [savingId, setSavingId] = useState<string | null>(null)
 
   const sorted = useMemo(
     () => [...cards].sort((a, b) => (a.open_date < b.open_date ? 1 : a.open_date > b.open_date ? -1 : 0)),
@@ -599,15 +617,31 @@ function InventoryList({ cards, onDeleted }: { cards: CardAccount[]; onDeleted: 
     setDeletingId(id)
     try {
       const ok = await deleteCardAccount(id)
-      if (ok) await onDeleted()
+      if (ok) await onChanged()
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  // Tri-state welcome-bonus history: "" unknown / "yes" earned / "no" not earned.
+  async function setBonus(id: string, value: string) {
+    setSavingId(id)
+    try {
+      const bonus_earned = value === "yes" ? true : value === "no" ? false : null
+      const ok = await updateCardAccount(id, { bonus_earned })
+      if (ok) await onChanged()
+    } finally {
+      setSavingId(null)
     }
   }
 
   return (
     <div style={cardBox}>
       <h3 style={sectionTitle}>Your card inventory</h3>
+      <div style={{ ...muted, marginTop: 2, marginBottom: 8 }}>
+        Marking whether you <b>earned the welcome bonus</b> powers the lifetime-bonus rules (Amex pays each bonus once
+        ever; Citi/Chase families lock for 48 months).
+      </div>
       {sorted.length === 0 ? (
         <div style={{ ...muted, marginTop: 8 }}>No cards yet — import a credit report or add one manually.</div>
       ) : (
@@ -617,7 +651,7 @@ function InventoryList({ cards, onDeleted }: { cards: CardAccount[]; onDeleted: 
               key={c.id}
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8, gap: 12, flexWrap: "wrap" }}
             >
-              <div>
+              <div style={{ minWidth: 180, flex: 1 }}>
                 <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
                   {cardTitle(c)}{" "}
                   <span style={{
@@ -633,15 +667,239 @@ function InventoryList({ cards, onDeleted }: { cards: CardAccount[]; onDeleted: 
                   {` · limit ${fmtLimit(c.credit_limit)}`}
                 </div>
               </div>
-              <button
-                style={{ ...ghostBtn, color: RED, opacity: deletingId === c.id ? 0.6 : 1 }}
-                disabled={deletingId === c.id}
-                onClick={() => void remove(c.id)}
-              >
-                {deletingId === c.id ? "Deleting…" : "Delete"}
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div>
+                  <label style={{ ...fieldLabel, marginBottom: 2 }}>Welcome bonus</label>
+                  <select
+                    style={{ ...selectStyle, width: "auto", padding: "5px 8px", fontSize: 12, opacity: savingId === c.id ? 0.6 : 1 }}
+                    disabled={savingId === c.id}
+                    value={c.bonus_earned === true ? "yes" : c.bonus_earned === false ? "no" : ""}
+                    onChange={e => void setBonus(c.id, e.target.value)}
+                  >
+                    <option value="">Unknown</option>
+                    <option value="yes">Earned</option>
+                    <option value="no">Not earned</option>
+                  </select>
+                </div>
+                <button
+                  style={{ ...ghostBtn, color: RED, opacity: deletingId === c.id ? 0.6 : 1 }}
+                  disabled={deletingId === c.id}
+                  onClick={() => void remove(c.id)}
+                >
+                  {deletingId === c.id ? "Deleting…" : "Delete"}
+                </button>
+              </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// Approval-odds matrix (lib/issuerRules) — verdict per issuer with reasons
+// and a "*" when more info would sharpen it.
+// ----------------------------------------------------------------------------
+
+const VERDICT_STYLE: Record<Verdict, { label: string; color: string; bg: string }> = {
+  clear: { label: "Clear", color: ACCENT, bg: "#ecfdf5" },
+  caution: { label: "Caution", color: AMBER, bg: "#fffbeb" },
+  deny: { label: "Auto-deny", color: RED, bg: "#fef2f2" },
+  unknown: { label: "Unknown", color: "#6b7280", bg: "#f3f4f6" },
+}
+
+function toHeldCards(cards: CardAccount[]): HeldCard[] {
+  return cards.map(c => ({
+    id: c.id, issuer: c.issuer, product_name: c.product_name, catalog_card_id: c.catalog_card_id,
+    card_type: c.card_type, open_date: c.open_date, closed_date: c.closed_date, bonus_earned: c.bonus_earned,
+  }))
+}
+
+function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profile: CreditProfile | null; asOf: string }) {
+  const [expanded, setExpanded] = useState<string | null>(null)
+
+  const rows = useMemo<IssuerEligibility[]>(
+    () =>
+      evaluateAllIssuers(toHeldCards(cards), profile, asOf).sort(
+        (a, b) => VERDICT_RANK[a.verdict] - VERDICT_RANK[b.verdict] || a.label.localeCompare(b.label),
+      ),
+    [cards, profile, asOf],
+  )
+
+  return (
+    <div style={cardBox}>
+      <h3 style={sectionTitle}>Approval-odds matrix</h3>
+      <div style={{ ...muted, marginTop: 2, marginBottom: 12 }}>
+        Your held cards + open dates run against each issuer&rsquo;s application rules. A{" "}
+        <b style={{ color: AMBER }}>*</b> means we could sharpen the call with a little more info — tap a row to see what.
+      </div>
+
+      {/* legend */}
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+        {(Object.keys(VERDICT_STYLE) as Verdict[]).map(v => (
+          <span key={v} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#666" }}>
+            <span style={{ width: 10, height: 10, borderRadius: 3, background: VERDICT_STYLE[v].color, display: "inline-block" }} />
+            {VERDICT_STYLE[v].label}
+          </span>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {rows.map(row => {
+          const vs = VERDICT_STYLE[row.verdict]
+          const isOpen = expanded === row.issuer
+          const needsMore = row.needsInfo.length > 0
+          const topReason = row.reasons[0]
+          return (
+            <div key={row.issuer} style={{ border: `1px solid ${vs.color}33`, borderRadius: 8, overflow: "hidden" }}>
+              <button
+                onClick={() => setExpanded(isOpen ? null : row.issuer)}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+                  padding: "10px 12px", background: isOpen ? vs.bg : "#fff", border: "none", cursor: "pointer",
+                }}
+              >
+                <span style={{ fontWeight: 700, color: "#111", fontSize: 14, minWidth: 150, flexShrink: 0 }}>{row.label}</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 700, color: vs.color, background: vs.bg,
+                  border: `1px solid ${vs.color}44`, borderRadius: 999, padding: "3px 10px", flexShrink: 0,
+                }}>
+                  {vs.label}{needsMore && <sup style={{ color: AMBER, fontWeight: 800, marginLeft: 1 }}>*</sup>}
+                </span>
+                <span style={{ ...muted, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {topReason ? topReason.text : ""}
+                </span>
+                <span style={{ color: "#bbb", fontSize: 12, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+              </button>
+
+              {isOpen && (
+                <div style={{ padding: "4px 12px 14px", background: vs.bg }}>
+                  {row.nextEligibleDate && (
+                    <div style={{ fontSize: 13, fontWeight: 600, color: vs.color, margin: "6px 0 10px" }}>
+                      Eligible again ~{row.nextEligibleDate}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {row.reasons.map((r, i) => {
+                      const c = r.severity === "deny" ? RED : r.severity === "caution" ? AMBER : "#6b7280"
+                      return (
+                        <div key={i} style={{ fontSize: 13, color: "#333", display: "flex", gap: 8 }}>
+                          <span style={{ color: c, fontWeight: 700, flexShrink: 0 }}>
+                            {r.severity === "deny" ? "⛔" : r.severity === "caution" ? "⚠" : "ℹ"}
+                          </span>
+                          <span><b style={{ color: c }}>{r.rule}:</b> {r.text}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {needsMore && (
+                    <div style={{ marginTop: 12, padding: "10px 12px", background: "#fff", border: `1px dashed ${AMBER}66`, borderRadius: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: AMBER, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>
+                        * Add this to sharpen the call
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 4 }}>
+                        {row.needsInfo.map((n, i) => (
+                          <li key={i} style={{ fontSize: 12.5, color: "#555", lineHeight: 1.45 }}>{n.text}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div style={{ ...muted, marginTop: 14, lineHeight: 1.6 }}>
+        Verdicts combine hard issuer velocity rules (5/24, 2/90, 7/12, 1/65…) with your credit profile. We deliberately
+        don&rsquo;t fake a precise approval percentage — issuers don&rsquo;t publish odds. Estimates only.
+      </div>
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// Credit profile panel — the soft inputs (score / inquiries / utilization /
+// income) that feed the matrix and clear the "*".
+// ----------------------------------------------------------------------------
+
+function CreditProfilePanel({ userId, profile, onSaved }: { userId: string | null; profile: CreditProfile | null; onSaved: () => Promise<void> }) {
+  const [open, setOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [draft, setDraft] = useState<Partial<CreditProfile>>({})
+
+  // Sync the editable draft whenever the saved profile loads/changes.
+  useEffect(() => {
+    setDraft({
+      score: profile?.score ?? null,
+      hard_inquiries_6mo: profile?.hard_inquiries_6mo ?? null,
+      utilization_pct: profile?.utilization_pct ?? null,
+      annual_income: profile?.annual_income ?? null,
+    })
+  }, [profile])
+
+  const filled = [profile?.score, profile?.hard_inquiries_6mo, profile?.utilization_pct, profile?.annual_income]
+    .filter(v => v != null).length
+
+  async function save() {
+    if (!userId) return
+    setSaving(true)
+    try {
+      await upsertCreditProfile({ user_id: userId, ...draft })
+      await onSaved()
+      setOpen(false)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const set = (patch: Partial<CreditProfile>) => setDraft(prev => ({ ...prev, ...patch }))
+
+  return (
+    <div style={cardBox}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <div>
+          <h3 style={{ ...sectionTitle, marginBottom: 2 }}>Credit profile</h3>
+          <div style={muted}>
+            {filled === 0
+              ? "Add your score, inquiries, utilization, and income to sharpen every verdict above."
+              : `${filled}/4 added — the matrix above uses these to refine each issuer.`}
+          </div>
+        </div>
+        <button style={secondaryBtn} onClick={() => setOpen(o => !o)}>{open ? "Close" : filled === 0 ? "Add details" : "Edit"}</button>
+      </div>
+
+      {open && (
+        <div style={{ marginTop: 14, padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+            <div>
+              <label style={fieldLabel}>Credit score</label>
+              <input style={inputStyle} type="number" placeholder="740" value={draft.score ?? ""} onChange={e => set({ score: num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Hard inquiries (last 6 mo)</label>
+              <input style={inputStyle} type="number" placeholder="2" value={draft.hard_inquiries_6mo ?? ""} onChange={e => set({ hard_inquiries_6mo: num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Utilization %</label>
+              <input style={inputStyle} type="number" placeholder="8" value={draft.utilization_pct ?? ""} onChange={e => set({ utilization_pct: num(e.target.value) })} />
+            </div>
+            <div>
+              <label style={fieldLabel}>Annual income ($)</label>
+              <input style={inputStyle} type="number" placeholder="85000" value={draft.annual_income ?? ""} onChange={e => set({ annual_income: num(e.target.value) })} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <button style={{ ...primaryBtn, opacity: saving ? 0.6 : 1, cursor: saving ? "default" : "pointer" }} disabled={saving} onClick={() => void save()}>
+              {saving ? "Saving…" : "Save profile"}
+            </button>
+            <button style={secondaryBtn} onClick={() => setOpen(false)} disabled={saving}>Cancel</button>
+          </div>
+          <div style={{ ...muted, marginTop: 10 }}>
+            Find these on Credit Karma or your issuer&rsquo;s app. Stored privately to your account — used only to refine the matrix.
+          </div>
         </div>
       )}
     </div>

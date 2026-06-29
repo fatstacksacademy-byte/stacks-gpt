@@ -24,6 +24,7 @@ import VerifiedBadge from "../../components/VerifiedBadge"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { getVerificationStateMap, type VerificationState } from "../../../lib/verificationState"
 import { sequenceCards, formatCurrency, DEFAULT_MAX_CARDS_PER_YEAR, type CardRankingMode, type SequencedCard } from "../../../lib/ccSequencer"
+import { evaluateAllIssuers, type IssuerEligibility } from "../../../lib/issuerRules"
 import { track } from "../../../lib/analytics"
 import { TRAVEL_CPP } from "../../../lib/travelCpp"
 import { signupBonusValue, signupYearOneValue, subHeadline } from "../../../lib/data/cardSpendValue"
@@ -161,6 +162,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     [cardAccounts],
   )
 
+  // Issuers the user is hard-blocked with right now (5/24, 2/90, 7/12, 1/65…).
+  // Drives both the sequencer's approval filter and the note above the list.
+  const blockedIssuers: IssuerEligibility[] = useMemo(
+    () => evaluateAllIssuers(cardAccounts, null, todayStr()).filter(e => e.verdict === "deny"),
+    [cardAccounts],
+  )
+
   function resetForm() {
     setFCardName(""); setFIssuer(""); setFSignupBonus(""); setFAnnualFee(""); setFSpendReq("")
     setFSpendDeadline(""); setFOpenedDate(todayStr()); setFExpectedValue(""); setFActualValue("")
@@ -290,6 +298,7 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
     benefitProfile,
     rankingMode,
     travelProgram || null,
+    { heldCards: cardAccounts, asOf: todayStr() },
   )
     .filter(sc => !trackedNames.has(sc.card.card_name.toLowerCase()))
     .filter(sc => cardVisibleInRewardsMode(sc.card, rewardsMode, recSearchQ.length > 0))
@@ -550,6 +559,13 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
 
           {showRecommendations && (
             <>
+              {blockedIssuers.length > 0 && (
+                <div style={{ marginBottom: 10, padding: "9px 12px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, fontSize: 12.5, color: "#b91c1c", lineHeight: 1.5 }}>
+                  Hiding cards from <b>{blockedIssuers.map(b => b.label).join(", ")}</b> — you&rsquo;re likely auto-declined there right now
+                  ({blockedIssuers.map(b => b.reasons[0]?.rule).filter(Boolean).join(", ")}).{" "}
+                  <a href="/stacksos/cards" style={{ color: "#b91c1c", fontWeight: 600 }}>See the approval matrix →</a>
+                </div>
+              )}
               <div style={{ marginBottom: 10, position: "relative" }}>
                 <input
                   type="search"
