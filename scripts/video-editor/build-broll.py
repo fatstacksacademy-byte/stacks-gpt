@@ -40,10 +40,20 @@ PAGE_FOCUS = os.path.join(HERE, "page-focus.py")
 MOTION_GFX = os.path.join(HERE, "motion-gfx.py")
 REMOTION_DIR = os.path.join(HERE, "remotion")
 REMOTION_RENDER = os.path.join(REMOTION_DIR, "render.mjs")
+TRANSITION = os.path.join(HERE, "transition.py")
+PARTICLES = os.path.join(HERE, "particles.py")
 ap = argparse.ArgumentParser()
 ap.add_argument("--plan", required=True)
 ap.add_argument("--keep-tmp", action="store_true")
+ap.add_argument("--transitions", choices=["whip", "wipe"], default=None,
+                help="overlay a whip/wipe sweep at each b-roll cut (masks the cut; off by default)")
+ap.add_argument("--transition-dur", type=float, default=0.4)
+ap.add_argument("--transition-color", default="#ffffff")
+ap.add_argument("--particles", nargs="?", const=0.45, type=float, default=None,
+                metavar="OPACITY", help="faint drifting-bokeh overlay over the whole video (0..1, default 0.45)")
+ap.add_argument("--particle-color", default="#f5c451")
 a = ap.parse_args()
+# plan can also carry these (CLI wins): {"transitions":"whip","particles":0.45,...}
 plan = json.load(open(a.plan))
 expand = lambda p: os.path.expanduser(p) if p else p
 
@@ -226,6 +236,43 @@ lst = os.path.join(tmp, "list.txt")
 open(lst, "w").write("\n".join(f"file '{f}'" for f in files))
 vid = os.path.join(tmp, "video.mp4")
 run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", vid], "concat")
+
+# ── optional retention FX pass (opt-in; off → byte-identical to before) ──────────
+TRANSITIONS = a.transitions or plan.get("transitions")
+PARTICLES_OP = a.particles if a.particles is not None else plan.get("particles")
+if PARTICLES_OP is not None:                       # faint drifting-bokeh over the whole timeline
+    pmov = os.path.join(tmp, "particles.mov")
+    run(["python3", PARTICLES, "--out", pmov, "--dur", "8", "--fps", str(FPS), "--w", str(W), "--h", str(H),
+         "--color", a.particle_color], "particles")
+    pvid = os.path.join(tmp, "video_p.mp4")
+    run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", vid, "-stream_loop", "-1", "-i", pmov,
+         "-filter_complex", f"[1:v]colorchannelmixer=aa={float(PARTICLES_OP):.3f}[p];[0:v][p]overlay=shortest=1[v]",
+         "-map", "[v]", "-frames:v", str(total_f), *VENC, pvid], "particles overlay")
+    vid = pvid
+if TRANSITIONS:                                    # whip/wipe sweep masking each b-roll cut
+    # cut times = every b-roll segment edge (in/out), minus the timeline start/end.
+    edges = sorted({round(f / FPS, 3) for (f0, f1, _) in seg_ranges for f in (f0, f1)}
+                   - {0.0, round(total_f / FPS, 3)})
+    if edges:
+        d = a.transition_dur
+        tmov = os.path.join(tmp, "trans.mov")
+        run(["python3", TRANSITION, "--out", tmov, "--dur", f"{d}", "--fps", str(FPS), "--w", str(W),
+             "--h", str(H), "--style", TRANSITIONS, "--color", a.transition_color], "transition")
+        cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", vid]
+        for e in edges:
+            cmd += ["-itsoffset", f"{max(0.0, e - d / 2):.3f}", "-i", tmov]   # align this sweep to its cut
+        fc, prev = [], "0:v"
+        for k, e in enumerate(edges, 1):
+            t0, t1 = max(0.0, e - d / 2), e + d / 2
+            fc.append(f"[{prev}][{k}:v]overlay=0:0:enable='between(t,{t0:.3f},{t1:.3f})'[v{k}]")
+            prev = f"v{k}"
+        tvid = os.path.join(tmp, "video_t.mp4")
+        cmd += ["-filter_complex", ";".join(fc), "-map", f"[{prev}]", "-frames:v", str(total_f), *VENC, tvid]
+        run(cmd, "transitions overlay")
+        vid = tvid
+    print(f"  retention FX: {TRANSITIONS+' transitions' if TRANSITIONS else ''}"
+          f"{' + ' if (TRANSITIONS and PARTICLES_OP is not None) else ''}"
+          f"{'particles' if PARTICLES_OP is not None else ''} ({len(edges)} cut(s))", flush=True)
 
 # ONE continuous A-roll audio under the whole timeline (+ optional loudnorm). No per-part audio = no drift.
 adur = total_f / FPS
