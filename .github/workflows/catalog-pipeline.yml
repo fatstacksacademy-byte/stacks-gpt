@@ -97,7 +97,15 @@ jobs:
         run: npm run verify:cards -- --persist
         continue-on-error: true
 
-      # ─── Apply ONLY what the admin approved in /admin/review ───────────
+      # ─── Auto-triage: agent investigates the queue so a human doesn't ──
+      # Fetches each lead/mismatch's live page, adjudicates with Claude, then
+      # dismisses noise, records page-confirmed fixes as approvals (→ the PR
+      # below), and leaves only genuine ambiguity for /admin/review.
+      - name: Auto-triage queue
+        run: npm run auto-triage -- --write
+        continue-on-error: true
+
+      # ─── Apply approved (auto-triage approvals + any admin review) ─────
       - name: Apply approved triage decisions
         run: npm run catalog:apply-decisions -- --write
 
