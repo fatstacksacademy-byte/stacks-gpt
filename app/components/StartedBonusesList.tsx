@@ -150,10 +150,13 @@ export default function StartedBonusesList({
         color: "#888",
         fontSize: 13,
       }}>
-        No bonuses in progress. Open the <a href="/stacksos/paycheck" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Paycheck</a>,{" "}
-        <a href="/stacksos/spending" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Spending</a>, or{" "}
-        <a href="/stacksos/savings" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Savings</a>{" "}
-        tab to start one.
+        <div style={{ fontWeight: 700, color: "#555", marginBottom: 6 }}>No bonuses in progress yet</div>
+        <div style={{ lineHeight: 1.6 }}>
+          Pick a tab and tap a bank or card to start tracking it:<br />
+          <a href="/stacksos/paycheck" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Paycheck</a> = checking bonuses (direct deposit) ·{" "}
+          <a href="/stacksos/spending" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Spending</a> = credit-card bonuses ·{" "}
+          <a href="/stacksos/savings" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Savings</a> = high-yield cash bonuses
+        </div>
       </div>
     )
   }
@@ -172,11 +175,14 @@ export default function StartedBonusesList({
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>Next actions</h2>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>Your next steps</h2>
         <div style={{ fontSize: 11, color: "#888" }}>
           {sorted.length} bonus{sorted.length !== 1 ? "es" : ""} active
         </div>
+      </div>
+      <div style={{ fontSize: 12, color: "#999", marginBottom: 10 }}>
+        Tap a bonus to see its checklist, then mark each step as you go.
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="started-bonuses-list">
         {sorted.map((b) => {

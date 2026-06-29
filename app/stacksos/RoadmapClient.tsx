@@ -14,6 +14,7 @@ import { runSequencer, SequencerResult, SequencedBonus } from "../../lib/sequenc
 import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, updateCustomBonus, CustomBonus } from "../../lib/customBonuses"
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
 import { DD_SOURCES } from "../../lib/ddSources"
+import InfoTip from "../components/InfoTip"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
 import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
@@ -1106,7 +1107,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
           {specRow("Account type", <span style={{ fontSize: 15, color: "#333" }}>{prettyProduct(b.product_type)}</span>)}
           {expiry && specRow("Offer expires", <span style={{ fontSize: 15, color: "#333" }}>{expiry}</span>)}
         </div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10 }}>Bonus requirements</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
+          Bonus requirements
+          {(b.requirements?.min_direct_deposit_total || b.requirements?.min_direct_deposit_per_deposit || b.requirements?.direct_deposit_required) ? <InfoTip term="directDeposit" label="direct deposit" /> : null}
+        </div>
         <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
           {steps.map((s, i) => (
             <li key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -1874,7 +1878,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         {/* Settings Panel */}
         {showSettings && (
           <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16 }}>Pay Profile</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>Pay Profile <InfoTip term="payProfile" label="pay profile" /></div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
               <div>
                 <div style={settingsLabel}>Pay frequency</div>
@@ -2301,7 +2305,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     </div>
                   )}
                   {hb.bonus.cooldown_months && (
-                    <div style={{ fontSize: 13, color: "#888", marginTop: 6 }}>Churnable · every {hb.bonus.cooldown_months}mo</div>
+                    <div style={{ fontSize: 13, color: "#888", marginTop: 6, display: "flex", alignItems: "center", gap: 5 }}>Repeatable · every {hb.bonus.cooldown_months}mo <InfoTip term="churnable" label="repeatable bonus" /></div>
                   )}
                   <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                     <button onClick={() => openStartCustomModal(hb.bonus)}
@@ -2358,7 +2362,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       <>
                         <div style={{ fontSize: 13, color: "#888", marginTop: 4, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                           <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
-                          <span>{hb.velocity ? `Earns ~$${Math.round(hb.velocity)}/week on your paycheck` : "You qualify based on your paycheck"}</span>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            {hb.velocity ? `Earns ~$${Math.round(hb.velocity)}/week on your paycheck` : "You qualify based on your paycheck"}
+            {hb.velocity ? <InfoTip term="velocity" label="earnings per week" /> : null}
+          </span>
                           <span>· Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}</span>
                           {hasOverride && <span style={{ color: "#d97706", fontWeight: 600 }}>· terms customized</span>}
                         </div>
@@ -2367,7 +2374,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         </div>
                         {effNotes && <div style={{ fontSize: 13, color: "#555", marginTop: 12, fontStyle: "italic" }}>{effNotes}</div>}
                         {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
-                          <div style={{ marginTop: 10, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          <div style={{ marginTop: 12 }}>
+                          <div style={{ fontSize: 11, color: "#888", marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
+                            Deposit more, earn more <InfoTip term="tier" label="bonus tiers" />
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                             {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
                               const isSelected = hb.bonus.bonus_amount === t.bonus
                               return (
@@ -2376,6 +2387,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 </div>
                               )
                             })}
+                          </div>
                           </div>
                         )}
 
@@ -2510,7 +2522,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                   {i < combo.partners.length - 1 && " + "}
                                 </span>
                               ))}
-                              {" "}(+${(combo.comboTotal - combo.selfEffectiveAmount).toLocaleString()} extra)
+                              {" "}(+${(combo.comboTotal - combo.selfEffectiveAmount).toLocaleString()} extra){" "}
+                              <InfoTip term="combo" label="combo offer" />
                             </span>
                           </label>
                         )}
@@ -3706,7 +3719,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="customChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
+                  <label htmlFor="customChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
                 </div>
                 {customChurnable && (
                   <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
@@ -3856,7 +3869,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" id="editCustomChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>This bonus is churnable (can be repeated)</label>
+                  <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
                 </div>
                 {customChurnable && (
                   <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>

@@ -749,22 +749,26 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
       <div style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
         Start tracking your bonuses
       </div>
-      <div style={{ fontSize: 14, color: "#666", lineHeight: 1.5, margin: "0 0 22px" }}>
+      <div style={{ fontSize: 14, color: "#666", lineHeight: 1.5, margin: "0 0 14px" }}>
         Add any bank or credit card bonus you&apos;re working on. Stacks keeps a checklist, tracks your deposits, and remembers your lifetime earnings.
+      </div>
+      <div style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 600, margin: "0 0 18px" }}>
+        New here? Start with a <strong>bank bonus</strong> — it&apos;s the easiest first win (often $200–$400 for opening a checking account and setting up direct deposit).
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
         <a
           href="/bonuses"
           style={{
-            display: "flex", flexDirection: "column", gap: 6,
-            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            display: "flex", flexDirection: "column", gap: 6, position: "relative",
+            padding: 16, background: "#f0faf5", border: "1.5px solid #0d7c5f", borderRadius: 12,
             textDecoration: "none",
           }}
         >
+          <span style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "2px 7px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Start here</span>
           <div style={{ fontSize: 22 }}>🏦</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Bank Bonuses</div>
-          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+          <div style={{ fontSize: 12, color: "#666", lineHeight: 1.4 }}>
             Every live checking, savings, and brokerage offer — one-click track.
           </div>
         </a>

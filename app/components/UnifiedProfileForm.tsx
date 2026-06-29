@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import InfoTip from "./InfoTip"
 import { upsertProfileClient } from "../../lib/profileClient"
 import type { UserProfile, PayFrequency } from "../../lib/profileTypes"
 import {
@@ -118,7 +119,7 @@ export default function UnifiedProfileForm({
       </p>
 
       {/* ── Paycheck (core) ── */}
-      <Section title="Paycheck" required>
+      <Section title="Paycheck" required titleExtra={<InfoTip term="payProfile" label="pay profile" />}>
         <Row label="State">
           <select
             value={state}
@@ -146,7 +147,7 @@ export default function UnifiedProfileForm({
         <Row label="Paycheck amount">
           <NumInput value={paycheckAmount} onChange={setPaycheckAmount} prefix="$" />
         </Row>
-        <Row label="Direct deposit slots">
+        <Row label="Direct deposit slots" labelExtra={<InfoTip term="ddSlots" label="direct deposit slots" />}>
           <NumInput value={ddSlots} onChange={setDdSlots} min={1} max={8} />
         </Row>
         <Row label="Second income (optional)">
@@ -209,6 +210,9 @@ export default function UnifiedProfileForm({
         expanded={spendingExpanded}
         onToggle={() => setSpendingExpanded(!spendingExpanded)}
       >
+        <div style={{ fontSize: 12, color: "#888", lineHeight: 1.5, marginBottom: 4 }}>
+          Tell Stacks roughly what you spend each month — it's used to estimate which credit-card bonuses are worth it for you.
+        </div>
         <Row label="Monthly spend">
           <NumInput
             value={monthlySpend === "" ? 0 : monthlySpend}
@@ -301,20 +305,21 @@ const inputStyle: React.CSSProperties = {
   color: "#111",
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({ label, labelExtra, children }: { label: string; labelExtra?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid #f2f2f2" }}>
-      <label style={{ fontSize: 13, color: "#555", flex: "0 0 180px" }}>{label}</label>
+      <label style={{ fontSize: 13, color: "#555", flex: "0 0 180px", display: "inline-flex", alignItems: "center", gap: 5 }}>{label}{labelExtra}</label>
       {children}
     </div>
   )
 }
 
-function Section({ title, required, children }: { title: string; required?: boolean; children: React.ReactNode }) {
+function Section({ title, required, titleExtra, children }: { title: string; required?: boolean; titleExtra?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "16px 20px", marginBottom: 14 }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
         {title}
+        {titleExtra}
         {required && <span style={{ fontSize: 10, background: "#0d7c5f", color: "#fff", padding: "2px 6px", borderRadius: 3, fontWeight: 700 }}>REQUIRED</span>}
       </div>
       {children}

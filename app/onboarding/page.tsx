@@ -10,6 +10,7 @@ import { bonuses as checkingBonuses } from "@/lib/data/bonuses"
 import { savingsBonuses } from "@/lib/data/savingsBonuses"
 import { createClient } from "@/lib/supabase/client"
 import { track } from "@/lib/analytics"
+import InfoTip from "../components/InfoTip"
 
 // Size of the live catalog we sequence from — used to contrast the curated
 // plan against the full pool ("the X most profitable, picked from N tracked").
@@ -279,6 +280,9 @@ function OnboardingInner() {
                 Tell us about your finances
               </h1>
               <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine — enter 0 for anything that doesn't apply. The more we know, the more bonuses we can find (savings &amp; credit-card too).</p>
+              <p style={{ fontSize: 13, color: "#0d7c5f", margin: "10px 0 0", lineHeight: 1.5 }}>
+                This stays private — it's only used to personalize your bonus plan. We never sell your data or touch your accounts.
+              </p>
             </div>
             <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>
               Paycheck amount <span style={{ color: "#bbb" }}>({FREQ_LABEL[frequency]}, take-home)</span>
@@ -302,7 +306,7 @@ function OnboardingInner() {
             </div>
             <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Income sources <span style={{ color: "#bbb" }}>(DD slots)</span></div>
+                <div style={{ fontSize: 13, color: "#999", marginBottom: 6, display: "inline-flex", alignItems: "center", gap: 5 }}>How many paychecks can you split? <span style={{ color: "#bbb" }}>(most people: 1)</span> <InfoTip term="ddSlots" label="paychecks you can split" /></div>
                 <select value={ddSlots} onChange={e => setDdSlots(e.target.value)}
                   style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
                   <option value="1">1 job</option>
@@ -327,6 +331,7 @@ function OnboardingInner() {
                 </div>
               </div>
             </div>
+            <div style={{ fontSize: 12, color: "#bbb", margin: "-12px 0 24px" }}>Enter 0 for anything you're not into right now — you can add it later.</div>
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(unlocks state-specific bonuses)</span></div>
               <select value={userState} onChange={e => setUserState(e.target.value)}
