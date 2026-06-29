@@ -40,6 +40,8 @@ const FREQ_LABEL: Record<PayFrequency, string> = {
   monthly: "monthly",
 }
 
+const STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]
+
 type Step = "frequency" | "paycheck" | "projection"
 
 // One row in the projection list, normalized across all three sequencers
@@ -77,10 +79,9 @@ function OnboardingInner() {
   const [userState, setUserState] = useState<string>("")
   const [militaryAffiliated, setMilitaryAffiliated] = useState<boolean>(false)
   const [ddSlots, setDdSlots] = useState<string>("1")
-  // Empty by default (not "0") so the user must consciously enter a value —
-  // zero is allowed, but they can't silently skip past and miss the savings /
-  // credit-card bonuses those numbers unlock. Button stays disabled until both
-  // are filled (see `disabled` on "Show my projection").
+  // Optional, in the "fuller plan" group. Empty is treated as 0 (no savings /
+  // credit-card bonuses surfaced) — the projection only gates on paycheck +
+  // state, so a beginner can get to value fast and add these later.
   const [savingsBalance, setSavingsBalance] = useState<string>("")
   const [monthlySpend, setMonthlySpend] = useState<string>("")
   const [bonuses, setBonuses] = useState<ProjItem[]>([])
@@ -248,7 +249,7 @@ function OnboardingInner() {
         {step === "frequency" && (
           <div>
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 1 of 2</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 1 of 3 · Takes ~30 seconds</div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                 Let's estimate your bonus earnings.
               </h1>
@@ -275,11 +276,11 @@ function OnboardingInner() {
         {step === "paycheck" && (
           <div>
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 2 of 2</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Step 2 of 3 · Your finances</div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                Tell us about your finances
+                Two quick numbers
               </h1>
-              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine — enter 0 for anything that doesn't apply. The more we know, the more bonuses we can find (savings &amp; credit-card too).</p>
+              <p style={{ fontSize: 15, color: "#999", margin: 0 }}>Estimates are fine. Just your paycheck and state to start — add the rest if you want even more bonuses.</p>
               <p style={{ fontSize: 13, color: "#0d7c5f", margin: "10px 0 0", lineHeight: 1.5 }}>
                 This stays private — it's only used to personalize your bonus plan. We never sell your data or touch your accounts.
               </p>
@@ -304,8 +305,45 @@ function OnboardingInner() {
                 onKeyDown={e => e.key === "Enter" && handleBuildPlan()}
               />
             </div>
-            <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 140 }}>
+            {/* State — required */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(unlocks state-specific bonuses)</span></div>
+              <select value={userState} onChange={e => setUserState(e.target.value)}
+                style={{ width: "100%", padding: "14px 14px", fontSize: 16, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: userState ? "#111" : "#999" }}>
+                <option value="" disabled>Select your state</option>
+                {STATES.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Optional — a fuller plan */}
+            <div style={{ border: "1px solid #ececec", borderRadius: 12, padding: "16px", marginBottom: 22, background: "#fcfcfc" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#555" }}>
+                Want a fuller plan? <span style={{ color: "#bbb", fontWeight: 400 }}>· optional, skip anytime</span>
+              </div>
+              <div style={{ fontSize: 12, color: "#aaa", margin: "2px 0 14px" }}>
+                Add any of these to also surface savings and credit-card bonuses. You can add them later, too.
+              </div>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available</div>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
+                    <input type="number" value={savingsBalance} onChange={e => setSavingsBalance(e.target.value)}
+                      style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
+                  </div>
+                </div>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Monthly card spend <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Beta</span></div>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
+                    <input type="number" value={monthlySpend} onChange={e => setMonthlySpend(e.target.value)}
+                      style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 13, color: "#999", marginBottom: 6, display: "inline-flex", alignItems: "center", gap: 5 }}>How many paychecks can you split? <span style={{ color: "#bbb" }}>(most people: 1)</span> <InfoTip term="ddSlots" label="paychecks you can split" /></div>
                 <select value={ddSlots} onChange={e => setDdSlots(e.target.value)}
                   style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111" }}>
@@ -314,35 +352,6 @@ function OnboardingInner() {
                   <option value="3">3 income sources</option>
                 </select>
               </div>
-              <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Savings available <span style={{ color: "#bbb" }}>(0 if none)</span></div>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
-                  <input type="number" value={savingsBalance} onChange={e => setSavingsBalance(e.target.value)}
-                    style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
-                </div>
-              </div>
-              <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>Monthly card spend <span style={{ color: "#0d7c5f", fontWeight: 700 }}>Beta</span> <span style={{ color: "#bbb" }}>(0 if none)</span></div>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }}>$</span>
-                  <input type="number" value={monthlySpend} onChange={e => setMonthlySpend(e.target.value)}
-                    style={{ width: "100%", padding: "12px 14px 12px 30px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: "#111", boxSizing: "border-box" as const }} placeholder="0" />
-                </div>
-              </div>
-            </div>
-            <div style={{ fontSize: 12, color: "#bbb", margin: "-12px 0 24px" }}>Enter 0 for anything you're not into right now — you can add it later.</div>
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 13, color: "#999", marginBottom: 6 }}>What state do you live in? <span style={{ color: "#bbb" }}>(unlocks state-specific bonuses)</span></div>
-              <select value={userState} onChange={e => setUserState(e.target.value)}
-                style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", color: userState ? "#111" : "#999" }}>
-                <option value="" disabled>Select your state</option>
-                {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-            <div style={{ marginBottom: 18 }}>
               <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", border: "2px solid #e8e8e8", borderRadius: 12, background: "#fff", cursor: "pointer" }}>
                 <input
                   type="checkbox"
@@ -358,12 +367,12 @@ function OnboardingInner() {
                 </span>
               </label>
             </div>
-            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0 || !userState || savingsBalance === "" || monthlySpend === ""}
+            <button onClick={handleBuildPlan} disabled={!paycheckAmt || paycheckAmt <= 0 || !userState}
               style={{
                 width: "100%", padding: "16px", fontSize: 16, fontWeight: 700,
-                background: paycheckAmt > 0 && userState && savingsBalance !== "" && monthlySpend !== "" ? "#0d7c5f" : "#e0e0e0",
+                background: paycheckAmt > 0 && userState ? "#0d7c5f" : "#e0e0e0",
                 color: "#fff", border: "none", borderRadius: 12,
-                cursor: paycheckAmt > 0 && userState && savingsBalance !== "" && monthlySpend !== "" ? "pointer" : "not-allowed",
+                cursor: paycheckAmt > 0 && userState ? "pointer" : "not-allowed",
                 transition: "background 0.15s",
               }}>
               Show my projection →
@@ -457,14 +466,44 @@ function OnboardingInner() {
                   </div>
                 )}
 
-                {/* ── Paywall CTA ── */}
+                {/* ── Two ways to start ── */}
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#999", textAlign: "center" as const, textTransform: "uppercase", letterSpacing: "0.07em", marginTop: 22, marginBottom: 12 }}>
+                  Two ways to start
+                </div>
+
+                {/* FREE — a clear, co-equal option (not a buried link) */}
+                <div style={{ background: "#fff", border: "1.5px solid #d8d8d8", borderRadius: 14, padding: "20px 22px", marginBottom: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: "#111" }}>Start free</div>
+                      <div style={{ fontSize: 13, color: "#666", marginTop: 3, lineHeight: 1.5 }}>
+                        Track your first bonus with step-by-step checklists and deposit tracking — no card required.
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111", flexShrink: 0 }}>$0</div>
+                  </div>
+                  <a href={isLoggedIn ? "/stacksos" : "/#signup"}
+                    style={{ display: "block", marginTop: 14, padding: "14px", textAlign: "center" as const, fontSize: 15, fontWeight: 700, color: "#0d7c5f", background: "#f0faf5", border: "1.5px solid #0d7c5f", borderRadius: 10, textDecoration: "none" }}>
+                    Start free →
+                  </a>
+                </div>
+
+                {/* PRO — unlock the full sequenced plan */}
                 <div style={{
                   background: "#fff", border: "2px solid #0d7c5f", borderRadius: 14,
-                  padding: "24px", marginTop: 8,
+                  padding: "22px", position: "relative" as const,
                   boxShadow: "0 4px 20px rgba(13,124,95,0.08)",
                 }}>
+                  <span style={{ position: "absolute", top: -10, left: 20, fontSize: 10, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "3px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Most earnings</span>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: "#111", marginBottom: 4 }}>
+                    Unlock your full ${yearTotal.toLocaleString()} plan
+                  </div>
+                  <div style={{ fontSize: 13, color: "#666", marginBottom: 16, lineHeight: 1.5 }}>
+                    The Sequencer <InfoTip term="sequencer" label="the Sequencer" /> ranks &amp; schedules all {bonuses.length} bonuses in the best order for your paycheck — plus eligibility &amp; cooldown tracking so you never miss one.
+                  </div>
+
                   {/* Plan toggle */}
-                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 16 }}>
+                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 14 }}>
                     <button onClick={() => setSelectedPlan("annual")} style={{
                       flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: 600, borderRadius: 6,
                       border: "none", cursor: "pointer",
@@ -489,29 +528,13 @@ function OnboardingInner() {
                   </div>
 
                   {selectedPlan === "annual" ? (
-                    <>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
-                        $99 unlocks a <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()} plan.</strong>
-                      </div>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
-                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 99)}x return.</strong>
-                      </div>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                        Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
-                      </div>
-                    </>
+                    <div style={{ fontSize: 13, color: "#888", marginBottom: 14 }}>
+                      <strong style={{ color: "#111" }}>$99/year</strong> unlocks your <strong style={{ color: "#111" }}>${yearTotal.toLocaleString()}</strong> plan — a <strong style={{ color: "#0d7c5f" }}>{Math.round(yearTotal / 99)}x</strong> return.
+                    </div>
                   ) : (
-                    <>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>
-                        $10/mo unlocks ~<strong style={{ color: "#111" }}>${Math.round(yearTotal / 12).toLocaleString()}/month</strong> in bonuses.
-                      </div>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>
-                        That's a <strong style={{ color: "#111" }}>{Math.round(yearTotal / 120)}x return.</strong>
-                      </div>
-                      <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>
-                        Most first bonuses pay <strong style={{ color: "#111" }}>$300–$400.</strong>
-                      </div>
-                    </>
+                    <div style={{ fontSize: 13, color: "#888", marginBottom: 14 }}>
+                      <strong style={{ color: "#111" }}>$10/month</strong> unlocks ~<strong style={{ color: "#111" }}>${Math.round(yearTotal / 12).toLocaleString()}/mo</strong> in bonuses — a <strong style={{ color: "#0d7c5f" }}>{Math.round(yearTotal / 120)}x</strong> return.
+                    </div>
                   )}
 
                   <button onClick={handleCheckout} disabled={checkoutLoading}
@@ -521,7 +544,7 @@ function OnboardingInner() {
                       color: "#fff", border: "none", borderRadius: 10,
                       cursor: checkoutLoading ? "wait" : "pointer",
                     }}>
-                    {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my bonus plan for $99/year" : "Unlock my bonus plan for $10/mo"}
+                    {checkoutLoading ? "Loading…" : selectedPlan === "annual" ? "Unlock my plan — $99/year" : "Unlock my plan — $10/mo"}
                   </button>
                   {checkoutError && (
                     <div style={{ fontSize: 12, color: "#dc2626", textAlign: "center" as const, marginTop: 8 }}>
@@ -530,29 +553,6 @@ function OnboardingInner() {
                   )}
                   <div style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 10 }}>
                     {selectedPlan === "annual" ? "Billed annually · Cancel anytime" : "Cancel anytime"}
-                  </div>
-
-                  <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 18, paddingTop: 14, textAlign: "center" as const }}>
-                    <a href={isLoggedIn ? "/stacksos" : "/#signup"} style={{ fontSize: 14, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
-                      Or, start tracking bonuses for free →
-                    </a>
-                  </div>
-
-                  {/* Feature checklist */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
-                    {[
-                      "Personalized bonus queue",
-                      "Step-by-step checklists",
-                      "Deposit tracking",
-                      "12-month earnings projection",
-                      "Cooldown + eligibility tracking",
-                      "Bonus details + requirements",
-                    ].map((feature) => (
-                      <div key={feature} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ color: "#0d7c5f", fontSize: 16, fontWeight: 700 }}>✓</span>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{feature}</span>
-                      </div>
-                    ))}
                   </div>
                 </div>
                 <button onClick={() => setStep("paycheck")}
