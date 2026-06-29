@@ -347,16 +347,33 @@ def llm_judge(png, beat):
         ctx += f" This beat is labelled: {beat['label']}."
     if beat.get("expect"):
         ctx += f" It should show: {beat['expect']}."
+    # Calibrated rubric: a generic "is anything clipped/wrong?" prompt cries wolf on this
+    # content (it flagged the video's real 73%-effective-APY thesis as an "error", normal
+    # web-page b-roll cropping, intentional page-focus blur + privacy redaction, and the host's
+    # physical whiteboard near the frame edge). Fail ONLY for genuine production mistakes.
     prompt = (
-        "You are QC-ing ONE frame from a US credit-card / bank-bonus finance YouTube edit." + ctx +
-        " Is anything WRONG with this frame as a finished, published edit? Specifically check: "
-        "(a) is the host's face covered or obscured by a graphic/overlay/card? "
-        "(b) is any text clipped, overflowing, or running off the edge of the frame? "
-        "(c) is there a stray artifact, debug grid, placeholder, black bar, or rendering glitch? "
-        "Ignore intentional lower-thirds/captions that DON'T cover the face and DON'T clip. "
+        "You are QC-ing ONE frame from a finished, PUBLISHED US credit-card / bank-bonus finance "
+        "YouTube video." + ctx +
+        " Fail the frame ONLY for a real production mistake a viewer would notice:\n"
+        " - a graphic / overlay / title-card that OBSCURES the host's face (covers his eyes or mouth); or\n"
+        " - a clearly BROKEN or MISSING asset: a magenta/checkerboard/solid placeholder box, literal "
+        "'PLACEHOLDER'/'TODO'/'undefined'/'NaN'/error text, or a hard rendering glitch; or\n"
+        " - OUR OWN added graphics (captions, number callouts, lower-thirds, title cards) that are garbled, "
+        "overlapping illegibly, or cut off mid-word.\n"
+        "Do NOT flag the following — they are intentional and correct:\n"
+        " - any dollar amount, percent, or APY that merely seems high or surprising; this is the creator's real "
+        "claim (a high effective/annualized APY from a bonus is the whole point) — never second-guess the figures.\n"
+        " - a website or app SCREENSHOT used as b-roll showing browser tabs, nav menus, cookie banners, or page "
+        "content cropped at the frame edges — that is normal framing of a captured page.\n"
+        " - deliberate effects: a blurred/dimmed page with ONE highlighted/spotlit region, a yellow highlighter "
+        "sweep, or BLACK PRIVACY-REDACTION bars over account/business details.\n"
+        " - the host's physical SET (whiteboard, corkboard, papers) sitting near or partly past a frame edge.\n"
+        " - the host holding or gesturing with a prop (a card, a statement) near his face.\n"
+        " - a full-screen b-roll cutaway where the host is not visible at all (intentional).\n"
+        "If the beat is labelled a graphic / b-roll window, EXPECT a page or cutaway and treat an absent face or "
+        "edge-cropped page as normal. Bias toward PASS; fail only when you are confident it is a real mistake.\n"
         "Respond with STRICT JSON and nothing else: "
-        '{"pass": true|false, "issues": ["short specific issue", ...]}. '
-        "Empty issues list when the frame is clean."
+        '{"pass": true|false, "issues": ["short specific issue", ...]}. Empty issues list when clean.'
     )
     body = json.dumps({
         "model": "claude-opus-4-8",
