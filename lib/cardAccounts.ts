@@ -8,8 +8,31 @@ import type { CardAccountDraft } from "./creditReportImport"
 export type CardAccount = CardAccountDraft & {
   id: string
   user_id: string
+  // Welcome-bonus history for issuer lifetime / 48-month rules (migration 038).
+  // Tri-state: true = earned, false = not earned, null/undefined = unknown.
+  bonus_earned?: boolean | null
+  bonus_earned_date?: string | null
   created_at?: string
   updated_at?: string
+}
+
+// Fields a user can edit in place after a card is saved (e.g. marking the
+// welcome bonus earned for Amex lifetime / Citi 48-month rules).
+export type CardAccountPatch = Partial<
+  Pick<CardAccount, "bonus_earned" | "bonus_earned_date" | "closed_date" | "credit_limit" | "card_type">
+>
+
+export async function updateCardAccount(id: string, patch: CardAccountPatch): Promise<boolean> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from("card_accounts")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", id)
+  if (error) {
+    reportError("Could not update card", error)
+    return false
+  }
+  return true
 }
 
 export async function getCardAccounts(userId: string): Promise<CardAccount[]> {

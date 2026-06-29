@@ -1,5 +1,8 @@
 "use client"
 
+import InfoTip from "./InfoTip"
+import type { GlossaryKey } from "../../lib/glossary"
+
 /**
  * Slim 3-number summary that sits above the dashboard view tabs.
  * Replaces the giant "Projected 12 Month Stack" hero — the projection
@@ -34,7 +37,7 @@ export default function DashboardGoalBar({
       }}
       className="goal-bar"
     >
-      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis locked={potentialLocked} />
+      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis locked={potentialLocked} tipTerm="stackPotential" />
       <Divider />
       <Stat label="In progress" value={inProgress} />
       <Divider />
@@ -49,11 +52,12 @@ export default function DashboardGoalBar({
   )
 }
 
-function Stat({ label, value, emphasis = false, locked = false }: { label: string; value: number; emphasis?: boolean; locked?: boolean }) {
+function Stat({ label, value, emphasis = false, locked = false, tipTerm }: { label: string; value: number; emphasis?: boolean; locked?: boolean; tipTerm?: GlossaryKey }) {
   return (
     <div style={{ flex: 1, minWidth: 110 }}>
-      <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", opacity: 0.75 }}>
+      <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", opacity: 0.75, display: "flex", alignItems: "center", gap: 4 }}>
         {label}
+        {tipTerm ? <InfoTip term={tipTerm} size={12} /> : null}
       </div>
       <div
         style={{

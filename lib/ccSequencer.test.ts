@@ -116,3 +116,36 @@ describe("sequenceCards — state restriction", () => {
     expect(sequenced.find(s => s.card.id === creditCardBonuses[0].id)).toBeUndefined()
   })
 })
+
+describe("sequenceCards — approval eligibility (opt-in)", () => {
+  const ASOF = "2026-06-28"
+  // Five personal cards opened in the last 24 months → Chase 5/24 hard deny.
+  const at524 = [
+    { issuer: "Chase", card_type: "personal" as const, open_date: "2025-01-01" },
+    { issuer: "Amex", card_type: "personal" as const, open_date: "2025-02-01" },
+    { issuer: "Citi", card_type: "personal" as const, open_date: "2025-03-01" },
+    { issuer: "BofA", card_type: "personal" as const, open_date: "2025-04-01" },
+    { issuer: "Barclays", card_type: "personal" as const, open_date: "2025-05-01" },
+  ]
+
+  it("drops Chase cards when the user is at 5/24", () => {
+    const seq = sequenceCards(
+      creditCardBonuses, 3000, null, 6, false, null, false, null, "return_per_month", null,
+      { heldCards: at524, asOf: ASOF },
+    )
+    expect(seq.some(s => s.card.issuer === "chase")).toBe(false)
+  })
+
+  it("leaves Chase cards untouched when no eligibility is passed (default)", () => {
+    const seq = sequenceCards(creditCardBonuses, 3000, null, 6)
+    expect(seq.some(s => s.card.issuer === "chase")).toBe(true)
+  })
+
+  it("does not filter when held cards are empty", () => {
+    const seq = sequenceCards(
+      creditCardBonuses, 3000, null, 6, false, null, false, null, "return_per_month", null,
+      { heldCards: [], asOf: ASOF },
+    )
+    expect(seq.some(s => s.card.issuer === "chase")).toBe(true)
+  })
+})

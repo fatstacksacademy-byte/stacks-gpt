@@ -1308,7 +1308,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 110,
     tiers: [{ min_deposit: 30000, bonus_amount: 1000 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 12, early_closure_fee: 0, monthly_fee_waived: true },
+    fees: { monthly_fee: 50, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
@@ -1434,15 +1434,15 @@ export const savingsBonuses: SavingsBonus[] = [
       states_allowed: ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "New business checking customers only. State restricted. Apply-by June 16, 2026 has PASSED — verify it's been renewed before featuring. Monthly fee NOT waivable at the bonus deposit: the $400 tier opens Unlimited Business Checking ($20/mo, waived only at a $10k deposit-relationship balance) and the $1,000 tier opens Unlimited Plus ($40/mo, waived only at $50k) — neither the $5k nor the $20k deposit clears its threshold (the cash bonus doesn't count), so plan on paying the monthly fee through the hold.",
+      eligibility_notes: "New business checking customers only. State restricted. Apply by June 28, 2026 (confirmed live on huntington.com 2026-06-26). Monthly fee NOT waivable at the bonus deposit: the $400 tier opens Unlimited Business Checking ($20/mo, waived only at a $10k total deposit-relationship balance) and the $1,000 tier opens Unlimited Plus ($40/mo, waived only at $50k) — neither the $5k nor the $20k deposit clears its threshold (the cash bonus doesn't count), so plan on paying the monthly fee through the hold.",
     },
     source_links: [
       "https://www.huntington.com/business-banking-promotions-offers",
       "https://www.doctorofcredit.com/huntington-1000-business-checking-bonus/",
     ],
-    raw_excerpt: "Huntington business checking bonus: $20,000 deposit within 60 days, maintain 60 days for $1,000 ($5,000 for $400). State restricted. Expires June 16, 2026.",
+    raw_excerpt: "Huntington business checking bonus: $20,000 deposit within 30 days + maintain 60 days for $1,000 ($5,000 within 60 days for $400). State restricted. Apply by June 28, 2026.",
     business: true,
-    notes: "Balance-hold business checking bonus (no DD). Near expiry (~June 16, 2026). base_apy set 0.",
+    notes: "Balance-hold business checking bonus (no DD). base_apy set 0. Monthly fee not waived at deposit (Unlimited $20/mo@$10k, Unlimited Plus $40/mo@$50k relationship).",
   },
   {
     id: "mt-bank-business-checking-1500-2026",

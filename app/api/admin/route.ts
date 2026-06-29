@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
+import { readFile, writeFile, rename } from "node:fs/promises"
+import { join } from "node:path"
 import { createClient } from "@/lib/supabase/server"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
 const ADMIN_EMAIL = "booth.nathaniel@gmail.com"
+const LEADS_PATH = join(process.cwd(), "review-queue", "leads.json")
 
 function createServiceClient() {
   return createSupabaseClient(
@@ -475,43 +478,20 @@ export async function GET(req: NextRequest) {
   }
 
   if (action === "discover-queue") {
-    // Leads now live in Supabase (discovery_leads) — cross-machine + prod-safe.
-    // The discover pipeline upserts rows; this UI reads them + writes status.
-    const { data, error } = await supabase
-      .from("discovery_leads")
-      .select("*")
-      .order("discovered_at", { ascending: false })
-    if (error) {
-      console.error("[admin] discover-queue query failed:", error.message)
-      return NextResponse.json({ error: error.message, leads: [] }, { status: 500 })
+    // Lead-review queue lives in review-queue/leads.json (file-based; the
+    // discover-bonuses pipeline writes it, this admin UI reads + writes
+    // status). Local-dev only — review-queue/ is gitignored.
+    try {
+      const raw = await readFile(LEADS_PATH, "utf8")
+      const leads = JSON.parse(raw)
+      return NextResponse.json({ leads, count: Array.isArray(leads) ? leads.length : 0 })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      // Missing file is normal — discover hasn't run yet.
+      if (msg.includes("ENOENT")) return NextResponse.json({ leads: [], count: 0 })
+      console.error("[admin] discover-queue read failed:", msg)
+      return NextResponse.json({ error: msg, leads: [] }, { status: 500 })
     }
-    // Flatten each row to the lead shape the review UI expects: spread the
-    // original Lead/Proposal payload, then overlay the DB columns (id = the
-    // row uuid, so decide actions target a single row unambiguously). Map
-    // card fields onto bank/product so both kinds render in the list.
-    const leads = (data ?? []).map((r: Record<string, unknown>) => {
-      const p = (r.payload && typeof r.payload === "object" ? r.payload : {}) as Record<string, unknown>
-      return {
-        ...p,
-        id: r.id, // row uuid — stable handle for discover-decide
-        lead_key: r.lead_key,
-        kind: r.kind,
-        status: r.status,
-        classification: r.classification ?? p.classification,
-        confidence: r.confidence ?? p.confidence,
-        bank: p.bank ?? r.institution,
-        product: p.product ?? r.name,
-        bonus_amount: r.bonus_amount ?? p.bonus_amount ?? null,
-        canonical_url: r.canonical_url ?? p.canonical_url ?? null,
-        source_urls: p.source_urls ?? (r.source_url ? [r.source_url] : []),
-        flags: p.flags ?? r.flags ?? [],
-        decided_at: r.decided_at,
-        decided_by: r.decided_by,
-        decision_notes: r.decision_notes,
-        discovered_at: r.discovered_at,
-      }
-    })
-    return NextResponse.json({ leads, count: leads.length })
   }
 
   if (action === "card-url-overrides") {
@@ -1018,12 +998,14 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "discover-decide") {
-    // Update a lead's status in Supabase (discovery_leads). Status values:
-    //   approved  — promote step writes it to the catalog on the next run
+    // Update a lead's status in review-queue/leads.json. Status values match
+    // what the discover apply pipeline already understands:
+    //   approved  — drafted on next `npm run discover:bonuses -- --apply-approved`
     //   dismissed — hidden from queue; kept for dedup so we don't re-surface
     //   snoozed   — hidden from queue but re-surfaces if the lead changes
-    //   new       — back to unreviewed
-    // `id` is the row uuid (discover-queue returns it as the lead id).
+    // Atomic write: temp file + rename so a crash mid-write can't corrupt
+    // the queue. Optimistic concurrency via discovered_at check — if the file
+    // was rewritten by discover under us, the lead might be gone or different.
     const body = await req.json().catch(() => ({}))
     const { id, status, notes } = body as {
       id?: string
@@ -1037,24 +1019,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid status" }, { status: 400 })
     }
 
-    const svc = createServiceClient()
-    const { data, error } = await svc
-      .from("discovery_leads")
-      .update({
-        status,
-        decided_at: new Date().toISOString(),
-        decided_by: admin.email ?? null,
-        decision_notes: notes ?? null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select("id")
-    if (error) {
-      console.error("[admin] discover-decide update failed:", error.message)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    let raw: string
+    try {
+      raw = await readFile(LEADS_PATH, "utf8")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ error: `leads.json read failed: ${msg}` }, { status: 500 })
     }
-    if (!data || data.length === 0) {
+    let leads: Array<Record<string, unknown>>
+    try {
+      leads = JSON.parse(raw)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ error: `leads.json parse failed: ${msg}` }, { status: 500 })
+    }
+    const idx = leads.findIndex((l) => l.id === id)
+    if (idx < 0) {
       return NextResponse.json({ error: "lead id not found in queue" }, { status: 404 })
+    }
+    leads[idx] = {
+      ...leads[idx],
+      status,
+      decided_at: new Date().toISOString(),
+      decided_by: admin.email ?? null,
+      decision_notes: notes ?? null,
+    }
+    const tmpPath = `${LEADS_PATH}.tmp.${process.pid}.${Date.now()}`
+    try {
+      await writeFile(tmpPath, JSON.stringify(leads, null, 2))
+      await rename(tmpPath, LEADS_PATH)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error("[admin] discover-decide write failed:", msg)
+      return NextResponse.json({ error: `write failed: ${msg}` }, { status: 500 })
     }
     return NextResponse.json({ ok: true, id, status })
   }

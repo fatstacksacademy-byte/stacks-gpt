@@ -9,6 +9,10 @@ export type CompletedBonus = {
   /** When the bonus actually posted (distinct from opened/closed). Requires
    *  migration 033; null on legacy records and until the user enters it. */
   bonus_posted_date?: string | null
+  /** Which direct-deposit source triggered the bonus ("Employer / payroll" or
+   *  an institution name). Captured on the "Bonus Posted" step. Requires
+   *  migration 037; null on legacy records and when the user skips it. */
+  dd_method?: string | null
   current_step: string | null
   /** User flagged the record via "Already had" but skipped entering dates.
    *  Cooldown math should exclude or warn on these since we can't trust the

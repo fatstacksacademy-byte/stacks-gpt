@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
 import { Suspense } from "react"
+import AnalyticsGate from "./components/AnalyticsGate"
 import ToastHost from "./components/ToastHost"
 import PostHogProvider from "./components/PostHogProvider"
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar"
@@ -118,7 +118,7 @@ export default function RootLayout({
         <ServiceWorkerRegistrar />
         <FloatingPushButton />
       </body>
-      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+      {GA_ID && <AnalyticsGate gaId={GA_ID} />}
     </html>
   )
 }

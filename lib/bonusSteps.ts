@@ -70,11 +70,11 @@ export type StepDetail = {
 }
 
 const MILESTONE_DEFS: { key: MilestoneKey; level: number; label: string }[] = [
-  { key: "account_opened", level: 1, label: "Account Opened" },
-  { key: "dd_confirmed", level: 2, label: "Set Up Recurring Direct Deposit" },
-  { key: "deposit_met", level: 3, label: "Deposit Requirement Met" },
-  { key: "bonus_posted", level: 4, label: "Bonus Posted" },
-  { key: "safe_to_close", level: 5, label: "Safe to Close" },
+  { key: "account_opened", level: 1, label: "Account opened" },
+  { key: "dd_confirmed", level: 2, label: "Route your paycheck to this account" },
+  { key: "deposit_met", level: 3, label: "Direct-deposit requirement met" },
+  { key: "bonus_posted", level: 4, label: "Bonus posted" },
+  { key: "safe_to_close", level: 5, label: "Safe to close" },
 ]
 
 const DAYS_PER_PAY: Record<string, number> = {

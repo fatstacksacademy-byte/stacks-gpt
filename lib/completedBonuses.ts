@@ -77,7 +77,7 @@ export async function approveApplication(
  * it — so the action never breaks if code ships ahead of the migration.
  */
 export async function markBonusPosted(
-  recordId: string, actualAmount: number, postedDate: string
+  recordId: string, actualAmount: number, postedDate: string, ddMethod?: string | null
 ): Promise<void> {
   const supabase = createClient()
   const base = {
@@ -86,17 +86,35 @@ export async function markBonusPosted(
     actual_amount: actualAmount,
     updated_at: new Date().toISOString(),
   }
+  // Both bonus_posted_date (migration 033) and dd_method (migration 037) are
+  // optional columns. Try the richest update first and progressively drop the
+  // columns that may not exist yet, so the action never breaks if code ships
+  // ahead of a migration.
+  const cleanedDd = ddMethod && ddMethod.trim() ? ddMethod.trim() : null
+  const attempts = [
+    { ...base, bonus_posted_date: postedDate, dd_method: cleanedDd },
+    { ...base, bonus_posted_date: postedDate },
+    base,
+  ]
+  for (let i = 0; i < attempts.length; i++) {
+    const { error } = await supabase.from("completed_bonuses").update(attempts[i]).eq("id", recordId)
+    if (!error) return
+    if (i === attempts.length - 1) reportError("Could not mark bonus posted", error)
+  }
+}
+
+/**
+ * Correct the recorded account-open date for an in-flight bonus without
+ * touching its milestone progress (current_step). Used by the inline "✎" on
+ * the tracker's "Account Opened" step.
+ */
+export async function updateOpenedDate(recordId: string, openedDate: string): Promise<void> {
+  const supabase = createClient()
   const { error } = await supabase
     .from("completed_bonuses")
-    .update({ ...base, bonus_posted_date: postedDate })
+    .update({ opened_date: openedDate, updated_at: new Date().toISOString() })
     .eq("id", recordId)
-  if (!error) return
-  // Column likely missing (migration 033 not applied) — retry without the date.
-  const { error: fallbackErr } = await supabase
-    .from("completed_bonuses")
-    .update(base)
-    .eq("id", recordId)
-  if (fallbackErr) reportError("Could not mark bonus posted", fallbackErr)
+  if (error) reportError("Could not update open date", error)
 }
 
 /**

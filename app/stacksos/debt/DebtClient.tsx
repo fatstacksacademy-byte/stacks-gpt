@@ -8,6 +8,7 @@
 
 import React, { useEffect, useMemo, useState } from "react"
 import CheckpointNav from "../../components/CheckpointNav"
+import InfoTip from "../../components/InfoTip"
 import {
   compareStrategies,
   loanScenarioGrid,
@@ -388,26 +389,36 @@ function Dashboard({
 
 const GOALS: StrategyGoal[] = ["lowest_cost", "fastest", "lowest_payment", "protect_credit"]
 
+// Plain-English trade-off shown under each goal so beginners grasp the choice.
+const GOAL_BLURB: Record<StrategyGoal, string> = {
+  lowest_cost: "Pay the least interest overall.",
+  fastest: "Debt-free soonest — expect higher payments.",
+  lowest_payment: "Easiest on your monthly budget.",
+  protect_credit: "Avoid score dips and opening new credit.",
+}
+
 function GoalSelector({ goal, onChange }: { goal: StrategyGoal; onChange: (g: StrategyGoal) => void }) {
   return (
     <div style={cardBox}>
       <div style={label}>Optimize for</div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
         {GOALS.map(g => {
           const active = g === goal
           return (
-            <button
-              key={g}
-              onClick={() => onChange(g)}
-              style={{
-                padding: "9px 16px", fontSize: 13, fontWeight: 600, borderRadius: 999, cursor: "pointer",
-                border: active ? `1px solid ${ACCENT}` : "1px solid #e0e0e0",
-                background: active ? ACCENT : "#fff",
-                color: active ? "#fff" : "#555",
-              }}
-            >
-              {STRATEGY_GOAL_LABEL[g]}
-            </button>
+            <div key={g} style={{ display: "flex", flexDirection: "column", gap: 4, maxWidth: 200 }}>
+              <button
+                onClick={() => onChange(g)}
+                style={{
+                  padding: "9px 16px", fontSize: 13, fontWeight: 600, borderRadius: 999, cursor: "pointer",
+                  border: active ? `1px solid ${ACCENT}` : "1px solid #e0e0e0",
+                  background: active ? ACCENT : "#fff",
+                  color: active ? "#fff" : "#555",
+                }}
+              >
+                {STRATEGY_GOAL_LABEL[g]}
+              </button>
+              <div style={{ fontSize: 11, color: "#999", lineHeight: 1.4, paddingLeft: 4 }}>{GOAL_BLURB[g]}</div>
+            </div>
           )
         })}
       </div>
@@ -485,6 +496,11 @@ function InputsPanel({
           <div style={{ ...muted, marginTop: 4 }}>
             Budget − minimums. {extraCapacity < 0 ? "Negative: minimums exceed your budget." : "Extra that attacks the highest-APR debt."}
           </div>
+          {extraCapacity < 0 && (
+            <div style={{ ...muted, marginTop: 4, color: "#b45309" }}>
+              Increase your monthly budget or pay down a balance before modeling strategies.
+            </div>
+          )}
         </div>
         <NumberField
           labelText="Available cash on hand"
@@ -819,6 +835,9 @@ function ImportReviewRow({
         </div>
         {hasPromo && (
           <>
+            <div style={{ gridColumn: "1 / -1", ...muted, marginTop: -4 }}>
+              Optional — only if your card has a 0% intro period.
+            </div>
             <div>
               <label style={fieldLabel}>Promo APR (optional)</label>
               <PercentInput allowNull value={debt.promoApr ?? null} onChange={v => onChange({ promoApr: v })} />
@@ -964,6 +983,9 @@ function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: 
               <label style={fieldLabel}>Credit limit (optional)</label>
               <input style={inputStyle} type="number" value={draft.creditLimit ?? ""} onChange={e => setCard({ creditLimit: e.target.value === "" ? undefined : num(e.target.value) })} />
             </div>
+            <div style={{ gridColumn: "1 / -1", ...muted, marginTop: -4 }}>
+              Optional — only if your card has a 0% intro period.
+            </div>
             <div>
               <label style={fieldLabel}>Promo APR (optional)</label>
               <PercentInput allowNull value={draft.promoApr ?? null} onChange={v => setCard({ promoApr: v })} />
@@ -1007,7 +1029,9 @@ function ApprovalNote({ status }: { status: ApprovalStatus }) {
   const labelText = status === "prequalified" ? "Prequalified" : "Estimated"
   return (
     <div style={{ ...muted, marginTop: 8, color: "#b45309" }}>
-      {labelText} ≠ approved. Approval and final terms are not guaranteed. Enter your actual offer to compare it accurately.
+      {labelText}
+      {status === "prequalified" && <> <InfoTip term="prequalified" label="prequalified" /></>}
+      {" "}≠ approved. Approval and final terms are not guaranteed. Enter your actual offer to compare it accurately.
     </div>
   )
 }
@@ -1241,6 +1265,7 @@ function OfferRow({
                 color: status === "approved" ? "#0d7c5f" : "#b45309",
                 background: status === "approved" ? "#ecfdf5" : "#fffbeb",
               }}>{status}</span>
+              {status === "prequalified" && <span style={{ marginLeft: 4 }}><InfoTip term="prequalified" label="prequalified" /></span>}
             </div>
             <div style={{ ...muted, marginTop: 2 }}>{summary}</div>
           </div>
@@ -1330,15 +1355,27 @@ function signedMoney(n: number): string {
   return formatMoney(n)
 }
 
+// Concept glossary term for each strategy, so beginners can learn the approach
+// behind the label. Only some kinds map to a defined term.
+const STRATEGY_TERM: Partial<Record<StrategyResult["kind"], "avalanche" | "balanceTransfer">> = {
+  baseline: "avalanche",
+  no_new_credit: "avalanche",
+  balance_transfer: "balanceTransfer",
+}
+
 function StrategyCard({ s, recommended, goal }: { s: StrategyResult; recommended: boolean; goal: StrategyGoal }) {
   const [showAccounts, setShowAccounts] = useState(false)
+  const term = STRATEGY_TERM[s.kind]
   return (
     <div style={{
       border: recommended ? `2px solid ${ACCENT}` : "1px solid #e8e8e8",
       borderRadius: 10, padding: 16, background: recommended ? "#f6fbf9" : "#fff",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{s.label}</div>
+        <div style={{ fontWeight: 700, fontSize: 15, color: "#111", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          {s.label}
+          {term && <InfoTip term={term} label={s.label} />}
+        </div>
         {recommended && (
           <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: ACCENT, borderRadius: 999, padding: "3px 10px" }}>
             Recommended for {STRATEGY_GOAL_LABEL[goal]}
