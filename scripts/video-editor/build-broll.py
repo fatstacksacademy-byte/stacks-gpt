@@ -38,6 +38,8 @@ W, H = 1920 * S, 1080 * S
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE_FOCUS = os.path.join(HERE, "page-focus.py")
 MOTION_GFX = os.path.join(HERE, "motion-gfx.py")
+REMOTION_DIR = os.path.join(HERE, "remotion")
+REMOTION_RENDER = os.path.join(REMOTION_DIR, "render.mjs")
 ap = argparse.ArgumentParser()
 ap.add_argument("--plan", required=True)
 ap.add_argument("--keep-tmp", action="store_true")
@@ -151,6 +153,21 @@ def render_seg(s, start_f, nframes, i):
              "--spec", json.dumps(s.get("spec", {})), "--dur", f"{dur:.4f}", "--fps", str(FPS), "--out", out],
             f"motion-gfx seg {i}")
         return out
+    if layout == "remotion":   # code-driven ANIMATED graphic (alpha) composited OVER the face span
+        if not os.path.isdir(os.path.join(REMOTION_DIR, "node_modules")):
+            sys.exit(f"build-broll: segment {i} (remotion) needs deps — run `npm install` in {REMOTION_DIR}")
+        spec = {"comp": s.get("comp", "Callout"), "props": s.get("props", {})}
+        alpha = os.path.join(tmp, f"rmtn_{i:03d}.mov")
+        run(["node", REMOTION_RENDER, "--spec", json.dumps(spec), "--duration", f"{dur:.4f}",
+             "--fps", str(FPS), "--scale", str(S), "--out", alpha], f"remotion render seg {i}")
+        face = os.path.join(tmp, f"rface_{i:03d}.mp4")
+        face_part(start_f, nframes, face)            # full-frame talking head for this span (video-only)
+        out = os.path.join(tmp, f"part_{i:03d}.mp4")
+        run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", face, "-i", alpha,
+             "-filter_complex", f"[1:v]scale={W}:{H}[ov];[0:v][ov]overlay=0:0:shortest=1[v]",
+             "-map", "[v]", "-frames:v", str(nframes), "-an", *VENC, out], f"remotion overlay {i}")
+        check_frames(out, nframes)
+        return out
     if layout == "split":   # big portrait of him (left) + the page region (right) — alternate to the circle
         style = s.get("split_style", "focus")
         image = expand(s.get("image") or s.get("hero"))
@@ -169,7 +186,7 @@ def render_seg(s, start_f, nframes, i):
         face_slice(start_f, nframes, slice_path)
         return split_compose(page_clip, slice_path, dur, i)
     if layout not in ("plain", "focus", "highlight"):
-        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx)")
+        sys.exit(f"build-broll: segment {i} unknown layout '{layout}' (use plain|focus|highlight|split|gfx|remotion)")
     image = expand(s.get("image") or s.get("hero"))
     if not image or not os.path.exists(image):
         sys.exit(f"build-broll: segment {i} ({layout}) missing image/hero (got {image!r})")
