@@ -240,7 +240,9 @@ run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "concat", "-saf
 # ── optional retention FX pass (opt-in; off → byte-identical to before) ──────────
 TRANSITIONS = a.transitions or plan.get("transitions")
 PARTICLES_OP = a.particles if a.particles is not None else plan.get("particles")
-if PARTICLES_OP is not None:                       # faint drifting-bokeh over the whole timeline
+if PARTICLES_OP is not None:
+    PARTICLES_OP = max(0.0, min(1.0, float(PARTICLES_OP)))   # ffmpeg aa range is [-2,2]; clamp + skip 0 (no wasted re-encode)
+if PARTICLES_OP:                                   # faint drifting-bokeh over the whole timeline
     pmov = os.path.join(tmp, "particles.mov")
     run(["python3", PARTICLES, "--out", pmov, "--dur", "8", "--fps", str(FPS), "--w", str(W), "--h", str(H),
          "--color", a.particle_color], "particles")
@@ -271,8 +273,8 @@ if TRANSITIONS:                                    # whip/wipe sweep masking eac
         run(cmd, "transitions overlay")
         vid = tvid
     print(f"  retention FX: {TRANSITIONS+' transitions' if TRANSITIONS else ''}"
-          f"{' + ' if (TRANSITIONS and PARTICLES_OP is not None) else ''}"
-          f"{'particles' if PARTICLES_OP is not None else ''} ({len(edges)} cut(s))", flush=True)
+          f"{' + ' if (TRANSITIONS and PARTICLES_OP) else ''}"
+          f"{'particles' if PARTICLES_OP else ''} ({len(edges)} cut(s))", flush=True)
 
 # ONE continuous A-roll audio under the whole timeline (+ optional loudnorm). No per-part audio = no drift.
 adur = total_f / FPS

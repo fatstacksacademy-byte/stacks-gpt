@@ -137,6 +137,7 @@ const COMPANIES: { re: RegExp; name: string; domain: string }[] = [
 
 type Seg = { start: number; end: number; layout: 'plain' | 'focus' | 'highlight' | 'gfx'; image?: string; roi?: string; lines?: string; source?: string; url?: string; cardId?: string; phrase?: string; gfx_type?: string; spec?: any; status: string; why: string; label?: string; lib?: string; assetKind?: 'logo' | 'concept'; assetQuery?: string; domain?: string };
 const proposed: Seg[] = [];
+const cardBrands: string[] = [];   // names of cards that got a section — a logo lane defers to these
 const sectBounds = [...sections, faceDur];
 
 // CARD sections → plain offer-page b-roll (+ a focus on the first bonus figure he says, if any)
@@ -144,6 +145,7 @@ for (let i = 0; i < sections.length; i++) {
   const t0 = sections[i], t1 = sectBounds[i + 1] ?? faceDur;
   const card = cardInWindow(t0, Math.min(t1, t0 + 60));
   if (!card) continue;
+  cardBrands.push(card.name);   // so the COMPANY lane won't also spawn a bare logo for this brand
   // Prefer a confident library hero (already cleared) over a fresh offer-page screenshot. When the
   // library is off/empty libraryHero() is null → the seg is identical to before (needs-screenshot).
   const hero = libraryHero(card);
@@ -171,12 +173,18 @@ for (const w of words) for (const site of SITES) {
   if (site.re.test(win)) { if (!proposed.some(p => p.label === site.label && Math.abs(p.start - w.t) < 20)) proposed.push({ start: +w.t.toFixed(2), end: +Math.min(w.t + SEG, faceDur).toFixed(2), layout: 'plain', url: site.url, label: site.label, status: 'needs-screenshot', why: site.why }); }
 }
 
-// COMPANY mentions (banks/fintechs not in the card catalog) → a logo b-roll (fetch-assets fills it).
+// COMPANY mentions (banks/fintechs named as a brand, not as one of our catalog cards) → a logo b-roll.
 for (let i = 0; i < words.length; i++) {
   const win = words.slice(i, i + 3).map(x => x.raw).join(' ');
   for (const co of COMPANIES) {
     if (!co.re.test(win)) continue;
-    const t = words[i].t;
+    if (cardBrands.some(n => co.re.test(n))) break;   // this brand has a card section → defer to its offer-page b-roll
+    // anchor to the actual brand word (two-word names like "Cash App" can sit at i+1/i+2, not i)
+    let j = i;
+    for (let k = i; k < Math.min(i + 3, words.length); k++) {
+      if (co.re.test(words.slice(k, k + 2).map(x => x.raw).join(' '))) { j = k; break; }
+    }
+    const t = words[j].t;
     if (proposed.some(p => Math.abs(p.start - t) < 20)) break;   // already covered nearby (card/site/another logo)
     proposed.push({ start: +t.toFixed(2), end: +Math.min(t + Math.min(SEG, 5), faceDur).toFixed(2), layout: 'plain',
       assetKind: 'logo', assetQuery: co.name, domain: co.domain, label: `logo-${co.domain}`,
