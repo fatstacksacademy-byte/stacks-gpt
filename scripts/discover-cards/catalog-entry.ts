@@ -87,6 +87,9 @@ export function renderCatalogEntry(p: Proposal): string {
   const id = `${p.issuer.replace(/\s+/g, "-")}-${slug}-auto`
   const isCash = !p.bonus_unit || p.bonus_unit === "$" || p.bonus_unit === "cashback"
   const cpp = isCash ? 1 : 0.01
+  // Detect business cards by name so discovered Ink/Spark/Business cards get the
+  // right card_type instead of defaulting to "personal".
+  const isBiz = /\b(business|ink|spark)\b/i.test(p.card_name)
 
   const rewards =
     p.rewards.length > 0
@@ -105,7 +108,7 @@ export function renderCatalogEntry(p: Proposal): string {
     id: ${JSON.stringify(id)},
     card_name: ${JSON.stringify(p.card_name)},
     issuer: ${JSON.stringify(p.issuer)},
-    card_type: "personal",
+    card_type: ${JSON.stringify(isBiz ? "business" : "personal")},
     bonus_amount: ${p.bonus_amount ?? 0},
     bonus_currency: ${JSON.stringify(p.bonus_currency ?? (isCash ? "cash" : "points"))},
     is_hotel_card: false,
