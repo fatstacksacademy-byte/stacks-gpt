@@ -34,6 +34,7 @@ export type AnalyticsEvent =
   | "intro_apr_finder_mode"      // purchase vs balance-transfer lens in the 0% finder
   | "intro_apr_finder_use"       // "Model it" — prefill the calculator from a finder row
   | "intro_apr_finder_apply"     // Apply click from a finder row
+  | "intro_apr_finder_biz"       // "won't hit personal credit" toggle in the 0% finder
   // Misc
   | "tax_summary_viewed"
   | "dashboard_tab_changed"

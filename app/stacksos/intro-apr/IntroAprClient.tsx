@@ -62,12 +62,22 @@ function bonusDisplay(c: AprCard): string {
     : `${c.bonus_amount.toLocaleString()} pts`
 }
 
-function rankIntroCards(mode: AprMode, sort: AprSort, noAF: boolean, query: string): AprCard[] {
+// Business cards from most issuers DON'T report to your personal credit bureaus,
+// so a 0% balance carried on one won't raise personal utilization or dent your
+// score — the ideal place to park the float. These issuers are the known
+// exceptions that DO report business activity to personal credit, so exclude them.
+const REPORTS_TO_PERSONAL = new Set(["capital-one", "capital one", "discover", "td-bank", "td", "brex"])
+function offPersonalCredit(c: AprCard): boolean {
+  return c.card_type === "business" && !REPORTS_TO_PERSONAL.has((c.issuer || "").trim().toLowerCase())
+}
+
+function rankIntroCards(mode: AprMode, sort: AprSort, noAF: boolean, bizOnly: boolean, query: string): AprCard[] {
   const q = query.trim().toLowerCase()
   const byLength = (a: AprCard, b: AprCard) => introMonths(b, mode) - introMonths(a, mode)
   return creditCardBonuses
     .filter(c => !c.expired && introMonths(c, mode) > 0)
     .filter(c => (noAF ? (c.annual_fee ?? 0) === 0 : true))
+    .filter(c => (bizOnly ? offPersonalCredit(c) : true))
     .filter(c => (q ? `${c.card_name} ${c.issuer}`.toLowerCase().includes(q) : true))
     .sort((a, b) => {
       switch (sort) {
@@ -114,9 +124,10 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
   const [mode, setMode] = useState<AprMode>("purchase")
   const [sort, setSort] = useState<AprSort>("length")
   const [noAF, setNoAF] = useState(false)
+  const [bizOnly, setBizOnly] = useState(false)
   const [query, setQuery] = useState("")
 
-  const ranked = useMemo(() => rankIntroCards(mode, sort, noAF, query), [mode, sort, noAF, query])
+  const ranked = useMemo(() => rankIntroCards(mode, sort, noAF, bizOnly, query), [mode, sort, noAF, bizOnly, query])
   const shown = ranked.slice(0, ABS_CAP)
 
   function pickMode(next: AprMode) {
@@ -168,6 +179,15 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
           <input type="checkbox" checked={noAF} onChange={e => setNoAF(e.target.checked)} />
           No annual fee
         </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
+          <input
+            type="checkbox"
+            checked={bizOnly}
+            onChange={e => { setBizOnly(e.target.checked); track("intro_apr_finder_biz", { on: e.target.checked }) }}
+          />
+          Won&apos;t hit personal credit
+          <InfoTip term="businessNoPersonalReport" label="business cards & personal credit" size={14} />
+        </label>
       </div>
 
       {/* Table */}
@@ -193,7 +213,14 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
                     <CardArt card={c} />
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 600, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 230 }}>{c.card_name}</div>
-                      <div style={{ fontSize: 11, color: "#aaa", textTransform: "capitalize" }}>{(c.issuer || "").replace(/_/g, " ")}</div>
+                      <div style={{ fontSize: 11, color: "#aaa", display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ textTransform: "capitalize" }}>{(c.issuer || "").replace(/_/g, " ")}</span>
+                        {offPersonalCredit(c) && (
+                          <span style={{ fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 99, padding: "1px 6px", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
+                            BUSINESS · OFF PERSONAL CREDIT
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </td>

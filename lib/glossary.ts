@@ -27,6 +27,8 @@ export const GLOSSARY = {
     "Your total first-year rewards (sign-up bonus + everyday earnings) divided by what you spend — shown as a % and a multiplier (e.g. 1.9× = about $1.90 back per $1 spent).",
   introApr:
     "A 0% intro APR card lets you carry a balance with no interest for a set number of months. Some people park cash in savings, pay only the minimum, then pay it off before the 0% period ends — keeping the interest.",
+  businessNoPersonalReport:
+    "Most business cards don't appear on your personal credit report, so a balance you carry on one won't raise your personal credit utilization or dent your score — ideal for parking a 0% balance. (Capital One business cards are the main exception — they do report to personal credit.)",
   prequalified:
     "A soft check that estimates whether a lender might approve you. It's not a guarantee — the real application uses a hard credit pull and the terms can change.",
   openingDeposit:
