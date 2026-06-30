@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { getMilestoneDetail, MilestoneKey } from "../../lib/bonusSteps"
+import { feeGuidance } from "../../lib/bonusFees"
 import { updateBonusStep } from "../../lib/completedBonuses"
 import { useProfile, PayFrequency } from "../components/ProfileProvider"
 import { upsertProfileClient } from "../../lib/profileClient"
@@ -1616,23 +1617,28 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
                               Fees &amp; how to avoid
                             </button>
-                            {expandedFees === b.id && (
-                              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
-                                {hasFee ? (
-                                  <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${fees.monthly_fee}/month</div>
-                                    {feeWaiverText && (
-                                      <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
-                                )}
-                                {fees?.early_closure_fee > 0 && (
-                                  <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${fees.early_closure_fee} — keep the account open until the holding period ends.</div>
-                                )}
-                              </div>
-                            )}
+                            {expandedFees === b.id && (() => {
+                              const feeG = feeGuidance(fees, { openDateISO: record.opened_date })
+                              return (
+                                <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
+                                  {!feeG.hasGuidance ? (
+                                    <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly or early-closure fees.</div>
+                                  ) : (
+                                    <>
+                                      {feeG.lines.map((line, i) => {
+                                        const isClose = line.includes("early-closure") || line.startsWith("Keep the account open")
+                                        return (
+                                          <div key={i} style={{ fontSize: 12, color: isClose ? "#d97706" : "#444", lineHeight: 1.5 }}>{line}</div>
+                                        )
+                                      })}
+                                      {feeWaiverText && (
+                                        <div style={{ fontSize: 11, color: "#999", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              )
+                            })()}
                           </div>
 
                           {/* ── What counts as direct deposit (expandable) ── */}

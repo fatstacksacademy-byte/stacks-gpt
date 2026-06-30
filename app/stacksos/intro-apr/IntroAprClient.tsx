@@ -319,7 +319,10 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
     setWelcomeBonusPoints(c.bonus_amount || 0)
     setWelcomeBonusMinSpend(c.min_spend || 0)
     setWelcomeBonusWindowMonths(c.spend_months || 3)
-    setCppCents(Math.round((c.cpp_value || 0.01) * 1000) / 10)
+    // cpp_value is dollars per point (~0.01–0.05 for points cards). Cash/no-reward
+    // cards use the sentinel cpp_value: 1 ("a point is a dollar") — map that to 1¢
+    // per point, NOT 100¢, or everyday-earn values every point at $1 (the 204% bug).
+    setCppCents(c.cpp_value && c.cpp_value < 0.5 ? Math.round(c.cpp_value * 1000) / 10 : 1)
     setAnnualFee(c.annual_fee_waived_first_year ? 0 : (c.annual_fee || 0))
     track("intro_apr_card_selected", { card: c.card_name })
   }

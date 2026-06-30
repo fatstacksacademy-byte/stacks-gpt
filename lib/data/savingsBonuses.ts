@@ -33,6 +33,19 @@ export type SavingsBonus = {
      * combined, but the bonus tiers are $10k/$20k, so the fee genuinely bites.
      */
     monthly_fee_waived?: boolean
+    /**
+     * Days you must keep the account open to avoid the early_closure_fee
+     * (distinct from the bonus hold — e.g. First Hawaiian's bonus needs a DD in
+     * 60 days but charges $75 if closed within 180). Lets the UI show a real
+     * "keep open until <date>" instead of a bare fee with no window.
+     */
+    early_closure_fee_days?: number
+    /**
+     * The account balance that waives the monthly_fee (e.g. $6,000 combined).
+     * Drives the "leave $X to skip the $/mo fee" recommendation. Omit when the
+     * waiver is non-balance (direct deposit only) or the bank doesn't state one.
+     */
+    monthly_fee_waiver_balance?: number
   }
   eligibility: {
     state_restricted: boolean
@@ -968,7 +981,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 500 }],
     cooldown_months: 24,
-    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
+    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true, monthly_fee_waiver_balance: 25000 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Basic Business Checking, promo SBOFFER500 (enter during online application). Deposit $5,000 from an external source within 30 days, maintain $5,000 for at least 60 of the first 90 days, plus 10 qualifying electronic transactions within 90 days. New customers only — ineligible if a signer on a Capital One Business checking opened after Jan 1, 2025; one account per business. Online applications only (in-branch ineligible). $15/mo Basic fee waived with $2,000 min balance (so waived while holding the $5k); Enhanced tier $35/mo waived at $25k. Bonus posts 60–90 days after requirements met." },
     source_links: ["https://www.capitalone.com/small-business/bank/bizchecking500/"],
     raw_excerpt: "Capital One Business Checking $500. $5,000 external deposit within 30 days, maintain $5,000 for 60 of 90 days + 10 electronic transactions. Online-only, nationwide. Promo SBOFFER500.",
@@ -1009,7 +1022,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 100000, bonus_amount: 1500 },
     ],
     cooldown_months: 12,
-    fees: { monthly_fee: 10, early_closure_fee: 50, monthly_fee_waived: true },
+    fees: { monthly_fee: 10, early_closure_fee: 50, monthly_fee_waived: true, monthly_fee_waiver_balance: 500 },
     eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Business Checking (Digital tier $10/mo waived at $500 balance). Deposit within 30 days, hold the tier minimum balance days 31–90 (a minimum, not an average), plus 10 debit-card transactions within 90 days. New customers only — no BMO business checking in the past 12 months. Opens online, but BMO's branch footprint is regional (Midwest + western ex-Bank-of-the-West states) and this offer has been footprint-gated before — verify residency before applying. Verified live 2026-06-23, expires Aug 31, 2026." },
     source_links: ["https://www.bmo.com/en-us/main/business-banking/bank-accounts/bb-checking-offer/", "https://www.doctorofcredit.com/az-fl-il-ks-mo-mn-wi-bmo-harris-200-500-business-checking-bonus/"],
     raw_excerpt: "BMO Business $400/$750/$1,000/$1,500 at $4k/$25k/$50k/$100k. Hold the tier balance days 31–90 + 10 debit transactions. Verified live 2026-06-23, expires Aug 31, 2026.",
@@ -1075,7 +1088,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 10000, bonus_amount: 250 }, { min_deposit: 20000, bonus_amount: 500 }],
     cooldown_months: null,
-    fees: { monthly_fee: 25, early_closure_fee: 0 },
+    fees: { monthly_fee: 25, early_closure_fee: 0, monthly_fee_waiver_balance: 50000 },
     eligibility: { state_restricted: true, states_allowed: ["HI","GU","MP"], lifetime_language: false, eligibility_notes: "Business Priority Banking Platinum Checking. Deposit $10k ($250) or $20k ($500) new money within 5 days, hold 90 days. $25/mo fee waived with $50k combined balance." },
     source_links: ["https://www.fhb.com/en/business/checking/priority-banking-platinum"],
     raw_excerpt: "First Hawaiian Business $250/$500. $10k/$20k within 5 days, hold 90d. HI/Guam/CNMI. Expires 2026-08-31.",
@@ -1124,7 +1137,7 @@ export const savingsBonuses: SavingsBonus[] = [
     total_hold_days: 90,
     tiers: [{ min_deposit: 5000, bonus_amount: 300 }, { min_deposit: 10000, bonus_amount: 500 }, { min_deposit: 15000, bonus_amount: 750 }],
     cooldown_months: 12,
-    fees: { monthly_fee: 0, early_closure_fee: 15 },
+    fees: { monthly_fee: 0, early_closure_fee: 15, early_closure_fee_days: 180 },
     eligibility: { state_restricted: true, states_allowed: ["NJ","NY","PA"], lifetime_language: false, eligibility_notes: "Small Business Month promo. New Small Business Checking ($50 min open) with new money; maintain avg balance $5k ($300) / $10k ($500) / $15k ($750) for two full statement cycles. Bonus credited within 120 days. Business TIN cannot have held a Provident business checking in prior 12 months. Branch-only (NJ/NY/PA). $15 early-closure fee if closed within 6 months." },
     source_links: ["https://www.provident.bank/small-business-month", "https://www.doctorofcredit.com/nj-ny-pa-in-branch-only-provident-bank-300-750-business-checking-bonus/"],
     raw_excerpt: "Provident Bank (NJ) Business $300/$500/$750 at $5k/$10k/$15k avg balance, 2 statement cycles. NJ/NY/PA, branch-only. Expires 2026-06-30.",

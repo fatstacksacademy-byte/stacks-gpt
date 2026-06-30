@@ -89,7 +89,9 @@ export const hawaiiCheckingBonuses: HawaiiCheckingRow[] = [
       monthly_fee: 5,
       monthly_fee_waiver_text:
         "$5/month, waived with a $500 minimum average daily ledger balance OR $500+ in total monthly direct deposits.",
+      monthly_fee_waiver_balance: 500,
       early_closure_fee: 40,
+      early_closure_fee_days: 180,
     },
     screening: {
       chex_sensitive: "low",
@@ -147,7 +149,9 @@ export const hawaiiCheckingBonuses: HawaiiCheckingRow[] = [
       monthly_fee: 15,
       monthly_fee_waiver_text:
         "$15/month, waived with a $6,000 combined balance OR $2,000+ direct deposit per statement cycle OR Private Banking enrollment.",
+      monthly_fee_waiver_balance: 6000,
       early_closure_fee: 75,
+      early_closure_fee_days: 180,
     },
     screening: {
       chex_sensitive: "unknown",
@@ -205,6 +209,7 @@ export const hawaiiCheckingBonuses: HawaiiCheckingRow[] = [
       monthly_fee: 0,
       monthly_fee_waiver_text: "No monthly fee with eStatements.",
       early_closure_fee: 50,
+      early_closure_fee_days: 180,
     },
     screening: {
       chex_sensitive: "unknown",
