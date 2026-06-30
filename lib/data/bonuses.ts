@@ -5060,6 +5060,8 @@ export const bonuses: any[] = [
       "https://www.doctorofcredit.com/az-fl-il-ks-mo-mn-wi-bmo-harris-200-500-business-checking-bonus/"
     ],
     "raw_excerpt": "BMO business checking bonus, tiered $400/$750/$1,000/$1,500 on average collected balance (day 30–90) of $4k/$25k/$50k/$100k, plus 10 debit transactions in 90 days. No DD required. Expires Aug 31, 2026."
+  ,
+    expired: true
   },
   {
     "id": "pnc-business-checking-400-2026",

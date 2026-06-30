@@ -8777,4 +8777,33 @@ export const creditCardBonuses: CreditCardBonus[] = [
   },
   ...hawaiiCreditCardBonuses,
   ...regionalStateCards,
+
+
+  // ─── AUTO-IMPORTED — discover-cards pipeline ──────────────────
+  // These entries came from the discover-cards scraper (approved in /admin/review).
+  // Fields are conservative (null/defaults where the regex couldn't extract a
+  // value). Review and calibrate before treating as trusted data.
+
+  {
+    id: "capital-one-capital-one-spark-cash-plus-auto",
+    card_name: "Capital One Spark Cash Plus",
+    issuer: "capital one",
+    card_type: "business",
+    bonus_amount: 2000,
+    bonus_currency: "cash",
+    is_hotel_card: false,
+    cpp_value: 1,
+    min_spend: 30000,
+    spend_months: 3,
+    annual_fee: 150,
+    annual_fee_waived_first_year: false,
+    statement_credits_year1: 0,
+    offer_link: "https://www.capitalone.com/small-business/credit-cards/spark-cash-plus/",
+    expired: false,
+    key_benefits: ["5% travel"],
+    rewards: [
+      { categories: ["travel"], multiplier: 5, unit: "%" }
+    ],
+    // Auto-imported from seed://curated — verify before relying on: clean
+  },
 ]
