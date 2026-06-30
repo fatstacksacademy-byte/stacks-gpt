@@ -76,8 +76,37 @@ export function getCategorizedBonuses() {
  * ranked by effective APY and derived from the catalog, so this stays current
  * automatically as `savingsBonuses` changes.
  */
+/**
+ * Business checking bonuses live in the main `bonuses` catalog (balance +
+ * transaction offers like PNC $400), while balance-only ones live in
+ * `savingsBonuses`. The business page ranks everything by effective APY, which
+ * needs the savings shape (tiers of {min_deposit, bonus_amount} + total_hold_days),
+ * so reshape a checking-catalog business bonus into that form: park-cash = its
+ * required maintained balance, hold = must-remain-open days.
+ */
+function normalizeBizChecking(b: any) {
+  const minBal =
+    b.requirements?.min_balance ??
+    b.tiers?.[0]?.min_balance ??
+    b.tiers?.[0]?.min_dd_total ??
+    b.bonus_amount ??
+    1
+  return {
+    ...b,
+    base_apy: b.base_apy ?? 0,
+    total_hold_days: b.total_hold_days ?? b.timeline?.must_remain_open_days ?? 90,
+    tiers: [{ min_deposit: Math.max(1, minBal), bonus_amount: b.bonus_amount }],
+  }
+}
+
 export function getBusinessBonuses() {
-  const liveBiz = savingsBonuses.filter(isLive).filter(isBusinessBonus)
+  // Pull business bonuses from BOTH catalogs — balance-only ones from savings,
+  // and checking/transaction ones from the main catalog (normalized) — so the
+  // page surfaces every live business offer, not just the savings-modeled ones.
+  const liveBiz = [
+    ...savingsBonuses.filter(isLive).filter(isBusinessBonus),
+    ...bonuses.filter(isLive).filter(isBusinessBonus).map(normalizeBizChecking),
+  ]
   const withApy = (b: any) => ({ bonus: b, effApy: effectiveApy(b) })
   const nationwide = liveBiz.filter(isNationwide).map(withApy).sort((a, b) => b.effApy - a.effApy)
   const regional = liveBiz.filter(b => !isNationwide(b)).map(withApy).sort((a, b) => b.effApy - a.effApy)
