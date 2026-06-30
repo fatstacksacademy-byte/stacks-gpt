@@ -225,7 +225,6 @@ export const wisconsinCards = buildStateCards({
       min_spend: 2000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 10.99, go_to_apr_high: 10.99 },
     },
     {
       id: "community-first-wi-great-rewards-platinum",

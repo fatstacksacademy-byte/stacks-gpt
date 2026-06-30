@@ -189,7 +189,6 @@ export const idahoCards = buildStateCards({
       ],
       eligibility: "caped",
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "points" }],
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "westmark-cobalt-rewards-visa",

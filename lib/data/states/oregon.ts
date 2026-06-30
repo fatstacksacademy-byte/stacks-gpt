@@ -93,7 +93,6 @@ export const oregonCards = buildStateCards({
       ],
       eligibility: "onpoint",
       rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -141,7 +140,6 @@ export const oregonCards = buildStateCards({
       ],
       eligibility: "onpoint",
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "points" }],
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 12 },
     },
     {
       id: "occu-nice-perks-platinum-visa",
@@ -284,7 +282,6 @@ export const oregonCards = buildStateCards({
       eligibility: "maps",
       foreign_tx_fee_pct: 2.1,
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
     },
     {
       id: "mid-oregon-everyday-rewards-visa",

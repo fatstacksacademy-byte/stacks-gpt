@@ -196,7 +196,6 @@ export const montanaCards = buildStateCards({
         "Portfolio held in-house with local branch payment support",
       ],
       eligibility: "vocal",
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 11.49 },
     },
     {
       id: "altana-fcu-visa",

@@ -151,7 +151,6 @@ export const newMexicoCards = buildStateCards({
       min_spend: 1000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 9.99, go_to_apr_high: 17.99 },
       protections: { price_protection: true },
       travel_insurance: { rental_cdw_secondary: true },
     },
@@ -170,7 +169,6 @@ export const newMexicoCards = buildStateCards({
       bonus_currency: "cash",
       cpp_value: 1,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 14.24, go_to_apr_high: 17.99 },
       protections: { price_protection: true },
       travel_insurance: { rental_cdw_secondary: true },
     },
@@ -186,7 +184,6 @@ export const newMexicoCards = buildStateCards({
         "Mastercard ID Theft Protection",
       ],
       eligibility: "sandiaArea",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 8.49, go_to_apr_high: 17.99 },
     },
     {
       id: "sandia-area-business-cash-back-mastercard",

@@ -151,7 +151,6 @@ export const indianaCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {

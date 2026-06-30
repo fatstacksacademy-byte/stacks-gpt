@@ -133,7 +133,6 @@ export const kansasCards = buildStateCards({
         "Low 1% foreign transaction fee",
       ],
       eligibility: "goldenPlains",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 11.9, go_to_apr_high: 11.9 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -147,7 +146,6 @@ export const kansasCards = buildStateCards({
         "Low 1% foreign transaction fee",
       ],
       eligibility: "goldenPlains",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 13.9, go_to_apr_high: 13.9 },
       foreign_tx_fee_pct: 1,
     },
     {

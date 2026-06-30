@@ -208,7 +208,6 @@ export const newYorkCards = buildStateCards({
         "No annual fee and a low 1% foreign transaction fee",
       ],
       eligibility: "americu",
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 11.65, go_to_apr_high: 17.99 },
       foreign_tx_fee_pct: 1,
     },
     {

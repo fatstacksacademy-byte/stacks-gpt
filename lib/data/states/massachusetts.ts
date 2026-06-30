@@ -65,7 +65,6 @@ export const massachusettsCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1.75, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 14.74, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -80,7 +79,6 @@ export const massachusettsCards = buildStateCards({
         "No annual fee; 1% foreign transaction fee",
       ],
       eligibility: "metro",
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 11.99, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -183,7 +181,6 @@ export const massachusettsCards = buildStateCards({
       eligibility: "jdcu",
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 9.99, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -200,7 +197,6 @@ export const massachusettsCards = buildStateCards({
       eligibility: "jdcu",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 9.99, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -215,7 +211,6 @@ export const massachusettsCards = buildStateCards({
         "1% foreign transaction fee",
       ],
       eligibility: "jdcu",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 9.99, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -416,7 +411,6 @@ export const massachusettsCards = buildStateCards({
         "2% foreign transaction fee",
       ],
       eligibility: "align",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, bt_fee_pct: 4, go_to_apr_low: 11.75, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 2,
     },
   ],

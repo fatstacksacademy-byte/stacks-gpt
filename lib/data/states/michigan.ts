@@ -52,7 +52,6 @@ export const michiganCards = buildStateCards({
         "MasterTrip Travel Assistance and Master RoadAssist roadside service",
       ],
       eligibility: "dfcu",
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 12.9, go_to_apr_high: 18.0 },
       protections: { purchase_protection: true },
     },
     {
@@ -119,7 +118,6 @@ export const michiganCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 2, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { bt_apr_months: 9, go_to_apr_low: 10.5, go_to_apr_high: 10.5 },
     },
     {
       id: "dort-financial-platinum-visa",
@@ -136,7 +134,6 @@ export const michiganCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { bt_apr_months: 9, go_to_apr_low: 11.5, go_to_apr_high: 11.5 },
     },
     {
       id: "cuone-achieve-rewards-mastercard-2026",
@@ -155,7 +152,6 @@ export const michiganCards = buildStateCards({
       min_spend: 1500,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 13.75, go_to_apr_high: 26.75 },
     },
   ],
 })

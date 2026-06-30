@@ -124,7 +124,6 @@ export const pennsylvaniaCards = buildStateCards({
       ],
       eligibility: "citadel",
       foreign_tx_fee_pct: 1.1,
-      intro_apr: { purchase_apr_months: 9, bt_apr_months: 9, go_to_apr_low: 10.74, go_to_apr_high: 17.99 },
     },
     {
       id: "citadel-world-mastercard",
@@ -296,7 +295,6 @@ export const pennsylvaniaCards = buildStateCards({
       cpp_value: 1,
       travel: { no_foreign_tx_fee: true },
       protections: { cell_phone_protection: true, extended_warranty: true },
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 13.9, go_to_apr_high: 17.9 },
     },
     {
       id: "erie-fcu-platinum-mastercard",
@@ -308,7 +306,6 @@ export const pennsylvaniaCards = buildStateCards({
         "Low 8.90%-17.90% go-to APR; no annual fee",
       ],
       eligibility: "erie",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 8.9, go_to_apr_high: 17.9 },
     },
     {
       id: "service-1st-fcu-visa-platinum",
@@ -323,7 +320,6 @@ export const pennsylvaniaCards = buildStateCards({
       eligibility: "service1st",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { bt_apr_months: 9, go_to_apr_low: 12.49, go_to_apr_high: 12.49 },
     },
   ],
 })

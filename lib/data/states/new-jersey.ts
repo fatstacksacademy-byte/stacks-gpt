@@ -94,7 +94,6 @@ export const newJerseyCards = buildStateCards({
         "Trip cancellation, auto rental CDW, extended warranty, and price protection",
       ],
       eligibility: "jerseyshore",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 11.49, go_to_apr_high: 18.0 },
       protections: { extended_warranty: true, price_protection: true, purchase_protection: true },
       travel_insurance: { trip_cancellation: true, rental_cdw_secondary: true },
     },

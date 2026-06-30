@@ -156,7 +156,6 @@ export const ohioCards = buildStateCards({
       min_spend: 3000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 11.99, go_to_apr_high: 11.99 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -177,7 +176,6 @@ export const ohioCards = buildStateCards({
       min_spend: 3000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 9.99, go_to_apr_high: 9.99 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -210,7 +208,6 @@ export const ohioCards = buildStateCards({
       eligibility: "vacationland",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 13.65, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {

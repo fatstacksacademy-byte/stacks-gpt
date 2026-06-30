@@ -84,7 +84,6 @@ export const washingtonCards = buildStateCards({
         { categories: ["groceries", "gas_stations", "ev_charging"], multiplier: 2 },
         { categories: ["everything_else"], multiplier: 1 },
       ],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 13.74, go_to_apr_high: 19.74 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -309,7 +308,6 @@ export const washingtonCards = buildStateCards({
       ],
       eligibility: "peak",
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 13.5, go_to_apr_high: 13.5 },
       foreign_tx_fee_pct: 2,
     },
     {

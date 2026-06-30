@@ -98,7 +98,6 @@ export const nebraskaCards = buildStateCards({
         "Go-to variable purchase APR of 9.90%-17.90%",
       ],
       eligibility: "centris",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 9.9, go_to_apr_high: 17.9 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -113,7 +112,6 @@ export const nebraskaCards = buildStateCards({
         "No balance-transfer fee and no cash-advance fee; go-to variable purchase APR of 12.90%-17.90%",
       ],
       eligibility: "centris",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 12.9, go_to_apr_high: 17.9 },
       foreign_tx_fee_pct: 1,
     },
     {

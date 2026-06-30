@@ -87,7 +87,6 @@ export const westVirginiaCards = buildStateCards({
         "Issued by a Kanawha County, WV community credit union",
       ],
       eligibility: "element",
-      intro_apr: { purchase_apr_months: 6 },
     },
     {
       id: "united-bank-visa-platinum",

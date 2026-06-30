@@ -109,7 +109,6 @@ export const illinoisCards = buildStateCards({
       eligibility: "siu",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 10.9, go_to_apr_high: 16.9 },
     },
     {
       id: "siu-cu-visa-credit",
@@ -122,7 +121,6 @@ export const illinoisCards = buildStateCards({
         "Zero liability, EMV chip, and contactless tap-to-pay",
       ],
       eligibility: "siu",
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 9.9, go_to_apr_high: 15.9 },
     },
     {
       id: "fncu-visa-platinum-premier",
@@ -237,7 +235,6 @@ export const illinoisCards = buildStateCards({
       min_spend: 1500,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
     },
     {
       id: "cefcu-world-credit-mastercard",
@@ -257,7 +254,6 @@ export const illinoisCards = buildStateCards({
         { categories: ["everything_else"], multiplier: 1 },
       ],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -274,7 +270,6 @@ export const illinoisCards = buildStateCards({
       eligibility: "cefcu",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
     },
     {
       id: "cefcu-credit-mastercard",
@@ -293,7 +288,6 @@ export const illinoisCards = buildStateCards({
       cpp_value: 1,
       min_spend: 500,
       spend_months: 3,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
     },
     {
       id: "dupage-cu-inspire-cash-back-visa",

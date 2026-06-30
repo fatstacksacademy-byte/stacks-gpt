@@ -62,7 +62,6 @@ export const vermontCards = buildStateCards({
         "Low 1.00% foreign transaction fee",
       ],
       eligibility: "vermontFederal",
-      intro_apr: { bt_apr_months: 6, go_to_apr_low: 11.2, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {

@@ -166,7 +166,6 @@ export const arizonaCards = buildStateCards({
       min_spend: 1000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 2 }],
-      intro_apr: { purchase_apr_months: 9, bt_apr_months: 9, go_to_apr_low: 12.74, go_to_apr_high: 17.99 },
     },
     {
       id: "truwest-platinum-points-visa",

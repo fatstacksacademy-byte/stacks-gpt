@@ -138,7 +138,6 @@ export const iowaCards = buildStateCards({
         "1% foreign transaction fee",
       ],
       eligibility: "dupaco",
-      intro_apr: { bt_apr_months: 6, bt_window_days: 90, go_to_apr_low: 12.5, go_to_apr_high: 19.5 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -203,7 +202,6 @@ export const iowaCards = buildStateCards({
       ],
       eligibility: "ascentra",
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { bt_apr_months: 6, go_to_apr_low: 9.88, go_to_apr_high: 17.88 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -221,7 +219,6 @@ export const iowaCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -241,7 +238,6 @@ export const iowaCards = buildStateCards({
         { categories: ["groceries"], multiplier: 2 },
         { categories: ["everything_else"], multiplier: 1 },
       ],
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -256,7 +252,6 @@ export const iowaCards = buildStateCards({
         "No annual fee and no foreign transaction fee",
       ],
       eligibility: "community1st",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -274,7 +269,6 @@ export const iowaCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 11.15, go_to_apr_high: 21 },
     },
     {
       id: "corda-cu-visa-platinum-rewards",

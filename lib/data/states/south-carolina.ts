@@ -141,7 +141,6 @@ export const southCarolinaCards = buildStateCards({
         "No annual fee and no balance transfer fees",
       ],
       eligibility: "carolinaFoothills",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 9.9 },
     },
     {
       id: "carolina-foothills-fcu-visa-secured",
@@ -296,7 +295,6 @@ export const southCarolinaCards = buildStateCards({
       min_spend: 1000,
       spend_months: 12,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 9.75, go_to_apr_high: 18.0 },
     },
     {
       id: "srp-fcu-visa-rewards",
@@ -317,7 +315,6 @@ export const southCarolinaCards = buildStateCards({
       min_spend: 1000,
       spend_months: 12,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 9.75, go_to_apr_high: 18.0 },
     },
     {
       id: "srp-fcu-visa-traditional",
@@ -331,7 +328,6 @@ export const southCarolinaCards = buildStateCards({
         "Simple low-rate everyday card",
       ],
       eligibility: "srp",
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 8.75, go_to_apr_high: 18.0 },
     },
     {
       id: "srp-fcu-visa-traditional-secured",
@@ -367,7 +363,6 @@ export const southCarolinaCards = buildStateCards({
       min_spend: 1000,
       spend_months: 12,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 9.75 },
     },
     {
       id: "srp-fcu-business-visa",
@@ -389,7 +384,6 @@ export const southCarolinaCards = buildStateCards({
       min_spend: 1000,
       spend_months: 12,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 13.25, go_to_apr_high: 18.0 },
     },
     {
       id: "mid-carolina-cu-visa-platinum-rewards",

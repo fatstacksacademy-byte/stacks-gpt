@@ -148,7 +148,6 @@ export const tennesseeCards = buildStateCards({
       bonus_currency: "points",
       cpp_value: 0.01,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { bt_apr_months: 6, bt_fee_pct: 3, go_to_apr_low: 11.49, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {

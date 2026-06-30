@@ -528,7 +528,6 @@ export const floridaCards = buildStateCards({
       bonus_currency: "points",
       cpp_value: 0.01,
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 6, go_to_apr_low: 12.75, go_to_apr_high: 16.25 },
       foreign_tx_fee_pct: 1,
     },
     {

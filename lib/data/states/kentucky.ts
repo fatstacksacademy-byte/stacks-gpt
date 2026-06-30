@@ -174,7 +174,6 @@ export const kentuckyCards = buildStateCards({
       eligibility: "serviceOne",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 11.75, go_to_apr_high: 19.75 },
       foreign_tx_fee_pct: 1,
     },
     {

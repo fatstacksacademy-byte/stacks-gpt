@@ -285,7 +285,6 @@ export const georgiaCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 13.49, go_to_apr_high: 22.99 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -299,7 +298,6 @@ export const georgiaCards = buildStateCards({
         "No balance transfer fees",
       ],
       eligibility: "georgiaUnited",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 11.49, go_to_apr_high: 22.99 },
     },
     {
       id: "marshland-cu-visa",

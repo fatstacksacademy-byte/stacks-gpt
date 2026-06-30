@@ -113,7 +113,6 @@ export const mississippiCards = buildStateCards({
         "Roadside assistance, travel assistance, and extended warranty coverage",
       ],
       eligibility: "hope",
-      intro_apr: { purchase_apr_months: 6, bt_apr_months: 12, go_to_apr_low: 13.25 },
       protections: { extended_warranty: true },
     },
     {

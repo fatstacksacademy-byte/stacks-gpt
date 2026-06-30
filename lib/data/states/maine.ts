@@ -299,7 +299,6 @@ export const maineCards = buildStateCards({
       cpp_value: 1,
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
       annual_fee: 0,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 13.75, go_to_apr_high: 13.75 },
     },
     {
       id: "atlantic-fcu-me-visa-platinum",
@@ -314,7 +313,6 @@ export const maineCards = buildStateCards({
       ],
       eligibility: "atlanticFcu",
       annual_fee: 0,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 11.49, go_to_apr_high: 11.49 },
     },
   ],
 })

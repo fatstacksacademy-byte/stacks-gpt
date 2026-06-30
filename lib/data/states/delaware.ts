@@ -90,7 +90,6 @@ export const delawareCards = buildStateCards({
       ],
       eligibility: "dexsta",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "dexsta-fcu-visa-platinum",
@@ -103,7 +102,6 @@ export const delawareCards = buildStateCards({
         "No annual fee, no balance transfer fee, no over-limit fee, and no cash advance fee",
       ],
       eligibility: "dexsta",
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "community-powered-fcu-visa",

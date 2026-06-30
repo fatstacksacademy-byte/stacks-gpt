@@ -98,7 +98,6 @@ export const oklahomaCards = buildStateCards({
         { categories: ["dining", "groceries", "gas_stations"], multiplier: 2 },
         { categories: ["everything_else"], multiplier: 1 },
       ],
-      intro_apr: { purchase_apr_months: 6, bt_fee_pct: 2.5, go_to_apr_low: 12.25, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
       protections: { purchase_protection: true },
     },
@@ -114,7 +113,6 @@ export const oklahomaCards = buildStateCards({
       ],
       eligibility: "tinker",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
-      intro_apr: { purchase_apr_months: 6, bt_fee_pct: 2.5, go_to_apr_low: 12.25, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {

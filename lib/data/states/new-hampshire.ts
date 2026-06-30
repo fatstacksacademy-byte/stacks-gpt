@@ -51,7 +51,6 @@ export const newHampshireCards = buildStateCards({
       min_spend: 1000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "bellwether-smart-cash-visa",
@@ -72,7 +71,6 @@ export const newHampshireCards = buildStateCards({
       min_spend: 1000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "bellwether-smart-rate-visa",
@@ -87,7 +85,6 @@ export const newHampshireCards = buildStateCards({
         "Visa Zero Liability protection and pay-per-use Roadside Dispatch",
       ],
       eligibility: "bellwether",
-      intro_apr: { purchase_apr_months: 12 },
     },
     {
       id: "members-first-nh-platinum-visa",

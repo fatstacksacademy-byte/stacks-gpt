@@ -187,7 +187,6 @@ export const marylandCards = buildStateCards({
       rewards: [{ categories: ["everything_else"], multiplier: 1, unit: "%" }],
       bonus_currency: "cash",
       cpp_value: 1,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 12.0, go_to_apr_high: 12.0 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -204,7 +203,6 @@ export const marylandCards = buildStateCards({
       eligibility: "mecu",
       rewards: [{ categories: ["everything_else"], multiplier: 1 }],
       cpp_value: 0.01,
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 13.25, go_to_apr_high: 16.25 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -219,7 +217,6 @@ export const marylandCards = buildStateCards({
         "Only up to 1% foreign transaction fee",
       ],
       eligibility: "mecu",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 12.25, go_to_apr_high: 15.25 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -235,7 +232,6 @@ export const marylandCards = buildStateCards({
       ],
       eligibility: "mecu",
       credit_score_required: "poor",
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, go_to_apr_low: 16.42, go_to_apr_high: 16.42 },
       foreign_tx_fee_pct: 1,
     },
     {
@@ -257,7 +253,6 @@ export const marylandCards = buildStateCards({
       min_spend: 1000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5, unit: "%" }],
-      intro_apr: { purchase_apr_months: 12, go_to_apr_low: 14.49, go_to_apr_high: 17.99 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -386,7 +381,6 @@ export const marylandCards = buildStateCards({
         { categories: ["gas_stations"], multiplier: 2 },
         { categories: ["everything_else"], multiplier: 1 },
       ],
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 13.4, go_to_apr_high: 18.0 },
       foreign_tx_fee_pct: 1,
     },
     {

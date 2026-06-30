@@ -255,7 +255,6 @@ export const coloradoCards = buildStateCards({
       ],
       eligibility: "westerra",
       rewards: [{ categories: ["everything_else"], multiplier: 1.25 }],
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 13.4, go_to_apr_high: 21.0 },
       foreign_tx_fee_pct: 2.8,
       protections: { purchase_protection: true },
     },

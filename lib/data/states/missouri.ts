@@ -265,7 +265,6 @@ export const missouriCards = buildStateCards({
       min_spend: 1500,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 2 }],
-      intro_apr: { bt_apr_months: 12, go_to_apr_low: 13.49, go_to_apr_high: 18 },
     },
     {
       id: "multipli-cu-memberrewards-mastercard",

@@ -158,7 +158,6 @@ export const virginiaCards = buildStateCards({
         "No annual fee, no balance transfer fee, and no cash advance fee",
       ],
       eligibility: "firstadvantage",
-      intro_apr: { purchase_apr_months: 6, go_to_apr_low: 11.25, go_to_apr_high: 17.95 },
     },
     {
       id: "uva-member-rewards-visa",

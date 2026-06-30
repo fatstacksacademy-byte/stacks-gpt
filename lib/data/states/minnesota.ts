@@ -225,7 +225,6 @@ export const minnesotaCards = buildStateCards({
       min_spend: 2500,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.25 }],
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, bt_window_days: 90, go_to_apr_high: 18.0 },
       travel: { no_foreign_tx_fee: true },
     },
     {
@@ -260,7 +259,6 @@ export const minnesotaCards = buildStateCards({
       min_spend: 4000,
       spend_months: 3,
       rewards: [{ categories: ["everything_else"], multiplier: 1.5 }],
-      intro_apr: { purchase_apr_months: 12, bt_apr_months: 12, bt_window_days: 90, go_to_apr_high: 18.0 },
     },
     {
       id: "blaze-signature-visa",
