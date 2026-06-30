@@ -149,7 +149,9 @@ export const illinoisCards = buildStateCards({
         "No annual fee; credit limits up to $30,000",
       ],
       eligibility: "fncu",
-      intro_apr: { bt_apr_months: 24, bt_fee_pct: 2 },
+      // NOTE: the 24-month balance-transfer intro is 2.99%, NOT 0% — so it must
+      // not carry intro_apr.bt_apr_months (that field means 0% months and would
+      // surface it as a 0% card). The 2.99% promo lives in key_benefits only.
     },
     {
       id: "llcu-visa-platinum-points",
