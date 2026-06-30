@@ -61,6 +61,15 @@ export type IntroAprInputs = {
    * BBP example ($4 the first month, growing over six months).
    */
   spendSchedule?: number[]
+  /**
+   * Minimum-payment floor in $ (e.g. 40). The required minimum each cycle is
+   * max(floor, minPaymentPct × balance). Paying the minimum pulls that cash out
+   * of the float early, so it earns less HYSA interest. Default 0 = ignore
+   * minimums (the theoretical "pay nothing until payoff" upper bound).
+   */
+  minPaymentFloor?: number
+  /** Minimum payment as a fraction of the balance (0.01 = 1%). Default 0. */
+  minPaymentPct?: number
 }
 
 export type IntroAprMonth = {
@@ -73,6 +82,10 @@ export type IntroAprMonth = {
   interest: number
   /** interest / spend — the decaying effective rate on this month's spend. */
   effectiveRateOnSpend: number
+  /** Card balance at the end of this cycle, after the minimum payment. */
+  balance: number
+  /** Minimum payment made this cycle (max(floor, pct × balance)). */
+  minPayment: number
 }
 
 export type IntroAprResult = {
@@ -83,6 +96,11 @@ export type IntroAprResult = {
   grossInterest: number
   taxOnInterest: number
   netInterest: number
+  /** Float interest lost because minimum payments chip the balance down early
+   *  (0 when no minimum is modelled). grossInterest − minPaymentDrag = realized. */
+  minPaymentDrag: number
+  /** Total of the minimum payments made across the promo. */
+  minPaymentTotal: number
 
   // Rewards
   basePoints: number
@@ -132,19 +150,44 @@ export function runIntroAprArbitrage(input: IntroAprInputs): IntroAprResult {
   const cpp = clampNonNeg(input.cpp)
 
   const spendByMonth = buildSchedule(input)
+  const monthlyRate = apy / 12
+  const minFloor = clampNonNeg(input.minPaymentFloor ?? 0)
+  const minPct = Math.min(1, clampNonNeg(input.minPaymentPct ?? 0))
+
+  // Balance simulation across the full promo: each cycle the new spend posts, the
+  // carried balance earns a month of float interest, then the minimum payment —
+  // max(floor, pct × balance) — chips the balance, and the float, down. With a $0
+  // minimum this reduces EXACTLY to the per-tranche "float until payoff" model
+  // below (so the headline schedule stays the theoretical upper bound).
+  let balance = 0
+  let realizedInterest = 0
+  let minPaymentTotal = 0
+  const sim: Array<{ balance: number; minPayment: number }> = []
+  for (let m = 0; m < promo; m++) {
+    balance += spendByMonth[m] ?? 0
+    realizedInterest += balance * monthlyRate
+    const minPayment = Math.min(balance, Math.max(minFloor, minPct * balance))
+    minPaymentTotal += minPayment
+    balance -= minPayment
+    sim.push({ balance, minPayment })
+  }
 
   const schedule: IntroAprMonth[] = spendByMonth.map((spend, m) => {
     // A purchase in cycle m floats until payoff at the end of the promo.
     const floatMonths = Math.max(0, promo - m)
     const effectiveRateOnSpend = (apy * floatMonths) / 12
     const interest = spend * effectiveRateOnSpend
-    return { month: m, spend, floatMonths, interest, effectiveRateOnSpend }
+    return { month: m, spend, floatMonths, interest, effectiveRateOnSpend, balance: sim[m]?.balance ?? 0, minPayment: sim[m]?.minPayment ?? 0 }
   })
 
   const totalSpend = schedule.reduce((s, r) => s + r.spend, 0)
   const grossInterest = schedule.reduce((s, r) => s + r.interest, 0)
-  const taxOnInterest = grossInterest * taxRate
-  const netInterest = grossInterest - taxOnInterest
+  // Minimum payments pull cash out of the float early; the drag is the gap
+  // between the theoretical (pay-nothing) float and the realized float.
+  const minPaymentDrag = Math.max(0, grossInterest - realizedInterest)
+  const realizedGross = grossInterest - minPaymentDrag
+  const taxOnInterest = realizedGross * taxRate
+  const netInterest = realizedGross - taxOnInterest
 
   // Everyday earn on all spend.
   const basePoints = totalSpend * clampNonNeg(input.pointsPerDollar)
@@ -171,6 +214,8 @@ export function runIntroAprArbitrage(input: IntroAprInputs): IntroAprResult {
     grossInterest,
     taxOnInterest,
     netInterest,
+    minPaymentDrag,
+    minPaymentTotal,
     basePoints,
     welcomeBonusEarned,
     welcomeBonusPoints,

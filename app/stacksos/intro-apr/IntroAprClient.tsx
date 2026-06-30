@@ -289,6 +289,10 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
   const [welcomeBonusWindowMonths, setWelcomeBonusWindowMonths] = useState(3)
   const [taxRatePct, setTaxRatePct] = useState(15)
   const [annualFee, setAnnualFee] = useState(0)
+  // Minimum payment — paying it each cycle pulls cash out of the float early, so
+  // it earns less. Default to the common max($40, 1% of balance).
+  const [minPayFloor, setMinPayFloor] = useState(40)
+  const [minPayPct, setMinPayPct] = useState(1)
 
   const selectedCard = cards.find(c => c.id === selectedCardId) ?? null
   const calcRef = useRef<HTMLHeadingElement>(null)
@@ -339,7 +343,9 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
     welcomeBonusWindowMonths,
     taxRateOnInterest: taxRatePct / 100,
     annualFee,
-  }), [monthlySpend, spendMonths, promoMonths, hysaApyPct, pointsPerDollar, cppCents, welcomeBonusPoints, welcomeBonusMinSpend, welcomeBonusWindowMonths, taxRatePct, annualFee])
+    minPaymentFloor: minPayFloor,
+    minPaymentPct: minPayPct / 100,
+  }), [monthlySpend, spendMonths, promoMonths, hysaApyPct, pointsPerDollar, cppCents, welcomeBonusPoints, welcomeBonusMinSpend, welcomeBonusWindowMonths, taxRatePct, annualFee, minPayFloor, minPayPct])
 
   const goToApr = selectedCard?.intro_apr?.go_to_apr_high
 
@@ -418,6 +424,10 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
             </Row>
             <Row>
               <Field label="Annual fee" suffix="$" value={annualFee} onChange={setAnnualFee} />
+              <Field label="Min payment" suffix="$" value={minPayFloor} onChange={setMinPayFloor} />
+            </Row>
+            <Row>
+              <Field label="…or % of balance" suffix="%" step={0.5} value={minPayPct} onChange={setMinPayPct} />
               <div style={fieldWrap} />
             </Row>
           </div>
@@ -440,6 +450,9 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
               <BreakdownRow k="Welcome bonus" v={money(result.welcomeBonusValue)} sub={result.welcomeBonusEarned ? `${result.welcomeBonusPoints.toLocaleString()} pts @ ${cppCents}¢` : "not earned"} />
               <BreakdownRow k="Everyday earn" v={money(result.baseRewardsValue)} sub={`${result.basePoints.toLocaleString()} pts @ ${cppCents}¢`} />
               <BreakdownRow k="Float interest (gross)" v={money(result.grossInterest)} sub={`@ ${hysaApyPct}% APY, decaying`} />
+              {result.minPaymentDrag > 0 && (
+                <BreakdownRow k="− Minimum payments" v={`-${money(result.minPaymentDrag)}`} sub={`${money(result.minPaymentTotal)} paid down early @ $${minPayFloor} or ${minPayPct}%`} muted />
+              )}
               <BreakdownRow k="− Tax on interest" v={`-${money(result.taxOnInterest)}`} sub={`${taxRatePct}% of interest (1099-INT)`} muted />
               {result.annualFee > 0 && <BreakdownRow k="− Annual fee" v={`-${money(result.annualFee)}`} muted />}
               <div style={{ borderTop: "1px solid #eee", marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>

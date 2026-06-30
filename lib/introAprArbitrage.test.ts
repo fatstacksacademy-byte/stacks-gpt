@@ -102,3 +102,44 @@ describe("runIntroAprArbitrage — guards & edge cases", () => {
     expect(r.totalProfit).toBeCloseTo(483.75 - 95, 4)
   })
 })
+
+describe("runIntroAprArbitrage — minimum-payment drag", () => {
+  it("defaults to no minimum (backward compatible — drag is 0)", () => {
+    const r = runIntroAprArbitrage(STANDARD)
+    expect(r.minPaymentDrag).toBe(0)
+    expect(r.minPaymentTotal).toBe(0)
+    expect(r.netInterest).toBeCloseTo(213.75, 4) // taxRate 0 → unchanged
+  })
+
+  it("a $40 / 1% minimum reduces the realized float below the theoretical curve", () => {
+    const r = runIntroAprArbitrage({ ...STANDARD, minPaymentFloor: 40, minPaymentPct: 0.01 })
+    expect(r.grossInterest).toBeCloseTo(213.75, 4) // theoretical schedule UNCHANGED
+    expect(r.minPaymentDrag).toBeGreaterThan(0)
+    expect(r.minPaymentDrag).toBeLessThan(30) // ~$11 of drag on this plan
+    expect(r.netInterest).toBeCloseTo(213.75 - r.minPaymentDrag, 6) // net = theoretical − drag (no tax)
+    expect(r.minPaymentTotal).toBeGreaterThan(0)
+    // month 0: 1% of $1,000 = $10 < $40 floor → pay $40, balance 1000-40=960
+    expect(r.schedule[0].minPayment).toBe(40)
+    expect(r.schedule[0].balance).toBe(960)
+  })
+
+  it("uses 1% of the balance once it exceeds the floor", () => {
+    // $10,000 balance month 0 → 1% = $100 > $40 floor → pay $100.
+    const r = runIntroAprArbitrage({ ...STANDARD, monthlySpend: 10000, spendMonths: 1, minPaymentFloor: 40, minPaymentPct: 0.01 })
+    expect(r.schedule[0].minPayment).toBe(100)
+    expect(r.schedule[0].balance).toBe(9900)
+  })
+
+  it("collapses exactly to the theoretical model when the minimum is 0", () => {
+    const r = runIntroAprArbitrage({ ...STANDARD, minPaymentFloor: 0, minPaymentPct: 0 })
+    expect(r.minPaymentDrag).toBe(0)
+    expect(r.netInterest).toBeCloseTo(213.75, 6)
+  })
+
+  it("taxes the realized (post-minimum) float, not the theoretical curve", () => {
+    const r = runIntroAprArbitrage({ ...STANDARD, minPaymentFloor: 40, minPaymentPct: 0.01, taxRateOnInterest: 0.15 })
+    const realized = 213.75 - r.minPaymentDrag
+    expect(r.taxOnInterest).toBeCloseTo(realized * 0.15, 6)
+    expect(r.netInterest).toBeCloseTo(realized * 0.85, 6)
+  })
+})
