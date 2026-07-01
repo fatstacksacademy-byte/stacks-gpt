@@ -62,7 +62,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
   }
 
   return (
-    <div style={{ background: "#fafafa", minHeight: "100vh", fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div style={{ background: "#0a0c10", minHeight: "100vh", fontFamily: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <style>{`
         .lp-nav { padding: 20px 40px; }
         .lp-section { padding: 60px 40px; }
@@ -86,7 +86,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         .lp-footer { padding: 40px 40px 32px; display: flex; justify-content: space-between; align-items: center; }
         .lp-faq { padding: 60px 40px; }
         .lp-nav-user { display: flex; align-items: center; gap: 16px; }
-        .lp-nav-email { font-size: 13px; color: #999; }
+        .lp-nav-email { font-size: 13px; color: #6b7280; }
         @media (max-width: 768px) {
           .lp-nav { padding: 16px 20px; }
           .lp-nav-email { display: none; }
@@ -115,18 +115,18 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── NAV ── */}
       <nav className="lp-nav" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: "#111", letterSpacing: "-0.02em" }}>Stacks OS</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em" }}>Stacks OS</span>
         {loggedInEmail ? (
           <div className="lp-nav-user">
             <span className="lp-nav-email">{loggedInEmail}</span>
             <button onClick={handleManageBilling} disabled={billingLoading}
-              style={{ fontSize: 14, fontWeight: 500, color: "#666", background: "none", border: "none", cursor: billingLoading ? "wait" : "pointer", padding: 0, textDecoration: "underline" }}>
+              style={{ fontSize: 14, fontWeight: 500, color: "#9aa1ad", background: "none", border: "none", cursor: billingLoading ? "wait" : "pointer", padding: 0, textDecoration: "underline" }}>
               {billingLoading ? "Opening…" : "Manage billing"}
             </button>
-            <Link href="/stacksos" style={{ fontSize: 14, fontWeight: 600, color: "#0d7c5f", textDecoration: "none" }}>Go to app →</Link>
+            <Link href="/stacksos" style={{ fontSize: 14, fontWeight: 600, color: "#34d399", textDecoration: "none" }}>Go to app →</Link>
           </div>
         ) : (
-          <Link href="/login" style={{ fontSize: 14, color: "#666", textDecoration: "none" }}>Log in</Link>
+          <Link href="/login" style={{ fontSize: 14, color: "#9aa1ad", textDecoration: "none" }}>Log in</Link>
         )}
       </nav>
 
@@ -135,33 +135,33 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         <div className="lp-hero-inner">
           <div className="lp-hero-text">
             <div style={{
-              display: "inline-block", fontSize: 12, fontWeight: 600, color: "#0d7c5f",
-              background: "#e6f5f0", padding: "6px 14px", borderRadius: 99, marginBottom: 24,
+              display: "inline-block", fontSize: 12, fontWeight: 600, color: "#34d399",
+              background: "rgba(13,150,104,0.16)", padding: "6px 14px", borderRadius: 99, marginBottom: 24,
               letterSpacing: "0.04em", textTransform: "uppercase",
             }}>
               Free — no credit card required
             </div>
-            <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
+            <h1 style={{ fontWeight: 800, color: "#ffffff", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
               Find your most profitable
               <br />
-              bank bonus <span style={{ color: "#0d7c5f" }}>in 60 seconds.</span>
+              bank bonus <span style={{ color: "#34d399" }}>in 60 seconds.</span>
             </h1>
-            <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 12px", maxWidth: 480 }}>
+            <p style={{ color: "#9aa1ad", lineHeight: 1.6, margin: "0 0 12px", maxWidth: 480 }}>
               Banks pay $300–$500 to open an account. Stacks OS tells you exactly which one to do next for your paycheck, tracks every deadline, and adds up your haul — alongside a crew clawing $1B back from the banks.
             </p>
-            <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.6, margin: "0 0 32px", maxWidth: 480 }}>
-              Free to track every bonus. Upgrade to <strong style={{ color: "#0d7c5f" }}>Pro ($10/mo)</strong> for the personalized queue that ranks checking, savings, and card bonuses and re-sequences as offers change.
+            <p style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.6, margin: "0 0 32px", maxWidth: 480 }}>
+              Free to track every bonus. Upgrade to <strong style={{ color: "#34d399" }}>Pro ($10/mo)</strong> for the personalized queue that ranks checking, savings, and card bonuses and re-sequences as offers change.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
-                fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d9668",
                 padding: "16px 36px", borderRadius: 10, textDecoration: "none",
                 boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
               }}>Start free →</a>
               <a href="#pricing" style={{
-                fontSize: 16, fontWeight: 500, color: "#666",
+                fontSize: 16, fontWeight: 500, color: "#9aa1ad",
                 padding: "16px 28px", borderRadius: 10, textDecoration: "none",
-                border: "1px solid #ddd",
+                border: "1px solid #2a2e38",
               }}>See Pro features</a>
             </div>
             <div className="lp-stats">
@@ -171,8 +171,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 { value: "60 sec", label: "to your bonus plan" },
               ].map((s, i) => (
                 <div key={i}>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111" }}>{s.value}</div>
-                  <div style={{ fontSize: 13, color: "#999", marginTop: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: "#ffffff" }}>{s.value}</div>
+                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -195,20 +195,20 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Three steps. Repeat.
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 48px" }}>No gimmicks. Just a system.</p>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 48px" }}>No gimmicks. Just a system.</p>
         <div className="lp-grid-3">
           {[
             { step: "01", title: "Open the account", desc: "Stacks shows you the best bonus for your paycheck. Click the link and open the account — takes about 10 minutes." },
             { step: "02", title: "Route your direct deposit", desc: "Update your direct deposit to the new account. Your regular paycheck handles the requirement — no extra money needed." },
             { step: "03", title: "Collect your bonus. Repeat.", desc: "Once a bonus posts, move to the next bank. Stacks tracks your progress and keeps the queue updated." },
           ].map((item, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "32px 28px", border: "1px solid #e8e8e8" }}>
-              <div style={{ fontSize: 32, fontWeight: 800, color: "#e0e0e0", marginBottom: 16 }}>{item.step}</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 10 }}>{item.title}</div>
-              <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>{item.desc}</div>
+            <div key={i} style={{ background: "#161922", borderRadius: 14, padding: "32px 28px", border: "1px solid #23262e" }}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: "#2a2e38", marginBottom: 16 }}>{item.step}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#ffffff", marginBottom: 10 }}>{item.title}</div>
+              <div style={{ fontSize: 14, color: "#9aa1ad", lineHeight: 1.6 }}>{item.desc}</div>
             </div>
           ))}
         </div>
@@ -216,16 +216,16 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── WHAT YOU GET ── */}
       <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Everything handled in one place
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 28px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 28px" }}>No spreadsheets. No blog tabs. No forgetting deadlines.</p>
         <div style={{
           maxWidth: 620, margin: "0 auto 40px", padding: "14px 18px",
-          background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12,
-          fontSize: 13.5, color: "#15604a", lineHeight: 1.55, textAlign: "center",
+          background: "rgba(13,150,104,0.12)", border: "1px solid rgba(13,150,104,0.5)", borderRadius: 12,
+          fontSize: 13.5, color: "#34d399", lineHeight: 1.55, textAlign: "center",
         }}>
-          Browsing the catalog, tracking your bonuses, and manual entry are <span style={{ fontWeight: 700 }}>free</span>. The <span style={{ fontWeight: 700 }}>Sequencer</span> <InfoTip term="sequencer" label="the Sequencer" /> — which ranks and schedules bonuses for you — and the multi-year projection are <span style={{ fontWeight: 700, color: "#0d7c5f" }}>Pro</span> (tagged below).
+          Browsing the catalog, tracking your bonuses, and manual entry are <span style={{ fontWeight: 700 }}>free</span>. The <span style={{ fontWeight: 700 }}>Sequencer</span> <InfoTip term="sequencer" label="the Sequencer" /> — which ranks and schedules bonuses for you — and the multi-year projection are <span style={{ fontWeight: 700, color: "#34d399" }}>Pro</span> (tagged below).
         </div>
         <div className="lp-grid-2">
           {([
@@ -239,12 +239,12 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             { title: "12-month earnings projection", desc: "See your projected bonus earnings before you even start. Updated as you complete bonuses.", pro: true },
             { title: "Bonuses ranked by value", desc: "Stacks OS prioritizes the highest-value bank bonuses available. Recommendations are based on profitability and requirements — not affiliate payouts.", pro: true },
           ] as { title: string; desc: string; pro?: boolean }[]).map((f, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 12, padding: "24px", border: "1px solid #e8e8e8" }}>
+            <div key={i} style={{ background: "#161922", borderRadius: 12, padding: "24px", border: "1px solid #23262e" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{f.title}</span>
-                {f.pro && <span style={{ fontSize: 10, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", padding: "2px 7px", borderRadius: 99, letterSpacing: "0.04em", textTransform: "uppercase" }}>Pro</span>}
+                <span style={{ fontSize: 15, fontWeight: 700, color: "#ffffff" }}>{f.title}</span>
+                {f.pro && <span style={{ fontSize: 10, fontWeight: 700, color: "#34d399", background: "rgba(13,150,104,0.16)", padding: "2px 7px", borderRadius: 99, letterSpacing: "0.04em", textTransform: "uppercase" }}>Pro</span>}
               </div>
-              <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>{f.desc}</div>
+              <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5 }}>{f.desc}</div>
             </div>
           ))}
         </div>
@@ -252,23 +252,23 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── HOW YOUR PLAN IS BUILT ── */}
       <section className="lp-section" style={{ maxWidth: 700, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           How your bonus plan is built
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 36px" }}>Every recommendation is calculated — not curated.</p>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 36px" }}>Every recommendation is calculated — not curated.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {[
             { label: "Profitability", desc: "Bonuses are ranked by net payout after deposit requirements, holding periods, and fees. The highest-value opportunities come first." },
             { label: "Eligibility", desc: "Each bonus is matched to your paycheck amount and frequency. Offers you can't qualify for don't show up in your plan." },
             { label: "Sequencing", desc: "Cooldown periods are factored in so your next bonus is always ready to start when the current one finishes." },
           ].map((item, i) => (
-            <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "20px 24px", display: "flex", gap: 16, alignItems: "flex-start" }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: "#e6f5f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
-                <span style={{ fontSize: 12, fontWeight: 800, color: "#0d7c5f" }}>{i + 1}</span>
+            <div key={i} style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: "20px 24px", display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(13,150,104,0.16)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#34d399" }}>{i + 1}</span>
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 4 }}>{item.label}</div>
-                <div style={{ fontSize: 13, color: "#888", lineHeight: 1.6 }}>{item.desc}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.6 }}>{item.desc}</div>
               </div>
             </div>
           ))}
@@ -278,13 +278,13 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
       {/* ── SIGNUP ── */}
       <section id="signup" className="lp-section" style={{ maxWidth: 480, margin: "0 auto" }}>
         <div style={{
-          background: "#fff", borderRadius: 16, padding: "40px 36px",
-          border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
+          background: "#161922", borderRadius: 16, padding: "40px 36px",
+          border: "1px solid #23262e", boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
         }}>
-          <h3 style={{ fontSize: 26, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+          <h3 style={{ fontSize: 26, fontWeight: 800, color: "#ffffff", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
             Sign up free. Start tracking bonuses in 30 seconds.
           </h3>
-          <p style={{ fontSize: 14, color: "#999", margin: "0 0 24px", lineHeight: 1.5 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 24px", lineHeight: 1.5 }}>
             No credit card. Upgrade to Pro anytime for the personalized checking, savings, and card queues.
           </p>
 
@@ -300,23 +300,23 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 onChange={e => setPassword(e.target.value)} style={inputStyle} />
             </div>
             {error && (
-              <div style={{ fontSize: 12, color: "#dc2626", background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 12, color: "#f87171", background: "rgba(220,38,38,0.12)", border: "1px solid #7f1d1d", borderRadius: 8, padding: "10px 12px" }}>
                 {error}
               </div>
             )}
             <button type="submit" disabled={loading} style={{
               width: "100%", padding: "14px", fontSize: 15, fontWeight: 700,
-              background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
+              background: "#0d9668", color: "#fff", border: "none", borderRadius: 10,
               cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, marginTop: 2,
             }}>
               {loading ? "Creating account…" : "Start tracking free →"}
             </button>
           </form>
 
-          <div style={{ borderTop: "1px solid #f0f0f0", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
-            <span style={{ fontSize: 13, color: "#999" }}>
+          <div style={{ borderTop: "1px solid #23262e", marginTop: 16, paddingTop: 16, textAlign: "center" as const }}>
+            <span style={{ fontSize: 13, color: "#6b7280" }}>
               Already have an account?{" "}
-              <Link href="/login" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
+              <Link href="/login" style={{ color: "#34d399", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
             </span>
           </div>
         </div>
@@ -324,10 +324,10 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── DEMO VIDEO ── */}
       <section className="lp-section" style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           See it in action
         </h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>A 90-second look at how Stacks OS works.</p>
+        <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 28px" }}>A 90-second look at how Stacks OS works.</p>
         <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
           <iframe
             src="https://www.youtube.com/embed/lVsb8fMmuDc"
@@ -338,7 +338,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
           />
         </div>
         <p style={{ fontSize: 14, margin: "16px 0 0" }}>
-          <a href="https://youtu.be/vJcZPt2KWY8" target="_blank" rel="noopener noreferrer" style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "none" }}>
+          <a href="https://youtu.be/vJcZPt2KWY8" target="_blank" rel="noopener noreferrer" style={{ color: "#34d399", fontWeight: 600, textDecoration: "none" }}>
             Want the full tour? Watch the complete walkthrough →
           </a>
         </p>
@@ -346,16 +346,16 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── SCREENSHOTS: checking + savings ── */}
       <section className="lp-section" style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           Not just checking — savings too
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 auto 36px", maxWidth: 620, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 auto 36px", maxWidth: 620, lineHeight: 1.6 }}>
           The catalog and sequencers cover checking, savings, and brokerage bonuses — ranked by
           what actually pays you most, for your state and your cash.
         </p>
         <div className="lp-compare" style={{ gap: 24 }}>
           <figure style={{ margin: 0 }}>
-            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #23262e", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
               <Image
                 src="/demo-checking-bonuses.jpg"
                 width={1650}
@@ -364,12 +364,12 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </div>
-            <figcaption style={{ fontSize: 13, color: "#888", textAlign: "center", marginTop: 12 }}>
-              <strong style={{ color: "#111" }}>Checking bonuses</strong> for your state — every requirement spelled out
+            <figcaption style={{ fontSize: 13, color: "#9aa1ad", textAlign: "center", marginTop: 12 }}>
+              <strong style={{ color: "#ffffff" }}>Checking bonuses</strong> for your state — every requirement spelled out
             </figcaption>
           </figure>
           <figure style={{ margin: 0 }}>
-            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e8e8e8", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #23262e", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
               <Image
                 src="/demo-savings-bonuses.jpg"
                 width={1650}
@@ -378,8 +378,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </div>
-            <figcaption style={{ fontSize: 13, color: "#888", textAlign: "center", marginTop: 12 }}>
-              <strong style={{ color: "#111" }}>Savings &amp; brokerage bonuses</strong> ranked by effective APY
+            <figcaption style={{ fontSize: 13, color: "#9aa1ad", textAlign: "center", marginTop: 12 }}>
+              <strong style={{ color: "#ffffff" }}>Savings &amp; brokerage bonuses</strong> ranked by effective APY
             </figcaption>
           </figure>
         </div>
@@ -387,7 +387,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── FAQ ── */}
       <section className="lp-faq" style={{ maxWidth: 700, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 40px" }}>Common questions</h2>
         {[
           { q: "Is this legal?", a: "Yes. Bank bonuses are promotional offers banks use to attract new customers. They want you to sign up." },
           { q: "Do I need extra money?", a: "Not usually. In many cases, your deposit only needs to pass through the account. You can often transfer the money back to your main bank after it arrives, as long as the bank requirements are met." },
@@ -397,22 +397,22 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
           { q: "What if a bonus offer changes?", a: "Stacks OS aggregates publicly available information. We recommend verifying terms with the bank before applying. Offers can change at any time." },
           { q: "Do taxes or fees reduce these bonuses?", a: "Most bank bonuses are treated as taxable income and may be reported on a 1099-INT or 1099-MISC by the bank. Some accounts may also have monthly fees if requirements are not met. Stacks OS highlights common fee-avoidance options for each bonus and helps you track the requirements needed to earn the reward. Always verify the terms directly with the bank before opening an account." },
         ].map((faq, i) => (
-          <div key={i} style={{ borderBottom: "1px solid #eee", padding: "20px 0" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6 }}>{faq.q}</div>
-            <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>{faq.a}</div>
+          <div key={i} style={{ borderBottom: "1px solid #23262e", padding: "20px 0" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", marginBottom: 6 }}>{faq.q}</div>
+            <div style={{ fontSize: 14, color: "#9aa1ad", lineHeight: 1.6 }}>{faq.a}</div>
           </div>
         ))}
       </section>
 
       {/* ── WHY PEOPLE STOP ── */}
       <section className="lp-section" style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", textAlign: "center", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           Why most people stop after 1–2 bank bonuses
         </h2>
-        <p style={{ fontSize: 15, color: "#999", textAlign: "center", margin: "0 0 40px" }}>The bonuses are real. The tracking becomes the problem.</p>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 40px" }}>The bonuses are real. The tracking becomes the problem.</p>
         <div className="lp-compare" style={{ gap: 20 }}>
-          <div style={{ background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Tracking in a spreadsheet</div>
+          <div style={{ background: "rgba(220,38,38,0.12)", border: "1px solid #7f1d1d", borderRadius: 14, padding: "28px 24px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#f87171", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Tracking in a spreadsheet</div>
             {[
               "Checking blogs and Reddit for new bonuses",
               "Trying to remember deposit requirements and deadlines",
@@ -421,13 +421,13 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               "Running out of bonuses to do",
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
-                <span style={{ color: "#dc2626", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✕</span>
-                <span style={{ fontSize: 14, color: "#555", lineHeight: 1.5 }}>{item}</span>
+                <span style={{ color: "#f87171", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✕</span>
+                <span style={{ fontSize: 14, color: "#cdd2db", lineHeight: 1.5 }}>{item}</span>
               </div>
             ))}
           </div>
-          <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS — free</div>
+          <div style={{ background: "rgba(13,150,104,0.12)", border: "1px solid rgba(13,150,104,0.5)", borderRadius: 14, padding: "28px 24px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#34d399", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>Stacks OS — free</div>
             {[
               "Full researched catalog with every requirement",
               "Clear checklist for every bonus",
@@ -436,8 +436,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               "Cooldown countdowns show when you're eligible again",
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
-                <span style={{ color: "#0d7c5f", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
-                <span style={{ fontSize: 14, color: "#555", lineHeight: 1.5 }}>{item}</span>
+                <span style={{ color: "#34d399", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
+                <span style={{ fontSize: 14, color: "#cdd2db", lineHeight: 1.5 }}>{item}</span>
               </div>
             ))}
           </div>
@@ -446,11 +446,11 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── EXAMPLE ROADMAP ── */}
       <section className="lp-section" style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
           Example bonus roadmap
         </h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 36px" }}>A typical sequence for someone with a $1,500 biweekly paycheck.</p>
-        <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, overflow: "hidden" }}>
+        <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 36px" }}>A typical sequence for someone with a $1,500 biweekly paycheck.</p>
+        <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 14, overflow: "hidden" }}>
           {[
             { bank: "Chase", amount: "$400" },
             { bank: "Wells Fargo", amount: "$400" },
@@ -461,45 +461,45 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             <div key={i} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               padding: "16px 24px",
-              borderBottom: i < arr.length - 1 ? "1px solid #f0f0f0" : "none",
-              background: i === 0 ? "#f0faf5" : "#fff",
+              borderBottom: i < arr.length - 1 ? "1px solid #23262e" : "none",
+              background: i === 0 ? "rgba(13,150,104,0.12)" : "#161922",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 12, color: "#bbb", fontWeight: 700, width: 18 }}>{i + 1}</span>
-                <span style={{ fontSize: 15, fontWeight: i === 0 ? 700 : 500, color: "#111" }}>{item.bank}</span>
-                {i === 0 && <span style={{ fontSize: 11, fontWeight: 600, color: "#0d7c5f", background: "#e6f5f0", padding: "2px 8px", borderRadius: 99 }}>Start here</span>}
+                <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 700, width: 18 }}>{i + 1}</span>
+                <span style={{ fontSize: 15, fontWeight: i === 0 ? 700 : 500, color: "#ffffff" }}>{item.bank}</span>
+                {i === 0 && <span style={{ fontSize: 11, fontWeight: 600, color: "#34d399", background: "rgba(13,150,104,0.16)", padding: "2px 8px", borderRadius: 99 }}>Start here</span>}
               </div>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{item.amount}</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#34d399" }}>{item.amount}</span>
             </div>
           ))}
-          <div style={{ padding: "16px 24px", background: "#fafafa", borderTop: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 2 }}>12+ bonuses available in a typical yearly plan</div>
-            <div style={{ fontSize: 12, color: "#bbb" }}>Stacks OS tracks nationwide bonuses worth your time.</div>
+          <div style={{ padding: "16px 24px", background: "#0f1219", borderTop: "1px solid #23262e" }}>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 2 }}>12+ bonuses available in a typical yearly plan</div>
+            <div style={{ fontSize: 12, color: "#6b7280" }}>Stacks OS tracks nationwide bonuses worth your time.</div>
           </div>
         </div>
       </section>
 
       {/* ── PRICING ── */}
       <section id="pricing" className="lp-section" style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Free does the tracking. Pro does the thinking.</h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 32px" }}>Free replaces your bonus spreadsheet. Upgrade to Pro when you want the sequencer to rank and schedule what to do next.</p>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", margin: "0 0 8px" }}>Free does the tracking. Pro does the thinking.</h2>
+        <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 32px" }}>Free replaces your bonus spreadsheet. Upgrade to Pro when you want the sequencer to rank and schedule what to do next.</p>
 
         <div className="lp-pricing-row">
           {/* ── FREE ── */}
           <div className="lp-pricing-card" style={{
-            background: "#fff", border: "1px solid #e8e8e8",
+            background: "#161922", border: "1px solid #23262e",
             borderRadius: 16, padding: "32px", textAlign: "left",
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Free</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 14 }}>Replaces your bonus spreadsheet</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Free</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#34d399", marginBottom: 14 }}>Replaces your bonus spreadsheet</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>$0</span>
+              <span style={{ fontSize: 48, fontWeight: 800, color: "#ffffff" }}>$0</span>
             </div>
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>No credit card required</div>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 20 }}>No credit card required</div>
 
             <a href="#signup" style={{
               display: "block", width: "100%", padding: "12px 16px", fontSize: 14, fontWeight: 700,
-              background: "#111", color: "#fff", border: "none", borderRadius: 10,
+              background: "#161922", color: "#fff", border: "1px solid #2a2e38", borderRadius: 10,
               textDecoration: "none", textAlign: "center" as const, marginBottom: 22,
             }}>
               Start free →
@@ -513,8 +513,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 "Cooldown countdown — when you're eligible again",
                 "Lifetime earned + full history",
               ].map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#555" }}>
-                  <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#cdd2db" }}>
+                  <span style={{ color: "#34d399", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}
                 </div>
               ))}
             </div>
@@ -522,51 +522,51 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
           {/* ── PRO ── */}
           <div className="lp-pricing-card" style={{
-            background: "#fff", border: "2px solid #0d7c5f",
+            background: "#161922", border: "2px solid #34d399",
             borderRadius: 16, padding: "32px", textAlign: "left",
             boxShadow: "0 8px 32px rgba(13,124,95,0.08)", position: "relative",
           }}>
             <div style={{
               position: "absolute", top: -12, right: 20, fontSize: 11, fontWeight: 700, color: "#fff",
-              background: "#0d7c5f", padding: "4px 10px", borderRadius: 99, letterSpacing: "0.06em",
+              background: "#0d9668", padding: "4px 10px", borderRadius: 99, letterSpacing: "0.06em",
             }}>
               RECOMMENDED
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Pro</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 14 }}>The sequencer — tells you what to do next</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#34d399", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Pro</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#34d399", marginBottom: 14 }}>The sequencer — tells you what to do next</div>
 
-            <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 14 }}>
+            <div style={{ display: "flex", background: "#0f1219", border: "1px solid #23262e", borderRadius: 8, padding: 3, marginBottom: 14 }}>
               <button onClick={() => setBillingCycle("monthly")} style={{
                 flex: 1, padding: "6px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
-                background: billingCycle === "monthly" ? "#fff" : "transparent",
-                color: billingCycle === "monthly" ? "#111" : "#999",
+                background: billingCycle === "monthly" ? "#161922" : "transparent",
+                color: billingCycle === "monthly" ? "#ffffff" : "#6b7280",
                 boxShadow: billingCycle === "monthly" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
               }}>Monthly</button>
               <button onClick={() => setBillingCycle("annual")} style={{
                 flex: 1, padding: "6px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
-                background: billingCycle === "annual" ? "#fff" : "transparent",
-                color: billingCycle === "annual" ? "#111" : "#999",
+                background: billingCycle === "annual" ? "#161922" : "transparent",
+                color: billingCycle === "annual" ? "#ffffff" : "#6b7280",
                 boxShadow: billingCycle === "annual" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-              }}>Annual <span style={{ fontSize: 10, color: "#0d7c5f", fontWeight: 700 }}>Save 18%</span></button>
+              }}>Annual <span style={{ fontSize: 10, color: "#34d399", fontWeight: 700 }}>Save 18%</span></button>
             </div>
 
             <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 48, fontWeight: 800, color: "#111" }}>${billingCycle === "monthly" ? "10" : "99"}</span>
-              <span style={{ fontSize: 16, color: "#999" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
+              <span style={{ fontSize: 48, fontWeight: 800, color: "#ffffff" }}>${billingCycle === "monthly" ? "10" : "99"}</span>
+              <span style={{ fontSize: 16, color: "#6b7280" }}>/{billingCycle === "monthly" ? "mo" : "yr"}</span>
             </div>
-            <div style={{ fontSize: 13, color: "#999", marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 20 }}>
               {billingCycle === "annual" ? "$8.25/mo billed annually" : "Cancel anytime"}
             </div>
 
             <a href="#signup" style={{
               display: "block", width: "100%", padding: "12px 16px", fontSize: 14, fontWeight: 700,
-              background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 10,
+              background: "#0d9668", color: "#fff", border: "none", borderRadius: 10,
               textDecoration: "none", textAlign: "center" as const, marginBottom: 22,
             }}>
               Start with Pro →
             </a>
 
-            <div style={{ fontSize: 12, fontWeight: 600, color: "#666", marginBottom: 10 }}>Everything in Free, plus:</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "#9aa1ad", marginBottom: 10 }}>Everything in Free, plus:</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
                 "Paycheck queue — checking bonuses ranked by net payout",
@@ -576,8 +576,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
                 "12-month earnings projection",
                 "Tax summary tools",
               ].map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#555" }}>
-                  <span style={{ color: "#0d7c5f", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#cdd2db" }}>
+                  <span style={{ color: "#34d399", fontWeight: 700, fontSize: 13, marginTop: 1 }}>&#10003;</span>{f}
                 </div>
               ))}
             </div>
@@ -587,10 +587,10 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── FINAL CTA ── */}
       <section className="lp-section" style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#111", letterSpacing: "-0.02em", margin: "0 0 12px" }}>Your first bonus is waiting</h2>
-        <p style={{ fontSize: 15, color: "#999", margin: "0 0 28px" }}>Sign up free in 30 seconds. No credit card.</p>
+        <h2 style={{ fontSize: 36, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", margin: "0 0 12px" }}>Your first bonus is waiting</h2>
+        <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 28px" }}>Sign up free in 30 seconds. No credit card.</p>
         <a href="#signup" style={{
-          fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+          fontSize: 16, fontWeight: 700, color: "#fff", background: "#0d9668",
           padding: "16px 40px", borderRadius: 10, textDecoration: "none", display: "inline-block",
           boxShadow: "0 4px 16px rgba(13,124,95,0.2)",
         }}>
@@ -600,26 +600,26 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
 
       {/* ── DISCLAIMER ── */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 24px" }}>
-        <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0, textAlign: "center" }}>
+        <p style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6, margin: 0, textAlign: "center" }}>
           Bonus offers, requirements, and fees are determined by each financial institution and may change at any time. Always verify the current terms directly with the bank before applying.
         </p>
       </div>
 
       {/* ── FOOTER ── */}
-      <footer className="lp-footer" style={{ maxWidth: 1100, margin: "0 auto", borderTop: "1px solid #f0f0f0" }}>
-        <span style={{ fontSize: 13, color: "#bbb" }}>&copy; {new Date().getFullYear()} Stacks OS</span>
+      <footer className="lp-footer" style={{ maxWidth: 1100, margin: "0 auto", borderTop: "1px solid #23262e" }}>
+        <span style={{ fontSize: 13, color: "#6b7280" }}>&copy; {new Date().getFullYear()} Stacks OS</span>
         <div style={{ display: "flex", gap: 20 }}>
-          <Link href="/terms" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Terms</Link>
-          <Link href="/privacy" style={{ fontSize: 13, color: "#bbb", textDecoration: "none" }}>Privacy</Link>
+          <Link href="/terms" style={{ fontSize: 13, color: "#6b7280", textDecoration: "none" }}>Terms</Link>
+          <Link href="/privacy" style={{ fontSize: 13, color: "#6b7280", textDecoration: "none" }}>Privacy</Link>
         </div>
       </footer>
     </div>
   )
 }
 
-const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#333", display: "block", marginBottom: 6 }
+const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#cdd2db", display: "block", marginBottom: 6 }
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "10px 14px", fontSize: 14,
-  border: "1px solid #e0e0e0", borderRadius: 8,
-  background: "#fff", color: "#111", boxSizing: "border-box" as const, outline: "none",
+  border: "1px solid #2a2e38", borderRadius: 8,
+  background: "#161922", color: "#ffffff", boxSizing: "border-box" as const, outline: "none",
 }
