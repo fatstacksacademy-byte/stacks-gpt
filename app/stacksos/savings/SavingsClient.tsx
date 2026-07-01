@@ -999,6 +999,32 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                       }
                     />
 
+                    {/* Editable key dates — correct the date a milestone was hit
+                        to when it actually happened (the click-to-mark stamps
+                        today). Same affordance as the dashboard + paycheck cards. */}
+                    {(openedConfirmed || depositedConfirmed || bonusReceived) && (
+                      <div style={{ marginTop: 14, background: "#0f1219", border: "1px solid #23262e", borderRadius: 10, padding: "12px 14px" }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", marginBottom: 8 }}>Dates</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {([
+                            openedConfirmed ? { key: "account_opened_at" as const, label: "Account opened", value: e.account_opened_at } : null,
+                            depositedConfirmed ? { key: "funded_at" as const, label: "Funded", value: e.funded_at } : null,
+                            (bonusReceived || e.bonus_posted_at) ? { key: "bonus_posted_at" as const, label: "Bonus posted", value: e.bonus_posted_at } : null,
+                          ].filter(Boolean) as { key: "account_opened_at" | "funded_at" | "bonus_posted_at"; label: string; value: string | null | undefined }[]).map(d => (
+                            <div key={d.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                              <span style={{ fontSize: 12.5, color: "#9aa1ad" }}>{d.label}</span>
+                              <input
+                                type="date"
+                                value={d.value ? String(d.value).slice(0, 10) : ""}
+                                onChange={async (ev) => { const iso = ev.target.value; if (!iso) return; await updateSavingsEntry(e.id, { [d.key]: iso }); await loadData() }}
+                                style={{ fontSize: 12.5, color: "#fff", background: "#161a22", border: "1px solid #2a2e38", borderRadius: 8, padding: "6px 9px", colorScheme: "dark" }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Fee reality check — monthly maintenance / early-closure
                         fees on the matched catalog bonus, with the honest
                         net-after-fees + waive-vs-HYSA math. Only rendered when
