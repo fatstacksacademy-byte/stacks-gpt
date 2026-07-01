@@ -5996,7 +5996,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": 3,
-      "deposit_window_days": 45,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": 10,
       "min_balance": null,
