@@ -34,6 +34,8 @@ export type BlogContent = {
   verifiedAt?: string
   /** The exact offer page URL the generator verified (may differ from current source_links[0]) */
   verifiedUrl?: string
+  /** Marks the offer as expired/no-longer-available (flagged by the catalog pipeline). */
+  expired?: boolean
 }
 
 export const blogContent: Record<string, BlogContent> = {
@@ -527,8 +529,8 @@ export const blogContent: Record<string, BlogContent> = {
       { method: "Venmo ACH", works: false },
       { method: "Zelle", works: false },
     ],
-    summary: "E*TRADE's $300 Max-Rate Checking bonus requires two direct deposits of $1,500+ each within 90 days. The $15/month fee (waivable with $5,000 balance) is a consideration, but the bonus itself is straightforward. Good for people already in the Morgan Stanley/E*TRADE ecosystem or those with larger paychecks.",
-    strategy: "Use promo code CHECKING25 when opening. Fund within 30 days, then route two direct deposits of at least $1,500 each within 90 days. If you're paid biweekly at $1,500+, you'll qualify within one month. Keep a $5,000 balance to waive the $15/month fee, or plan to close after the 120-day holding period. The bonus posts around day 120.",
+    summary: "E*TRADE's $300 Max-Rate Checking bonus requires two direct deposits of $1,500+ each within 90 days. There's no monthly fee (E*TRADE dropped the $15 Max-Rate Checking fee in June 2026), and the bonus itself is straightforward. Good for people already in the Morgan Stanley/E*TRADE ecosystem or those with larger paychecks.",
+    strategy: "Use promo code CHECKING25 when opening. Fund within 30 days, then route two direct deposits of at least $1,500 each within 90 days. If you're paid biweekly at $1,500+, you'll qualify within one month. There's no longer a monthly fee to manage, but plan to keep the account open through the ~120-day holding period. The bonus posts around day 120.",
     bestFor: "Higher earners with $1,500+ per-deposit paychecks who want to add E*TRADE to their bonus rotation. Also good for people who already use E*TRADE for investing and want to consolidate banking.",
     pros: [
       "Solid $300 bonus",
@@ -1979,7 +1981,7 @@ export const blogContent: Record<string, BlogContent> = {
     strategy: "Set up direct deposit or online banking, make 5 debit purchases, enroll in eStatements, and set up bill payments to hit all tiers for the full $300.",
     bestFor: "Connecticut residents who want a tiered bonus they can build up through normal banking activity.",
     pros: ["Tiered structure lets you earn incrementally", "Low debit requirement (5 purchases)"],
-    cons: ["Connecticut only", "Requires multiple activities to max out"],
+    cons: ["Regional — western MA, CT, RI, NH only", "Requires multiple activities to max out"],
     comparison: "Similar tiered structure to bankHometown ($300). Connecticut has fewer checking bonus options.",
     faqs: [{ q: "Which states is this bankESB offer available in?", a: "Massachusetts (Hampden, Hampshire, or Franklin County), Connecticut, Rhode Island, and New Hampshire. bankESB is a western-Massachusetts bank." }],
     relatedSlugs: [],
@@ -3011,12 +3013,12 @@ export const blogContent: Record<string, BlogContent> = {
       { method: "Government benefits (SSA, pension)", works: false, notes: "Not applicable for business accounts." },
     ],
     summary: "U.S. Bank's Platinum Business Checking bonus offers up to $1,200 for a $25,000 deposit maintained for 60 days plus 6 qualifying transactions. Use promo code Q3DIG26. This is one of the largest non-Citi business checking bonuses available.",
-    strategy: "Open a Platinum Business Checking account with promo code Q2AFL26. Deposit $25,000 within 30 days and maintain for 60 days. Complete 6 qualifying transactions to satisfy all requirements. The lower $400 tier requires only $5,000.",
+    strategy: "Open a Platinum Business Checking account with promo code Q3DIG26. Deposit $25,000 within 30 days and maintain for 60 days. Complete 6 qualifying transactions to satisfy all requirements. The lower $400 tier requires only $5,000.",
     bestFor: "Business owners with $25,000 to park for 60 days who want a premium business checking relationship with U.S. Bank.",
     pros: ["$1,200 is among the highest business checking bonuses", "Nationwide availability", "Lower tier available at $5,000/$400"],
     cons: ["$30/month fee unless $15,000 daily balance", "6 transactions required"],
     comparison: "",
-    faqs: [{ q: "Where do I enter the promo code?", a: "Enter promo code Q2AFL26 during the online application process for the Platinum Business Checking account." }],
+    faqs: [{ q: "Where do I enter the promo code?", a: "Enter promo code Q3DIG26 during the online application process for the Platinum Business Checking account." }],
     relatedSlugs: [],
   },
 
@@ -4019,11 +4021,11 @@ export const blogContent: Record<string, BlogContent> = {
   },
 
   "usbank-biz-savings-1200": {
-    summary: "U.S. Bank Platinum Business Checking pays $400 or $1,200 depending on deposit size ($5k or $25k). The $1,200 at $25k is the highest top-tier business checking bonus among the big banks. Requires promo code Q2DIG26 and 6 qualifying transactions during the qualification period.",
-    strategy: "Open U.S. Bank Platinum Business Checking online with promo code Q2DIG26. Deposit net-new funds within 30 days to hit the $25k tier. Make 6 qualifying transactions (debit purchases, ACH, wires). Maintain for 60 days. The $1,200 payout is best-in-class; the $400 tier is acceptable but leaves money on the table.",
+    summary: "U.S. Bank Platinum Business Checking pays $400 or $1,200 depending on deposit size ($5k or $25k). The $1,200 at $25k is the highest top-tier business checking bonus among the big banks. Requires promo code Q3DIG26 and 6 qualifying transactions during the qualification period.",
+    strategy: "Open U.S. Bank Platinum Business Checking online with promo code Q3DIG26. Deposit net-new funds within 30 days to hit the $25k tier. Make 6 qualifying transactions (debit purchases, ACH, wires). Maintain for 60 days. The $1,200 payout is best-in-class; the $400 tier is acceptable but leaves money on the table.",
     bestFor: "Businesses with $25k+ in available working capital. Also decent for high-transaction-volume businesses that can hit the 6-transaction bar quickly.",
     pros: ["$1,200 at $25k is the best big-bank business bonus", "Platinum Business Checking includes enhanced features (wire discounts, cash deposit allowances)", "U.S. Bank's footprint is strong in the Midwest and West", "Promo code entry process is straightforward"],
-    cons: ["Requires a specific promo code (Q2DIG26) — easy to miss", "6 transactions can be a stretch for low-volume businesses", "$30 monthly fee on Platinum, waivable with $25k balance", "U.S. Bank's online account opening is clunkier than Chase or BofA"],
+    cons: ["Requires a specific promo code (Q3DIG26) — easy to miss", "6 transactions can be a stretch for low-volume businesses", "$30 monthly fee on Platinum, waivable with $25k balance", "U.S. Bank's online account opening is clunkier than Chase or BofA"],
     comparison: "U.S. Bank's $1,200 at $25k beats Chase's $750 at $20k, BofA's $750 at $15k, and is in a league of its own at the top tier. The catch: the $25k balance maintenance during a 60-day period is a real capital commitment. If you have the cash, this is the best business bonus available.",
     faqs: [
       { q: "What is promo code Q2DIG26?", a: "U.S. Bank's Q2 2026 digital-acquisition promo code for Platinum Business Checking. Enter it when applying online to qualify for the tiered bonus." },
@@ -4121,7 +4123,8 @@ export const blogContent: Record<string, BlogContent> = {
       { q: "Do I really only need one direct deposit for the $350?", a: "Yes — the $350 First Direct Deposit Bonus only requires a single qualifying $500+ deposit to post within 90 days of opening. It's the extra $200 (the Second and Third bonuses) that requires a qualifying DD every month for 12 and then 24 consecutive months." },
       { q: "What happens if I miss a month of direct deposits?", a: "You keep the $350, but you forfeit both the $100 (12-month) and $100 (24-month) bonuses. The terms say if a qualifying DD doesn't post in any month after the first, you're no longer eligible for the Second and Third bonuses — the streak has to stay unbroken." },
       { q: "Is this bonus repeatable?", a: "No. It's once-per-lifetime — you're not eligible if you've ever received a FourLeaf new-checking bonus, and you can only get one checking bonus per person." },
-      { q: "Does FourLeaf run a hard credit pull?", a: "No — FourLeaf uses a soft pull (if any), so it won't affect your credit score. It does run a ChexSystems inquiry, so make sure ChexSystems is unfrozen and your file is clean before applying." },
+      { q: "How do I join Four Leaf FCU — do I need to live in New York?", a: "No New York tie needed. FourLeaf (formerly Bethpage) is open to anyone in the country: you become a member simply by opening a $5 savings share — no employer group, association, or donation required — and that easy nationwide path carried over from the Bethpage days. The main requirements are that you must be a U.S. citizen or permanent resident (green-card holder), with your SSN and a government photo ID. The tougher gate is ChexSystems, not membership — see below." },
+      { q: "Does FourLeaf run a hard credit pull?", a: "No — FourLeaf doesn't do a hard credit pull; it only runs a ChexSystems inquiry, so it won't affect your credit score. ChexSystems must be UNFROZEN when you submit, and approval leans heavily on how few accounts you've opened in the last 1-2 months (zero or one is ideal). One wrinkle from the data points: FourLeaf often sends the application back with a 'complete/resubmit' step and pulls ChexSystems a second time — so a common move is to re-freeze your ChexSystems file right after the first submission to block that second inquiry." },
     ],
     relatedSlugs: ["psecu-300-checking-2026","capital-one-360-checking-300-offer300"],
     verifiedAt: "2026-06-10T01:51:36.699Z",

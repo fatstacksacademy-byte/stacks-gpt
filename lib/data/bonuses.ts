@@ -274,7 +274,7 @@ export const bonuses: any[] = [
     },
     "timeline": {
       "bonus_posting_days_est": 90,
-      "must_remain_open_days": 150
+      "must_remain_open_days": null
     },
     "source_links": [
       "https://promotions.bankofamerica.com/en/offers/chooseyourchecking100500",
@@ -5061,14 +5061,14 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Promo code Q2AFL26. Expires June 30, 2026. New business checking customers only."
+      "eligibility_notes": "Business checking. Promo code Q3DIG26. Expires September 27, 2026. New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
       "https://www.usbank.com/splash/business-checking/business-checking-promo.html",
       "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
     ],
-    "raw_excerpt": "U.S. Bank $1,200 Platinum business checking bonus. $25k deposit in 30 days, maintain 60 days, 6 transactions. Promo Q2PRO26 or Q2AFL26. Tiered: $400/$1,200. Expires June 30, 2026."
+    "raw_excerpt": "U.S. Bank $1,200 Platinum business checking bonus. $25k deposit in 30 days, maintain 60 days, 6 transactions. Promo Q3DIG26. Tiered: $400/$1,200. Expires September 27, 2026."
   },
   {
     "id": "bmo-business-checking-1000-2026",
