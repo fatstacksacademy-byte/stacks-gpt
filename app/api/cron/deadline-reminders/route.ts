@@ -8,6 +8,7 @@ import { bonuses as catalogBonuses } from "../../../../lib/data/bonuses"
 import { savingsBonusForEntry } from "../../../../lib/data/savingsBonuses"
 import {
   checkingBonusStep,
+  stagedPayoutStep,
   customBonusStep,
   spendingCardStep,
   savingsEntryStep,
@@ -186,12 +187,15 @@ async function collectCandidates(
 ): Promise<Candidate[]> {
   const out: Candidate[] = []
 
-  const [checking, custom, cards, savings] = await Promise.all([
+  const [checking, custom, cards, savings, depositRows] = await Promise.all([
     supabase.from("completed_bonuses").select("*").eq("user_id", userId).is("closed_date", null),
     supabase.from("custom_bonuses").select("*").eq("user_id", userId).is("closed_date", null),
     supabase.from("owned_cards").select("*").eq("user_id", userId).eq("status", "active"),
     supabase.from("savings_entries").select("*").eq("user_id", userId).eq("status", "active"),
+    supabase.from("bonus_deposits").select("bonus_id, amount, deposit_date").eq("user_id", userId),
   ])
+  const deposits = depositRows.data ?? []
+  const thisMonth = new Date().toISOString().slice(0, 7)
 
   // Suffix bonusKey with `step.stage` (when present) so a single bonus
   // can receive reminders for each distinct milestone instead of
@@ -203,6 +207,30 @@ async function collectCandidates(
   for (const r of checking.data ?? []) {
     const b = catalogBonuses.find(x => (x as { id?: string }).id === r.bonus_id)
     if (!b) continue
+
+    // Staged / multi-payout bonuses (Four Leaf FCU etc.): once the first
+    // tranche has banked, the recurring nudge that matters is "log this
+    // month's $500 DD" — miss a month and the later tranches are forfeited.
+    const stagedList = (b as { staged_payouts?: { amount: number; label: string; months: number }[] | null }).staged_payouts
+    if (Array.isArray(stagedList) && stagedList.length > 0) {
+      const perDd = (b as { requirements?: { min_direct_deposit_per_deposit?: number | null } }).requirements?.min_direct_deposit_per_deposit ?? 500
+      const mine = deposits.filter(d => d.bonus_id === r.bonus_id && (d.amount ?? 0) >= perDd)
+      const monthsLogged = new Set(mine.map(d => String(d.deposit_date).slice(0, 7))).size
+      const loggedThisMonth = mine.some(d => String(d.deposit_date).slice(0, 7) === thisMonth)
+      const staged = stagedPayoutStep(r, { staged_payouts: stagedList }, { loggedThisMonth, monthsLogged })
+      if (staged.nextStep && staged.deadline) {
+        out.push({
+          bonusKey: keyOf("checking", r.id, staged.stage),
+          bonusName: (b as { bank_name?: string }).bank_name ?? r.bonus_id,
+          bonusAmount: r.actual_amount ?? (b as { bonus_amount?: number }).bonus_amount ?? 0,
+          nextStep: staged.nextStep,
+          deadline: staged.deadline,
+          module: "paycheck",
+        })
+        continue
+      }
+    }
+
     const step = checkingBonusStep(r, b)
     if (!step.nextStep || !step.deadline) continue
     out.push({

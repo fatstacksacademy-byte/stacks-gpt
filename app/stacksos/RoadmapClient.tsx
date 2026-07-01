@@ -20,6 +20,7 @@ import GoalProgressBar from "../components/GoalProgressBar"
 import FatStackMeter from "../components/FatStackMeter"
 import NextStepBar from "../components/NextStepBar"
 import FeeStrip, { type FeeWaiver } from "../components/FeeStrip"
+import StagedPayoutTracker, { type StagedPayout } from "../components/StagedPayoutTracker"
 import { getSavingsProfile } from "../../lib/savingsProfile"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
@@ -662,6 +663,54 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     // Write the milestone key directly — getMilestoneDetail reads it back
     // via the fallback: LEGACY_STEP_MAP[manualStep] ?? (manualStep as MilestoneKey)
     await handleStepOverride(bonusId, milestone)
+  }
+
+  // ── Staged / multi-payout bonuses (e.g. Four Leaf FCU: $350 now, +$100 at 12
+  //    consecutive months of $500 DDs, +$100 at 24). The account stays open for
+  //    ~2 years. We piggyback on the normal record: actual_amount encodes the
+  //    running total banked (350 → 450 → 550), and monthsLogged is derived from
+  //    the distinct year-months of logged $500+ deposits. No new table needed. ──
+  const [stagedBusy, setStagedBusy] = useState<string | null>(null)
+
+  // Log one qualifying $500 DD for the current month (advances the month counter).
+  async function handleStagedLogMonth(bonus: Bonus, record: CompletedBonus) {
+    setStagedBusy(bonus.id)
+    try {
+      const perDd = bonus.requirements?.min_direct_deposit_per_deposit ?? 500
+      const dep = await addDeposit(userId, bonus.id, perDd, todayStr(), "Employer / payroll")
+      if (dep) setDeposits(prev => [...prev, dep])
+    } finally {
+      setStagedBusy(null)
+    }
+  }
+
+  // Claim a milestone payout (+$100): bump the record's running total banked.
+  async function handleStagedClaim(bonus: Bonus, record: CompletedBonus, stageIndex: number) {
+    const stages = (bonus.staged_payouts ?? []) as StagedPayout[]
+    const stage = stages[stageIndex]
+    if (!stage) return
+    setStagedBusy(bonus.id)
+    try {
+      const newTotal = (record.actual_amount ?? 0) + stage.amount
+      await markBonusPosted(record.id, newTotal, todayStr(), record.dd_method ?? null)
+      track("bonus_completed", { module: "paycheck", bonus_id: bonus.id, amount: newTotal })
+      await loadRecords()
+    } finally {
+      setStagedBusy(null)
+    }
+  }
+
+  // Close the account (keep what's banked, forfeit any un-reached milestones).
+  async function handleStagedClose(bonus: Bonus, record: CompletedBonus) {
+    if (!confirm("Close this account now? You keep everything already banked, but any remaining $100 milestones are forfeited.")) return
+    setStagedBusy(bonus.id)
+    try {
+      await markBonusClosed(record.id, todayStr(), true, record.actual_amount ?? undefined)
+      track("bonus_completed", { module: "paycheck", bonus_id: bonus.id, amount: record.actual_amount ?? bonus.bonus_amount })
+      await loadRecords()
+    } finally {
+      setStagedBusy(null)
+    }
   }
 
   async function handleSaveProfile() {
@@ -1436,6 +1485,19 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       // the payout" CTA rather than being told to close early.
                       const payoutConfirmed = hasConfirmedPosted(record)
 
+                      // Staged / multi-payout bonus (Four Leaf FCU etc.): the
+                      // account stays open ~2 years and pays in tranches. Once
+                      // the first payout lands, the StagedPayoutTracker replaces
+                      // the normal close/keep-open actions and drives monthly DD
+                      // logging toward the later +$100 milestones.
+                      const stagedPayouts = (b.staged_payouts ?? null) as StagedPayout[] | null
+                      const isStaged = Array.isArray(stagedPayouts) && stagedPayouts.length > 0
+                      const perDdMin = req?.min_direct_deposit_per_deposit ?? 500
+                      const stagedMonthsLogged = isStaged
+                        ? new Set(bonusDeposits.filter(d => d.amount >= perDdMin).map(d => d.deposit_date.slice(0, 7))).size
+                        : 0
+                      const stagedTotalBanked = record.actual_amount ?? 0
+
                       const isDetailsExpanded = expandedDetails === b.id
                       const isFlipped = flippedCards.has(b.id)
                       const flipAnimate = flipAnimatedRef.current.has(b.id)
@@ -1524,7 +1586,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               if (activeKey === "bonus_posted") {
                                 setPendingStepDate({ id: b.id, type: "posted" })
                                 setStepDateValue(todayStr())
-                                setStepActualAmount(String(b.bonus_amount))
+                                // Staged bonuses pay the FIRST tranche now (e.g. $350),
+                                // not the full advertised total — default to that.
+                                setStepActualAmount(String(isStaged ? stagedPayouts![0].amount : b.bonus_amount))
                                 setDdMethodValue(""); setDdSearchOpen(false); setDdSearch("")
                                 return
                               }
@@ -1586,7 +1650,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     // silently assuming the full advertised figure.
                                     setPendingStepDate({ id: b.id, type: "posted" })
                                     setStepDateValue(todayStr())
-                                    setStepActualAmount(String(b.bonus_amount))
+                                    // Staged bonuses pay the first tranche now (e.g. $350).
+                                    setStepActualAmount(String(isStaged ? stagedPayouts![0].amount : b.bonus_amount))
                                     setDdMethodValue(""); setDdSearchOpen(false); setDdSearch("")
                                     return
                                   }
@@ -1903,8 +1968,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             </div>
                           )}
 
+                          {/* ── Staged multi-payout tracker (Four Leaf FCU etc.) ──
+                              Replaces the normal close/keep-open actions: shows the
+                              full payout schedule, drives monthly $500-DD logging
+                              toward the 12- and 24-month +$100 milestones, and lets
+                              the user claim each tranche or close & stop. ── */}
+                          {!isFlipped && isStaged && (
+                            <div style={{ padding: "4px 24px 0" }}>
+                              <StagedPayoutTracker
+                                stages={stagedPayouts!}
+                                totalBanked={stagedTotalBanked}
+                                monthsLogged={stagedMonthsLogged}
+                                busy={stagedBusy === b.id}
+                                onLogMonth={() => handleStagedLogMonth(b, record)}
+                                onClaim={(i) => handleStagedClaim(b, record, i)}
+                                onClose={() => handleStagedClose(b, record)}
+                              />
+                            </div>
+                          )}
+
                           {/* ── Actions ── */}
-                          {payoutConfirmed && !keptOpen.includes(b.id) && (
+                          {payoutConfirmed && !keptOpen.includes(b.id) && !isStaged && (
                             <div style={{ padding: "16px 24px 0" }}>
                               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
@@ -2127,6 +2211,17 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const renderWaitingCard = (item: typeof inProgress[number]) => {
     const b = item.bonus
     const rec = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+
+    // Staged / multi-payout bonuses (Four Leaf FCU etc.) reach the "waiting"
+    // pile the moment the FIRST tranche posts — but "safe to close" is a lie
+    // here: closing forfeits the later +$100 tranches. Skip the generic banner
+    // entirely and let the StagedPayoutTracker (inside the standard card) own
+    // the messaging — it shows the schedule, monthly logging, and its own
+    // "all banked — safe to close" state once every tranche lands.
+    if (Array.isArray((b as { staged_payouts?: unknown[] }).staged_payouts) && (b as { staged_payouts: unknown[] }).staged_payouts.length > 0) {
+      return renderStandardWorkingCard(item)
+    }
+
     // Cards only reach here once the user CONFIRMED the payout (isBonusWaiting /
     // isWaiting gate on hasConfirmedPosted), so "posted" is a fact, not a guess.
     // The only open question is the mandatory-open hold: use must_remain_open_days
