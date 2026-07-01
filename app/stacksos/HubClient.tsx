@@ -818,7 +818,7 @@ export default function HubClient({
                     textDecoration: "none",
                   }}
                 >
-                  Bank Bonuses
+                  🏦 Find bonuses
                 </a>
                 <a
                   href="/spending"
@@ -828,7 +828,7 @@ export default function HubClient({
                     textDecoration: "none",
                   }}
                 >
-                  Credit Cards
+                  💳 Find credit cards
                 </a>
                 <button
                   onClick={() => { track("custom_bonus_modal_opened", { source: "dashboard_active_tab" }); setShowAddModal(true) }}
@@ -837,7 +837,7 @@ export default function HubClient({
                     padding: "8px 14px", border: "none", borderRadius: 8, cursor: "pointer",
                   }}
                 >
-                  + Add bonus
+                  ＋ Add custom bonus
                 </button>
               </div>
             </div>

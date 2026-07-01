@@ -1032,23 +1032,29 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         style={{ padding: "8px 16px", fontSize: 12, color: "#9aa1ad", background: "none", border: "1px solid #2a2e38", borderRadius: 8, cursor: "pointer" }}>
                         Edit
                       </button>
-                      {/* Undo for genuinely-untouched entries — visible only when
-                          no manual steps logged + no actual_value posted. Hides
-                          itself the moment the user makes any progress so we
-                          can't blow away a real in-flight bonus by accident. */}
-                      {!openedConfirmed && !depositedConfirmed && !bonusReceived && (
-                        <button
-                          onClick={async () => {
-                            if (!confirm(`Undo "${e.institution_name}"? This removes the entry — only do this if you didn't actually start the bonus.`)) return
-                            await deleteSavingsEntry(e.id)
-                            await loadData()
-                          }}
-                          style={{ marginLeft: "auto", padding: "8px 14px", fontSize: 12, color: "#9aa1ad", background: "none", border: "1px solid #2a2e38", borderRadius: 8, cursor: "pointer" }}
-                          title="Remove this entry — for accidental Start clicks before any actual progress"
-                        >
-                          Undo (didn&apos;t start)
-                        </button>
-                      )}
+                      {/* Remove — ALWAYS available. Soft copy for an accidental
+                          start; a stronger warning once real progress is logged so
+                          the user knows it wipes their tracked progress (never the
+                          actual bank account). */}
+                      {(() => {
+                        const touched = openedConfirmed || depositedConfirmed || bonusReceived
+                        return (
+                          <button
+                            onClick={async () => {
+                              const msg = touched
+                                ? `Remove "${e.institution_name}"? This deletes the bonus and its logged progress from your tracker. It does NOT touch your actual bank account.`
+                                : `Undo "${e.institution_name}"? This removes the entry — only do this if you didn't actually start the bonus.`
+                              if (!confirm(msg)) return
+                              await deleteSavingsEntry(e.id)
+                              await loadData()
+                            }}
+                            style={{ marginLeft: "auto", padding: "8px 14px", fontSize: 12, color: touched ? "#f87171" : "#9aa1ad", background: "none", border: `1px solid ${touched ? "#7f1d1d" : "#2a2e38"}`, borderRadius: 8, cursor: "pointer" }}
+                            title="Remove this bonus from your tracker (doesn't touch your bank account)"
+                          >
+                            {touched ? "Remove" : "Undo (didn't start)"}
+                          </button>
+                        )
+                      })()}
                     </div>
                     </>)}
                     </div>
