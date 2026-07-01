@@ -123,7 +123,7 @@ export default function SequencerClient() {
     setStartDates((prev) => ({ ...prev, ...cascaded }))
   }
 
-  if (!loaded || loadingRecords) return <div style={{ color: "#aaa", fontSize: 14 }}>Loading…</div>
+  if (!loaded || loadingRecords) return <div style={{ color: "#6b7280", fontSize: 14 }}>Loading…</div>
 
   // Year pagination derived values
   const totalYears = result ? Math.ceil(result.horizon_weeks / WEEKS_PER_YEAR) : 1
@@ -140,7 +140,7 @@ export default function SequencerClient() {
           <span style={profileChip}>{profile.pay_frequency}</span>
           <span style={profileChip}>${profile.paycheck_amount.toLocaleString()} / paycheck</span>
           {profile.state && <span style={profileChip}>{profile.state}</span>}
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#555", cursor: "pointer" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#cdd2db", cursor: "pointer" }}>
             <input
               type="checkbox"
               checked={showBusiness}
@@ -165,7 +165,7 @@ export default function SequencerClient() {
             <button onClick={() => setCurrentYear(y => Math.max(1, y - 1))} disabled={currentYear === 1} style={yearNavBtn}>← Prev</button>
             <div style={yearLabel}>
               Year {currentYear}
-              <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400, marginLeft: 8 }}>of {totalYears}</span>
+              <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 400, marginLeft: 8 }}>of {totalYears}</span>
             </div>
             <button onClick={() => setCurrentYear(y => Math.min(totalYears, y + 1))} disabled={currentYear === totalYears} style={yearNavBtn}>Next →</button>
           </div>
@@ -186,7 +186,7 @@ export default function SequencerClient() {
             </div>
             <div style={statCard}>
               <div style={statLabel}>All-time projected</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#888" }}>${result.total_bonus.toLocaleString()}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#9aa1ad" }}>${result.total_bonus.toLocaleString()}</div>
             </div>
           </div>
 
@@ -199,7 +199,7 @@ export default function SequencerClient() {
                 <div key={slotIdx} style={slotBlock}>
                   <div style={{ ...slotLabel, color: SLOT_COLORS[slotIdx] }}>Slot {slotIdx + 1}</div>
                   {visible.length === 0
-                    ? <div style={{ color: "#999", fontSize: 13, padding: "8px 0" }}>No activity this year</div>
+                    ? <div style={{ color: "#6b7280", fontSize: 13, padding: "8px 0" }}>No activity this year</div>
                     : <div style={bonusStack}>
                         {visible.map((entry, i) => {
                           if (entry.type === "placeholder") {
@@ -207,8 +207,8 @@ export default function SequencerClient() {
                               <div key={`ph-${entry.start_week}`} style={placeholderCard}>
                                 <span style={{ fontSize: 18 }}>⏳</span>
                                 <div>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#888" }}>Waiting for {entry.waiting_for}</div>
-                                  <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{entry.end_week - entry.start_week + 1} weeks idle</div>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#9aa1ad" }}>Waiting for {entry.waiting_for}</div>
+                                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{entry.end_week - entry.start_week + 1} weeks idle</div>
                                 </div>
                               </div>
                             )
@@ -237,7 +237,7 @@ export default function SequencerClient() {
           {/* Year nav bottom */}
           <div style={{ ...yearNav, marginTop: 24 }}>
             <button onClick={() => setCurrentYear(y => Math.max(1, y - 1))} disabled={currentYear === 1} style={yearNavBtn}>← Prev year</button>
-            <span style={{ fontSize: 13, color: "#aaa" }}>Year {currentYear} of {totalYears}</span>
+            <span style={{ fontSize: 13, color: "#6b7280" }}>Year {currentYear} of {totalYears}</span>
             <button onClick={() => setCurrentYear(y => Math.min(totalYears, y + 1))} disabled={currentYear === totalYears} style={yearNavBtn}>Next year →</button>
           </div>
 
@@ -251,7 +251,7 @@ export default function SequencerClient() {
                   {result.skipped.map((s, i) => (
                     <div key={i} style={skippedRow}>
                       <span style={{ fontWeight: 500 }}>{s.bank_name}</span>
-                      <span style={{ color: "#888" }}>{s.reason}</span>
+                      <span style={{ color: "#9aa1ad" }}>{s.reason}</span>
                     </div>
                   ))}
                 </div>
@@ -290,7 +290,7 @@ function BonusCard({ bonus: b, color, position, startDate, isChained, onStartDat
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
             <div style={{ ...bonusAmountStyle, color }}>${b.net_bonus.toLocaleString()}</div>
             {b.total_fees > 0 && (
-              <div style={{ fontSize: 10, color: "#b45309" }}>
+              <div style={{ fontSize: 10, color: "#f59e0b" }}>
                 net · ${b.bonus_amount.toLocaleString()} − ${b.total_fees} fees
               </div>
             )}
@@ -318,7 +318,7 @@ function BonusCard({ bonus: b, color, position, startDate, isChained, onStartDat
             <DetailRow label="Cooldown" value={b.cooldown_months == null ? "One-time only" : `${b.cooldown_months} months`} />
           </div>
           {b.monthly_fee != null && b.monthly_fee > 0 && b.fee_strategy_note && (
-            <div style={{ marginTop: 12, padding: "10px 12px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
+            <div style={{ marginTop: 12, padding: "10px 12px", background: "#1c160a", border: "1px solid #4a3a16", borderRadius: 8, fontSize: 12, color: "#f59e0b", lineHeight: 1.5 }}>
               <span style={{ fontWeight: 700 }}>Fee play:</span> {b.fee_strategy_note}
             </div>
           )}
@@ -332,47 +332,47 @@ function BonusCard({ bonus: b, color, position, startDate, isChained, onStartDat
 function DetailRow({ label, value }: { label: string; value: string | number }) {
   return (
     <div style={detailRow}>
-      <span style={{ color: "#666" }}>{label}</span>
-      <span style={{ color: "#111", fontWeight: 500 }}>{value}</span>
+      <span style={{ color: "#9aa1ad" }}>{label}</span>
+      <span style={{ color: "#ffffff", fontWeight: 500 }}>{value}</span>
     </div>
   )
 }
 
-const profileSummary: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, background: "#f9f9f9", border: "1px solid #e6e6e6", borderRadius: 10, padding: "16px 20px" }
+const profileSummary: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, background: "#0f1219", border: "1px solid #23262e", borderRadius: 10, padding: "16px 20px" }
 const profileInfo: React.CSSProperties = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }
-const profileChip: React.CSSProperties = { fontSize: 13, fontWeight: 600, background: "#111", color: "#fff", padding: "4px 12px", borderRadius: 999 }
-const profileNote: React.CSSProperties = { fontSize: 12, color: "#aaa", marginLeft: 4 }
-const runBtn: React.CSSProperties = { padding: "10px 22px", fontSize: 14, fontWeight: 600, background: "#111", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }
+const profileChip: React.CSSProperties = { fontSize: 13, fontWeight: 600, background: "#23262e", color: "#fff", padding: "4px 12px", borderRadius: 999 }
+const profileNote: React.CSSProperties = { fontSize: 12, color: "#6b7280", marginLeft: 4 }
+const runBtn: React.CSSProperties = { padding: "10px 22px", fontSize: 14, fontWeight: 600, background: "#0d9668", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }
 const yearNav: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }
-const yearLabel: React.CSSProperties = { fontSize: 20, fontWeight: 700, color: "#111" }
-const yearNavBtn: React.CSSProperties = { padding: "8px 16px", fontSize: 13, border: "1px solid #e6e6e6", borderRadius: 6, background: "#fff", cursor: "pointer", color: "#333", fontWeight: 500 }
+const yearLabel: React.CSSProperties = { fontSize: 20, fontWeight: 700, color: "#ffffff" }
+const yearNavBtn: React.CSSProperties = { padding: "8px 16px", fontSize: 13, border: "1px solid #23262e", borderRadius: 6, background: "#161922", cursor: "pointer", color: "#cdd2db", fontWeight: 500 }
 const summaryRow: React.CSSProperties = { display: "flex", gap: 16, flexWrap: "wrap" }
-const statCard: React.CSSProperties = { flex: 1, minWidth: 140, border: "1px solid #e6e6e6", borderRadius: 8, padding: "14px 18px", background: "#fff" }
-const statLabel: React.CSSProperties = { fontSize: 12, color: "#888", marginBottom: 4 }
-const statValue: React.CSSProperties = { fontSize: 24, fontWeight: 700, color: "#111" }
+const statCard: React.CSSProperties = { flex: 1, minWidth: 140, border: "1px solid #23262e", borderRadius: 8, padding: "14px 18px", background: "#161922" }
+const statLabel: React.CSSProperties = { fontSize: 12, color: "#9aa1ad", marginBottom: 4 }
+const statValue: React.CSSProperties = { fontSize: 24, fontWeight: 700, color: "#ffffff" }
 const sectionHead: React.CSSProperties = { fontSize: 18, fontWeight: 700, marginBottom: 16 }
 const slotBlock: React.CSSProperties = { marginBottom: 24 }
 const slotLabel: React.CSSProperties = { fontSize: 13, fontWeight: 700, marginBottom: 8, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
 const bonusStack: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 8 }
-const bonusCard: React.CSSProperties = { border: "1px solid #e6e6e6", borderRadius: 8, overflow: "hidden", background: "#fff" }
+const bonusCard: React.CSSProperties = { border: "1px solid #23262e", borderRadius: 8, overflow: "hidden", background: "#161922" }
 const bonusCardHeader: React.CSSProperties = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px" }
 const positionBadge: React.CSSProperties = { width: 26, height: 26, borderRadius: "50%", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }
-const bonusBankName: React.CSSProperties = { fontSize: 15, fontWeight: 600, color: "#111" }
-const bonusMeta: React.CSSProperties = { fontSize: 12, color: "#888", marginTop: 2 }
+const bonusBankName: React.CSSProperties = { fontSize: 15, fontWeight: 600, color: "#ffffff" }
+const bonusMeta: React.CSSProperties = { fontSize: 12, color: "#9aa1ad", marginTop: 2 }
 const cycleBadge: React.CSSProperties = { fontSize: 11, border: "1px solid", padding: "1px 7px", borderRadius: 999, fontWeight: 600 }
 const bonusAmountStyle: React.CSSProperties = { fontSize: 20, fontWeight: 700 }
-const velocityBadge: React.CSSProperties = { fontSize: 12, background: "#f0f0f0", padding: "3px 8px", borderRadius: 999, color: "#555" }
-const expandBtn: React.CSSProperties = { background: "none", border: "1px solid #e6e6e6", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontSize: 11, color: "#666" }
-const datePickerRow: React.CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", background: "#f9f9f9", borderTop: "1px solid #f0f0f0", flexWrap: "wrap" }
-const dateLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#555", whiteSpace: "nowrap" }
-const dateInput: React.CSSProperties = { fontSize: 12, border: "1px solid #ddd", borderRadius: 4, padding: "4px 8px", color: "#111" }
-const dateHint: React.CSSProperties = { fontSize: 12, color: "#888" }
-const chainedNote: React.CSSProperties = { fontSize: 11, color: "#0d9e6e", fontWeight: 500 }
-const bonusDetail: React.CSSProperties = { borderTop: "1px solid #f0f0f0", padding: "14px 16px", background: "#fafafa" }
+const velocityBadge: React.CSSProperties = { fontSize: 12, background: "#0f1219", padding: "3px 8px", borderRadius: 999, color: "#cdd2db" }
+const expandBtn: React.CSSProperties = { background: "none", border: "1px solid #23262e", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontSize: 11, color: "#9aa1ad" }
+const datePickerRow: React.CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", background: "#0f1219", borderTop: "1px solid #23262e", flexWrap: "wrap" }
+const dateLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#cdd2db", whiteSpace: "nowrap" }
+const dateInput: React.CSSProperties = { fontSize: 12, border: "1px solid #2a2e38", borderRadius: 4, padding: "4px 8px", color: "#ffffff", background: "#161922" }
+const dateHint: React.CSSProperties = { fontSize: 12, color: "#9aa1ad" }
+const chainedNote: React.CSSProperties = { fontSize: 11, color: "#34d399", fontWeight: 500 }
+const bonusDetail: React.CSSProperties = { borderTop: "1px solid #23262e", padding: "14px 16px", background: "#0a0c10" }
 const detailGrid: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "6px 24px" }
-const detailRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", fontSize: 13, padding: "5px 0", borderBottom: "1px dashed #ebebeb" }
-const applyLink: React.CSSProperties = { display: "inline-block", marginTop: 12, fontSize: 13, fontWeight: 600, color: "#1a6ef5", textDecoration: "none" }
-const skippedToggle: React.CSSProperties = { background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#888", padding: 0 }
-const skippedList: React.CSSProperties = { marginTop: 10, border: "1px solid #e6e6e6", borderRadius: 8, overflow: "hidden" }
-const skippedRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", padding: "10px 14px", fontSize: 13, borderBottom: "1px solid #f0f0f0", gap: 16 }
-const placeholderCard: React.CSSProperties = { display: "flex", alignItems: "center", gap: 12, border: "1px dashed #ddd", borderRadius: 8, padding: "14px 16px", background: "#fafafa", color: "#aaa" }
+const detailRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", fontSize: 13, padding: "5px 0", borderBottom: "1px dashed #23262e" }
+const applyLink: React.CSSProperties = { display: "inline-block", marginTop: 12, fontSize: 13, fontWeight: 600, color: "#60a5fa", textDecoration: "none" }
+const skippedToggle: React.CSSProperties = { background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#9aa1ad", padding: 0 }
+const skippedList: React.CSSProperties = { marginTop: 10, border: "1px solid #23262e", borderRadius: 8, overflow: "hidden" }
+const skippedRow: React.CSSProperties = { display: "flex", justifyContent: "space-between", padding: "10px 14px", fontSize: 13, borderBottom: "1px solid #23262e", gap: 16 }
+const placeholderCard: React.CSSProperties = { display: "flex", alignItems: "center", gap: 12, border: "1px dashed #23262e", borderRadius: 8, padding: "14px 16px", background: "#0a0c10", color: "#6b7280" }

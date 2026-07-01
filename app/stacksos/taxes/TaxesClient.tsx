@@ -161,54 +161,54 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
   }
 
   if (loading) {
-    return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
+    return <div style={{ minHeight: "100vh", background: "#0a0c10", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#6b7280", fontSize: 14 }}>Loading...</div></div>
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0c10", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {/* Top Bar */}
-      <div style={{ borderBottom: "1px solid #e8e8e8", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
-        <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111", textDecoration: "none" }}>Stacks OS</a>
+      <div style={{ borderBottom: "1px solid #23262e", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#161922" }}>
+        <a href="/stacksos" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#ffffff", textDecoration: "none" }}>Stacks OS</a>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 12, color: "#bbb" }}>{userEmail}</span>
-          <a href="/stacksos" style={{ fontSize: 12, color: "#999", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 12px", textDecoration: "none" }}>&larr; Dashboard</a>
+          <span style={{ fontSize: 12, color: "#6b7280" }}>{userEmail}</span>
+          <a href="/stacksos" style={{ fontSize: 12, color: "#6b7280", border: "1px solid #23262e", borderRadius: 6, padding: "5px 12px", textDecoration: "none" }}>&larr; Dashboard</a>
         </div>
       </div>
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "28px 32px 80px" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Tax Summary</h1>
-        <p style={{ fontSize: 14, color: "#888", margin: "0 0 16px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: "#ffffff", margin: "0 0 8px", letterSpacing: "-0.02em" }}>Tax Summary</h1>
+        <p style={{ fontSize: 14, color: "#9aa1ad", margin: "0 0 16px" }}>
           Bank bonuses are taxed as interest income (1099-INT). Credit card bonuses are generally not taxable. This page tracks what you should consider setting aside.
         </p>
 
         {/* Why CC bonuses aren't taxed but bank bonuses are */}
         <div
           style={{
-            background: "#f6f8fa",
-            border: "1px solid #e8e8e8",
+            background: "#0f1219",
+            border: "1px solid #23262e",
             borderRadius: 10,
             padding: "12px 16px",
             marginBottom: 16,
             fontSize: 12.5,
-            color: "#555",
+            color: "#cdd2db",
             lineHeight: 1.55,
           }}
         >
-          <strong style={{ color: "#0d7c5f" }}>Credit-card sign-up bonuses are treated as rebates</strong>{" "}
-          on your spending (not taxable). <strong style={{ color: "#111" }}>Bank / checking &amp; savings bonuses are
+          <strong style={{ color: "#34d399" }}>Credit-card sign-up bonuses are treated as rebates</strong>{" "}
+          on your spending (not taxable). <strong style={{ color: "#ffffff" }}>Bank / checking &amp; savings bonuses are
           interest</strong> the bank reports on a 1099-INT (taxable). This is an estimate, not tax advice — confirm with a CPA.
         </div>
 
         {/* Accuracy caveat */}
         <div
           style={{
-            background: "#fff7ed",
-            border: "1px solid #fdba74",
+            background: "#1c160a",
+            border: "1px solid #4a3a16",
             borderRadius: 10,
             padding: "12px 16px",
             marginBottom: 24,
             fontSize: 12,
-            color: "#9a3412",
+            color: "#f59e0b",
             lineHeight: 1.5,
           }}
         >
@@ -221,15 +221,15 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
 
         {/* Tax rate control */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-          <span style={{ fontSize: 13, color: "#555" }}>Tax rate:</span>
+          <span style={{ fontSize: 13, color: "#cdd2db" }}>Tax rate:</span>
           <input type="number" value={taxRate} onChange={e => setTaxRate(Number(e.target.value) || 0)}
-            style={{ width: 60, padding: "6px 10px", fontSize: 14, fontWeight: 700, border: "1px solid #e0e0e0", borderRadius: 6, textAlign: "center" }} min={0} max={50} />
-          <span style={{ fontSize: 13, color: "#999" }}>%</span>
-          <span style={{ fontSize: 11, color: "#bbb" }}>(federal + state combined estimate)</span>
+            style={{ width: 60, padding: "6px 10px", fontSize: 14, fontWeight: 700, border: "1px solid #2a2e38", borderRadius: 6, textAlign: "center" }} min={0} max={50} />
+          <span style={{ fontSize: 13, color: "#6b7280" }}>%</span>
+          <span style={{ fontSize: 11, color: "#6b7280" }}>(federal + state combined estimate)</span>
         </div>
 
         {years.length === 0 ? (
-          <div style={{ padding: "40px 0", textAlign: "center", color: "#bbb", fontSize: 14 }}>
+          <div style={{ padding: "40px 0", textAlign: "center", color: "#6b7280", fontSize: 14 }}>
             No completed bonuses yet. Earnings will appear here as you complete bonuses.
           </div>
         ) : (
@@ -241,18 +241,18 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
               const taxOwed = Math.round(taxableAmount * taxRate / 100)
 
               return (
-                <div key={year} style={{ marginBottom: 24, background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden" }}>
+                <div key={year} style={{ marginBottom: 24, background: "#161922", border: "1px solid #23262e", borderRadius: 12, overflow: "hidden" }}>
                   {/* Year header */}
-                  <div style={{ padding: "16px 20px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ padding: "16px 20px", borderBottom: "1px solid #23262e", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{year}</div>
-                      <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: "#ffffff" }}>{year}</div>
+                      <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 2 }}>
                         {d.items.length} bonus{d.items.length !== 1 ? "es" : ""} earned
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(yearTotal)}</div>
-                      <div style={{ fontSize: 12, color: "#d97706", fontWeight: 600 }}>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: "#34d399" }}>{money(yearTotal)}</div>
+                      <div style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600 }}>
                         Set aside: {money(taxOwed)}
                       </div>
                       <button
@@ -261,9 +261,9 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
                           fontSize: 11,
                           marginTop: 6,
                           padding: "4px 10px",
-                          border: "1px solid #0d7c5f",
-                          color: "#0d7c5f",
-                          background: "#fff",
+                          border: "1px solid rgba(13,150,104,0.5)",
+                          color: "#34d399",
+                          background: "#161922",
                           borderRadius: 6,
                           cursor: "pointer",
                           fontWeight: 600,
@@ -275,26 +275,26 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
                   </div>
 
                   {/* Category breakdown */}
-                  <div style={{ padding: "12px 20px", display: "flex", gap: 20, borderBottom: "1px solid #f0f0f0", fontSize: 12 }}>
+                  <div style={{ padding: "12px 20px", display: "flex", gap: 20, borderBottom: "1px solid #23262e", fontSize: 12 }}>
                     {d.checking > 0 && (
                       <div>
-                        <span style={{ color: "#888" }}>Checking: </span>
-                        <span style={{ color: "#111", fontWeight: 600 }}>{money(d.checking)}</span>
-                        <span style={{ color: "#d97706", marginLeft: 4 }}>({money(Math.round(d.checking * taxRate / 100))} tax)</span>
+                        <span style={{ color: "#9aa1ad" }}>Checking: </span>
+                        <span style={{ color: "#ffffff", fontWeight: 600 }}>{money(d.checking)}</span>
+                        <span style={{ color: "#f59e0b", marginLeft: 4 }}>({money(Math.round(d.checking * taxRate / 100))} tax)</span>
                       </div>
                     )}
                     {d.savings > 0 && (
                       <div>
-                        <span style={{ color: "#888" }}>Savings: </span>
-                        <span style={{ color: "#111", fontWeight: 600 }}>{money(d.savings)}</span>
-                        <span style={{ color: "#d97706", marginLeft: 4 }}>({money(Math.round(d.savings * taxRate / 100))} tax)</span>
+                        <span style={{ color: "#9aa1ad" }}>Savings: </span>
+                        <span style={{ color: "#ffffff", fontWeight: 600 }}>{money(d.savings)}</span>
+                        <span style={{ color: "#f59e0b", marginLeft: 4 }}>({money(Math.round(d.savings * taxRate / 100))} tax)</span>
                       </div>
                     )}
                     {d.creditCards > 0 && (
                       <div>
-                        <span style={{ color: "#888" }}>Credit Cards: </span>
-                        <span style={{ color: "#111", fontWeight: 600 }}>{money(d.creditCards)}</span>
-                        <span style={{ color: "#0d7c5f", marginLeft: 4 }}>(not taxable)</span>
+                        <span style={{ color: "#9aa1ad" }}>Credit Cards: </span>
+                        <span style={{ color: "#ffffff", fontWeight: 600 }}>{money(d.creditCards)}</span>
+                        <span style={{ color: "#34d399", marginLeft: 4 }}>(not taxable)</span>
                       </div>
                     )}
                   </div>
@@ -302,14 +302,14 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
                   {/* Item list */}
                   <div style={{ padding: "0 20px" }}>
                     {d.items.sort((a, b) => (b.date || "").localeCompare(a.date || "")).map((item, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < d.items.length - 1 ? "1px solid #f5f5f5" : "none" }}>
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < d.items.length - 1 ? "1px solid #23262e" : "none" }}>
                         <div>
-                          <span style={{ fontSize: 13, color: "#111", fontWeight: 600 }}>{item.name}</span>
-                          <span style={{ fontSize: 11, color: "#999", marginLeft: 8 }}>{item.type}</span>
+                          <span style={{ fontSize: 13, color: "#ffffff", fontWeight: 600 }}>{item.name}</span>
+                          <span style={{ fontSize: 11, color: "#6b7280", marginLeft: 8 }}>{item.type}</span>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <span style={{ fontSize: 11, color: "#bbb" }}>{item.date ? new Date(item.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}</span>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(item.amount)}</span>
+                          <span style={{ fontSize: 11, color: "#6b7280" }}>{item.date ? new Date(item.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#34d399" }}>{money(item.amount)}</span>
                         </div>
                       </div>
                     ))}
@@ -319,14 +319,14 @@ export default function TaxesClient({ userEmail, userId }: { userEmail: string; 
             })}
 
             {/* Grand total */}
-            <div style={{ background: "#f0faf5", border: "1px solid #a7f3d0", borderRadius: 12, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ background: "rgba(13,150,104,0.14)", border: "1px solid rgba(13,150,104,0.5)", borderRadius: 12, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>All-Time Earnings</div>
-                <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{years.length} year{years.length !== 1 ? "s" : ""} tracked</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#ffffff" }}>All-Time Earnings</div>
+                <div style={{ fontSize: 11, color: "#9aa1ad", marginTop: 2 }}>{years.length} year{years.length !== 1 ? "s" : ""} tracked</div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#0d7c5f" }}>{money(grandTotal)}</div>
-                <div style={{ fontSize: 12, color: "#d97706", fontWeight: 600 }}>Total tax reserve: {money(grandTax)}</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#34d399" }}>{money(grandTotal)}</div>
+                <div style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600 }}>Total tax reserve: {money(grandTax)}</div>
               </div>
             </div>
           </>

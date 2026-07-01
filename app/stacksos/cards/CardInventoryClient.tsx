@@ -29,50 +29,50 @@ import { createClient } from "../../../lib/supabase/client"
 // ----------------------------------------------------------------------------
 
 const cardBox: React.CSSProperties = {
-  background: "#fff",
-  border: "1px solid #e8e8e8",
+  background: "#161922",
+  border: "1px solid #23262e",
   borderRadius: 12,
   padding: 24,
   marginBottom: 16,
 }
 
 const label: React.CSSProperties = {
-  fontSize: 11, color: "#999", textTransform: "uppercase",
+  fontSize: 11, color: "#6b7280", textTransform: "uppercase",
   letterSpacing: "0.05em", marginBottom: 6,
 }
 
 const primaryBtn: React.CSSProperties = {
-  background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8,
+  background: "#0d9668", color: "#fff", border: "none", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer",
 }
 
 const secondaryBtn: React.CSSProperties = {
-  background: "#fff", color: "#666", border: "1px solid #e0e0e0", borderRadius: 8,
+  background: "#161922", color: "#9aa1ad", border: "1px solid #2a2e38", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 500, cursor: "pointer",
 }
 
 const ghostBtn: React.CSSProperties = {
-  background: "transparent", color: "#999", border: "1px solid #e8e8e8", borderRadius: 6,
+  background: "transparent", color: "#6b7280", border: "1px solid #23262e", borderRadius: 6,
   padding: "6px 12px", fontSize: 12, cursor: "pointer",
 }
 
 const inputStyle: React.CSSProperties = {
-  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
-  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+  padding: "8px 12px", fontSize: 13, background: "#0f1219", color: "#ffffff",
+  border: "1px solid #2a2e38", borderRadius: 6, width: "100%",
 }
 
 const selectStyle: React.CSSProperties = {
-  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
-  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+  padding: "8px 12px", fontSize: 13, background: "#0f1219", color: "#ffffff",
+  border: "1px solid #2a2e38", borderRadius: 6, width: "100%",
 }
 
-const fieldLabel: React.CSSProperties = { fontSize: 11, color: "#777", marginBottom: 4, display: "block" }
-const sectionTitle: React.CSSProperties = { fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }
-const muted: React.CSSProperties = { fontSize: 12, color: "#999", lineHeight: 1.5 }
+const fieldLabel: React.CSSProperties = { fontSize: 11, color: "#9aa1ad", marginBottom: 4, display: "block" }
+const sectionTitle: React.CSSProperties = { fontSize: 16, fontWeight: 700, color: "#ffffff", marginBottom: 4 }
+const muted: React.CSSProperties = { fontSize: 12, color: "#6b7280", lineHeight: 1.5 }
 
-const ACCENT = "#0d7c5f"
-const AMBER = "#b45309"
-const RED = "#dc2626"
+const ACCENT = "#34d399"
+const AMBER = "#f59e0b"
+const RED = "#f87171"
 
 const MAX_IMPORT_BYTES = 20 * 1024 * 1024 // 20 MB — mirrors the route's limit
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
@@ -101,7 +101,7 @@ function cardTitle(c: { issuer: string; product_name: string | null }): string {
 // A small inline notice (warn / error / info severities).
 function NoticeBox({ severity, children }: { severity: "critical" | "warn" | "info"; children: React.ReactNode }) {
   const color = severity === "critical" ? RED : severity === "warn" ? AMBER : "#6b7280"
-  const bg = severity === "critical" ? "#fef2f2" : severity === "warn" ? "#fffbeb" : "#f9fafb"
+  const bg = severity === "critical" ? "rgba(220,38,38,0.12)" : severity === "warn" ? "#1c160a" : "#0f1219"
   return (
     <div
       style={{
@@ -178,7 +178,7 @@ export default function CardInventoryClient() {
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Card Inventory &amp; Chase 5/24 Tracker</h1>
           <div style={{ ...muted, marginTop: 4 }}>
             Track every credit card you hold and see where you stand against Chase&rsquo;s 5/24 rule.
-            {userEmail ? <> Signed in as <b style={{ color: "#555" }}>{userEmail}</b>.</> : null}
+            {userEmail ? <> Signed in as <b style={{ color: "#cdd2db" }}>{userEmail}</b>.</> : null}
           </div>
         </div>
 
@@ -223,7 +223,7 @@ function Five24Hero({ cards, asOf }: { cards: CardAccount[]; asOf: string }) {
 
   const under = status.under_524
   const badgeColor = under ? ACCENT : status.count >= 5 ? RED : AMBER
-  const badgeBg = under ? "#ecfdf5" : status.count >= 5 ? "#fef2f2" : "#fffbeb"
+  const badgeBg = under ? "rgba(13,150,104,0.14)" : status.count >= 5 ? "rgba(220,38,38,0.12)" : "#1c160a"
   const badgeText = under
     ? "Under 5/24 — Chase approvals likely"
     : "At 5/24 — most Chase cards will be declined"
@@ -233,7 +233,7 @@ function Five24Hero({ cards, asOf }: { cards: CardAccount[]; asOf: string }) {
       <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
         <div style={{ textAlign: "center", minWidth: 120 }}>
           <div style={{ fontSize: 48, fontWeight: 800, color: badgeColor, lineHeight: 1 }}>
-            {status.count} <span style={{ fontSize: 24, color: "#bbb", fontWeight: 700 }}>/ 24</span>
+            {status.count} <span style={{ fontSize: 24, color: "#6b7280", fontWeight: 700 }}>/ 24</span>
           </div>
           <div style={{ ...label, marginTop: 6, marginBottom: 0 }}>Personal cards (24 mo)</div>
         </div>
@@ -244,7 +244,7 @@ function Five24Hero({ cards, asOf }: { cards: CardAccount[]; asOf: string }) {
           }}>
             {badgeText}
           </span>
-          <div style={{ fontSize: 14, color: "#333", marginTop: 10 }}>
+          <div style={{ fontSize: 14, color: "#cdd2db", marginTop: 10 }}>
             {under ? (
               <><b>{status.slots_remaining}</b> personal slot{status.slots_remaining === 1 ? "" : "s"} before 5/24.</>
             ) : (
@@ -274,10 +274,10 @@ function Five24Hero({ cards, asOf }: { cards: CardAccount[]; asOf: string }) {
                   key={c.id ?? i}
                   style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    fontSize: 13, padding: "8px 12px", border: "1px solid #f0f0f0", borderRadius: 8,
+                    fontSize: 13, padding: "8px 12px", border: "1px solid #23262e", borderRadius: 8,
                   }}
                 >
-                  <span style={{ color: "#111", fontWeight: 600 }}>
+                  <span style={{ color: "#ffffff", fontWeight: 600 }}>
                     {cardTitle({ issuer: c.issuer ?? "Unknown issuer", product_name: c.product_name ?? null })}
                   </span>
                   <span style={muted}>opened {c.open_date} · counts until {c.falls_off}</span>
@@ -407,7 +407,7 @@ function ImportSection({ userId, onSaved }: { userId: string | null; onSaved: ()
           accept="application/pdf,image/png,image/jpeg,image/webp,image/gif"
           onChange={onPick}
           disabled={importing}
-          style={{ fontSize: 13, color: "#444" }}
+          style={{ fontSize: 13, color: "#cdd2db" }}
         />
         <button
           style={{ ...secondaryBtn, opacity: importing || !file ? 0.6 : 1, cursor: importing || !file ? "default" : "pointer" }}
@@ -469,7 +469,7 @@ function ImportSection({ userId, onSaved }: { userId: string | null; onSaved: ()
 function ImportReviewRow({ draft, onChange }: { draft: CardAccountDraft; onChange: (patch: Partial<CardAccountDraft>) => void }) {
   const openInvalid = !ISO_DATE.test(draft.open_date)
   return (
-    <div style={{ padding: 16, border: `1px solid ${openInvalid ? `${RED}44` : `${ACCENT}44`}`, borderRadius: 8, background: openInvalid ? "#fef2f2" : "#fafafa" }}>
+    <div style={{ padding: 16, border: `1px solid ${openInvalid ? `${RED}44` : `${ACCENT}44`}`, borderRadius: 8, background: openInvalid ? "rgba(220,38,38,0.12)" : "#0f1219" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <div>
           <label style={fieldLabel}>Issuer</label>
@@ -488,7 +488,7 @@ function ImportReviewRow({ draft, onChange }: { draft: CardAccountDraft; onChang
         </div>
         <div>
           <label style={fieldLabel}>Open date</label>
-          <input style={{ ...inputStyle, borderColor: openInvalid ? RED : "#e0e0e0" }} type="date" value={draft.open_date} onChange={e => onChange({ open_date: e.target.value })} />
+          <input style={{ ...inputStyle, borderColor: openInvalid ? RED : "#2a2e38" }} type="date" value={draft.open_date} onChange={e => onChange({ open_date: e.target.value })} />
           {openInvalid && <div style={{ fontSize: 11, color: RED, fontWeight: 600, marginTop: 4 }}>Enter the open date — 5/24 needs it.</div>}
         </div>
         <div>
@@ -557,7 +557,7 @@ function AddManualSection({ userId, onSaved }: { userId: string | null; onSaved:
       </div>
 
       {open && (
-        <div style={{ marginTop: 14, padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+        <div style={{ marginTop: 14, padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#0f1219" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
             <div>
               <label style={fieldLabel}>Issuer</label>
@@ -649,14 +649,14 @@ function InventoryList({ cards, onChanged }: { cards: CardAccount[]; onChanged: 
           {sorted.map(c => (
             <div
               key={c.id}
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8, gap: 12, flexWrap: "wrap" }}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #23262e", borderRadius: 8, gap: 12, flexWrap: "wrap" }}
             >
               <div style={{ minWidth: 180, flex: 1 }}>
-                <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
+                <div style={{ fontWeight: 600, color: "#ffffff", fontSize: 14 }}>
                   {cardTitle(c)}{" "}
                   <span style={{
                     fontSize: 11, fontWeight: 600, color: c.card_type === "business" ? "#6b7280" : ACCENT,
-                    background: c.card_type === "business" ? "#f3f4f6" : "#ecfdf5", borderRadius: 999, padding: "2px 8px", marginLeft: 4,
+                    background: c.card_type === "business" ? "#0f1219" : "rgba(13,150,104,0.14)", borderRadius: 999, padding: "2px 8px", marginLeft: 4,
                   }}>
                     {c.card_type === "business" ? "Business" : "Personal"}
                   </span>
@@ -703,10 +703,10 @@ function InventoryList({ cards, onChanged }: { cards: CardAccount[]; onChanged: 
 // ----------------------------------------------------------------------------
 
 const VERDICT_STYLE: Record<Verdict, { label: string; color: string; bg: string }> = {
-  clear: { label: "Clear", color: ACCENT, bg: "#ecfdf5" },
-  caution: { label: "Caution", color: AMBER, bg: "#fffbeb" },
-  deny: { label: "Auto-deny", color: RED, bg: "#fef2f2" },
-  unknown: { label: "Unknown", color: "#6b7280", bg: "#f3f4f6" },
+  clear: { label: "Clear", color: ACCENT, bg: "rgba(13,150,104,0.14)" },
+  caution: { label: "Caution", color: AMBER, bg: "#1c160a" },
+  deny: { label: "Auto-deny", color: RED, bg: "rgba(220,38,38,0.12)" },
+  unknown: { label: "Unknown", color: "#6b7280", bg: "#0f1219" },
 }
 
 function toHeldCards(cards: CardAccount[]): HeldCard[] {
@@ -738,7 +738,7 @@ function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profil
       {/* legend */}
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
         {(Object.keys(VERDICT_STYLE) as Verdict[]).map(v => (
-          <span key={v} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#666" }}>
+          <span key={v} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#9aa1ad" }}>
             <span style={{ width: 10, height: 10, borderRadius: 3, background: VERDICT_STYLE[v].color, display: "inline-block" }} />
             {VERDICT_STYLE[v].label}
           </span>
@@ -757,10 +757,10 @@ function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profil
                 onClick={() => setExpanded(isOpen ? null : row.issuer)}
                 style={{
                   width: "100%", display: "flex", alignItems: "center", gap: 12, textAlign: "left",
-                  padding: "10px 12px", background: isOpen ? vs.bg : "#fff", border: "none", cursor: "pointer",
+                  padding: "10px 12px", background: isOpen ? vs.bg : "#161922", border: "none", cursor: "pointer",
                 }}
               >
-                <span style={{ fontWeight: 700, color: "#111", fontSize: 14, minWidth: 150, flexShrink: 0 }}>{row.label}</span>
+                <span style={{ fontWeight: 700, color: "#ffffff", fontSize: 14, minWidth: 150, flexShrink: 0 }}>{row.label}</span>
                 <span style={{
                   fontSize: 12, fontWeight: 700, color: vs.color, background: vs.bg,
                   border: `1px solid ${vs.color}44`, borderRadius: 999, padding: "3px 10px", flexShrink: 0,
@@ -770,7 +770,7 @@ function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profil
                 <span style={{ ...muted, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {topReason ? topReason.text : ""}
                 </span>
-                <span style={{ color: "#bbb", fontSize: 12, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+                <span style={{ color: "#6b7280", fontSize: 12, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
               </button>
 
               {isOpen && (
@@ -784,7 +784,7 @@ function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profil
                     {row.reasons.map((r, i) => {
                       const c = r.severity === "deny" ? RED : r.severity === "caution" ? AMBER : "#6b7280"
                       return (
-                        <div key={i} style={{ fontSize: 13, color: "#333", display: "flex", gap: 8 }}>
+                        <div key={i} style={{ fontSize: 13, color: "#cdd2db", display: "flex", gap: 8 }}>
                           <span style={{ color: c, fontWeight: 700, flexShrink: 0 }}>
                             {r.severity === "deny" ? "⛔" : r.severity === "caution" ? "⚠" : "ℹ"}
                           </span>
@@ -794,13 +794,13 @@ function ApprovalMatrix({ cards, profile, asOf }: { cards: CardAccount[]; profil
                     })}
                   </div>
                   {needsMore && (
-                    <div style={{ marginTop: 12, padding: "10px 12px", background: "#fff", border: `1px dashed ${AMBER}66`, borderRadius: 8 }}>
+                    <div style={{ marginTop: 12, padding: "10px 12px", background: "#161922", border: `1px dashed ${AMBER}66`, borderRadius: 8 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: AMBER, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>
                         * Add this to sharpen the call
                       </div>
                       <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 4 }}>
                         {row.needsInfo.map((n, i) => (
-                          <li key={i} style={{ fontSize: 12.5, color: "#555", lineHeight: 1.45 }}>{n.text}</li>
+                          <li key={i} style={{ fontSize: 12.5, color: "#cdd2db", lineHeight: 1.45 }}>{n.text}</li>
                         ))}
                       </ul>
                     </div>
@@ -872,7 +872,7 @@ function CreditProfilePanel({ userId, profile, onSaved }: { userId: string | nul
       </div>
 
       {open && (
-        <div style={{ marginTop: 14, padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+        <div style={{ marginTop: 14, padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#0f1219" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
             <div>
               <label style={fieldLabel}>Credit score</label>
@@ -912,8 +912,8 @@ function CreditProfilePanel({ userId, profile, onSaved }: { userId: string | nul
 
 function GuardrailFooter() {
   return (
-    <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#f9fafb", border: "1px solid #eee" }}>
-      <div style={{ fontSize: 12.5, color: "#777", lineHeight: 1.6 }}>
+    <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#0f1219", border: "1px solid #23262e" }}>
+      <div style={{ fontSize: 12.5, color: "#9aa1ad", lineHeight: 1.6 }}>
         <b>Educational tool, not credit or financial advice.</b> 5/24 and approval rules are issuer-controlled and
         change without notice. Estimates only.
       </div>
