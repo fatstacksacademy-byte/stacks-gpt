@@ -1,5 +1,7 @@
 "use client"
 
+import { DK, MODULE } from "../../lib/stacksTheme"
+
 export type DashboardView = "active" | "projection" | "history"
 
 /**
@@ -24,7 +26,8 @@ export default function DashboardViewTabs({
     <div
       style={{
         display: "inline-flex",
-        background: "#f1f1f0",
+        background: DK.panel2,
+        border: `1px solid ${DK.border}`,
         borderRadius: 10,
         padding: 3,
         marginBottom: 16,
@@ -39,14 +42,14 @@ export default function DashboardViewTabs({
             onClick={() => onChange(t.id)}
             style={{
               border: "none",
-              background: active ? "#fff" : "transparent",
-              color: active ? "#111" : "#777",
+              background: active ? DK.panel : "transparent",
+              color: active ? DK.text : DK.textMute,
               fontSize: 13,
               fontWeight: active ? 700 : 600,
               padding: "7px 14px",
               borderRadius: 8,
               cursor: "pointer",
-              boxShadow: active ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+              boxShadow: active ? "0 1px 3px rgba(0,0,0,0.35)" : "none",
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
@@ -59,8 +62,8 @@ export default function DashboardViewTabs({
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  background: active ? "#e6f5f0" : "#e4e4e3",
-                  color: active ? "#0d7c5f" : "#666",
+                  background: active ? MODULE.savings.soft : DK.board,
+                  color: active ? DK.greenFg : DK.textMute,
                   borderRadius: 99,
                   padding: "1px 7px",
                   minWidth: 14,

@@ -1,5 +1,7 @@
 "use client"
 
+import { DK, MODULE } from "../../lib/stacksTheme"
+
 /**
  * Completed-bonus list shown under the "History" dashboard tab.
  * Unified across all four sources (checking, custom, spending cards,
@@ -15,9 +17,9 @@ export type HistoricalWin = {
 }
 
 const MODULE_COLORS: Record<HistoricalWin["module"], { fg: string; bg: string; label: string }> = {
-  paycheck: { fg: "#2563eb", bg: "#eff6ff", label: "Paycheck" },
-  spending: { fg: "#7c3aed", bg: "#ede9fe", label: "Spending" },
-  savings: { fg: "#0d7c5f", bg: "#e6f5f0", label: "Savings" },
+  paycheck: { fg: MODULE.paycheck.fg, bg: MODULE.paycheck.soft, label: "Paycheck" },
+  spending: { fg: MODULE.spending.fg, bg: MODULE.spending.soft, label: "Spending" },
+  savings: { fg: MODULE.savings.fg, bg: MODULE.savings.soft, label: "Savings" },
 }
 
 function fmtDate(iso: string | null): string {
@@ -32,16 +34,16 @@ export default function HistoricalWinsList({ wins }: { wins: HistoricalWin[] }) 
     return (
       <div
         style={{
-          background: "#fff",
-          border: "1px dashed #e8e8e8",
+          background: DK.panel,
+          border: `1px dashed ${DK.border2}`,
           borderRadius: 12,
           padding: "32px 24px",
           textAlign: "center",
-          color: "#888",
+          color: DK.textMute,
           fontSize: 13,
         }}
       >
-        No completed bonuses yet. Finish one and it'll show up here.
+        No completed bonuses yet. Finish one and it&apos;ll show up here.
       </div>
     )
   }
@@ -51,8 +53,8 @@ export default function HistoricalWinsList({ wins }: { wins: HistoricalWin[] }) 
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>Completed wins</h2>
-        <div style={{ fontSize: 11, color: "#888" }}>
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: DK.text, margin: 0 }}>Completed wins</h2>
+        <div style={{ fontSize: 11, color: DK.textMute }}>
           {wins.length} win{wins.length !== 1 ? "s" : ""} · ${total.toLocaleString()}
         </div>
       </div>
@@ -67,16 +69,16 @@ export default function HistoricalWinsList({ wins }: { wins: HistoricalWin[] }) 
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                background: "#fff",
-                border: "1px solid #e8e8e8",
+                background: DK.panel,
+                border: `1px solid ${DK.border}`,
                 borderRadius: 12,
                 padding: "14px 18px",
                 textDecoration: "none",
                 color: "inherit",
                 transition: "border-color 0.15s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#ccc")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e8e8e8")}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = DK.border2)}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = DK.border)}
             >
               <span
                 style={{
@@ -98,7 +100,7 @@ export default function HistoricalWinsList({ wins }: { wins: HistoricalWin[] }) 
                   style={{
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "#111",
+                    color: DK.text,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -106,11 +108,11 @@ export default function HistoricalWinsList({ wins }: { wins: HistoricalWin[] }) 
                 >
                   {w.name}
                 </div>
-                <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: DK.textMute, marginTop: 2 }}>
                   Completed {fmtDate(w.date)}
                 </div>
               </div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: "#0d7c5f", flexShrink: 0 }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: DK.gold, flexShrink: 0 }}>
                 ${Math.round(w.amount).toLocaleString()}
               </div>
             </a>

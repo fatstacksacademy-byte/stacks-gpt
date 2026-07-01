@@ -41,21 +41,34 @@ export default function DashboardGoalBar({
   potentialLocked?: boolean
 }) {
   return (
-    <div
-      style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}
-      className="goal-bar"
-    >
-      <StatCard
-        label="Stack potential"
-        value={projection36mo}
-        color={C.greenFg}
-        locked={potentialLocked}
-        tipTerm="stackPotential"
-        sub="3-year projection"
-      />
-      <StatCard label="In progress" value={inProgress} color={C.accentFg} />
-      <StatCard label="Lifetime earned" value={lifetimeEarned} color={C.gold} />
-    </div>
+    <>
+      <div
+        style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginBottom: 14 }}
+        className="goal-bar"
+      >
+        <StatCard
+          label="Stack potential"
+          value={projection36mo}
+          color={C.greenFg}
+          locked={potentialLocked}
+          tipTerm="stackPotential"
+          sub="3-year projection"
+        />
+        <StatCard label="In progress" value={inProgress} color={C.accentFg} />
+        <StatCard label="Lifetime earned" value={lifetimeEarned} color={C.gold} />
+      </div>
+      {/* Keep the three stat cards on ONE row on phones (they used to wrap 2+1,
+          which read as broken). Compact the padding/type so they fit cleanly. */}
+      <style>{`
+        @media (max-width: 480px) {
+          .goal-bar { gap: 6px; }
+          .goal-bar .sdb-card { padding: 10px 10px !important; }
+          .goal-bar .sdb-label { font-size: 9.5px !important; letter-spacing: 0.03em !important; }
+          .goal-bar .sdb-val { font-size: 16px !important; }
+          .goal-bar .sdb-sub { display: none !important; }
+        }
+      `}</style>
+    </>
   )
 }
 
@@ -76,16 +89,17 @@ function StatCard({
 }) {
   return (
     <div
+      className="sdb-card"
       style={{
         background: C.panel,
         border: `1px solid ${C.border}`,
         borderRadius: 10,
-        padding: "14px 20px",
-        flex: 1,
-        minWidth: 120,
+        padding: "14px 16px",
+        minWidth: 0,
       }}
     >
       <div
+        className="sdb-label"
         style={{
           fontSize: 11,
           color: C.textFaint,
@@ -94,19 +108,20 @@ function StatCard({
           display: "flex",
           alignItems: "center",
           gap: 4,
+          whiteSpace: "nowrap",
         }}
       >
         {label}
         {tipTerm ? <InfoTip term={tipTerm} size={12} /> : null}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 800, color: locked ? C.text : color, marginTop: 2, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+      <div className="sdb-val" style={{ fontSize: 22, fontWeight: 800, color: locked ? C.text : color, marginTop: 2, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
         {locked ? (
           <span style={{ fontSize: 18 }}>🔒 Pro</span>
         ) : (
           `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
         )}
       </div>
-      {sub ? <div style={{ fontSize: 11, color: C.textFaint, marginTop: 3 }}>{sub}</div> : null}
+      {sub ? <div className="sdb-sub" style={{ fontSize: 11, color: C.textFaint, marginTop: 3 }}>{sub}</div> : null}
     </div>
   )
 }
