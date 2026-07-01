@@ -21,6 +21,8 @@ import FatStackMeter from "../components/FatStackMeter"
 import NextStepBar from "../components/NextStepBar"
 import FeeStrip, { type FeeWaiver } from "../components/FeeStrip"
 import StagedPayoutTracker, { type StagedPayout } from "../components/StagedPayoutTracker"
+import TierPicker from "../components/TierPicker"
+import { resolveTier } from "../../lib/bonusTiers"
 import { getSavingsProfile } from "../../lib/savingsProfile"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
@@ -1309,6 +1311,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         <div style={{ flex: 1 }}>{value}</div>
       </div>
     )
+    const tierInfo = resolveTier(b, catO)
     return (
       <div>
         <div style={{ marginTop: 4 }}>
@@ -1316,6 +1319,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
           {specRow("Account type", <span style={{ fontSize: 15, color: DK.textDim }}>{prettyProduct(b.product_type)}</span>)}
           {expiry && specRow("Offer expires", <span style={{ fontSize: 15, color: DK.textDim }}>{expiry}</span>)}
         </div>
+        {/* Tier chooser — a single pick drives the amount, DD target, AND the
+            fee/account/waiver everywhere this bonus renders (see resolveTier). */}
+        {tierInfo.hasTiers && (
+          <TierPicker
+            accent={accentColor}
+            options={tierInfo.tiers!.map(t => ({ key: t.bonus, primary: money(t.bonus), secondary: `${money(t.min_dd_total)} DD`, selected: t.bonus === effAmt }))}
+            onSelect={(key) => { const t = tierInfo.tiers!.find(x => x.bonus === key); if (t) selectTier(b.id, t) }}
+            footnote={tierInfo.tier?.account ? <>Requires a <b style={{ color: DK.textDim }}>{tierInfo.tier.account}</b> account{tierInfo.tier.monthly_fee != null ? ` · $${tierInfo.tier.monthly_fee}/mo (waivable)` : ""}</> : undefined}
+          />
+        )}
         <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
           Bonus requirements
           {(b.requirements?.min_direct_deposit_total || b.requirements?.min_direct_deposit_per_deposit || b.requirements?.direct_deposit_required) ? <InfoTip term="directDeposit" label="direct deposit" /> : null}
@@ -1461,8 +1474,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       const req = b.requirements
                       const fees = b.fees
 
-                      // Deposit math
-                      const totalRequired = req?.min_direct_deposit_total ?? 0
+                      // Tiered bonus (e.g. BofA $100/$300/$500): the selected tier
+                      // drives the DD target, the fee, and the fee-waiver text so a
+                      // started tiered bonus shows the RIGHT numbers, not the base.
+                      const wcTier = resolveTier(b, catalogOverrides[b.id] ?? {})
+
+                      // Deposit math — honor the selected tier's DD target.
+                      const totalRequired = wcTier.ddTotal ?? req?.min_direct_deposit_total ?? 0
                       const openedDate = new Date(record.opened_date + "T00:00:00")
                       const today = new Date(); today.setHours(0, 0, 0, 0)
                       const daysSinceOpen = Math.floor((today.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24))
@@ -1502,9 +1520,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       const isFlipped = flippedCards.has(b.id)
                       const flipAnimate = flipAnimatedRef.current.has(b.id)
 
-                      // Fee avoidance info
-                      const hasFee = fees?.monthly_fee && fees.monthly_fee > 0
-                      const feeWaiverText = fees?.monthly_fee_waiver_text ?? null
+                      // Fee avoidance info — follows the selected tier (e.g. BofA
+                      // $300/$500 = Advantage Plus $12, waived at a $1,500 balance;
+                      // the $100 tier = SafeBalance $4.95, waived at $500).
+                      const effFee = wcTier.fee || (fees?.monthly_fee ?? 0)
+                      const hasFee = effFee > 0
+                      const feeWaiverText = wcTier.waiverText ?? fees?.monthly_fee_waiver_text ?? null
 
                       return (
                         <div key={b.id} style={{
@@ -1556,6 +1577,20 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               willChange: "transform",
                             } : undefined}
                           >
+
+                          {/* ── Tier chooser for a started tiered bonus — lets the user
+                              set/change which tier they're chasing right on the card;
+                              the DD target, fee, and waiver all follow the pick. ── */}
+                          {!isFlipped && !payoutConfirmed && wcTier.hasTiers && (
+                            <div style={{ padding: "14px 24px 0" }}>
+                              <TierPicker
+                                accent="#2563eb"
+                                options={wcTier.tiers!.map(t => ({ key: t.bonus, primary: money(t.bonus), secondary: `${money(t.min_dd_total)} DD`, selected: t.bonus === wcTier.amount }))}
+                                onSelect={(key) => { const t = wcTier.tiers!.find(x => x.bonus === key); if (t) selectTier(b.id, t) }}
+                                footnote={wcTier.tier?.account ? <>Requires a <b style={{ color: DK.textDim }}>{wcTier.tier.account}</b> account{wcTier.tier.monthly_fee != null ? ` · $${wcTier.tier.monthly_fee}/mo (waivable)` : ""}</> : undefined}
+                              />
+                            </div>
+                          )}
 
                           {/* ── Next step hero: the "one clear objective + XP bar" face.
                               Sits above the full checklist so the user sees exactly ONE
@@ -1875,15 +1910,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               STACK PROTECTED" strip). Only shows when the bonus
                               actually carries a fee — the full "Fees & how to avoid"
                               breakdown still lives in the expandable below. ── */}
-                          {!isFlipped && ((fees?.monthly_fee ?? 0) > 0 || (fees?.early_closure_fee ?? 0) > 0) && (() => {
-                            const feeText = fees?.monthly_fee_waiver_text ?? ""
+                          {!isFlipped && (effFee > 0 || (fees?.early_closure_fee ?? 0) > 0) && (() => {
+                            const feeText = feeWaiverText ?? ""
                             // Banks often list SEVERAL ways to dodge the same fee
                             // ("$500 daily balance OR a direct deposit OR Preferred
                             // Rewards"). Rather than fragile clause-splitting on messy
                             // narrative text, scan the whole blurb for known waiver
                             // signals and emit ONE clean, canonical option per signal.
                             const waiversList: FeeWaiver[] = []
-                            if ((fees?.monthly_fee ?? 0) > 0 && feeText) {
+                            if (effFee > 0 && feeText) {
                               // Balance waiver — largest $ figure that reads like a real
                               // balance threshold (never the small monthly-fee amount,
                               // e.g. "$4.95/mo … $500+ daily balance" → $500, not $4).
@@ -1909,8 +1944,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             return (
                               <div style={{ padding: "12px 24px 0" }}>
                                 <FeeStrip
-                                  bonusAmount={b.bonus_amount}
-                                  monthlyFee={fees?.monthly_fee ?? 0}
+                                  bonusAmount={wcTier.amount || b.bonus_amount}
+                                  monthlyFee={effFee}
                                   earlyClosureFee={fees?.early_closure_fee ?? 0}
                                   holdingDays={holdingDays}
                                   waivers={waiversList.length ? waiversList : undefined}
@@ -2924,36 +2959,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {renderOfferSummaryFace(hb.bonus, accentColor)}
                         </div>
                         {effNotes && <div style={{ fontSize: 13, color: DK.textMute, marginTop: 12, fontStyle: "italic" }}>{effNotes}</div>}
-                        {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
-                          <div style={{ marginTop: 12 }}>
-                          <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
-                            Choose your tier — pick your target <InfoTip term="tier" label="bonus tiers" />
-                          </div>
-                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                            {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number; account?: string; monthly_fee?: number }) => {
-                              const effAmt = catO.bonus_amount ?? hb.bonus.bonus_amount
-                              const isSelected = effAmt === t.bonus
-                              return (
-                                <button key={t.bonus} onClick={() => selectTier(hb.bonus.id, t)}
-                                  title={t.account ? `${t.account}${t.monthly_fee != null ? ` · $${t.monthly_fee}/mo` : ""}` : undefined}
-                                  style={{ fontSize: 11.5, padding: "6px 11px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap", border: isSelected ? `1.5px solid ${accentColor}` : `1px solid ${DK.border2}`, color: isSelected ? DK.accentFg : DK.textDim, fontWeight: isSelected ? 700 : 500, background: isSelected ? "rgba(37,99,235,0.12)" : DK.panel2 }}>
-                                  {isSelected ? "✓ " : ""}${t.bonus} · ${t.min_dd_total.toLocaleString()} DD
-                                </button>
-                              )
-                            })}
-                          </div>
-                          {(() => {
-                            const effAmt = catO.bonus_amount ?? hb.bonus.bonus_amount
-                            const selTier = hb.bonus.tiers.find((t: { bonus: number }) => t.bonus === effAmt) as { bonus: number; account?: string; monthly_fee?: number } | undefined
-                            if (!selTier?.account) return null
-                            return (
-                              <div style={{ fontSize: 11.5, color: DK.textMute, marginTop: 6 }}>
-                                Requires a <b style={{ color: DK.textDim }}>{selTier.account}</b> account{selTier.monthly_fee != null ? ` · $${selTier.monthly_fee}/mo (waivable)` : ""}
-                              </div>
-                            )
-                          })()}
-                          </div>
-                        )}
+                        {/* Tier picker now lives inside renderOfferSummaryFace above,
+                            so it shows on every surface that reuses that face. */}
 
                   {/* Min opening deposit pill — separate concept from min_balance,
                       this is what you have to put in on day 1, not maintain. */}
@@ -3553,6 +3560,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     }
                     // Standard bonus
                     const b = q.bonus
+                    const qTier = resolveTier(b, catalogOverrides[b.id] ?? {})
                     const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (queueItems[0]?.kind === "standard" ? (queueItems[0].weeksToComplete ?? 0) : 0)
                     return (
                       <div key={b.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
@@ -3564,8 +3572,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               {q.velocity ? <span style={{ color: DK.greenFg, marginLeft: 8 }}>${Math.round(q.velocity)}/wk</span> : null}
                             </div>
                           </div>
-                          <div style={{ fontSize: 18, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: DK.greenFg }}>{money(qTier.amount || b.bonus_amount)}</div>
                         </div>
+                        {qTier.hasTiers && (
+                          <TierPicker
+                            accent="#2563eb"
+                            options={qTier.tiers!.map(t => ({ key: t.bonus, primary: money(t.bonus), secondary: `${money(t.min_dd_total)} DD`, selected: t.bonus === qTier.amount }))}
+                            onSelect={(key) => { const t = qTier.tiers!.find(x => x.bonus === key); if (t) selectTier(b.id, t) }}
+                            footnote={qTier.tier?.account ? <>Requires a <b style={{ color: DK.textDim }}>{qTier.tier.account}</b> account{qTier.tier.monthly_fee != null ? ` · $${qTier.tier.monthly_fee}/mo (waivable)` : ""}</> : undefined}
+                          />
+                        )}
                         <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
                           <button onClick={() => handleMarkApplied(b)}
                             style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>I applied</button>
@@ -3586,11 +3602,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           </button>
                           {expandedFees === b.id && (
                             <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
-                              {b.fees?.monthly_fee && b.fees.monthly_fee > 0 ? (
+                              {qTier.fee > 0 ? (
                                 <div>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${b.fees.monthly_fee}/month</div>
-                                  {b.fees.monthly_fee_waiver_text && (
-                                    <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{b.fees.monthly_fee_waiver_text}</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${qTier.fee}/month{qTier.account ? ` · ${qTier.account}` : ""}</div>
+                                  {qTier.waiverText && (
+                                    <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{qTier.waiverText}</div>
                                   )}
                                 </div>
                               ) : (
