@@ -20,6 +20,7 @@ import GoalProgressBar from "../components/GoalProgressBar"
 import FatStackMeter from "../components/FatStackMeter"
 import NextStepBar from "../components/NextStepBar"
 import FeeStrip, { type FeeWaiver } from "../components/FeeStrip"
+import { getSavingsProfile } from "../../lib/savingsProfile"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
 import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
@@ -378,6 +379,14 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [applyDateValue, setApplyDateValue] = useState(todayStr())
 
   useEffect(() => { setMounted(true) }, [])
+
+  // The user's own HYSA APY (from their savings profile) — feeds the fee section's
+  // "is it worth parking cash here vs your HYSA?" opportunity-cost math, so it
+  // uses THEIR rate instead of a generic 4.3% default.
+  const [userHysaApy, setUserHysaApy] = useState(0)
+  useEffect(() => {
+    getSavingsProfile(userId).then(p => setUserHysaApy(p?.current_apy ?? 0)).catch(() => {})
+  }, [userId])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -1815,7 +1824,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 waiversList.push({ type: "dd", label: "keep a qualifying direct deposit going" })
                               }
                               // Named relationship / eligibility waivers → clean labels
-                              if (/preferred rewards/i.test(feeText)) waiversList.push({ type: "other", label: "enroll in Preferred Rewards" })
+                              if (/preferred rewards/i.test(feeText)) waiversList.push({ type: "other", label: "already in Preferred Rewards (by balance)" })
                               if (/\bstudent\b/i.test(feeText) || /under\s?2[0-9]|ages?\s?2[0-9]/i.test(feeText)) waiversList.push({ type: "other", label: "be a student / under 25" })
                               if (/e-?statement|paperless/i.test(feeText)) waiversList.push({ type: "other", label: "go paperless (e-statements)" })
                             }
@@ -1828,6 +1837,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                   earlyClosureFee={fees?.early_closure_fee ?? 0}
                                   holdingDays={holdingDays}
                                   waivers={waiversList.length ? waiversList : undefined}
+                                  bestHysaApy={userHysaApy || undefined}
                                 />
                               </div>
                             )
