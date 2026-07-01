@@ -190,6 +190,36 @@ python3 scripts/video-editor/page-roi.py --image doc.png \
 #   → --roi 1005,726,962,40   --lines 1411,726,664,40;1091,770,282,40
 ```
 
+## `phone-pip.py` — sync an iPhone screen-recording as an over-the-shoulder PiP
+
+For the "watch me actually add this bonus on the site" CTA: film the walkthrough **on your phone** while
+you talk to camera, and drop the phone screen straight into the video, already lined up with your taps.
+
+**Film it right:** Control Center → **long-press** the Screen Recording button → **Microphone On**. With the
+phone mic on, the screen recording captures *your voice* too — that shared voice is the sync key (same idea
+as a waveform sync, but measured for you; `add-good-audio.py` used to hardcode this offset by hand). Start the
+screen recording *before* you start the on-camera walkthrough — overlap is free and trimmed later.
+
+```bash
+# 1) measure the offset only (cross-correlates the shared voice; prints a score + margin)
+python3 scripts/video-editor/phone-pip.py --aroll ~/Desktop/main.mov --phone ~/Desktop/screenrec.mov --dry
+# 2) burned corner-PiP preview over just the CTA window, with a phone bezel
+python3 scripts/video-editor/phone-pip.py --aroll main.mov --phone screenrec.mov \
+  --from 372 --to 410 --corner br --mockup --out build/cta-preview.mp4
+# 3) place it into a Resolve timeline on a fresh V-track at the synced frame (finish in the hero pass)
+python3 scripts/video-editor/phone-pip.py --aroll main.mov --phone screenrec.mov \
+  --resolve "best-cards-tightened" --corner br --size 0.34
+```
+
+`offset` = the A-cam time where the phone clip's t=0 lands (negative = the phone rolled *before* the A-cam;
+the tool trims the phone head automatically). Flags: `--corner tl/tr/bl/br` and `--size <frac>` pick the
+over-the-shoulder spot — **choose the corner opposite his face, never cover it**; `--from/--to <sec>` limits
+correlation + the preview overlay to the CTA window; `--offset <sec>` overrides the measurement; `--mockup`
+wraps a dark phone bezel (preview mode). If the phone mic was off (near-silent audio), it **refuses** and
+tells you to pass `--offset` or use a visible clap — report that, don't guess a number. Zero edit-token
+(ffmpeg measures + renders). Resolve mode sets a rough corner transform best-effort; refine scale/position,
+a soft drop-shadow, and the bezel in the ~10-min GUI hero pass.
+
 ## Article finder (#6) — option-C hybrid auto-tag, *approve before placing*
 
 When he references a **change** with no b-roll ("the 10% anniversary boost is going away"), surface a
