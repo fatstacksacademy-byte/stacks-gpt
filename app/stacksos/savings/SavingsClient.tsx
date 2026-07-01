@@ -107,6 +107,29 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
     const ok = await setSavingsMilestone(entry.id, milestone, hit)
     if (ok) await loadData()
   }
+  // Let the user re-pick which deposit tier they're going for on a tracked
+  // multi-tier savings bonus (e.g. Capital One $20k→$300 vs $100k→$1,500).
+  // A blog "Track this bonus" lands on the smallest tier by default; this is
+  // where they size it up. The hero-card stats, HYSA-edge math, and next-step
+  // amounts all read from deposit_required / bonus_amount, so they follow.
+  async function handleTierChange(
+    entry: SavingsEntry,
+    bonus: (typeof savingsBonusesCatalog)[number],
+    tier: { min_deposit: number; bonus_amount: number },
+  ) {
+    if (entry.deposit_required === tier.min_deposit && entry.bonus_amount === tier.bonus_amount) return
+    // Mirror the deposit→value math used when the bonus is first tracked
+    // (lib/trackBonus.ts): interest accrues on the deposit over the same hold.
+    const holdDays = entry.holding_period_days ?? 0
+    const interestEarned = Math.round(tier.min_deposit * bonus.base_apy * (holdDays / 365))
+    await updateSavingsEntry(entry.id, {
+      deposit_required: tier.min_deposit,
+      bonus_amount: tier.bonus_amount,
+      estimated_yield: interestEarned > 0 ? interestEarned : null,
+      expected_total_value: tier.bonus_amount + interestEarned,
+    })
+    await loadData()
+  }
   // Legacy localStorage milestone shape mapped to the new columns.
   const LEGACY_MILESTONE_MAP: Record<"opened" | "deposited", SavingsMilestone> = {
     opened: "account_opened_at",
@@ -845,6 +868,29 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 2 }}>
                           {money(e.bonus_amount ?? 0)} bonus · {money(deposit)} deposit · {holdDays} days
                         </div>
+                        {catalogEntry && catalogEntry.tiers.length > 1 && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                            <span style={{ fontSize: 10, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: 2 }}>Deposit tier</span>
+                            {catalogEntry.tiers.map(t => {
+                              const selected = t.min_deposit === deposit
+                              return (
+                                <button
+                                  key={t.min_deposit}
+                                  onClick={() => handleTierChange(e, catalogEntry, t)}
+                                  title={`Deposit ${money(t.min_deposit)} → ${money(t.bonus_amount)} bonus`}
+                                  style={{
+                                    padding: "4px 10px", fontSize: 12, fontWeight: 600, borderRadius: 999,
+                                    cursor: selected ? "default" : "pointer", whiteSpace: "nowrap",
+                                    background: selected ? DK.green : "transparent",
+                                    color: selected ? "#ffffff" : "#9aa1ad",
+                                    border: `1px solid ${selected ? DK.green : "#2a2e38"}`,
+                                  }}>
+                                  {money(t.min_deposit)} → {money(t.bonus_amount)}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
                         {hysaEdge != null && hysaWouldEarn != null ? (
                           <div style={{ fontSize: 12, marginTop: 4, color: hysaEdge > 0 ? DK.greenFg : "#f87171", fontWeight: 600 }}>
                             {hysaEdge > 0 ? "+" : ""}{money(Math.round(hysaEdge))} vs your {pct(currentApy)} HYSA
