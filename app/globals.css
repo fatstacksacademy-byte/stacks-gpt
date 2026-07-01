@@ -30,6 +30,9 @@ body {
 /* Light sweep that travels across the FILLED region only (the strip is
    clipped to the fill div), so it scales with progress. */
 @keyframes goalShimmer { 0% { left: -30% } 100% { left: 100% } }
+/* Mission-board card flip — front/back faces swing in on flip (Savings + others) */
+@keyframes cardFlipFront { 0% { transform: perspective(1000px) rotateY(-90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1000px) rotateY(0deg); opacity: 1 } }
+@keyframes cardFlipBack  { 0% { transform: perspective(1000px) rotateY(90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1000px) rotateY(0deg); opacity: 1 } }
 /* Gold celebratory flash on the meter when a deposit/purchase lands. */
 @keyframes goalMeterFlash {
   0%, 100% { box-shadow: inset 0 0 0 1px #e3e6ea; }
