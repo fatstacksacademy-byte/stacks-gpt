@@ -320,15 +320,18 @@ export default function StartedBonusesList({
                       </div>
                     )}
 
-                    {/* Primary action lives on the front (with the DD-source prompt below it) */}
-                    {b.advance && (
-                      <div style={{ padding: "12px 18px 16px" }}>
+                    {/* Front footer — the primary action (when there is one) + a
+                        clear "Open in <module>" prompt, always visible so a started
+                        bonus can always jump to its module page (fixes the missing
+                        "Open in Savings" cue). */}
+                    <div style={{ padding: "12px 18px 16px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                      {b.advance && (
                         <button
                           onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
                           disabled={isBusy}
                           className="sbl-advance"
                           style={{
-                            width: "100%", fontSize: 13, fontWeight: 700, color: "#fff",
+                            flex: "1 1 auto", fontSize: 13, fontWeight: 700, color: "#fff",
                             background: ddPromptKey === key ? DK.panel2 : moduleGradient(b.module),
                             border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none",
                             borderRadius: 10, padding: "11px 16px", cursor: isBusy ? "wait" : "pointer",
@@ -337,8 +340,12 @@ export default function StartedBonusesList({
                         >
                           {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
                         </button>
-                      </div>
-                    )}
+                      )}
+                      <a href={b.href} onClick={(e) => e.stopPropagation()}
+                        style={{ fontSize: 12.5, fontWeight: 600, color: color.fg, textDecoration: "none", whiteSpace: "nowrap", padding: "8px 4px", flexShrink: 0 }}>
+                        Open in {color.label} →
+                      </a>
+                    </div>
 
                     {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
                     {ddPromptKey === key && b.advance && (

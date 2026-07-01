@@ -600,6 +600,42 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
           </div>
         )}
 
+        {/* Active Cards — your in-progress "hero" cards, above the picks */}
+        {activeCards.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
+            </div>
+          </div>
+        )}
+
+        {/* Planned Cards */}
+        {plannedCards.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
+                isMatching={matchingCardId === c.id}
+                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
+                onMatchSelect={async (catalogName) => {
+                  await updateOwnedCard(c.id, { card_name: catalogName })
+                  setMatchingCardId(null)
+                  await loadData()
+                }}
+              />)}
+            </div>
+          </div>
+        )}
+
         {/* ── Recommended Cards (sequencer) ── */}
         {isPaid && (
         <div style={{ marginBottom: 28 }}>
@@ -1117,42 +1153,6 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                 ? "Sorted best-first for you. Tap “Start” on any card above to begin tracking — or add one you already have."
                 : "Sorted best-first for you. Use “+ Add spending card / bonus” below to begin tracking — or add one you already have."}
             </p>
-          </div>
-        )}
-
-        {/* Active Cards */}
-        {activeCards.length > 0 && (
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Active</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {activeCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
-                isMatching={matchingCardId === c.id}
-                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
-                onMatchSelect={async (catalogName) => {
-                  await updateOwnedCard(c.id, { card_name: catalogName })
-                  setMatchingCardId(null)
-                  await loadData()
-                }}
-              />)}
-            </div>
-          </div>
-        )}
-
-        {/* Planned Cards */}
-        {plannedCards.length > 0 && (
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Planned</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {plannedCards.map(c => <CardRow key={c.id} card={c} userId={userId} spendCheck={canHitSpend(c)} onEdit={() => { populateForm(c); setEditingId(c.id); setShowAdd(true) }} onDelete={() => handleDelete(c.id)} onStatusChange={async (s) => { await updateOwnedCard(c.id, { status: s }); await loadData() }}
-                isMatching={matchingCardId === c.id}
-                onMatchToggle={() => setMatchingCardId(matchingCardId === c.id ? null : c.id)}
-                onMatchSelect={async (catalogName) => {
-                  await updateOwnedCard(c.id, { card_name: catalogName })
-                  setMatchingCardId(null)
-                  await loadData()
-                }}
-              />)}
-            </div>
           </div>
         )}
 
