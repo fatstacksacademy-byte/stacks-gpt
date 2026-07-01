@@ -237,9 +237,9 @@ export const bonuses: any[] = [
     "bonus_amount": 500,
     "cooldown_months": 12,
     "tiers": [
-      { "bonus": 100, "min_dd_total": 2000 },
-      { "bonus": 300, "min_dd_total": 5000 },
-      { "bonus": 500, "min_dd_total": 10000 }
+      { "bonus": 100, "min_dd_total": 2000, "account": "Advantage SafeBalance", "monthly_fee": 4.95, "monthly_fee_waiver_text": "SafeBalance ($4.95/mo) — waived with a $500+ average daily balance, if the account owner is under 25, or if you're already in BofA Rewards. SafeBalance earns the $100 tier only." },
+      { "bonus": 300, "min_dd_total": 5000, "account": "Advantage Plus", "monthly_fee": 12, "monthly_fee_waiver_text": "Advantage Plus ($12/mo) — waived with a $1,500+ average daily balance, one $250+ qualifying direct deposit per statement cycle, or BofA Rewards. Required for the $300 tier." },
+      { "bonus": 500, "min_dd_total": 10000, "account": "Advantage Plus", "monthly_fee": 12, "monthly_fee_waiver_text": "Advantage Plus ($12/mo) — waived with a $1,500+ average daily balance, one $250+ qualifying direct deposit per statement cycle, or BofA Rewards. Required for the $500 tier." }
     ],
     "requirements": {
       "direct_deposit_required": true,

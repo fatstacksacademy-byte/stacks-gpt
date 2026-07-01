@@ -437,6 +437,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     setEditingCatalogTerms(null)
   }
 
+  // Tier picker (e.g. BofA $100/$300/$500) — selecting a tier stores its bonus +
+  // DD target as a term override. The fee/account for that tier is DERIVED from
+  // the tier's own data at display time (see effTier below), so we don't need to
+  // stash the fee here. Persisted to localStorage like the manual overrides.
+  function selectTier(bonusId: string, tier: { bonus: number; min_dd_total: number }) {
+    setCatalogOverrides(prev => {
+      const override = { ...prev[bonusId], bonus_amount: tier.bonus, min_dd_total: tier.min_dd_total }
+      if (typeof window !== "undefined") localStorage.setItem(`stacks:term-override:${bonusId}`, JSON.stringify(override))
+      return { ...prev, [bonusId]: override }
+    })
+  }
+
   function clearCatalogTermOverride(bonusId: string) {
     setCatalogOverrides(prev => { const next = { ...prev }; delete next[bonusId]; return next })
     if (typeof window !== "undefined") {
@@ -2820,18 +2832,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
                           <div style={{ marginTop: 12 }}>
                           <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
-                            Deposit more, earn more <InfoTip term="tier" label="bonus tiers" />
+                            Choose your tier — pick your target <InfoTip term="tier" label="bonus tiers" />
                           </div>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                            {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
-                              const isSelected = hb.bonus.bonus_amount === t.bonus
+                            {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number; account?: string; monthly_fee?: number }) => {
+                              const effAmt = catO.bonus_amount ?? hb.bonus.bonus_amount
+                              const isSelected = effAmt === t.bonus
                               return (
-                                <div key={t.bonus} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, border: isSelected ? `1.5px solid ${accentColor}` : `1px solid ${DK.border2}`, color: isSelected ? DK.accentFg : DK.textMute, fontWeight: isSelected ? 700 : 400, background: isSelected ? "rgba(37,99,235,0.12)" : "transparent" }}>
-                                  ${t.bonus} at ${t.min_dd_total.toLocaleString()} DD
-                                </div>
+                                <button key={t.bonus} onClick={() => selectTier(hb.bonus.id, t)}
+                                  title={t.account ? `${t.account}${t.monthly_fee != null ? ` · $${t.monthly_fee}/mo` : ""}` : undefined}
+                                  style={{ fontSize: 11.5, padding: "6px 11px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap", border: isSelected ? `1.5px solid ${accentColor}` : `1px solid ${DK.border2}`, color: isSelected ? DK.accentFg : DK.textDim, fontWeight: isSelected ? 700 : 500, background: isSelected ? "rgba(37,99,235,0.12)" : DK.panel2 }}>
+                                  {isSelected ? "✓ " : ""}${t.bonus} · ${t.min_dd_total.toLocaleString()} DD
+                                </button>
                               )
                             })}
                           </div>
+                          {(() => {
+                            const effAmt = catO.bonus_amount ?? hb.bonus.bonus_amount
+                            const selTier = hb.bonus.tiers.find((t: { bonus: number }) => t.bonus === effAmt) as { bonus: number; account?: string; monthly_fee?: number } | undefined
+                            if (!selTier?.account) return null
+                            return (
+                              <div style={{ fontSize: 11.5, color: DK.textMute, marginTop: 6 }}>
+                                Requires a <b style={{ color: DK.textDim }}>{selTier.account}</b> account{selTier.monthly_fee != null ? ` · $${selTier.monthly_fee}/mo (waivable)` : ""}
+                              </div>
+                            )
+                          })()}
                           </div>
                         )}
 
@@ -2872,13 +2897,21 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       <span style={{ fontSize: 10, color: DK.textFaint }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
                       Fees &amp; how to avoid
                     </button>
-                    {expandedFees === hb.bonus.id && (
+                    {expandedFees === hb.bonus.id && (() => {
+                      // Fee follows the SELECTED tier (e.g. BofA $100 tier = SafeBalance
+                      // $4.95; $300/$500 = Advantage Plus $12). Derive from the tier the
+                      // user picked, falling back to the base offer fee.
+                      const effAmt = catO.bonus_amount ?? hb.bonus.bonus_amount
+                      const selTier = (hb.bonus.tiers as { bonus: number; account?: string; monthly_fee?: number; monthly_fee_waiver_text?: string }[] | undefined)?.find(t => t.bonus === effAmt)
+                      const effFee = selTier?.monthly_fee ?? hb.bonus.fees?.monthly_fee
+                      const effWaiver = selTier?.monthly_fee_waiver_text ?? hb.bonus.fees?.monthly_fee_waiver_text
+                      return (
                       <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-                        {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
+                        {effFee && effFee > 0 ? (
                           <div>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
-                            {hb.bonus.fees.monthly_fee_waiver_text && (
-                              <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${effFee}/month{selTier?.account ? ` · ${selTier.account}` : ""}</div>
+                            {effWaiver && (
+                              <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{effWaiver}</div>
                             )}
                           </div>
                         ) : (
@@ -2888,7 +2921,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           <div style={{ fontSize: 12, color: DK.amber }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
                         )}
                       </div>
-                    )}
+                      )
+                    })()}
                   </div>
                   {/* DD methods dropdown */}
                   {(() => {
