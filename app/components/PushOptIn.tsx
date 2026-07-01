@@ -9,6 +9,7 @@ import {
   unsubscribeFromPush,
   type PushPermission,
 } from "../../lib/push/client"
+import { DK, moduleGradient } from "../../lib/stacksTheme"
 
 /**
  * Single-line opt-in / opt-out for web push notifications.  Renders nothing
@@ -74,23 +75,23 @@ export default function PushOptIn() {
         justifyContent: "space-between",
         gap: 12,
         padding: "12px 14px",
-        background: "#fff",
-        border: "1px solid #e8e8e8",
+        background: DK.panel,
+        border: `1px solid ${DK.border}`,
         borderRadius: 12,
         marginBottom: 12,
       }}
     >
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: DK.text }}>
           {subscribed ? "Notifications on" : "Get deadline reminders on your phone"}
         </div>
-        <div style={{ fontSize: 12, color: "#666", marginTop: 2, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2, lineHeight: 1.4 }}>
           {subscribed
             ? "You'll get a notification 7 days and 1 day before each bonus deadline."
             : "Install Stacks OS to your home screen, then enable push to skip the inbox."}
         </div>
         {error && (
-          <div style={{ fontSize: 11, color: "#b91c1c", marginTop: 4 }}>{error}</div>
+          <div style={{ fontSize: 11, color: DK.red, marginTop: 4 }}>{error}</div>
         )}
       </div>
       <button
@@ -101,9 +102,9 @@ export default function PushOptIn() {
           padding: "8px 14px",
           fontSize: 13,
           fontWeight: 700,
-          color: subscribed ? "#555" : "#fff",
-          background: subscribed ? "#fafafa" : "#0d7c5f",
-          border: subscribed ? "1px solid #d4d4d4" : "none",
+          color: subscribed ? DK.textDim : "#fff",
+          background: subscribed ? DK.panel2 : moduleGradient("paycheck"),
+          border: subscribed ? `1px solid ${DK.border2}` : "none",
           borderRadius: 8,
           cursor: busy ? "wait" : "pointer",
           opacity: busy ? 0.6 : 1,

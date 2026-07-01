@@ -29,6 +29,7 @@ import { getCustomBonuses, updateCustomBonus, type CustomBonus } from "../../lib
 import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedCards"
 import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
 import type { CompletedBonus } from "../../lib/churn"
+import { DK, MODULE, moduleGradient } from "../../lib/stacksTheme"
 
 // How far out the dashboard projects, in days/months. Was 12 months; now a
 // 3-year view so multi-year rotations and churnable bonuses (which recur after
@@ -649,14 +650,15 @@ export default function HubClient({
         />
       )}
       <CheckpointNav />
+      <div style={{ minHeight: "100vh", background: DK.board, color: DK.textDim, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {subscriptionStatus === "past_due" && (
-        <div style={{ background: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "12px 20px" }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#854d0e", textAlign: "center" }}>
+        <div style={{ background: DK.amberBg, borderBottom: `1px solid ${DK.amberBorder}`, padding: "12px 20px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: DK.amber, textAlign: "center" }}>
             <span>
               Your last payment didn't go through — please update your card to keep your subscription active.
             </span>
             <button onClick={handleManageBilling} disabled={billingLoading}
-              style={{ fontSize: 14, fontWeight: 700, color: "#fff", background: "#854d0e", border: "none", borderRadius: 8, padding: "10px 16px", minHeight: 40, cursor: billingLoading ? "wait" : "pointer" }}>
+              style={{ fontSize: 14, fontWeight: 700, color: "#1a1204", background: DK.amber, border: "none", borderRadius: 8, padding: "10px 16px", minHeight: 40, cursor: billingLoading ? "wait" : "pointer" }}>
               {billingLoading ? "Opening…" : "Update payment →"}
             </button>
           </div>
@@ -675,24 +677,24 @@ export default function HubClient({
         >
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "#111" }}>Dashboard</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: DK.text }}>Dashboard</h1>
               {!isPaid && (
                 <span style={{
-                  fontSize: 10, fontWeight: 700, color: "#666", background: "#f0f0f0",
+                  fontSize: 10, fontWeight: 700, color: DK.textMute, background: DK.panel2, border: `1px solid ${DK.border}`,
                   padding: "3px 8px", borderRadius: 99, letterSpacing: "0.06em", textTransform: "uppercase",
                 }}>
                   Free
                 </span>
               )}
             </div>
-            <div style={{ fontSize: 13, color: "#888", marginTop: 2, overflowWrap: "anywhere" }}>
+            <div style={{ fontSize: 13, color: DK.textMute, marginTop: 2, overflowWrap: "anywhere" }}>
               {userEmail}
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
             <a
               href="/stacksos/profile"
-              style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}
+              style={{ fontSize: 13, color: DK.accentFg, textDecoration: "none", fontWeight: 600 }}
             >
               Edit profile →
             </a>
@@ -728,15 +730,15 @@ export default function HubClient({
         {view === "active" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "16px 0 10px", flexWrap: "wrap", gap: 10 }}>
-              <div style={{ fontSize: 13, color: "#888" }}>
+              <div style={{ fontSize: 13, color: DK.textMute }}>
                 {startedBonuses.length > 0 ? `${startedBonuses.length} bonus${startedBonuses.length === 1 ? "" : "es"} in progress` : ""}
               </div>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <a
                   href="/bonuses"
                   style={{
-                    fontSize: 13, fontWeight: 600, color: "#0d7c5f",
-                    padding: "8px 14px", border: "1px solid #0d7c5f", borderRadius: 8,
+                    fontSize: 13, fontWeight: 600, color: DK.textDim,
+                    padding: "8px 14px", border: `1px solid ${DK.border2}`, background: DK.panel, borderRadius: 8,
                     textDecoration: "none",
                   }}
                 >
@@ -745,8 +747,8 @@ export default function HubClient({
                 <a
                   href="/spending"
                   style={{
-                    fontSize: 13, fontWeight: 600, color: "#0d7c5f",
-                    padding: "8px 14px", border: "1px solid #0d7c5f", borderRadius: 8,
+                    fontSize: 13, fontWeight: 600, color: DK.textDim,
+                    padding: "8px 14px", border: `1px solid ${DK.border2}`, background: DK.panel, borderRadius: 8,
                     textDecoration: "none",
                   }}
                 >
@@ -755,7 +757,7 @@ export default function HubClient({
                 <button
                   onClick={() => { track("custom_bonus_modal_opened", { source: "dashboard_active_tab" }); setShowAddModal(true) }}
                   style={{
-                    fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                    fontSize: 13, fontWeight: 700, color: "#fff", background: moduleGradient("paycheck"),
                     padding: "8px 14px", border: "none", borderRadius: 8, cursor: "pointer",
                   }}
                 >
@@ -786,23 +788,23 @@ export default function HubClient({
             // Free tier: the 3-yr projection is built from the Pro sequencers — don't
             // leak the number; show the same upgrade nudge used on the sequencer pages.
             <div style={{
-              background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+              background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 14,
               padding: "20px 22px", marginBottom: 24,
               display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
             }}>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
                   Pro feature
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: DK.text, marginBottom: 4 }}>
                   See your 3-year stack projection
                 </div>
-                <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+                <div style={{ fontSize: 13, color: DK.textMute, lineHeight: 1.5 }}>
                   Pro ranks and sequences every checking, savings, and card bonus for your paycheck and balance — and projects what your stack is worth over three years.
                 </div>
               </div>
               <a href="/onboarding" style={{
-                fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+                fontSize: 13, fontWeight: 700, color: "#1a1204", background: `linear-gradient(135deg, ${DK.gold}, ${DK.goldDeep})`,
                 padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
               }}>
                 Upgrade to Pro →
@@ -817,8 +819,8 @@ export default function HubClient({
           <a
             href="/stacksos/taxes"
             style={{
-              fontSize: 13, color: "#666", textDecoration: "none",
-              padding: "8px 14px", border: "1px solid #e8e8e8", borderRadius: 8,
+              fontSize: 13, color: DK.textMute, textDecoration: "none",
+              padding: "8px 14px", border: `1px solid ${DK.border2}`, background: DK.panel, borderRadius: 8,
             }}
           >
             Tax summary →
@@ -829,6 +831,7 @@ export default function HubClient({
         <div style={{ marginTop: 28 }}>
           <AcademyLedger variant="inline" userContribution={lifetimeEarned} />
         </div>
+      </div>
       </div>
 
       <style>{`
@@ -846,16 +849,16 @@ export default function HubClient({
 function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; isPaid: boolean }) {
   return (
     <div style={{
-      background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14,
+      background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 14,
       padding: "32px 28px", marginTop: 16,
     }}>
-      <div style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
+      <div style={{ fontSize: 20, fontWeight: 800, color: DK.text, margin: "0 0 6px", letterSpacing: "-0.01em" }}>
         Start tracking your bonuses
       </div>
-      <div style={{ fontSize: 14, color: "#666", lineHeight: 1.5, margin: "0 0 14px" }}>
+      <div style={{ fontSize: 14, color: DK.textMute, lineHeight: 1.5, margin: "0 0 14px" }}>
         Add any bank or credit card bonus you&apos;re working on. Stacks keeps a checklist, tracks your deposits, and remembers your lifetime earnings.
       </div>
-      <div style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 600, margin: "0 0 18px" }}>
+      <div style={{ fontSize: 13, color: DK.greenFg, fontWeight: 600, margin: "0 0 18px" }}>
         New here? Start with a <strong>bank bonus</strong> — it&apos;s the easiest first win (often $200–$400 for opening a checking account and setting up direct deposit).
       </div>
 
@@ -864,14 +867,14 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
           href="/bonuses"
           style={{
             display: "flex", flexDirection: "column", gap: 6, position: "relative",
-            padding: 16, background: "#f0faf5", border: "1.5px solid #0d7c5f", borderRadius: 12,
+            padding: 16, background: MODULE.savings.soft, border: `1.5px solid ${DK.green}`, borderRadius: 12,
             textDecoration: "none",
           }}
         >
-          <span style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 700, color: "#fff", background: "#0d7c5f", padding: "2px 7px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Start here</span>
+          <span style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 700, color: "#fff", background: DK.green, padding: "2px 7px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>Start here</span>
           <div style={{ fontSize: 22 }}>🏦</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Bank Bonuses</div>
-          <div style={{ fontSize: 12, color: "#666", lineHeight: 1.4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: DK.text }}>Bank Bonuses</div>
+          <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.4 }}>
             Every live checking, savings, and brokerage offer — one-click track.
           </div>
         </a>
@@ -879,13 +882,13 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
           href="/spending"
           style={{
             display: "flex", flexDirection: "column", gap: 6,
-            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            padding: 16, background: DK.panel2, border: `1px solid ${DK.border}`, borderRadius: 12,
             textDecoration: "none",
           }}
         >
           <div style={{ fontSize: 22 }}>💳</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Credit Cards</div>
-          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: DK.text }}>Credit Cards</div>
+          <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.4 }}>
             Welcome bonuses and top cards — ranked by net value.
           </div>
         </a>
@@ -895,13 +898,13 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
           onClick={onAddCustom}
           style={{
             display: "flex", flexDirection: "column", gap: 6,
-            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            padding: 16, background: DK.panel2, border: `1px solid ${DK.border}`, borderRadius: 12,
             textAlign: "left", cursor: "pointer", fontFamily: "inherit",
           }}
         >
           <div style={{ fontSize: 22 }}>✍️</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Add manually</div>
-          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: DK.text }}>Add manually</div>
+          <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.4 }}>
             Type in a bonus from anywhere — bank, card, or savings.
           </div>
         </button>
@@ -910,13 +913,13 @@ function EmptyDashboardCta({ onAddCustom, isPaid }: { onAddCustom: () => void; i
           href="/stacksos/import"
           style={{
             display: "flex", flexDirection: "column", gap: 6,
-            padding: 16, background: "#fafafa", border: "1px solid #e8e8e8", borderRadius: 12,
+            padding: 16, background: DK.panel2, border: `1px solid ${DK.border}`, borderRadius: 12,
             textDecoration: "none",
           }}
         >
           <div style={{ fontSize: 22 }}>📊</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Import a spreadsheet</div>
-          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: DK.text }}>Import a spreadsheet</div>
+          <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.4 }}>
             Paste from YNAB or a tracking sheet — we match the catalog.
           </div>
         </a>

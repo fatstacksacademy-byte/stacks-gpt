@@ -44,7 +44,10 @@ export default function CheckpointNav() {
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const dark = DARK_ROUTES.some(r => pathname.startsWith(r))
+  // Dashboard ("/stacksos" exactly) is now the dark mission board too — match it
+  // precisely so the still-light tool routes (/stacksos/debt, /profile, …) keep
+  // their light nav until they're ported.
+  const dark = pathname === "/stacksos" || DARK_ROUTES.some(r => pathname.startsWith(r))
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href

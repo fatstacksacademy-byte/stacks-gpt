@@ -4,6 +4,7 @@ import { useState } from "react"
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { DD_SOURCES, DD_EMPLOYER } from "../../lib/ddSources"
 import PortalStacksBadge from "./PortalStacksBadge"
+import { DK, MODULE, URGENCY_DK, moduleGradient } from "../../lib/stacksTheme"
 
 /**
  * Unified list of every currently-started bonus across paycheck,
@@ -59,18 +60,17 @@ export type StartedBonus = {
   checklist?: ChecklistItem[]
 }
 
+// Dark "mission board" module accents + urgency — pulled from the shared theme
+// so the dashboard to-do reads exactly like the Paycheck cards. `bg` is the
+// translucent chip tint that works on the near-black board (the old pastels
+// only read on white).
 const MODULE_COLORS: Record<StartedBonus["module"], { fg: string; bg: string; label: string }> = {
-  paycheck: { fg: "#2563eb", bg: "#eff6ff", label: "Paycheck" },
-  spending: { fg: "#7c3aed", bg: "#ede9fe", label: "Spending" },
-  savings: { fg: "#0d7c5f", bg: "#e6f5f0", label: "Savings" },
+  paycheck: { fg: MODULE.paycheck.fg, bg: MODULE.paycheck.soft, label: "Paycheck" },
+  spending: { fg: MODULE.spending.fg, bg: MODULE.spending.soft, label: "Spending" },
+  savings: { fg: MODULE.savings.fg, bg: MODULE.savings.soft, label: "Savings" },
 }
 
-const URGENCY_STYLE: Record<BonusUrgency, { border: string; chipBg: string; chipFg: string; chipLabel: string | null }> = {
-  overdue: { border: "#dc2626", chipBg: "#fee2e2", chipFg: "#b91c1c", chipLabel: "Overdue" },
-  urgent:  { border: "#f59e0b", chipBg: "#fef3c7", chipFg: "#92400e", chipLabel: "Urgent" },
-  soon:    { border: "#e8e8e8", chipBg: "#f3f4f6", chipFg: "#525252", chipLabel: "Soon" },
-  none:    { border: "#e8e8e8", chipBg: "#f3f4f6", chipFg: "#666",    chipLabel: null },
-}
+const URGENCY_STYLE: Record<BonusUrgency, { border: string; chipBg: string; chipFg: string; chipLabel: string | null }> = URGENCY_DK
 
 function daysSince(dateStr: string | null): number | null {
   if (!dateStr) return null
@@ -158,20 +158,20 @@ export default function StartedBonusesList({
   if (bonuses.length === 0) {
     return (
       <div style={{
-        background: "#fff",
-        border: "1px dashed #e8e8e8",
+        background: DK.panel,
+        border: `1px dashed ${DK.border2}`,
         borderRadius: 12,
         padding: "32px 24px",
         textAlign: "center",
-        color: "#888",
+        color: DK.textMute,
         fontSize: 13,
       }}>
-        <div style={{ fontWeight: 700, color: "#555", marginBottom: 6 }}>No bonuses in progress yet</div>
+        <div style={{ fontWeight: 700, color: DK.textDim, marginBottom: 6 }}>No bonuses in progress yet</div>
         <div style={{ lineHeight: 1.6 }}>
           Pick a tab and tap a bank or card to start tracking it:<br />
-          <a href="/stacksos/paycheck" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Paycheck</a> = checking bonuses (direct deposit) ·{" "}
-          <a href="/stacksos/spending" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Spending</a> = credit-card bonuses ·{" "}
-          <a href="/stacksos/savings" style={{ color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>Savings</a> = high-yield cash bonuses
+          <a href="/stacksos/paycheck" style={{ color: MODULE.paycheck.fg, fontWeight: 700, textDecoration: "none" }}>Paycheck</a> = checking bonuses (direct deposit) ·{" "}
+          <a href="/stacksos/spending" style={{ color: MODULE.spending.fg, fontWeight: 700, textDecoration: "none" }}>Spending</a> = credit-card bonuses ·{" "}
+          <a href="/stacksos/savings" style={{ color: MODULE.savings.fg, fontWeight: 700, textDecoration: "none" }}>Savings</a> = high-yield cash bonuses
         </div>
       </div>
     )
@@ -192,12 +192,12 @@ export default function StartedBonusesList({
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0 }}>Your next steps</h2>
-        <div style={{ fontSize: 11, color: "#888" }}>
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: DK.text, margin: 0 }}>Your next steps</h2>
+        <div style={{ fontSize: 11, color: DK.textMute }}>
           {sorted.length} bonus{sorted.length !== 1 ? "es" : ""} active
         </div>
       </div>
-      <div style={{ fontSize: 12, color: "#999", marginBottom: 10 }}>
+      <div style={{ fontSize: 12, color: DK.textFaint, marginBottom: 10 }}>
         Tap a bonus to see its checklist, then mark each step as you go.
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="started-bonuses-list">
@@ -223,11 +223,11 @@ export default function StartedBonusesList({
             <div
               key={key}
               style={{
-                background: "#fff",
-                border: `1px solid ${urg.border}`,
+                background: DK.panel,
+                border: `1px solid ${urgency === "overdue" || urgency === "urgent" ? urg.border : DK.border}`,
                 borderLeft: urgency === "overdue" || urgency === "urgent"
                   ? `4px solid ${urg.border}`
-                  : `1px solid ${urg.border}`,
+                  : `1px solid ${DK.border}`,
                 borderRadius: 12,
                 overflow: "hidden",
               }}
@@ -260,7 +260,7 @@ export default function StartedBonusesList({
                   <div style={{
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "#111",
+                    color: DK.text,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -268,11 +268,11 @@ export default function StartedBonusesList({
                     {b.name}
                   </div>
                   {b.nextStep && (
-                    <div style={{ fontSize: 12, color: "#333", marginTop: 4, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 12, color: DK.textDim, marginTop: 4, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                       <span style={{ fontWeight: 600 }}>Next:</span>
                       <span>{b.nextStep}</span>
                       {deadlineLabel && (
-                        <span style={{ color: "#666" }}>
+                        <span style={{ color: DK.textMute }}>
                           · by {deadlineLabel}
                           {daysLeft != null && (
                             <>
@@ -302,17 +302,17 @@ export default function StartedBonusesList({
                       <PortalStacksBadge bonusId={b.bonus_id} />
                     </div>
                   )}
-                  <div style={{ fontSize: 11, color: "#999", marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
                     {days != null && (
                       <span>Started {days} day{days !== 1 ? "s" : ""} ago</span>
                     )}
                     {b.expected_payout_date && (
-                      <span style={{ color: "#666" }}>
+                      <span style={{ color: DK.textMute }}>
                         Estimated payout {fmtDeadline(b.expected_payout_date)}
                       </span>
                     )}
                     {b.safe_close_date && (
-                      <span style={{ color: "#666" }}>
+                      <span style={{ color: DK.textMute }}>
                         Estimated safe date {fmtDeadline(b.safe_close_date)}
                       </span>
                     )}
@@ -322,7 +322,7 @@ export default function StartedBonusesList({
                   <div className="sbl-amount" style={{
                     fontSize: 16,
                     fontWeight: 800,
-                    color: "#0d7c5f",
+                    color: DK.text,
                   }}>
                     ${Math.round(b.amount).toLocaleString()}
                   </div>
@@ -335,8 +335,8 @@ export default function StartedBonusesList({
                         fontSize: 12,
                         fontWeight: 700,
                         color: "#fff",
-                        background: color.fg,
-                        border: "none",
+                        background: ddPromptKey === key ? DK.panel2 : moduleGradient(b.module),
+                        border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none",
                         borderRadius: 8,
                         padding: "7px 12px",
                         cursor: isBusy ? "wait" : "pointer",
@@ -348,7 +348,7 @@ export default function StartedBonusesList({
                     </button>
                   )}
                 </div>
-                <span style={{ fontSize: 16, color: "#bbb", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>
+                <span style={{ fontSize: 16, color: DK.textFaint, flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>
                   ›
                 </span>
               </div>
@@ -359,14 +359,14 @@ export default function StartedBonusesList({
                   ported to the dashboard. */}
               {totalCount > 0 && (
                 <div onClick={() => toggle(key)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 18px 14px", cursor: "pointer" }}>
-                  <div style={{ flex: 1, height: 8, borderRadius: 99, background: "#eef0f2", overflow: "hidden", position: "relative" }}>
+                  <div style={{ flex: 1, height: 8, borderRadius: 99, background: DK.panel2, border: `1px solid ${DK.border}`, overflow: "hidden", position: "relative" }}>
                     <div
                       style={{
                         position: "absolute",
                         inset: 0,
                         width: `${pct}%`,
                         borderRadius: 99,
-                        background: xpReady ? "linear-gradient(90deg,#0d7c5f,#f7d774)" : color.fg,
+                        background: xpReady ? `linear-gradient(90deg,${DK.green},${DK.gold})` : moduleGradient(b.module, 90),
                         transition: "width .6s cubic-bezier(.2,.7,.2,1)",
                         overflow: "hidden",
                       }}
@@ -374,7 +374,7 @@ export default function StartedBonusesList({
                       <div style={{ position: "absolute", top: 0, height: "100%", width: "22%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)", animation: "goalShimmer 2.2s linear infinite" }} />
                     </div>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? "#0d7c5f" : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? DK.gold : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>
                     {pct}%
                   </span>
                   <span
@@ -394,31 +394,31 @@ export default function StartedBonusesList({
 
               {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
               {ddPromptKey === key && b.advance && (
-                <div style={{ borderTop: "1px solid #f0f0f0", background: "#f0fdf4", padding: "12px 18px" }}>
-                  <div style={{ fontSize: 12, color: "#166534", fontWeight: 600, marginBottom: 8 }}>
-                    Which deposit triggered it? <span style={{ color: "#9ca3af", fontWeight: 400 }}>(optional — helps track what works)</span>
+                <div style={{ borderTop: `1px solid ${DK.border}`, background: DK.panel2, padding: "12px 18px" }}>
+                  <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600, marginBottom: 8 }}>
+                    Which deposit triggered it? <span style={{ color: DK.textFaint, fontWeight: 400 }}>(optional — helps track what works)</span>
                   </div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                     <button onClick={(e) => { e.stopPropagation(); setDdValue(ddValue === DD_EMPLOYER ? "" : DD_EMPLOYER); setDdSearchOpen(false); setDdSearch("") }}
-                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddValue === DD_EMPLOYER ? "1.5px solid #0d7c5f" : "1px solid #ddd", background: ddValue === DD_EMPLOYER ? "#e6f5f0" : "#fff", color: ddValue === DD_EMPLOYER ? "#0d7c5f" : "#555" }}>
+                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddValue === DD_EMPLOYER ? `1.5px solid ${DK.green}` : `1px solid ${DK.border2}`, background: ddValue === DD_EMPLOYER ? MODULE.savings.soft : DK.panel, color: ddValue === DD_EMPLOYER ? DK.greenFg : DK.textDim }}>
                       {ddValue === DD_EMPLOYER ? "✓ " : ""}Employer / payroll
                     </button>
                     <button onClick={(e) => { e.stopPropagation(); setDdSearchOpen(v => !v); setDdValue("") }}
-                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? "1.5px solid #2563eb" : "1px solid #ddd", background: ddSearchOpen ? "#eff6ff" : "#fff", color: ddSearchOpen ? "#2563eb" : "#555" }}>
+                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearchOpen ? MODULE.paycheck.soft : DK.panel, color: ddSearchOpen ? DK.accentFg : DK.textDim }}>
                       Other source…
                     </button>
                     {!ddSearchOpen && ddValue && ddValue !== DD_EMPLOYER && (
-                      <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>via {ddValue}</span>
+                      <span style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>via {ddValue}</span>
                     )}
                   </div>
                   {ddSearchOpen && (
                     <div style={{ marginTop: 8 }}>
                       <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Search bank, brokerage, or app…"
-                        style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" }} />
+                        style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", background: DK.panel, color: DK.text, boxSizing: "border-box" }} />
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
                         {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
                           <button key={s} onClick={(e) => { e.stopPropagation(); setDdSearch(s) }}
-                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "1.5px solid #2563eb" : "1px solid #e0e0e0", background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "#eff6ff" : "#fff", color: "#555" }}>
+                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? MODULE.paycheck.soft : DK.panel, color: DK.textDim }}>
                             {s}
                           </button>
                         ))}
@@ -428,12 +428,12 @@ export default function StartedBonusesList({
                   <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                     <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, ddSearchOpen ? ddSearch.trim() : ddValue) }}
                       disabled={isBusy}
-                      style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, background: color.fg, color: "#fff", border: "none", borderRadius: 8, cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1 }}>
+                      style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, background: moduleGradient(b.module), color: "#fff", border: "none", borderRadius: 8, cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1 }}>
                       {isBusy ? "Saving…" : "Save & mark received"}
                     </button>
                     <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, null) }}
                       disabled={isBusy}
-                      style={{ padding: "8px 14px", fontSize: 12, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                      style={{ padding: "8px 14px", fontSize: 12, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                       Skip
                     </button>
                   </div>
@@ -442,17 +442,17 @@ export default function StartedBonusesList({
 
               {/* Expanded drawer — full checklist + link into the module */}
               {isOpen && (
-                <div style={{ borderTop: "1px solid #f0f0f0", background: "#fafafa", padding: "14px 18px 16px" }}>
+                <div style={{ borderTop: `1px solid ${DK.border}`, background: DK.panel2, padding: "14px 18px 16px" }}>
                   {b.checklist && b.checklist.length > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#999" }}>Checklist</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: DK.textFaint }}>Checklist</div>
                       {/* Undo — reverse the last-marked step (same safety net the
                           Paycheck & Savings pages carry). */}
                       {b.undo && (
                         <button
                           onClick={(e) => { e.stopPropagation(); runUndo(key, b.undo!) }}
                           disabled={isBusy}
-                          style={{ fontSize: 11, color: "#999", background: "none", border: "none", cursor: isBusy ? "wait" : "pointer", padding: "2px 0" }}
+                          style={{ fontSize: 11, color: DK.textMute, background: "none", border: "none", cursor: isBusy ? "wait" : "pointer", padding: "2px 0" }}
                         >
                           {isBusy ? "…" : "↩ Undo last step"}
                         </button>
@@ -465,8 +465,8 @@ export default function StartedBonusesList({
                         <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
                           <span style={{
                             width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                            border: item.done ? "none" : `2px solid ${item.current ? color.fg : "#d4d4d4"}`,
-                            background: item.done ? "#0d7c5f" : "transparent",
+                            border: item.done ? "none" : `2px solid ${item.current ? color.fg : DK.border2}`,
+                            background: item.done ? DK.green : "transparent",
                             display: "flex", alignItems: "center", justifyContent: "center",
                           }}>
                             {item.done && (
@@ -477,7 +477,7 @@ export default function StartedBonusesList({
                           </span>
                           <span style={{
                             fontSize: 13,
-                            color: item.done ? "#999" : item.current ? "#111" : "#bbb",
+                            color: item.done ? DK.textFaint : item.current ? DK.text : DK.textMute,
                             fontWeight: item.current ? 600 : 400,
                             textDecoration: item.done ? "line-through" : "none",
                           }}>
@@ -493,8 +493,8 @@ export default function StartedBonusesList({
                         onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
                         disabled={isBusy}
                         style={{
-                          fontSize: 13, fontWeight: 700, color: "#fff", background: color.fg,
-                          border: "none", borderRadius: 8, padding: "9px 16px",
+                          fontSize: 13, fontWeight: 700, color: "#fff", background: ddPromptKey === key ? DK.panel : moduleGradient(b.module),
+                          border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none", borderRadius: 8, padding: "9px 16px",
                           cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1,
                         }}
                       >
@@ -506,7 +506,7 @@ export default function StartedBonusesList({
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 13, fontWeight: 600, color: color.fg,
-                        padding: "9px 14px", border: `1px solid ${color.fg}`, borderRadius: 8,
+                        padding: "9px 14px", border: `1px solid ${color.fg}55`, borderRadius: 8,
                         textDecoration: "none",
                       }}
                     >
