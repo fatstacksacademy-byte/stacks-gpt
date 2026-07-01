@@ -167,6 +167,64 @@ export function checkingBonusStep(
   return { nextStep: "Confirm bonus posted", deadline: null, urgency: "none", stage: "confirm" }
 }
 
+// ─── Staged / multi-payout checking bonuses ──────────────────────────
+// Some bonuses (e.g. Four Leaf FCU) pay the headline amount as a first
+// tranche, then release later tranches only if the user keeps a $500+
+// direct deposit going every single month for 12 / 24 consecutive months.
+// Miss ONE month and both later tranches are forfeited — so once the first
+// tranche has banked, the important recurring nudge is "log this month's
+// DD" with the calendar month-end as a hard deadline.
+//
+//   stage="month:YYYY-MM" → a fresh dedupe slot per calendar month, so the
+//                           user gets one reminder chain per month rather
+//                           than burning a single lifetime slot.
+//
+// Returns null (defer to checkingBonusStep) until the first tranche is
+// banked, and again once every tranche is banked.
+function endOfMonthISO(iso: string): string {
+  const [y, m] = iso.split("-").map(Number)
+  const lastDay = new Date(y, m, 0).getDate() // m is 1-based → day 0 of next month = last day of m
+  return `${y}-${String(m).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`
+}
+
+export function stagedPayoutStep(
+  record: { actual_amount?: number | null },
+  bonus: { staged_payouts?: { amount: number; label: string; months: number }[] | null },
+  opts: { loggedThisMonth: boolean; monthsLogged: number; today?: string },
+): NextStepInfo {
+  const stages = bonus.staged_payouts
+  if (!Array.isArray(stages) || stages.length === 0) {
+    return { nextStep: null, deadline: null, urgency: "none" }
+  }
+  const firstAmount = stages[0].amount
+  const total = stages.reduce((a, s) => a + s.amount, 0)
+  const banked = record.actual_amount ?? 0
+
+  // Before the first tranche lands, the normal checking flow (open →
+  // direct deposit) drives the reminders. After everything's banked,
+  // there's nothing time-sensitive left.
+  if (banked < firstAmount - 0.01 || banked >= total - 0.01) {
+    return { nextStep: null, deadline: null, urgency: "none" }
+  }
+
+  // Mid-schedule: keeping the streak alive is the whole game. If they've
+  // already logged this month's DD, they're covered — stay quiet until
+  // next month. Otherwise nudge toward the month-end deadline.
+  if (opts.loggedThisMonth) {
+    return { nextStep: null, deadline: null, urgency: "none" }
+  }
+  const today = opts.today ?? todayISO()
+  const deadline = endOfMonthISO(today)
+  const nextMilestone = stages.find(s => s.months > 0 && s.months > opts.monthsLogged)
+  const suffix = nextMilestone ? ` (month ${opts.monthsLogged + 1} of ${nextMilestone.months})` : ""
+  return {
+    nextStep: `Log this month's $500 direct deposit${suffix}`,
+    deadline,
+    urgency: urgencyFor(deadline),
+    stage: `month:${today.slice(0, 7)}`,
+  }
+}
+
 // ─── Custom-tracked checking bonuses ─────────────────────────────────
 // Stages mirror checkingBonusStep so the cron's dedupe key shape is
 // uniform across modules:

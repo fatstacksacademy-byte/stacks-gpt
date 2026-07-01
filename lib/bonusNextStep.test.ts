@@ -3,6 +3,7 @@ import {
   daysUntil,
   urgencyFor,
   checkingBonusStep,
+  stagedPayoutStep,
   customBonusStep,
   spendingCardStep,
   savingsEntryStep,
@@ -335,5 +336,47 @@ describe("savingsEntryStep — milestone-aware stages", () => {
   it("no requiresTransactions → milestone skipped entirely (unchanged hold behavior)", () => {
     const r = savingsEntryStep(fundedBase)
     expect(r.stage).toBe("hold")
+  })
+})
+
+describe("stagedPayoutStep (Four Leaf FCU–style multi-tranche)", () => {
+  const stages = [
+    { amount: 350, label: "First $500 DD", months: 0 },
+    { amount: 100, label: "12 consecutive months", months: 12 },
+    { amount: 100, label: "24 consecutive months", months: 24 },
+  ]
+  const bonus = { staged_payouts: stages }
+
+  it("stays quiet before the first tranche has banked (normal flow drives it)", () => {
+    const r = stagedPayoutStep({ actual_amount: 0 }, bonus, { loggedThisMonth: false, monthsLogged: 0 })
+    expect(r.nextStep).toBeNull()
+  })
+
+  it("stays quiet once every tranche is banked", () => {
+    const r = stagedPayoutStep({ actual_amount: 550 }, bonus, { loggedThisMonth: true, monthsLogged: 24 })
+    expect(r.nextStep).toBeNull()
+  })
+
+  it("stays quiet mid-schedule when this month's DD is already logged", () => {
+    const r = stagedPayoutStep({ actual_amount: 350 }, bonus, { loggedThisMonth: true, monthsLogged: 5 })
+    expect(r.nextStep).toBeNull()
+  })
+
+  it("nudges toward the month-end deadline when mid-schedule and no DD logged this month", () => {
+    // FIXED_TODAY = 2026-06-04 → month end is 2026-06-30
+    const r = stagedPayoutStep({ actual_amount: 350 }, bonus, { loggedThisMonth: false, monthsLogged: 5 })
+    expect(r.deadline).toBe("2026-06-30")
+    expect(r.nextStep).toBe("Log this month's $500 direct deposit (month 6 of 12)")
+    expect(r.stage).toBe("month:2026-06")
+  })
+
+  it("counts toward the 24-month milestone once the 12-month one is banked", () => {
+    const r = stagedPayoutStep({ actual_amount: 450 }, bonus, { loggedThisMonth: false, monthsLogged: 15 })
+    expect(r.nextStep).toBe("Log this month's $500 direct deposit (month 16 of 24)")
+  })
+
+  it("no staged_payouts → null", () => {
+    const r = stagedPayoutStep({ actual_amount: 100 }, { staged_payouts: null }, { loggedThisMonth: false, monthsLogged: 0 })
+    expect(r.nextStep).toBeNull()
   })
 })

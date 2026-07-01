@@ -6238,6 +6238,11 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 550,
     "cooldown_months": null,
+    "staged_payouts": [
+      { "amount": 350, "label": "Your first qualifying $500+ direct deposit (within 90 days)", "months": 0 },
+      { "amount": 100, "label": "12 consecutive months with a $500+ direct deposit", "months": 12 },
+      { "amount": 100, "label": "24 consecutive months with a $500+ direct deposit", "months": 24 }
+    ],
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 500,
