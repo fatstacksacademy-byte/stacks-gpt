@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import PortfolioCard from "../components/PortfolioCard"
 import FatStackMeter from "../components/FatStackMeter"
 import StartedBonusesList, { type StartedBonus } from "../components/StartedBonusesList"
@@ -8,7 +8,11 @@ import HistoricalWinsList, { type HistoricalWin } from "../components/Historical
 import DashboardGoalBar from "../components/DashboardGoalBar"
 import PushOptIn from "../components/PushOptIn"
 import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
-import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep, urgencyFor } from "../../lib/bonusNextStep"
+import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep, urgencyFor, URGENCY_RANK, daysUntil } from "../../lib/bonusNextStep"
+import NextMoveCard, { type NextMove } from "../components/NextMoveCard"
+import DeadlineDigest from "../components/DeadlineDigest"
+import QueueTrendCard from "../components/QueueTrendCard"
+import { getQueueSnapshots, recordQueueSnapshot, type QueueSnapshot } from "../../lib/queueSnapshots"
 import { savingsBonusForEntry } from "../../lib/data/savingsBonuses"
 import { getMilestoneDetail } from "../../lib/bonusSteps"
 import { track } from "../../lib/analytics"
@@ -138,6 +142,7 @@ export default function HubClient({
   // "+$X banked!" pop as the number hydrates from 0. Real pops still fire when
   // the user marks a bonus received (banked ticks up after this is true).
   const [dataReady, setDataReady] = useState(false)
+  const [queueSnapshots, setQueueSnapshots] = useState<QueueSnapshot[]>([])
 
   const loadData = useCallback(() => {
     Promise.allSettled([
@@ -250,6 +255,31 @@ export default function HubClient({
 
   const portfolio36mo =
     paycheckProjection.total + savingsProjection.total + spendingProjection.total
+
+  // ─── Pro: snapshot the queue projection once/month ────────────────
+  // Records this month's 3-year projection (best-effort) so QueueTrendCard can
+  // show the plan getting more profitable over time, then loads the history.
+  // Guarded to run once per mount; the upsert is idempotent per (user, month).
+  const snapshotDoneRef = useRef(false)
+  useEffect(() => {
+    if (!isPaid || !dataReady || portfolio36mo <= 0 || snapshotDoneRef.current) return
+    snapshotDoneRef.current = true
+    const profileHash = [
+      profile.paycheck_amount, profile.dd_slots, profile.pay_frequency, profile.state,
+      profile.military_affiliated, savingsProfile?.current_balance, spendingProfile?.monthly_spend,
+    ].join("|")
+    ;(async () => {
+      await recordQueueSnapshot(userId, {
+        paycheckTotal: paycheckProjection.total,
+        savingsTotal: savingsProjection.total,
+        spendingTotal: spendingProjection.total,
+        portfolio36mo,
+        topBonuses: paycheckProjection.items.slice(0, 5),
+        profileHash,
+      })
+      setQueueSnapshots(await getQueueSnapshots(userId))
+    })()
+  }, [isPaid, dataReady, portfolio36mo, userId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Started bonuses across all 4 sources ─────────────────────────
   const startedBonuses = useMemo<StartedBonus[]>(() => {
@@ -550,6 +580,50 @@ export default function HubClient({
     [startedBonuses],
   )
 
+  // ─── The single "next move" — the app's spine ─────────────────────
+  // Answers "what do I do right now?" with ONE action: the most-urgent
+  // in-progress step, or (when nothing's started) a nudge to bank the
+  // first bonus. Same urgency ordering the to-do list uses.
+  const nextMove = useMemo<NextMove | null>(() => {
+    if (startedBonuses.length > 0) {
+      const top = [...startedBonuses].sort((a, b) => {
+        const ua = URGENCY_RANK[a.urgency ?? "none"]
+        const ub = URGENCY_RANK[b.urgency ?? "none"]
+        if (ua !== ub) return ua - ub
+        const da = daysUntil(a.deadline ?? null)
+        const db = daysUntil(b.deadline ?? null)
+        if (da != null && db != null) return da - db
+        if (da != null) return -1
+        if (db != null) return 1
+        return 0
+      })[0]
+      return {
+        module: top.module,
+        title: top.name,
+        action: top.nextStep ?? "Continue this bonus",
+        amount: top.amount,
+        deadline: top.deadline ?? null,
+        daysLeft: daysUntil(top.deadline ?? null),
+        urgency: top.urgency ?? "none",
+        href: top.href,
+        cta: "Continue →",
+      }
+    }
+    // Nothing started yet — point at the easiest first win.
+    return {
+      module: "paycheck",
+      title: "Bank bonuses",
+      action: "Start your first bonus",
+      amount: null,
+      deadline: null,
+      daysLeft: null,
+      urgency: "none",
+      href: "/bonuses",
+      cta: "Browse bonuses →",
+      sub: "A checking bonus is the easiest first win — often $200–$400 for a direct deposit.",
+    }
+  }, [startedBonuses])
+
   // ─── Historical wins across all 4 sources ─────────────────────────
   // Mirrors the lifetimeEarned logic but produces individual rows for
   // the "History" dashboard tab.
@@ -712,6 +786,8 @@ export default function HubClient({
           <div style={{ minHeight: 150, marginBottom: 22, borderRadius: 18, background: "radial-gradient(140% 120% at 50% 0%, #1c2230, #12141b)", border: "1px solid #23262e" }} />
         )}
 
+        {dataReady && view === "active" && <NextMoveCard move={nextMove} />}
+
         <DashboardGoalBar
           projection36mo={portfolio36mo}
           inProgress={inProgressValue}
@@ -769,13 +845,18 @@ export default function HubClient({
             {startedBonuses.length === 0 ? (
               <EmptyDashboardCta onAddCustom={() => { track("custom_bonus_modal_opened", { source: "dashboard_empty_state" }); setShowAddModal(true) }} isPaid={isPaid} />
             ) : (
-              <StartedBonusesList bonuses={startedBonuses} onChanged={loadData} />
+              <>
+                <DeadlineDigest items={startedBonuses} />
+                <StartedBonusesList bonuses={startedBonuses} onChanged={loadData} />
+              </>
             )}
           </>
         )}
 
         {view === "projection" && (
           isPaid ? (
+            <>
+            <QueueTrendCard snapshots={queueSnapshots} current={portfolio36mo} />
             <PortfolioCard
               total={portfolio36mo}
               breakdown={[
@@ -784,6 +865,7 @@ export default function HubClient({
                 { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
               ]}
             />
+            </>
           ) : (
             // Free tier: the 3-yr projection is built from the Pro sequencers — don't
             // leak the number; show the same upgrade nudge used on the sequencer pages.

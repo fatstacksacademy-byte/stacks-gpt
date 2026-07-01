@@ -218,5 +218,38 @@ Files:
 **Deliberately NOT done tonight** (need your call / too risky unreviewed): the "Next Move" spine
 card, the mobile bottom nav, the deadline digest, and the `queue_snapshots` Pro feature. Those
 are the top of the roadmap above — say the word and I'll build the next one.
+
+---
+
+## Session 2 — features shipped (pushed to `fee-and-biz`)
+
+All build-green and pushed. **One action needed from you: run `migrations/041_queue_snapshots.sql`
+in Supabase** — the queue-history feature degrades quietly until it exists (no data shown, nothing
+breaks), same pattern as the deposit-source column.
+
+- **BUG FIX — BoA card wouldn't flip.** Root cause: when you tap "I applied," the bonus enters
+  `current_step: "applied"` and `renderStandardWorkingCard` early-returns a pending-application
+  card *before* the flip button — so an applied bonus was the one state with no way to see its
+  requirements. Added a "ⓘ Requirements" flip to that pending card. (`RoadmapClient.tsx`)
+- **Next Move spine** — `NextMoveCard` at the top of the dashboard: one line telling you the
+  single highest-priority action (most-urgent in-progress step, or "start your first bonus"),
+  with the reward, deadline, and a CTA. This is the app's new answer to "what do I do right now?"
+- **Mobile bottom nav** — `BottomNav`: 5 thumb targets (Home · Paycheck · Savings · Spending ·
+  More) + a "More" sheet for the 8 tool routes. The top tab scroller is now hidden under 768px.
+- **Deadline digest** — `DeadlineDigest` above the to-do list: "⚠️ N overdue · ⏱ N due this
+  week · next deadline in Xd," or a calm "nothing due" confirmation.
+- **Pro queue-history** — `queue_snapshots` table + best-effort monthly snapshot writer +
+  `QueueTrendCard` on the Projection tab showing the 3-year plan climbing over time with a
+  sparkline. Records a fingerprint of your inputs so it can honestly separate "we found better
+  offers" from "you changed your paycheck." (Needs the migration to start collecting; a genuine
+  git-history backfill for a marketing demo is still in the roadmap above.)
+
+**Decisions I made for you** (all reversible): nav = 5 items; theme sweep = all-dark (bottom nav
++ all dashboard surfaces dark). I did **not** touch the landing-page copy (heist-led vs
+free-led) — that's outward-facing marketing and I'd rather you approve the wording; it's the
+`BEFORE THE NEWSLETTER` item above.
+
+**Still to eyeball on a phone:** the bottom nav + Next Move card + digest all render for real
+users behind login — build is green and logic is shared, but give it a look on your device.
 </content>
 </invoke>

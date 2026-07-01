@@ -1283,6 +1283,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           "Deposit Requirement Met",
                           "Bonus Posted",
                         ]
+                        // Applied cards early-return here, before the normal card's
+                        // "☰ All steps" flip — so without this they'd be the ONE state
+                        // with no way to review the bonus requirements. Reuse the same
+                        // flippedCards/toggleFlip so "ⓘ Requirements" flips to the spec.
+                        const pendingFlipped = flippedCards.has(b.id)
                         return (
                           <div key={b.id} style={{
                             background: DK.panel,
@@ -1296,10 +1301,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 <div style={{ fontSize: 20, fontWeight: 800, color: DK.text }}>{b.bank_name}</div>
                                 <span style={{ fontSize: 10, color: DK.amber, background: DK.amberBg, padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
                               </div>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
+                                <button onClick={() => toggleFlip(b.id)}
+                                  title={pendingFlipped ? "Back to the application status" : "See every requirement & the details"}
+                                  style={{ fontSize: 11, fontWeight: 700, color: pendingFlipped ? DK.accentFg : DK.textMute, background: pendingFlipped ? "rgba(37,99,235,0.14)" : DK.panel2, border: `1px solid ${pendingFlipped ? "rgba(37,99,235,0.4)" : DK.border2}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" as const, display: "flex", alignItems: "center", gap: 5 }}>
+                                  {pendingFlipped ? "↩ Status" : "ⓘ Requirements"}
+                                </button>
+                              </div>
                             </div>
 
+                            {/* Flipped → full requirements spec sheet (same face the
+                                offer + working cards use), so an applied bonus is never
+                                a dead end. */}
+                            {pendingFlipped && (
+                              <div style={{ padding: "16px 24px 20px" }}>
+                                {renderOfferSummaryFace(b, "#d97706")}
+                              </div>
+                            )}
+
                             {/* Checklist preview — Applied done, rest locked until approved */}
+                            {!pendingFlipped && (<>
                             <div style={{ padding: "16px 24px 0" }}>
                               <div style={{ fontSize: 12, fontWeight: 600, color: DK.textMute, marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
                               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -1361,6 +1383,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 </>
                               )}
                             </div>
+                            </>)}
                           </div>
                         )
                       }

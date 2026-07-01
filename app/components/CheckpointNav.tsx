@@ -211,9 +211,12 @@ export default function CheckpointNav() {
         .cpnav-tabs::-webkit-scrollbar { display: none; }
         .cpnav-soon-item:hover { background: #f4f4f4; }
         .cpnav-dark .cpnav-soon-item:hover { background: #1c2029; }
-        @media (max-width: 768px) {
-          .cpnav-inner { padding: 0 12px !important; }
+        @media (max-width: 767px) {
+          .cpnav-inner { padding: 0 12px !important; justify-content: flex-end; min-height: 46px; }
           .cpnav-account { margin-left: 8px !important; }
+          /* On phones the BottomNav owns section switching — hide the
+             horizontal-scroll tab strip and keep just the account menu. */
+          .cpnav-tabs { display: none !important; }
         }
       `}</style>
     </div>
