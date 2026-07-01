@@ -4028,7 +4028,7 @@ export const blogContent: Record<string, BlogContent> = {
     cons: ["Requires a specific promo code (Q3DIG26) — easy to miss", "6 transactions can be a stretch for low-volume businesses", "$30 monthly fee on Platinum, waivable with $25k balance", "U.S. Bank's online account opening is clunkier than Chase or BofA"],
     comparison: "U.S. Bank's $1,200 at $25k beats Chase's $750 at $20k, BofA's $750 at $15k, and is in a league of its own at the top tier. The catch: the $25k balance maintenance during a 60-day period is a real capital commitment. If you have the cash, this is the best business bonus available.",
     faqs: [
-      { q: "What is promo code Q2DIG26?", a: "U.S. Bank's Q2 2026 digital-acquisition promo code for Platinum Business Checking. Enter it when applying online to qualify for the tiered bonus." },
+      { q: "What is promo code Q3DIG26?", a: "U.S. Bank's Q3 2026 digital-acquisition promo code for Platinum Business Checking. Enter it when applying online to qualify for the tiered bonus." },
       { q: "What counts as a qualifying transaction?", a: "Debit card purchases, ACH transfers (both directions), and incoming wires. ATM withdrawals and internal transfers do not count." },
       { q: "Can I downgrade from Platinum after the bonus?", a: "Yes — U.S. Bank allows product changes. Most churners downgrade to Silver Business Checking after the bonus window ends to avoid the $30 monthly fee on Platinum." },
     ],
