@@ -94,6 +94,14 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
   const [justStartedIds, setJustStartedIds] = useState<Set<string>>(new Set())
   const [startError, setStartError] = useState<string | null>(null)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
+  // Flip state for the active-bonus cards — front = one next step, back = the
+  // full liquidity timeline + fees + actions (mirrors the Paycheck card).
+  const [flippedSavings, setFlippedSavings] = useState<Set<string>>(new Set())
+  const flipAnimatedSavingsRef = useRef<Set<string>>(new Set())
+  function toggleSavingsFlip(id: string) {
+    flipAnimatedSavingsRef.current.add(id)
+    setFlippedSavings(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+  }
   // Milestone state is now persisted on the savings_entries row itself
   // (account_opened_at / funded_at / bonus_posted_at), so a click writes
   // to the DB and survives across devices / cron / sessions. The earlier
@@ -841,6 +849,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 const bonusReceived = e.actual_value != null && e.actual_value > 0
                 const openedConfirmed = e.account_opened_at != null
                 const depositedConfirmed = e.funded_at != null
+                const svFlipped = flippedSavings.has(e.id)
+                const svFlipAnimate = flipAnimatedSavingsRef.current.has(e.id)
 
                 const catalogEntry = savingsBonusesCatalog.find(b => b.id === e.bonus_name)
                 const offerLink = catalogEntry?.source_links?.[0] ?? null
@@ -900,16 +910,27 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                           <div style={{ fontSize: 11, marginTop: 4, color: "#6b7280" }}>Add your HYSA APY in your profile to see the edge over just leaving the cash there</div>
                         )}
                       </div>
-                      <div style={{ textAlign: "right" }}>
+                      <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
                         <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(e.bonus_amount ?? 0)}</div>
                         {daysRemaining > 0 && <div style={{ fontSize: 11, color: "#f59e0b" }}>{daysRemaining} days remaining</div>}
+                        <button onClick={() => toggleSavingsFlip(e.id)}
+                          title={svFlipped ? "Back to the next step" : "See the full timeline & details"}
+                          style={{ fontSize: 11, fontWeight: 700, color: svFlipped ? DK.accentFg : "#9aa1ad", background: svFlipped ? "rgba(37,99,235,0.14)" : "#0f1219", border: `1px solid ${svFlipped ? "rgba(37,99,235,0.4)" : "#2a2e38"}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          {svFlipped ? "↩ Back" : "☰ Details"}
+                        </button>
                       </div>
                     </div>
+
+                    {/* Flip body — FRONT (one next step) OR BACK (full timeline +
+                        fees + actions). Keyed so it re-mounts + swings on each flip,
+                        mirroring the Paycheck card. */}
+                    <div key={svFlipped ? "sv-back" : "sv-front"} style={svFlipAnimate ? { animation: `${svFlipped ? "cardFlipBack" : "cardFlipFront"} .45s cubic-bezier(.2,.7,.2,1) both`, transformOrigin: "center" } : undefined}>
+                    {!svFlipped ? (<>
 
                     {/* ONE clear next step + XP bar (the prototype's ActiveFace
                         pattern) — replaces "read the checklist" with "here's the
                         single thing to do next." The full milestone detail lives
-                        in the timeline just below. */}
+                        on the back of the card. */}
                     {(() => {
                       let objective: string
                       let stepPct: number
@@ -941,6 +962,7 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         />
                       )
                     })()}
+                    </>) : (<>
 
                     {/* Liquidity timeline replaces the legacy checklist +
                         progress bar. The timeline component renders all six
@@ -1027,6 +1049,8 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                           Undo (didn&apos;t start)
                         </button>
                       )}
+                    </div>
+                    </>)}
                     </div>
                   </div>
                 )
