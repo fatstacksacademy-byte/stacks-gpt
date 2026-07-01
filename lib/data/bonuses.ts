@@ -273,11 +273,11 @@ export const bonuses: any[] = [
       "eligibility_notes": "Must not have had a BofA personal checking account in the past 12 months; one bonus per customer every 12 months."
     },
     "timeline": {
-      "bonus_posting_days_est": 150,
+      "bonus_posting_days_est": 90,
       "must_remain_open_days": 150
     },
     "source_links": [
-      "https://promotions.bankofamerica.com/en/offers/chooseyourchecking500tiered",
+      "https://promotions.bankofamerica.com/en/offers/chooseyourchecking100500",
       "https://www.doctorofcredit.com/bank-of-america-100-500-checking-bonus/",
       "https://www.doctorofcredit.com/knowledge-base/list-methods-banks-count-direct-deposits/"
     ],
@@ -514,7 +514,7 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "business": true,
     "bonus_amount": 400,
-    "cooldown_months": 3,
+    "cooldown_months": 24,
     "tiers": [
       { "bonus": 400, "min_balance": 2500 },
       { "bonus": 825, "min_balance": 25000 }
@@ -533,8 +533,8 @@ export const bonuses: any[] = [
       "other_requirements_text": "Open a new Initiate Business Checking account by 07/07/2026. $400 tier: deposit $2,500+ by day 30 and keep a $2,500 minimum daily collected balance through day 60. $825 tier: deposit $25,000+ by day 30 and keep a $25,000 balance through day 60. No direct deposit and no debit transactions required. Bonus posts within 30 days after the 60-day qualification period."
     },
     "fees": {
-      "monthly_fee": 15,
-      "monthly_fee_waiver_text": "Avoid the $15 monthly service fee with a $500 minimum daily balance.",
+      "monthly_fee": 10,
+      "monthly_fee_waiver_text": "Avoid the $10 monthly service fee with a $500 minimum daily balance.",
       "early_closure_fee": null
     },
     "screening": {
@@ -1022,7 +1022,7 @@ export const bonuses: any[] = [
       "https://www.mypoints.com/",
       "https://www.rakuten.com/"
     ],
-    "raw_excerpt": "Max tier is $300 for $5,000+ qualifying DD total in a 25-day window; bonus posts within 7 business days after evaluation.",
+    "raw_excerpt": "Max tier is $400 for $5,000+ qualifying DD total in a 25-day window ($50 for $1,000–4,999); bonus posts within 7 business days after evaluation.",
     "missing_fields": [
       "requirements.min_direct_deposit_per_deposit",
       "requirements.dd_count_required",
