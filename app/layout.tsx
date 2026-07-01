@@ -6,7 +6,6 @@ import AnalyticsGate from "./components/AnalyticsGate"
 import ToastHost from "./components/ToastHost"
 import PostHogProvider from "./components/PostHogProvider"
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar"
-import FloatingPushButton from "./components/FloatingPushButton"
 import InstallButton from "./components/InstallButton"
 import PWABackButton from "./components/PWABackButton"
 
@@ -118,7 +117,9 @@ export default function RootLayout({
         {children}
         <ToastHost />
         <ServiceWorkerRegistrar />
-        <FloatingPushButton />
+        {/* FloatingPushButton removed for now — its fixed bottom-right badge
+            ("Get alerts") overlapped the new mobile bottom nav / covered UI.
+            Push opt-in still lives inline on the dashboard (PushOptIn). */}
         <InstallButton />
         <PWABackButton />
       </body>

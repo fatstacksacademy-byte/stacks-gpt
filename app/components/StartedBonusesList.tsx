@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { DD_SOURCES, DD_EMPLOYER } from "../../lib/ddSources"
 import PortalStacksBadge from "./PortalStacksBadge"
@@ -12,11 +12,11 @@ import { DK, MODULE, URGENCY_DK, moduleGradient } from "../../lib/stacksTheme"
  * + deadline + urgency, so the dashboard reads like a prioritized
  * to-do.
  *
- * Cards are interactive: each carries an optional `advance` action that
- * moves the bonus to its next step (mark DD met → bonus posted → safe to
- * close, etc.) and a `checklist` so you can work the bonus right from the
- * dashboard without opening each module page. The card body expands to
- * show the full checklist + a link into the module for deeper edits.
+ * Each card is a mission-board flip card (same pattern as the Paycheck tab):
+ * the FRONT shows one clear next step + an XP bar + the primary action; the
+ * BACK ("☰ Details") flips to reveal the full checklist, the key dates, and a
+ * deep link into the module. This keeps the dashboard scannable — one action
+ * per card — while the granular detail is one tap away on the reverse.
  */
 
 export type AdvanceAction = {
@@ -56,7 +56,7 @@ export type StartedBonus = {
   /** One-tap action to reverse the most-recent completed step (the mission-board
    *  "Undo" the section pages carry). Null when there's nothing to walk back. */
   undo?: AdvanceAction | null
-  /** Ordered milestone checklist shown when the card is expanded. */
+  /** Ordered milestone checklist shown on the back of the card. */
   checklist?: ChecklistItem[]
 }
 
@@ -97,7 +97,7 @@ export default function StartedBonusesList({
   /** Called after an inline advance so the dashboard can reload its data. */
   onChanged?: () => void
 }) {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [flippedSet, setFlippedSet] = useState<Set<string>>(new Set())
   const [busyKey, setBusyKey] = useState<string | null>(null)
   // "Which DD worked?" prompt: which card is asking, plus the picker state.
   const [ddPromptKey, setDdPromptKey] = useState<string | null>(null)
@@ -105,8 +105,12 @@ export default function StartedBonusesList({
   const [ddSearchOpen, setDdSearchOpen] = useState(false)
   const [ddSearch, setDdSearch] = useState("")
 
+  // Tracks which cards have been flipped at least once, so the 3D flip-in
+  // animation only fires on a real user flip — never on first paint.
+  const flipAnimatedRef = useRef<Set<string>>(new Set())
   function toggle(key: string) {
-    setExpanded((prev) => {
+    flipAnimatedRef.current.add(key)
+    setFlippedSet((prev) => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
@@ -198,12 +202,13 @@ export default function StartedBonusesList({
         </div>
       </div>
       <div style={{ fontSize: 12, color: DK.textFaint, marginBottom: 10 }}>
-        Tap a bonus to see its checklist, then mark each step as you go.
+        Each card shows your one next step. Flip it for the full checklist &amp; details.
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="started-bonuses-list">
         {sorted.map((b) => {
           const key = keyOf(b)
-          const isOpen = expanded.has(key)
+          const isFlipped = flippedSet.has(key)
+          const flipAnimate = flipAnimatedRef.current.has(key)
           const isBusy = busyKey === key
           const color = MODULE_COLORS[b.module]
           const urgency = b.urgency ?? "none"
@@ -211,9 +216,8 @@ export default function StartedBonusesList({
           const days = daysSince(b.started_date)
           const daysLeft = daysUntil(b.deadline ?? null)
           const deadlineLabel = fmtDeadline(b.deadline)
-          // Gamified XP bar — the mission-board "one objective + progress toward
-          // the payout" feel, ported to the dashboard. Fill = milestones done vs
-          // total; the 💵 payout lights up as you close in on it.
+          const urgent = urgency === "urgent" || urgency === "overdue"
+          // XP bar — milestones done vs total; the 💵 payout lights up as you close in.
           const doneCount = b.checklist?.filter((c) => c.done).length ?? 0
           const totalCount = b.checklist?.length ?? 0
           const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
@@ -222,306 +226,243 @@ export default function StartedBonusesList({
           return (
             <div
               key={key}
+              className="sbl-card"
               style={{
                 background: DK.panel,
-                border: `1px solid ${urgency === "overdue" || urgency === "urgent" ? urg.border : DK.border}`,
-                borderLeft: urgency === "overdue" || urgency === "urgent"
-                  ? `4px solid ${urg.border}`
-                  : `1px solid ${DK.border}`,
+                border: `1px solid ${urgent ? urg.border : DK.border}`,
+                borderLeft: urgent ? `4px solid ${urg.border}` : `1px solid ${DK.border}`,
                 borderRadius: 12,
                 overflow: "hidden",
               }}
             >
-              {/* Header row — click to expand */}
-              <div
-                onClick={() => toggle(key)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                  padding: "14px 18px",
-                  cursor: "pointer",
-                }}
-              >
+              {/* Persistent header — module + name + amount + flip toggle.
+                  Stays put on both faces (mirrors the Paycheck card). */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px 0" }}>
                 <span style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: color.fg,
-                  background: color.bg,
-                  padding: "3px 9px",
-                  borderRadius: 99,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  flexShrink: 0,
+                  fontSize: 10, fontWeight: 700, color: color.fg, background: color.bg,
+                  padding: "3px 9px", borderRadius: 99, textTransform: "uppercase",
+                  letterSpacing: "0.05em", flexShrink: 0,
                 }}>
                   {color.label}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: DK.text,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: DK.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {b.name}
                   </div>
-                  {b.nextStep && (
-                    <div style={{ fontSize: 12, color: DK.textDim, marginTop: 4, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontWeight: 600 }}>Next:</span>
-                      <span>{b.nextStep}</span>
-                      {deadlineLabel && (
-                        <span style={{ color: DK.textMute }}>
-                          · by {deadlineLabel}
-                          {daysLeft != null && (
-                            <>
-                              {" "}({daysLeft < 0
-                                ? `${Math.abs(daysLeft)}d overdue`
-                                : daysLeft === 0
-                                ? "today"
-                                : `${daysLeft}d left`})
-                            </>
-                          )}
-                        </span>
-                      )}
-                      {urg.chipLabel && (
-                        <span style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          background: urg.chipBg,
-                          color: urg.chipFg,
-                          padding: "2px 7px",
-                          borderRadius: 99,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em",
-                        }}>
-                          {urg.chipLabel}
-                        </span>
-                      )}
-                      <PortalStacksBadge bonusId={b.bonus_id} />
+                  {days != null && (
+                    <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 2 }}>
+                      Started {days} day{days !== 1 ? "s" : ""} ago
                     </div>
                   )}
-                  <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 3, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    {days != null && (
-                      <span>Started {days} day{days !== 1 ? "s" : ""} ago</span>
-                    )}
-                    {b.expected_payout_date && (
-                      <span style={{ color: DK.textMute }}>
-                        Estimated payout {fmtDeadline(b.expected_payout_date)}
-                      </span>
-                    )}
-                    {b.safe_close_date && (
-                      <span style={{ color: DK.textMute }}>
-                        Estimated safe date {fmtDeadline(b.safe_close_date)}
-                      </span>
-                    )}
-                  </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
-                  <div className="sbl-amount" style={{
-                    fontSize: 16,
-                    fontWeight: 800,
-                    color: DK.text,
-                  }}>
-                    ${Math.round(b.amount).toLocaleString()}
-                  </div>
-                  {b.advance && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
-                      disabled={isBusy}
-                      className="sbl-advance"
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#fff",
-                        background: ddPromptKey === key ? DK.panel2 : moduleGradient(b.module),
-                        border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none",
-                        borderRadius: 8,
-                        padding: "7px 12px",
-                        cursor: isBusy ? "wait" : "pointer",
-                        opacity: isBusy ? 0.6 : 1,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
-                    </button>
-                  )}
+                <div className="sbl-amount" style={{ fontSize: 16, fontWeight: 800, color: DK.text, flexShrink: 0 }}>
+                  ${Math.round(b.amount).toLocaleString()}
                 </div>
-                <span style={{ fontSize: 16, color: DK.textFaint, flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>
-                  ›
-                </span>
+                <button
+                  onClick={() => toggle(key)}
+                  title={isFlipped ? "Back to the next step" : "See every step & the details"}
+                  style={{
+                    fontSize: 11, fontWeight: 700, flexShrink: 0,
+                    color: isFlipped ? DK.accentFg : DK.textMute,
+                    background: isFlipped ? "rgba(37,99,235,0.14)" : DK.panel2,
+                    border: `1px solid ${isFlipped ? "rgba(37,99,235,0.4)" : DK.border2}`,
+                    borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap",
+                    display: "flex", alignItems: "center", gap: 5,
+                  }}
+                >
+                  {isFlipped ? "↩ Back" : "☰ Details"}
+                </button>
               </div>
 
-              {/* Gamified XP bar — full-width so it reads clearly (and doesn't get
-                  squeezed on mobile). Fill = milestones done vs total; the 💵
-                  payout lights up as you close in. The mission-board NextStepBar,
-                  ported to the dashboard. */}
-              {totalCount > 0 && (
-                <div onClick={() => toggle(key)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 18px 14px", cursor: "pointer" }}>
-                  <div style={{ flex: 1, height: 8, borderRadius: 99, background: DK.panel2, border: `1px solid ${DK.border}`, overflow: "hidden", position: "relative" }}>
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: `${pct}%`,
-                        borderRadius: 99,
-                        background: xpReady ? `linear-gradient(90deg,${DK.green},${DK.gold})` : moduleGradient(b.module, 90),
-                        transition: "width .6s cubic-bezier(.2,.7,.2,1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div style={{ position: "absolute", top: 0, height: "100%", width: "22%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)", animation: "goalShimmer 2.2s linear infinite" }} />
-                    </div>
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? DK.gold : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>
-                    {pct}%
-                  </span>
-                  <span
-                    title="The payout"
-                    style={{
-                      fontSize: 14,
-                      flexShrink: 0,
-                      filter: cashNear ? "none" : "grayscale(0.85)",
-                      opacity: cashNear ? 1 : 0.45,
-                      transition: "filter .3s, opacity .3s",
-                    }}
-                  >
-                    💵
-                  </span>
-                </div>
-              )}
-
-              {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
-              {ddPromptKey === key && b.advance && (
-                <div style={{ borderTop: `1px solid ${DK.border}`, background: DK.panel2, padding: "12px 18px" }}>
-                  <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600, marginBottom: 8 }}>
-                    Which deposit triggered it? <span style={{ color: DK.textFaint, fontWeight: 400 }}>(optional — helps track what works)</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                    <button onClick={(e) => { e.stopPropagation(); setDdValue(ddValue === DD_EMPLOYER ? "" : DD_EMPLOYER); setDdSearchOpen(false); setDdSearch("") }}
-                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddValue === DD_EMPLOYER ? `1.5px solid ${DK.green}` : `1px solid ${DK.border2}`, background: ddValue === DD_EMPLOYER ? MODULE.savings.soft : DK.panel, color: ddValue === DD_EMPLOYER ? DK.greenFg : DK.textDim }}>
-                      {ddValue === DD_EMPLOYER ? "✓ " : ""}Employer / payroll
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDdSearchOpen(v => !v); setDdValue("") }}
-                      style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearchOpen ? MODULE.paycheck.soft : DK.panel, color: ddSearchOpen ? DK.accentFg : DK.textDim }}>
-                      Other source…
-                    </button>
-                    {!ddSearchOpen && ddValue && ddValue !== DD_EMPLOYER && (
-                      <span style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>via {ddValue}</span>
-                    )}
-                  </div>
-                  {ddSearchOpen && (
-                    <div style={{ marginTop: 8 }}>
-                      <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Search bank, brokerage, or app…"
-                        style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", background: DK.panel, color: DK.text, boxSizing: "border-box" }} />
-                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
-                        {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
-                          <button key={s} onClick={(e) => { e.stopPropagation(); setDdSearch(s) }}
-                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? MODULE.paycheck.soft : DK.panel, color: DK.textDim }}>
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                    <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, ddSearchOpen ? ddSearch.trim() : ddValue) }}
-                      disabled={isBusy}
-                      style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, background: moduleGradient(b.module), color: "#fff", border: "none", borderRadius: 8, cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1 }}>
-                      {isBusy ? "Saving…" : "Save & mark received"}
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, null) }}
-                      disabled={isBusy}
-                      style={{ padding: "8px 14px", fontSize: 12, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
-                      Skip
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded drawer — full checklist + link into the module */}
-              {isOpen && (
-                <div style={{ borderTop: `1px solid ${DK.border}`, background: DK.panel2, padding: "14px 18px 16px" }}>
-                  {b.checklist && b.checklist.length > 0 && (
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: DK.textFaint }}>Checklist</div>
-                      {/* Undo — reverse the last-marked step (same safety net the
-                          Paycheck & Savings pages carry). */}
-                      {b.undo && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); runUndo(key, b.undo!) }}
-                          disabled={isBusy}
-                          style={{ fontSize: 11, color: DK.textMute, background: "none", border: "none", cursor: isBusy ? "wait" : "pointer", padding: "2px 0" }}
-                        >
-                          {isBusy ? "…" : "↩ Undo last step"}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  {b.checklist && b.checklist.length > 0 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
-                      {b.checklist.map((item, idx) => (
-                        <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
-                          <span style={{
-                            width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                            border: item.done ? "none" : `2px solid ${item.current ? color.fg : DK.border2}`,
-                            background: item.done ? DK.green : "transparent",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}>
-                            {item.done && (
-                              <svg width="9" height="9" viewBox="0 0 14 14" fill="none">
-                                <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
+              {/* Flip body — FRONT (one next step) OR BACK (full checklist).
+                  Keyed so it re-mounts and does the 3D rotateY swing on each flip. */}
+              <div
+                key={isFlipped ? "back" : "front"}
+                style={flipAnimate ? {
+                  animation: `${isFlipped ? "sblFlipBack" : "sblFlipFront"} .45s cubic-bezier(.2,.7,.2,1) both`,
+                  transformOrigin: "center",
+                } : undefined}
+              >
+                {!isFlipped ? (
+                  <>
+                    {/* FRONT: the single next step + XP bar + primary action */}
+                    {b.nextStep && (
+                      <div style={{ fontSize: 12.5, color: DK.textDim, margin: "10px 18px 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        <span style={{ fontWeight: 700 }}>🎯 {b.nextStep}</span>
+                        {deadlineLabel && (
+                          <span style={{ color: urgent ? DK.amber : DK.textMute, fontWeight: urgent ? 700 : 400 }}>
+                            · by {deadlineLabel}
+                            {daysLeft != null && (
+                              <>
+                                {" "}({daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "today" : `${daysLeft}d left`})
+                              </>
                             )}
                           </span>
-                          <span style={{
-                            fontSize: 13,
-                            color: item.done ? DK.textFaint : item.current ? DK.text : DK.textMute,
-                            fontWeight: item.current ? 600 : 400,
-                            textDecoration: item.done ? "line-through" : "none",
-                          }}>
-                            {item.label}
+                        )}
+                        {urg.chipLabel && (
+                          <span style={{ fontSize: 10, fontWeight: 700, background: urg.chipBg, color: urg.chipFg, padding: "2px 7px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                            {urg.chipLabel}
                           </span>
+                        )}
+                        <PortalStacksBadge bonusId={b.bonus_id} />
+                      </div>
+                    )}
+
+                    {totalCount > 0 && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 18px 0" }}>
+                        <div style={{ flex: 1, height: 8, borderRadius: 99, background: DK.panel2, border: `1px solid ${DK.border}`, overflow: "hidden", position: "relative" }}>
+                          <div style={{ position: "absolute", inset: 0, width: `${pct}%`, borderRadius: 99, background: xpReady ? `linear-gradient(90deg,${DK.green},${DK.gold})` : moduleGradient(b.module, 90), transition: "width .6s cubic-bezier(.2,.7,.2,1)", overflow: "hidden" }}>
+                            <div style={{ position: "absolute", top: 0, height: "100%", width: "22%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)", animation: "goalShimmer 2.2s linear infinite" }} />
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? DK.gold : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>{pct}%</span>
+                        <span title="The payout" style={{ fontSize: 14, flexShrink: 0, filter: cashNear ? "none" : "grayscale(0.85)", opacity: cashNear ? 1 : 0.45, transition: "filter .3s, opacity .3s" }}>💵</span>
+                      </div>
+                    )}
+
+                    {/* Primary action lives on the front (with the DD-source prompt below it) */}
                     {b.advance && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
-                        disabled={isBusy}
+                      <div style={{ padding: "12px 18px 16px" }}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); clickAdvance(key, b.advance!) }}
+                          disabled={isBusy}
+                          className="sbl-advance"
+                          style={{
+                            width: "100%", fontSize: 13, fontWeight: 700, color: "#fff",
+                            background: ddPromptKey === key ? DK.panel2 : moduleGradient(b.module),
+                            border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none",
+                            borderRadius: 10, padding: "11px 16px", cursor: isBusy ? "wait" : "pointer",
+                            opacity: isBusy ? 0.6 : 1,
+                          }}
+                        >
+                          {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
+                    {ddPromptKey === key && b.advance && (
+                      <div style={{ borderTop: `1px solid ${DK.border}`, background: DK.panel2, padding: "12px 18px" }}>
+                        <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600, marginBottom: 8 }}>
+                          Which deposit triggered it? <span style={{ color: DK.textFaint, fontWeight: 400 }}>(optional — helps track what works)</span>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                          <button onClick={(e) => { e.stopPropagation(); setDdValue(ddValue === DD_EMPLOYER ? "" : DD_EMPLOYER); setDdSearchOpen(false); setDdSearch("") }}
+                            style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddValue === DD_EMPLOYER ? `1.5px solid ${DK.green}` : `1px solid ${DK.border2}`, background: ddValue === DD_EMPLOYER ? MODULE.savings.soft : DK.panel, color: ddValue === DD_EMPLOYER ? DK.greenFg : DK.textDim }}>
+                            {ddValue === DD_EMPLOYER ? "✓ " : ""}Employer / payroll
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); setDdSearchOpen(v => !v); setDdValue("") }}
+                            style={{ padding: "7px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearchOpen ? MODULE.paycheck.soft : DK.panel, color: ddSearchOpen ? DK.accentFg : DK.textDim }}>
+                            Other source…
+                          </button>
+                          {!ddSearchOpen && ddValue && ddValue !== DD_EMPLOYER && (
+                            <span style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>via {ddValue}</span>
+                          )}
+                        </div>
+                        {ddSearchOpen && (
+                          <div style={{ marginTop: 8 }}>
+                            <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Search bank, brokerage, or app…"
+                              style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", background: DK.panel, color: DK.text, boxSizing: "border-box" }} />
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                              {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
+                                <button key={s} onClick={(e) => { e.stopPropagation(); setDdSearch(s) }}
+                                  style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? MODULE.paycheck.soft : DK.panel, color: DK.textDim }}>
+                                  {s}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                          <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, ddSearchOpen ? ddSearch.trim() : ddValue) }}
+                            disabled={isBusy}
+                            style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, background: moduleGradient(b.module), color: "#fff", border: "none", borderRadius: 8, cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1 }}>
+                            {isBusy ? "Saving…" : "Save & mark received"}
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); runAdvance(key, b.advance!, null) }}
+                            disabled={isBusy}
+                            style={{ padding: "8px 14px", fontSize: 12, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
+                            Skip
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* BACK: key dates + full checklist + deep link into the module */}
+                    {(b.expected_payout_date || b.safe_close_date) && (
+                      <div style={{ fontSize: 11, color: DK.textMute, margin: "10px 18px 0", display: "flex", gap: 14, flexWrap: "wrap" }}>
+                        {b.expected_payout_date && <span>Estimated payout {fmtDeadline(b.expected_payout_date)}</span>}
+                        {b.safe_close_date && <span>Safe to close {fmtDeadline(b.safe_close_date)}</span>}
+                      </div>
+                    )}
+                    <div style={{ background: DK.panel2, borderTop: `1px solid ${DK.border}`, marginTop: 12, padding: "14px 18px 16px" }}>
+                      {b.checklist && b.checklist.length > 0 && (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: DK.textFaint }}>Checklist</div>
+                          {b.undo && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); runUndo(key, b.undo!) }}
+                              disabled={isBusy}
+                              style={{ fontSize: 11, color: DK.textMute, background: "none", border: "none", cursor: isBusy ? "wait" : "pointer", padding: "2px 0" }}
+                            >
+                              {isBusy ? "…" : "↩ Undo last step"}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {b.checklist && b.checklist.length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
+                          {b.checklist.map((item, idx) => (
+                            <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
+                              <span style={{
+                                width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                                border: item.done ? "none" : `2px solid ${item.current ? color.fg : DK.border2}`,
+                                background: item.done ? DK.green : "transparent",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                              }}>
+                                {item.done && (
+                                  <svg width="9" height="9" viewBox="0 0 14 14" fill="none">
+                                    <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                )}
+                              </span>
+                              <span style={{
+                                fontSize: 13,
+                                color: item.done ? DK.textFaint : item.current ? DK.text : DK.textMute,
+                                fontWeight: item.current ? 600 : 400,
+                                textDecoration: item.done ? "line-through" : "none",
+                              }}>
+                                {item.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <a
+                        href={b.href}
+                        onClick={(e) => e.stopPropagation()}
                         style={{
-                          fontSize: 13, fontWeight: 700, color: "#fff", background: ddPromptKey === key ? DK.panel : moduleGradient(b.module),
-                          border: ddPromptKey === key ? `1px solid ${DK.border2}` : "none", borderRadius: 8, padding: "9px 16px",
-                          cursor: isBusy ? "wait" : "pointer", opacity: isBusy ? 0.6 : 1,
+                          display: "inline-block", fontSize: 13, fontWeight: 600, color: color.fg,
+                          padding: "9px 14px", border: `1px solid ${color.fg}55`, borderRadius: 8,
+                          textDecoration: "none",
                         }}
                       >
-                        {isBusy ? "Saving…" : ddPromptKey === key ? "Cancel" : b.advance.label}
-                      </button>
-                    )}
-                    <a
-                      href={b.href}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{
-                        fontSize: 13, fontWeight: 600, color: color.fg,
-                        padding: "9px 14px", border: `1px solid ${color.fg}55`, borderRadius: 8,
-                        textDecoration: "none",
-                      }}
-                    >
-                      Open in {color.label} →
-                    </a>
-                  </div>
-                </div>
-              )}
+                        Open in {color.label} →
+                      </a>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )
         })}
       </div>
       <style>{`
+        @keyframes sblFlipFront { 0% { transform: perspective(1000px) rotateY(-90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1000px) rotateY(0deg); opacity: 1 } }
+        @keyframes sblFlipBack  { 0% { transform: perspective(1000px) rotateY(90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1000px) rotateY(0deg); opacity: 1 } }
         @media (max-width: 380px) {
-          .started-bonuses-list > div > div { padding: 12px 14px !important; gap: 10px !important; }
           .started-bonuses-list .sbl-amount { font-size: 15px !important; }
         }
       `}</style>
