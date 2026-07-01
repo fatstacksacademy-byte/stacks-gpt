@@ -7,6 +7,9 @@ export type BonusDeposit = {
   bonus_id: string
   amount: number
   deposit_date: string
+  /** Where this deposit came from — "Employer / payroll" or an account name.
+   *  Requires migration 040; null on legacy rows and when the user skips it. */
+  source?: string | null
   created_at: string
 }
 
@@ -28,19 +31,31 @@ export async function addDeposit(
   userId: string,
   bonusId: string,
   amount: number,
-  depositDate: string
+  depositDate: string,
+  source?: string | null
 ): Promise<BonusDeposit | null> {
   const supabase = createClient()
-  const { data, error } = await supabase
-    .from("bonus_deposits")
-    .insert({ user_id: userId, bonus_id: bonusId, amount, deposit_date: depositDate })
-    .select()
-    .single()
-  if (error) {
-    reportError("Could not add deposit", error)
-    return null
+  const base = { user_id: userId, bonus_id: bonusId, amount, deposit_date: depositDate }
+  const cleanedSource = source && source.trim() ? source.trim() : null
+  // source lives behind migration 040 — try the insert WITH it first and fall
+  // back to the same insert without it if the column isn't present yet, so the
+  // action never breaks when code ships ahead of the migration.
+  const attempts = cleanedSource
+    ? [{ ...base, source: cleanedSource }, base]
+    : [base]
+  for (let i = 0; i < attempts.length; i++) {
+    const { data, error } = await supabase
+      .from("bonus_deposits")
+      .insert(attempts[i])
+      .select()
+      .single()
+    if (!error) return data as BonusDeposit
+    if (i === attempts.length - 1) {
+      reportError("Could not add deposit", error)
+      return null
+    }
   }
-  return data as BonusDeposit
+  return null
 }
 
 export async function deleteDeposit(depositId: string): Promise<void> {

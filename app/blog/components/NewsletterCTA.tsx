@@ -36,6 +36,11 @@ export default function NewsletterCTA() {
       <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
         <input
           type="email"
+          name="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="you@email.com"
           required
           value={email}

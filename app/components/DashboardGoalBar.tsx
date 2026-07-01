@@ -4,10 +4,29 @@ import InfoTip from "./InfoTip"
 import type { GlossaryKey } from "../../lib/glossary"
 
 /**
- * Slim 3-number summary that sits above the dashboard view tabs.
- * Replaces the giant "Projected 12 Month Stack" hero — the projection
- * itself moves behind a tab; this bar keeps the numbers glanceable.
+ * Dashboard hero stat strip — the 3-number summary that sits under the
+ * FatStackMeter and above the view tabs.
+ *
+ * Styled to MATCH the dark 3-up stat cards the module sections (Paycheck /
+ * Savings / Spending) render under their own FatStackMeter, so the dashboard's
+ * hero reads as the same card treatment across the whole app. The stats stay
+ * dashboard-specific (the 3-yr Stack potential projection lives here — the
+ * sections point back to the Dashboard for it), but the shell is identical:
+ * dark panels, hairline borders, gold/blue value colors.
  */
+
+// Mirrors the RoadmapClient "DK" tokens the section stat cards use so the two
+// heros are pixel-consistent.
+const C = {
+  panel: "#161922",
+  border: "#23262e",
+  text: "#ffffff",
+  textFaint: "#6b7280",
+  accentFg: "#60a5fa", // blue — "in progress"
+  greenFg: "#34d399",  // green — the marquee projection
+  gold: "#f7d774",     // gold — "lifetime earned"
+}
+
 export default function DashboardGoalBar({
   projection36mo,
   inProgress,
@@ -23,66 +42,71 @@ export default function DashboardGoalBar({
 }) {
   return (
     <div
-      style={{
-        background: "linear-gradient(135deg, #0d7c5f 0%, #0a5c47 100%)",
-        borderRadius: 12,
-        padding: "16px 22px",
-        color: "#fff",
-        marginBottom: 14,
-        display: "flex",
-        gap: 12,
-        flexWrap: "wrap",
-        alignItems: "stretch",
-        boxShadow: "0 3px 14px rgba(13, 124, 95, 0.16)",
-      }}
+      style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}
       className="goal-bar"
     >
-      <Stat label="Stack potential · 3 yr" value={projection36mo} emphasis locked={potentialLocked} tipTerm="stackPotential" />
-      <Divider />
-      <Stat label="In progress" value={inProgress} />
-      <Divider />
-      <Stat label="Lifetime earned" value={lifetimeEarned} />
-      <style>{`
-        @media (max-width: 520px) {
-          .goal-bar { padding: 14px 16px !important; gap: 8px !important; }
-          .goal-bar .goal-divider { display: none !important; }
-        }
-      `}</style>
+      <StatCard
+        label="Stack potential"
+        value={projection36mo}
+        color={C.greenFg}
+        locked={potentialLocked}
+        tipTerm="stackPotential"
+        sub="3-year projection"
+      />
+      <StatCard label="In progress" value={inProgress} color={C.accentFg} />
+      <StatCard label="Lifetime earned" value={lifetimeEarned} color={C.gold} />
     </div>
   )
 }
 
-function Stat({ label, value, emphasis = false, locked = false, tipTerm }: { label: string; value: number; emphasis?: boolean; locked?: boolean; tipTerm?: GlossaryKey }) {
+function StatCard({
+  label,
+  value,
+  color,
+  locked = false,
+  tipTerm,
+  sub,
+}: {
+  label: string
+  value: number
+  color: string
+  locked?: boolean
+  tipTerm?: GlossaryKey
+  sub?: string
+}) {
   return (
-    <div style={{ flex: 1, minWidth: 110 }}>
-      <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", opacity: 0.75, display: "flex", alignItems: "center", gap: 4 }}>
+    <div
+      style={{
+        background: C.panel,
+        border: `1px solid ${C.border}`,
+        borderRadius: 10,
+        padding: "14px 20px",
+        flex: 1,
+        minWidth: 120,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          color: C.textFaint,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+        }}
+      >
         {label}
         {tipTerm ? <InfoTip term={tipTerm} size={12} /> : null}
       </div>
-      <div
-        style={{
-          fontSize: emphasis ? 26 : 20,
-          fontWeight: 800,
-          marginTop: 2,
-          letterSpacing: "-0.01em",
-          lineHeight: 1.1,
-        }}
-      >
+      <div style={{ fontSize: 22, fontWeight: 800, color: locked ? C.text : color, marginTop: 2, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
         {locked ? (
-          <span style={{ fontSize: emphasis ? 18 : 16, opacity: 0.92 }}>🔒 Pro</span>
+          <span style={{ fontSize: 18 }}>🔒 Pro</span>
         ) : (
           `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
         )}
       </div>
+      {sub ? <div style={{ fontSize: 11, color: C.textFaint, marginTop: 3 }}>{sub}</div> : null}
     </div>
-  )
-}
-
-function Divider() {
-  return (
-    <div
-      className="goal-divider"
-      style={{ width: 1, background: "rgba(255,255,255,0.18)", alignSelf: "stretch" }}
-    />
   )
 }

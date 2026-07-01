@@ -133,7 +133,7 @@ function LoginInner() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
               <label style={labelStyle}>Email</label>
-              <input type="email" placeholder="you@email.com" required value={email}
+              <input type="email" name="email" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="you@email.com" required value={email}
                 onChange={e => setEmail(e.target.value)} style={inputStyle} />
             </div>
 
@@ -146,7 +146,7 @@ function LoginInner() {
                     Forgot password?
                   </button>
                 </div>
-                <input type="password" placeholder="••••••••" required minLength={6} value={password}
+                <input type="password" name="password" autoComplete="current-password" placeholder="••••••••" required minLength={6} value={password}
                   onChange={e => setPassword(e.target.value)} style={inputStyle} />
               </div>
             )}

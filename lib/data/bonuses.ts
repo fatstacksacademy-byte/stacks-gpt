@@ -509,6 +509,58 @@ export const bonuses: any[] = [
     ]
   },
   {
+    "id": "wells-fargo-initiate-business-400-2026",
+    "bank_name": "Wells Fargo",
+    "product_type": "checking",
+    "business": true,
+    "bonus_amount": 400,
+    "cooldown_months": 3,
+    "tiers": [
+      { "bonus": 400, "min_balance": 2500 },
+      { "bonus": 825, "min_balance": 25000 }
+    ],
+    "requirements": {
+      "direct_deposit_required": false,
+      "min_direct_deposit_total": null,
+      "min_direct_deposit_per_deposit": null,
+      "dd_count_required": null,
+      "deposit_window_days": 60,
+      "holding_period_days": 60,
+      "min_opening_deposit": 25,
+      "min_balance": 2500,
+      "debit_transactions_required": null,
+      "billpay_required": null,
+      "other_requirements_text": "Open a new Initiate Business Checking account by 07/07/2026. $400 tier: deposit $2,500+ by day 30 and keep a $2,500 minimum daily collected balance through day 60. $825 tier: deposit $25,000+ by day 30 and keep a $25,000 balance through day 60. No direct deposit and no debit transactions required. Bonus posts within 30 days after the 60-day qualification period."
+    },
+    "fees": {
+      "monthly_fee": 15,
+      "monthly_fee_waiver_text": "Avoid the $15 monthly service fee with a $500 minimum daily balance.",
+      "early_closure_fee": null
+    },
+    "screening": {
+      "chex_sensitive": "low",
+      "hard_pull": false,
+      "soft_pull": true,
+      "screening_notes": "Standard business verification; no personal hard pull reported."
+    },
+    "eligibility": {
+      "state_restricted": false,
+      "states_allowed": ["Nationwide (U.S.)"],
+      "states_excluded": [],
+      "lifetime_language": false,
+      "eligibility_notes": "New business checking customers only. A business is not eligible if it currently owns a Wells Fargo business checking account or has closed one in the past 90 days. Sole proprietors qualify — no LLC required."
+    },
+    "timeline": {
+      "bonus_posting_days_est": 90,
+      "must_remain_open_days": 90
+    },
+    "source_links": [
+      "https://accountoffers.wellsfargo.com/businesscheckinga/",
+      "https://www.doctorofcredit.com/wells-fargo-400-825-business-checking-bonus/"
+    ],
+    "raw_excerpt": "Wells Fargo Initiate Business Checking: $400 for a $2,500 balance (or $825 for $25,000) maintained from day 30 to day 60. No direct deposit required. Expires 07/07/2026."
+  },
+  {
     "id": "bmo-400-checking-2026",
     "bank_name": "BMO",
     "product_type": "checking",

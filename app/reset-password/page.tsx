@@ -177,6 +177,8 @@ export default function ResetPasswordPage() {
               <label className="text-sm font-medium text-gray-700">New Password</label>
               <input
                 type="password"
+                name="new-password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 required
                 minLength={6}
@@ -190,6 +192,8 @@ export default function ResetPasswordPage() {
               <label className="text-sm font-medium text-gray-700">Confirm Password</label>
               <input
                 type="password"
+                name="confirm-password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 required
                 minLength={6}

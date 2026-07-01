@@ -159,8 +159,8 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation, tra
   ]
 
   return (
-    <div style={{ background: "#fafafa", border: "1px solid #f0f0f0", borderRadius: 12, padding: "16px 18px", marginTop: 14 }}>
-      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, fontWeight: 700 }}>
+    <div style={{ background: "#12151c", border: "1px solid #23262e", borderRadius: 12, padding: "16px 18px", marginTop: 14 }}>
+      <div style={{ fontSize: 11, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, fontWeight: 700 }}>
         Liquidity timeline
       </div>
 
@@ -170,13 +170,13 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation, tra
           const isLast = i === steps.length - 1
           const isClickable = step.clickable
           const color =
-            step.status === "done" ? "#0d7c5f" :
-            step.status === "current" ? "#2563eb" :
-            "#d4d4d4"
+            step.status === "done" ? "#34d399" :
+            step.status === "current" ? "#60a5fa" :
+            "#2a2e38"
           const labelColor =
-            step.status === "done" ? "#111" :
-            step.status === "current" ? "#111" :
-            "#bbb"
+            step.status === "done" ? "#ffffff" :
+            step.status === "current" ? "#ffffff" :
+            "#6b7280"
 
           return (
             <div
@@ -199,7 +199,7 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation, tra
                     left: 22,
                     right: -8,
                     height: 2,
-                    background: step.status === "done" && steps[i + 1]?.status !== "future" ? "#0d7c5f" : "#e0e0e0",
+                    background: step.status === "done" && steps[i + 1]?.status !== "future" ? "#34d399" : "#2a2e38",
                   }}
                 />
               )}
@@ -223,7 +223,7 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation, tra
                   width: 22,
                   height: 22,
                   borderRadius: 11,
-                  background: step.status === "done" ? "#0d7c5f" : "#fff",
+                  background: step.status === "done" ? "#0d9668" : "#0f1219",
                   border: `2px solid ${color}`,
                   display: "flex",
                   alignItems: "center",
@@ -241,12 +241,12 @@ export default function LiquidityTimeline({ entry, onToggle, recommendation, tra
                   {step.label}
                 </div>
                 {step.date && (
-                  <div style={{ fontSize: 10, color: "#999" }}>
+                  <div style={{ fontSize: 10, color: "#9aa1ad" }}>
                     {step.date}
                   </div>
                 )}
                 {step.detail && (
-                  <div style={{ fontSize: 10, color: step.status === "current" ? "#2563eb" : "#999", lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 10, color: step.status === "current" ? "#60a5fa" : "#9aa1ad", lineHeight: 1.4 }}>
                     {step.detail}
                   </div>
                 )}

@@ -395,7 +395,7 @@ function AccountsPanel({ accounts, userId, onChange }: {
       </div>
 
       {adding && (
-        <div style={{ background: "#fafafa", borderRadius: 10, padding: "12px 14px", marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr auto", gap: 8, alignItems: "center" }}>
+        <div style={{ background: "#fafafa", borderRadius: 10, padding: "12px 14px", marginBottom: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8, alignItems: "center" }}>
           <input placeholder="Institution" value={form.institution} onChange={e => setForm({ ...form, institution: e.target.value })} style={inputStyle} />
           <select value={form.account_type} onChange={e => setForm({ ...form, account_type: e.target.value as OwnedAccountType })} style={inputStyle}>
             {OWNED_ACCOUNT_TYPES.map(t => <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>)}

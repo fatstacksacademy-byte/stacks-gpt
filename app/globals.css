@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Gamified goal progress bar (GoalProgressBar) ──
+   Shared by the Paycheck, Spending, and Savings trackers. */
+/* Light sweep that travels across the FILLED region only (the strip is
+   clipped to the fill div), so it scales with progress. */
+@keyframes goalShimmer { 0% { left: -30% } 100% { left: 100% } }
+/* Gold celebratory flash on the meter when a deposit/purchase lands. */
+@keyframes goalMeterFlash {
+  0%, 100% { box-shadow: inset 0 0 0 1px #e3e6ea; }
+  30% { box-shadow: inset 0 0 0 1px #f0c64a, 0 0 16px rgba(240,198,74,0.7); }
+}
+/* "+$amount" coin bubble floating up off the bar. */
+@keyframes goalFloatUp {
+  0% { transform: translate(-50%, 6px) scale(0.8); opacity: 0; }
+  20% { transform: translate(-50%, 0) scale(1.12); opacity: 1; }
+  72% { opacity: 1; }
+  100% { transform: translate(-50%, -34px) scale(1); opacity: 0; }
+}
+/* Soft pulsing glow on the cash-stack finish line once the goal is hit. */
+@keyframes goalPulse { 0%, 100% { box-shadow: 0 0 8px rgba(212,160,23,0.45); } 50% { box-shadow: 0 0 18px rgba(212,160,23,0.95); } }

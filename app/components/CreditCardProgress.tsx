@@ -7,6 +7,7 @@ import {
   deleteDeposit,
   type BonusDeposit,
 } from "../../lib/deposits"
+import GoalProgressBar from "./GoalProgressBar"
 
 /**
  * Spend-progress tracker for a single credit card bonus. Reuses the existing
@@ -79,15 +80,15 @@ export default function CreditCardProgress({
       style={{
         marginTop: 12,
         paddingTop: 12,
-        borderTop: "1px dashed #eee",
+        borderTop: "1px dashed #23262e",
       }}
     >
       {/* ── Progress bar ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <div style={{ fontSize: 11, color: "#666", fontWeight: 600 }}>
+        <div style={{ fontSize: 11, color: "#9aa1ad", fontWeight: 600 }}>
           Spend progress
           {spendRequirement && (
-            <span style={{ fontWeight: 400, color: "#888", marginLeft: 6 }}>
+            <span style={{ fontWeight: 400, color: "#9aa1ad", marginLeft: 6 }}>
               ${spentToDate.toLocaleString()} of ${spendRequirement.toLocaleString()}
             </span>
           )}
@@ -96,7 +97,7 @@ export default function CreditCardProgress({
           <div
             style={{
               fontSize: 10,
-              color: daysRemaining < 14 ? "#b45309" : daysRemaining < 30 ? "#555" : "#888",
+              color: daysRemaining < 14 ? "#f59e0b" : daysRemaining < 30 ? "#9aa1ad" : "#9aa1ad",
               fontWeight: daysRemaining < 14 ? 600 : 400,
             }}
           >
@@ -104,30 +105,23 @@ export default function CreditCardProgress({
           </div>
         )}
       </div>
-      <div
-        style={{
-          height: 6,
-          background: "#f0f0f0",
-          borderRadius: 3,
-          overflow: "hidden",
-          marginBottom: 8,
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            width: `${pct}%`,
-            background: pct >= 100 ? "#0d7c5f" : "#2563eb",
-            transition: "width 0.2s",
-          }}
-        />
-      </div>
+      {spendRequirement && spendRequirement > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <GoalProgressBar
+            current={spentToDate}
+            target={spendRequirement}
+            accent="#2563eb"
+            label="of spend"
+            dark
+          />
+        </div>
+      )}
 
       {pct >= 100 && spendRequirement && (
         <div
           style={{
-            background: "#e6f5f0",
-            color: "#0d7c5f",
+            background: "rgba(13,150,104,0.12)",
+            color: "#34d399",
             fontSize: 12,
             padding: "6px 10px",
             borderRadius: 6,
@@ -140,7 +134,7 @@ export default function CreditCardProgress({
       )}
 
       {remaining > 0 && daysRemaining !== null && daysRemaining > 0 && spendRequirement && (
-        <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: "#9aa1ad", marginBottom: 8 }}>
           ${remaining.toLocaleString()} remaining · ~$
           {Math.ceil(remaining / Math.max(1, daysRemaining)).toLocaleString()}/day to hit it in time
         </div>
@@ -151,7 +145,7 @@ export default function CreditCardProgress({
         onClick={() => setExpanded(!expanded)}
         style={{
           fontSize: 11,
-          color: "#0d7c5f",
+          color: "#34d399",
           background: "none",
           border: "none",
           padding: 0,
@@ -161,7 +155,7 @@ export default function CreditCardProgress({
       >
         {expanded ? "− Hide purchase log" : "+ Log a purchase"}
         {!expanded && purchases.length > 0 && (
-          <span style={{ color: "#bbb", marginLeft: 6, fontWeight: 400 }}>
+          <span style={{ color: "#6b7280", marginLeft: 6, fontWeight: 400 }}>
             ({purchases.length})
           </span>
         )}
@@ -178,7 +172,7 @@ export default function CreditCardProgress({
                   top: "50%",
                   transform: "translateY(-50%)",
                   fontSize: 12,
-                  color: "#999",
+                  color: "#9aa1ad",
                 }}
               >
                 $
@@ -192,7 +186,9 @@ export default function CreditCardProgress({
                   width: "100%",
                   padding: "6px 8px 6px 20px",
                   fontSize: 12,
-                  border: "1px solid #e2e2e2",
+                  background: "#0f1219",
+                  color: "#fff",
+                  border: "1px solid #2a2e38",
                   borderRadius: 6,
                   boxSizing: "border-box",
                 }}
@@ -206,7 +202,10 @@ export default function CreditCardProgress({
               style={{
                 padding: "6px 8px",
                 fontSize: 12,
-                border: "1px solid #e2e2e2",
+                background: "#0f1219",
+                color: "#fff",
+                colorScheme: "dark",
+                border: "1px solid #2a2e38",
                 borderRadius: 6,
                 flex: "0 0 auto",
               }}
@@ -217,7 +216,7 @@ export default function CreditCardProgress({
               style={{
                 fontSize: 11,
                 padding: "6px 10px",
-                background: "#0d7c5f",
+                background: "#0d9668",
                 color: "#fff",
                 border: "none",
                 borderRadius: 6,
@@ -231,9 +230,9 @@ export default function CreditCardProgress({
           </div>
 
           {loading ? (
-            <div style={{ fontSize: 11, color: "#bbb" }}>Loading…</div>
+            <div style={{ fontSize: 11, color: "#6b7280" }}>Loading…</div>
           ) : purchases.length === 0 ? (
-            <div style={{ fontSize: 11, color: "#bbb" }}>No purchases logged yet.</div>
+            <div style={{ fontSize: 11, color: "#6b7280" }}>No purchases logged yet.</div>
           ) : (
             <div style={{ maxHeight: 140, overflowY: "auto" }}>
               {purchases
@@ -248,19 +247,19 @@ export default function CreditCardProgress({
                       alignItems: "center",
                       fontSize: 11,
                       padding: "4px 0",
-                      borderBottom: "1px solid #f5f5f5",
+                      borderBottom: "1px solid #23262e",
                     }}
                   >
-                    <div style={{ color: "#555" }}>{p.deposit_date}</div>
+                    <div style={{ color: "#9aa1ad" }}>{p.deposit_date}</div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <div style={{ color: "#111", fontWeight: 600 }}>
+                      <div style={{ color: "#ffffff", fontWeight: 600 }}>
                         ${p.amount.toLocaleString()}
                       </div>
                       <button
                         onClick={() => handleDelete(p.id)}
                         style={{
                           fontSize: 10,
-                          color: "#bbb",
+                          color: "#6b7280",
                           background: "none",
                           border: "none",
                           cursor: "pointer",

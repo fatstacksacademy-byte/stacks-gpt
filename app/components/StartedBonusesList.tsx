@@ -52,6 +52,9 @@ export type StartedBonus = {
   safe_close_date?: string | null
   /** One-tap action to advance this bonus to its next step. */
   advance?: AdvanceAction | null
+  /** One-tap action to reverse the most-recent completed step (the mission-board
+   *  "Undo" the section pages carry). Null when there's nothing to walk back. */
+  undo?: AdvanceAction | null
   /** Ordered milestone checklist shown when the card is expanded. */
   checklist?: ChecklistItem[]
 }
@@ -139,6 +142,19 @@ export default function StartedBonusesList({
     }
   }
 
+  // Walk the bonus back one step — the inverse of `advance`. Same guard/reload
+  // path so the dashboard stays in sync after an accidental "Mark …".
+  async function runUndo(key: string, undo: AdvanceAction) {
+    if (busyKey) return
+    setBusyKey(key)
+    try {
+      await undo.run()
+      onChanged?.()
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   if (bonuses.length === 0) {
     return (
       <div style={{
@@ -195,6 +211,14 @@ export default function StartedBonusesList({
           const days = daysSince(b.started_date)
           const daysLeft = daysUntil(b.deadline ?? null)
           const deadlineLabel = fmtDeadline(b.deadline)
+          // Gamified XP bar — the mission-board "one objective + progress toward
+          // the payout" feel, ported to the dashboard. Fill = milestones done vs
+          // total; the 💵 payout lights up as you close in on it.
+          const doneCount = b.checklist?.filter((c) => c.done).length ?? 0
+          const totalCount = b.checklist?.length ?? 0
+          const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
+          const xpReady = pct >= 100
+          const cashNear = pct >= 70
           return (
             <div
               key={key}
@@ -329,6 +353,45 @@ export default function StartedBonusesList({
                 </span>
               </div>
 
+              {/* Gamified XP bar — full-width so it reads clearly (and doesn't get
+                  squeezed on mobile). Fill = milestones done vs total; the 💵
+                  payout lights up as you close in. The mission-board NextStepBar,
+                  ported to the dashboard. */}
+              {totalCount > 0 && (
+                <div onClick={() => toggle(key)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 18px 14px", cursor: "pointer" }}>
+                  <div style={{ flex: 1, height: 8, borderRadius: 99, background: "#eef0f2", overflow: "hidden", position: "relative" }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: `${pct}%`,
+                        borderRadius: 99,
+                        background: xpReady ? "linear-gradient(90deg,#0d7c5f,#f7d774)" : color.fg,
+                        transition: "width .6s cubic-bezier(.2,.7,.2,1)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div style={{ position: "absolute", top: 0, height: "100%", width: "22%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)", animation: "goalShimmer 2.2s linear infinite" }} />
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? "#0d7c5f" : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>
+                    {pct}%
+                  </span>
+                  <span
+                    title="The payout"
+                    style={{
+                      fontSize: 14,
+                      flexShrink: 0,
+                      filter: cashNear ? "none" : "grayscale(0.85)",
+                      opacity: cashNear ? 1 : 0.45,
+                      transition: "filter .3s, opacity .3s",
+                    }}
+                  >
+                    💵
+                  </span>
+                </div>
+              )}
+
               {/* "Which deposit worked?" — shown before completing a DD-capture advance */}
               {ddPromptKey === key && b.advance && (
                 <div style={{ borderTop: "1px solid #f0f0f0", background: "#f0fdf4", padding: "12px 18px" }}>
@@ -380,6 +443,22 @@ export default function StartedBonusesList({
               {/* Expanded drawer — full checklist + link into the module */}
               {isOpen && (
                 <div style={{ borderTop: "1px solid #f0f0f0", background: "#fafafa", padding: "14px 18px 16px" }}>
+                  {b.checklist && b.checklist.length > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#999" }}>Checklist</div>
+                      {/* Undo — reverse the last-marked step (same safety net the
+                          Paycheck & Savings pages carry). */}
+                      {b.undo && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); runUndo(key, b.undo!) }}
+                          disabled={isBusy}
+                          style={{ fontSize: 11, color: "#999", background: "none", border: "none", cursor: isBusy ? "wait" : "pointer", padding: "2px 0" }}
+                        >
+                          {isBusy ? "…" : "↩ Undo last step"}
+                        </button>
+                      )}
+                    </div>
+                  )}
                   {b.checklist && b.checklist.length > 0 && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
                       {b.checklist.map((item, idx) => (
