@@ -20,11 +20,6 @@ const comingSoon = [
   { label: "Base", href: "/stacksos/base" },
 ] as const
 
-// Routes that have been reskinned to the dark "mission board" theme. The nav
-// renders dark on these so it flows into the tab below instead of floating a
-// white bar over a near-black board; every other route stays light.
-const DARK_ROUTES = ["/stacksos/paycheck", "/stacksos/spending", "/stacksos/savings"]
-
 // Dark palette — mirrors the DK constant in RoadmapClient so the shared nav
 // matches the reskinned tabs exactly.
 const DK = {
@@ -44,10 +39,10 @@ export default function CheckpointNav() {
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Dashboard ("/stacksos" exactly) is now the dark mission board too — match it
-  // precisely so the still-light tool routes (/stacksos/debt, /profile, …) keep
-  // their light nav until they're ported.
-  const dark = pathname === "/stacksos" || DARK_ROUTES.some(r => pathname.startsWith(r))
+  // The entire Stacks OS app is now the dark mission board (dashboard + every
+  // tool route), so the nav renders dark everywhere under /stacksos. The public
+  // marketing landing at /stacksos uses its own nav, not this one.
+  const dark = pathname.startsWith("/stacksos")
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href

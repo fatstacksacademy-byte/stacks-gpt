@@ -111,10 +111,10 @@ export default function UnifiedProfileForm({
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: "28px 32px 60px" }}>
-      <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: "#111" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: "#ffffff" }}>
         Your profile
       </h1>
-      <p style={{ fontSize: 13, color: "#888", margin: "0 0 24px" }}>
+      <p style={{ fontSize: 13, color: "#9aa1ad", margin: "0 0 24px" }}>
         One form for all three modules. Savings and spending are optional (beta).
       </p>
 
@@ -210,7 +210,7 @@ export default function UnifiedProfileForm({
         expanded={spendingExpanded}
         onToggle={() => setSpendingExpanded(!spendingExpanded)}
       >
-        <div style={{ fontSize: 12, color: "#888", lineHeight: 1.5, marginBottom: 4 }}>
+        <div style={{ fontSize: 12, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 4 }}>
           Tell Stacks roughly what you spend each month — it's used to estimate which credit-card bonuses are worth it for you.
         </div>
         <Row label="Monthly spend">
@@ -249,7 +249,7 @@ export default function UnifiedProfileForm({
           onClick={handleSave}
           disabled={status === "saving"}
           style={{
-            background: "#0d7c5f",
+            background: "#0d9668",
             color: "#fff",
             border: "none",
             borderRadius: 8,
@@ -263,17 +263,17 @@ export default function UnifiedProfileForm({
           {status === "saving" ? "Saving…" : "Save"}
         </button>
         {status === "saved" && (
-          <span style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 600 }}>✓ Saved</span>
+          <span style={{ fontSize: 13, color: "#34d399", fontWeight: 600 }}>✓ Saved</span>
         )}
         {status === "error" && (
-          <span style={{ fontSize: 13, color: "#dc2626", fontWeight: 600 }}>Error — try again</span>
+          <span style={{ fontSize: 13, color: "#f87171", fontWeight: 600 }}>Error — try again</span>
         )}
         <a
           href="/stacksos"
           style={{
             marginLeft: "auto",
             fontSize: 13,
-            color: "#888",
+            color: "#9aa1ad",
             textDecoration: "none",
           }}
         >
@@ -290,25 +290,25 @@ const selectStyle: React.CSSProperties = {
   flex: 1,
   padding: "8px 10px",
   fontSize: 14,
-  border: "1px solid #e2e2e2",
+  border: "1px solid #2a2e38",
   borderRadius: 6,
-  background: "#fff",
-  color: "#111",
+  background: "#161922",
+  color: "#ffffff",
 }
 const inputStyle: React.CSSProperties = {
   flex: 1,
   padding: "8px 10px",
   fontSize: 14,
-  border: "1px solid #e2e2e2",
+  border: "1px solid #2a2e38",
   borderRadius: 6,
-  background: "#fff",
-  color: "#111",
+  background: "#161922",
+  color: "#ffffff",
 }
 
 function Row({ label, labelExtra, children }: { label: string; labelExtra?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid #f2f2f2" }}>
-      <label style={{ fontSize: 13, color: "#555", flex: "0 0 180px", display: "inline-flex", alignItems: "center", gap: 5 }}>{label}{labelExtra}</label>
+    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid #23262e" }}>
+      <label style={{ fontSize: 13, color: "#cdd2db", flex: "0 0 180px", display: "inline-flex", alignItems: "center", gap: 5 }}>{label}{labelExtra}</label>
       {children}
     </div>
   )
@@ -316,11 +316,11 @@ function Row({ label, labelExtra, children }: { label: string; labelExtra?: Reac
 
 function Section({ title, required, titleExtra, children }: { title: string; required?: boolean; titleExtra?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "16px 20px", marginBottom: 14 }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 10, padding: "16px 20px", marginBottom: 14 }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
         {title}
         {titleExtra}
-        {required && <span style={{ fontSize: 10, background: "#0d7c5f", color: "#fff", padding: "2px 6px", borderRadius: 3, fontWeight: 700 }}>REQUIRED</span>}
+        {required && <span style={{ fontSize: 10, background: "#0d9668", color: "#fff", padding: "2px 6px", borderRadius: 3, fontWeight: 700 }}>REQUIRED</span>}
       </div>
       {children}
     </div>
@@ -343,7 +343,7 @@ function CollapsibleSection({
   children: React.ReactNode
 }) {
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", marginBottom: 14 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 10, padding: "14px 20px", marginBottom: 14 }}>
       <button
         onClick={onToggle}
         style={{
@@ -358,14 +358,14 @@ function CollapsibleSection({
           textAlign: "left",
         }}
       >
-        <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{title}</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: "#ffffff" }}>{title}</span>
         {beta && (
-          <span style={{ fontSize: 10, background: "#fef3c7", color: "#92400e", padding: "2px 6px", borderRadius: 3, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span style={{ fontSize: 10, background: "#1c160a", color: "#f59e0b", padding: "2px 6px", borderRadius: 3, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Beta
           </span>
         )}
-        <span style={{ fontSize: 12, color: "#888" }}>{subtitle}</span>
-        <span style={{ marginLeft: "auto", fontSize: 14, color: "#888" }}>{expanded ? "−" : "+"}</span>
+        <span style={{ fontSize: 12, color: "#9aa1ad" }}>{subtitle}</span>
+        <span style={{ marginLeft: "auto", fontSize: 14, color: "#9aa1ad" }}>{expanded ? "−" : "+"}</span>
       </button>
       {expanded && <div style={{ marginTop: 10 }}>{children}</div>}
     </div>
@@ -393,7 +393,7 @@ function NumInput({
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1 }}>
-      {prefix && <span style={{ fontSize: 13, color: "#888" }}>{prefix}</span>}
+      {prefix && <span style={{ fontSize: 13, color: "#9aa1ad" }}>{prefix}</span>}
       <input
         type="number"
         value={value === 0 && placeholder ? "" : value}
@@ -404,7 +404,7 @@ function NumInput({
         onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
         style={inputStyle}
       />
-      {suffix && <span style={{ fontSize: 13, color: "#888" }}>{suffix}</span>}
+      {suffix && <span style={{ fontSize: 13, color: "#9aa1ad" }}>{suffix}</span>}
     </div>
   )
 }

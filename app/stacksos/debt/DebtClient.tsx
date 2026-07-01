@@ -51,53 +51,55 @@ import { markBonusAlreadyHad, getCompletedBonuses } from "../../../lib/completed
 // ----------------------------------------------------------------------------
 
 const cardBox: React.CSSProperties = {
-  background: "#fff",
-  border: "1px solid #e8e8e8",
+  background: "#161922",
+  border: "1px solid #23262e",
   borderRadius: 12,
   padding: 24,
   marginBottom: 16,
 }
 
 const label: React.CSSProperties = {
-  fontSize: 11, color: "#999", textTransform: "uppercase",
+  fontSize: 11, color: "#6b7280", textTransform: "uppercase",
   letterSpacing: "0.05em", marginBottom: 6,
 }
 
 const primaryBtn: React.CSSProperties = {
-  background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8,
+  background: "#0d9668", color: "#fff", border: "none", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer",
 }
 
 const secondaryBtn: React.CSSProperties = {
-  background: "#fff", color: "#666", border: "1px solid #e0e0e0", borderRadius: 8,
+  background: "#161922", color: "#9aa1ad", border: "1px solid #2a2e38", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 500, cursor: "pointer",
 }
 
 const ghostBtn: React.CSSProperties = {
-  background: "transparent", color: "#999", border: "1px solid #e8e8e8", borderRadius: 6,
+  background: "transparent", color: "#6b7280", border: "1px solid #23262e", borderRadius: 6,
   padding: "6px 12px", fontSize: 12, cursor: "pointer",
 }
 
 const inputStyle: React.CSSProperties = {
-  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
-  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+  padding: "8px 12px", fontSize: 13, background: "#0f1219", color: "#ffffff",
+  border: "1px solid #2a2e38", borderRadius: 6, width: "100%",
 }
 
 const selectStyle: React.CSSProperties = {
-  padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111",
-  border: "1px solid #e0e0e0", borderRadius: 6, width: "100%",
+  padding: "8px 12px", fontSize: 13, background: "#0f1219", color: "#ffffff",
+  border: "1px solid #2a2e38", borderRadius: 6, width: "100%",
 }
 
 const computedStyle: React.CSSProperties = {
-  padding: "8px 12px", fontSize: 13, background: "#f9f9f9", color: "#555",
-  border: "1px solid #e8e8e8", borderRadius: 6, width: "100%",
+  padding: "8px 12px", fontSize: 13, background: "#0f1219", color: "#cdd2db",
+  border: "1px solid #23262e", borderRadius: 6, width: "100%",
 }
 
-const fieldLabel: React.CSSProperties = { fontSize: 11, color: "#777", marginBottom: 4, display: "block" }
-const sectionTitle: React.CSSProperties = { fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }
-const muted: React.CSSProperties = { fontSize: 12, color: "#999", lineHeight: 1.5 }
+const fieldLabel: React.CSSProperties = { fontSize: 11, color: "#9aa1ad", marginBottom: 4, display: "block" }
+const sectionTitle: React.CSSProperties = { fontSize: 16, fontWeight: 700, color: "#ffffff", marginBottom: 4 }
+const muted: React.CSSProperties = { fontSize: 12, color: "#6b7280", lineHeight: 1.5 }
 
-const ACCENT = "#0d7c5f"
+const ACCENT = "#0d9668"
+// Green used as TEXT (readable on the dark panel) vs ACCENT used as a fill/border.
+const ACCENT_TEXT = "#34d399"
 
 // ----------------------------------------------------------------------------
 // Small helpers
@@ -145,20 +147,20 @@ function PercentInput({
         }}
         style={{ ...inputStyle, paddingRight: 24, ...style }}
       />
-      <span style={{ position: "absolute", right: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 12, pointerEvents: "none" }}>%</span>
+      <span style={{ position: "absolute", right: 9, top: "50%", transform: "translateY(-50%)", color: "#6b7280", fontSize: 12, pointerEvents: "none" }}>%</span>
     </div>
   )
 }
 
 function severityColor(s: StrategyWarning["severity"]): string {
-  if (s === "critical") return "#dc2626"
-  if (s === "warn") return "#b45309"
-  return "#6b7280"
+  if (s === "critical") return "#f87171"
+  if (s === "warn") return "#f59e0b"
+  return "#9aa1ad"
 }
 function severityBg(s: StrategyWarning["severity"]): string {
-  if (s === "critical") return "#fef2f2"
-  if (s === "warn") return "#fffbeb"
-  return "#f9fafb"
+  if (s === "critical") return "rgba(220,38,38,0.12)"
+  if (s === "warn") return "#1c160a"
+  return "#0f1219"
 }
 
 function WarningList({ warnings }: { warnings: StrategyWarning[] }) {
@@ -269,7 +271,7 @@ function SetupScreen({ onDemo, onEmpty }: { onDemo: () => void; onEmpty: () => v
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: 32 }}>
       <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Debt Payoff Strategy Simulator</h1>
-      <p style={{ color: "#555", marginBottom: 20, lineHeight: 1.6 }}>
+      <p style={{ color: "#cdd2db", marginBottom: 20, lineHeight: 1.6 }}>
         Model how avalanche payoff, balance transfers, and consolidation loans compare for your
         situation, with an auditable month-by-month schedule. This is an{" "}
         <b>educational simulator — not financial, lending, or tax advice.</b> Projected dates and
@@ -335,12 +337,12 @@ function Dashboard({
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Debt Payoff Strategy Simulator</h1>
           <div style={{ ...muted, marginTop: 4 }}>
-            Total debt: <b style={{ color: "#111" }}>{formatMoney(totalDebt(picture))}</b>
+            Total debt: <b style={{ color: "#ffffff" }}>{formatMoney(totalDebt(picture))}</b>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {scenario.isDemo && (
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#b45309", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 999, padding: "4px 12px" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", background: "#1c160a", border: "1px solid #4a3a16", borderRadius: 999, padding: "4px 12px" }}>
               Viewing fictional demo data
             </span>
           )}
@@ -410,14 +412,14 @@ function GoalSelector({ goal, onChange }: { goal: StrategyGoal; onChange: (g: St
                 onClick={() => onChange(g)}
                 style={{
                   padding: "9px 16px", fontSize: 13, fontWeight: 600, borderRadius: 999, cursor: "pointer",
-                  border: active ? `1px solid ${ACCENT}` : "1px solid #e0e0e0",
-                  background: active ? ACCENT : "#fff",
-                  color: active ? "#fff" : "#555",
+                  border: active ? `1px solid ${ACCENT}` : "1px solid #23262e",
+                  background: active ? ACCENT : "#161922",
+                  color: active ? "#fff" : "#cdd2db",
                 }}
               >
                 {STRATEGY_GOAL_LABEL[g]}
               </button>
-              <div style={{ fontSize: 11, color: "#999", lineHeight: 1.4, paddingLeft: 4 }}>{GOAL_BLURB[g]}</div>
+              <div style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.4, paddingLeft: 4 }}>{GOAL_BLURB[g]}</div>
             </div>
           )
         })}
@@ -444,7 +446,7 @@ function NumberField({
       <label style={fieldLabel}>{labelText}</label>
       <div style={{ position: "relative" }}>
         {prefix && (
-          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>
+          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#6b7280", fontSize: 13 }}>
             {prefix}
           </span>
         )}
@@ -490,14 +492,14 @@ function InputsPanel({
         </div>
         <div>
           <label style={fieldLabel}>Extra monthly payment capacity</label>
-          <div style={{ ...computedStyle, color: extraCapacity < 0 ? "#dc2626" : "#0d7c5f", fontWeight: 700 }}>
+          <div style={{ ...computedStyle, color: extraCapacity < 0 ? "#f87171" : "#34d399", fontWeight: 700 }}>
             {formatMoney(extraCapacity)}/mo
           </div>
           <div style={{ ...muted, marginTop: 4 }}>
             Budget − minimums. {extraCapacity < 0 ? "Negative: minimums exceed your budget." : "Extra that attacks the highest-APR debt."}
           </div>
           {extraCapacity < 0 && (
-            <div style={{ ...muted, marginTop: 4, color: "#b45309" }}>
+            <div style={{ ...muted, marginTop: 4, color: "#f59e0b" }}>
               Increase your monthly budget or pay down a balance before modeling strategies.
             </div>
           )}
@@ -518,7 +520,7 @@ function InputsPanel({
         />
         <div>
           <label style={fieldLabel}>Usable cash</label>
-          <div style={{ ...computedStyle, color: "#0d7c5f", fontWeight: 700 }}>{formatMoney(usableCash)}</div>
+          <div style={{ ...computedStyle, color: "#34d399", fontWeight: 700 }}>{formatMoney(usableCash)}</div>
           <div style={{ ...muted, marginTop: 4 }}>max(0, available − buffer).</div>
         </div>
       </div>
@@ -724,7 +726,7 @@ function StatementImportSection({ debts, update, userId }: { debts: DebtInstrume
           accept="application/pdf,image/png,image/jpeg,image/webp,image/gif"
           onChange={onPick}
           disabled={importing}
-          style={{ fontSize: 13, color: "#444" }}
+          style={{ fontSize: 13, color: "#cdd2db" }}
         />
         <button
           style={{ ...secondaryBtn, opacity: importing || !file ? 0.6 : 1, cursor: importing || !file ? "default" : "pointer" }}
@@ -755,7 +757,7 @@ function StatementImportSection({ debts, update, userId }: { debts: DebtInstrume
 
       {review && review.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ ...label, color: ACCENT, marginBottom: 8 }}>
+          <div style={{ ...label, color: ACCENT_TEXT, marginBottom: 8 }}>
             Review {review.length} card{review.length === 1 ? "" : "s"} before adding
           </div>
           <div style={{ ...muted, marginBottom: 12 }}>
@@ -804,7 +806,7 @@ function ImportReviewRow({
   const aprMissing = debt.apr === 0
   const hasPromo = debt.promoApr != null || debt.promoEndsOn != null || debt.postPromoApr != null
   return (
-    <div style={{ padding: 16, border: `1px solid ${aprMissing ? "#dc262644" : `${ACCENT}44`}`, borderRadius: 8, background: aprMissing ? "#fef2f2" : "#fafafa" }}>
+    <div style={{ padding: 16, border: `1px solid ${aprMissing ? "#f8717144" : `${ACCENT}44`}`, borderRadius: 8, background: aprMissing ? "rgba(220,38,38,0.12)" : "#0f1219" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <div>
           <label style={fieldLabel}>Name</label>
@@ -817,12 +819,12 @@ function ImportReviewRow({
         <div>
           <label style={fieldLabel}>APR</label>
           <PercentInput
-            style={{ borderColor: aprMissing ? "#dc2626" : "#e0e0e0" }}
+            style={{ borderColor: aprMissing ? "#f87171" : "#2a2e38" }}
             value={debt.apr}
             onChange={v => onChange({ apr: v ?? 0 })}
           />
           {aprMissing
-            ? <div style={{ fontSize: 11, color: "#dc2626", fontWeight: 600, marginTop: 4 }}>Enter APR — the rate couldn&rsquo;t be read.</div>
+            ? <div style={{ fontSize: 11, color: "#f87171", fontWeight: 600, marginTop: 4 }}>Enter APR — the rate couldn&rsquo;t be read.</div>
             : <div style={{ ...muted, marginTop: 4 }}>{APR_HINT}</div>}
         </div>
         <div>
@@ -855,7 +857,7 @@ function ImportReviewRow({
       </div>
       {match && (
         <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${ACCENT}22` }}>
-          <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "#333", cursor: "pointer" }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "#cdd2db", cursor: "pointer" }}>
             <input
               type="checkbox"
               checked={churnChecked}
@@ -925,9 +927,9 @@ function DebtsSection({ debts, update }: { debts: DebtInstrument[]; update: (pat
 
 function DebtRow({ debt, onEdit, onDelete }: { debt: DebtInstrument; onEdit: () => void; onDelete: () => void }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", border: "1px solid #23262e", borderRadius: 8 }}>
       <div>
-        <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
+        <div style={{ fontWeight: 600, color: "#ffffff", fontSize: 14 }}>
           {debt.name} <span style={{ ...muted, fontSize: 11 }}>· {debt.kind === "credit_card" ? "Credit card" : "Installment"}</span>
         </div>
         <div style={{ ...muted, marginTop: 2 }}>
@@ -939,7 +941,7 @@ function DebtRow({ debt, onEdit, onDelete }: { debt: DebtInstrument; onEdit: () 
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         <button style={ghostBtn} onClick={onEdit}>Edit</button>
-        <button style={{ ...ghostBtn, color: "#dc2626" }} onClick={onDelete}>Delete</button>
+        <button style={{ ...ghostBtn, color: "#f87171" }} onClick={onDelete}>Delete</button>
       </div>
     </div>
   )
@@ -957,7 +959,7 @@ function DebtEditor({ debt, onSave, onCancel }: { debt: DebtInstrument; onSave: 
   }
 
   return (
-    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#0f1219" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <div>
           <label style={fieldLabel}>Name</label>
@@ -1028,7 +1030,7 @@ function ApprovalNote({ status }: { status: ApprovalStatus }) {
   if (status === "approved") return null
   const labelText = status === "prequalified" ? "Prequalified" : "Estimated"
   return (
-    <div style={{ ...muted, marginTop: 8, color: "#b45309" }}>
+    <div style={{ ...muted, marginTop: 8, color: "#f59e0b" }}>
       {labelText}
       {status === "prequalified" && <> <InfoTip term="prequalified" label="prequalified" /></>}
       {" "}≠ approved. Approval and final terms are not guaranteed. Enter your actual offer to compare it accurately.
@@ -1093,7 +1095,7 @@ function BTEditor({ offer, onSave, onCancel }: { offer: BalanceTransferOffer; on
   const [d, setD] = useState<BalanceTransferOffer>(offer)
   const set = (patch: Partial<BalanceTransferOffer>) => setD(prev => ({ ...prev, ...patch }))
   return (
-    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#0f1219" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
         <div><label style={fieldLabel}>Credit limit</label><input style={inputStyle} type="number" value={d.creditLimit} onChange={e => set({ creditLimit: num(e.target.value) })} /></div>
@@ -1110,11 +1112,11 @@ function BTEditor({ offer, onSave, onCancel }: { offer: BalanceTransferOffer; on
             {APPROVAL_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
           <input type="checkbox" checked={d.payFeeWithCash} onChange={e => set({ payFeeWithCash: e.target.checked })} />
           Pay fee with cash
         </label>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
           <input type="checkbox" checked={d.enabled} onChange={e => set({ enabled: e.target.checked })} />
           Enabled (include in comparison)
         </label>
@@ -1194,7 +1196,7 @@ function LoanEditor({ offer, onSave, onCancel }: { offer: ConsolidationLoanOffer
   const set = (patch: Partial<ConsolidationLoanOffer>) => setD(prev => ({ ...prev, ...patch }))
   const amortized = loanPayment({ ...d, monthlyPayment: null })
   return (
-    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#fafafa" }}>
+    <div style={{ padding: 16, border: `1px solid ${ACCENT}44`, borderRadius: 8, background: "#0f1219" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <div><label style={fieldLabel}>Name</label><input style={inputStyle} value={d.name} onChange={e => set({ name: e.target.value })} /></div>
         <div><label style={fieldLabel}>Requested amount</label><input style={inputStyle} type="number" value={d.requestedAmount} onChange={e => set({ requestedAmount: num(e.target.value) })} /></div>
@@ -1226,7 +1228,7 @@ function LoanEditor({ offer, onSave, onCancel }: { offer: ConsolidationLoanOffer
             {APPROVAL_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
           <input type="checkbox" checked={d.enabled} onChange={e => set({ enabled: e.target.checked })} />
           Enabled (include in comparison)
         </label>
@@ -1252,18 +1254,18 @@ function OfferRow({
   onDelete: () => void
 }) {
   return (
-    <div style={{ padding: "10px 12px", border: "1px solid #f0f0f0", borderRadius: 8, opacity: enabled ? 1 : 0.6 }}>
+    <div style={{ padding: "10px 12px", border: "1px solid #23262e", borderRadius: 8, opacity: enabled ? 1 : 0.6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <input type="checkbox" checked={enabled} onChange={onToggle} title="Include in comparison" />
           <div>
-            <div style={{ fontWeight: 600, color: "#111", fontSize: 14 }}>
+            <div style={{ fontWeight: 600, color: "#ffffff", fontSize: 14 }}>
               {title}{" "}
               <span style={{
                 fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em",
                 padding: "2px 7px", borderRadius: 999, marginLeft: 4,
-                color: status === "approved" ? "#0d7c5f" : "#b45309",
-                background: status === "approved" ? "#ecfdf5" : "#fffbeb",
+                color: status === "approved" ? "#34d399" : "#f59e0b",
+                background: status === "approved" ? "rgba(13,150,104,0.14)" : "#1c160a",
               }}>{status}</span>
               {status === "prequalified" && <span style={{ marginLeft: 4 }}><InfoTip term="prequalified" label="prequalified" /></span>}
             </div>
@@ -1272,7 +1274,7 @@ function OfferRow({
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button style={ghostBtn} onClick={onEdit}>Edit</button>
-          <button style={{ ...ghostBtn, color: "#dc2626" }} onClick={onDelete}>Delete</button>
+          <button style={{ ...ghostBtn, color: "#f87171" }} onClick={onDelete}>Delete</button>
         </div>
       </div>
       {status !== "approved" && <ApprovalNote status={status} />}
@@ -1318,15 +1320,15 @@ function CreditProfileSection({ profile, update }: { profile: CreditProfile; upd
             <div><label style={fieldLabel}>Card apps (12 mo)</label><input style={inputStyle} type="number" value={optNum(profile.cardApps12mo)} onChange={e => set({ cardApps12mo: e.target.value === "" ? undefined : num(e.target.value) })} /></div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
               <input type="checkbox" checked={!!profile.majorDerogatory} onChange={e => set({ majorDerogatory: e.target.checked })} />
               Major derogatory mark (collection, charge-off, bankruptcy)
             </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
               <input type="checkbox" checked={!!profile.willingToOpenCredit} onChange={e => set({ willingToOpenCredit: e.target.checked })} />
               Willing to open new credit
             </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#cdd2db" }}>
               <input type="checkbox" checked={!!profile.preserveChurningEligibility} onChange={e => set({ preserveChurningEligibility: e.target.checked })} />
               Preserve card / churning eligibility
             </label>
@@ -1345,7 +1347,7 @@ function metric(labelText: string, value: string, accent?: boolean) {
   return (
     <div>
       <div style={{ ...muted, fontSize: 10.5, textTransform: "uppercase", letterSpacing: "0.04em" }}>{labelText}</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: accent ? ACCENT : "#111" }}>{value}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: accent ? ACCENT_TEXT : "#ffffff" }}>{value}</div>
     </div>
   )
 }
@@ -1368,11 +1370,11 @@ function StrategyCard({ s, recommended, goal }: { s: StrategyResult; recommended
   const term = STRATEGY_TERM[s.kind]
   return (
     <div style={{
-      border: recommended ? `2px solid ${ACCENT}` : "1px solid #e8e8e8",
-      borderRadius: 10, padding: 16, background: recommended ? "#f6fbf9" : "#fff",
+      border: recommended ? `2px solid ${ACCENT}` : "1px solid #23262e",
+      borderRadius: 10, padding: 16, background: recommended ? "rgba(13,150,104,0.14)" : "#161922",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: "#111", display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: "#ffffff", display: "inline-flex", alignItems: "center", gap: 6 }}>
           {s.label}
           {term && <InfoTip term={term} label={s.label} />}
         </div>
@@ -1401,7 +1403,7 @@ function StrategyCard({ s, recommended, goal }: { s: StrategyResult; recommended
             {showAccounts ? "Hide" : "Show"} {s.newAccountDetails.length} new account detail(s)
           </button>
           {showAccounts && (
-            <ul style={{ margin: "8px 0 0", paddingLeft: 18, fontSize: 12.5, color: "#555", lineHeight: 1.6 }}>
+            <ul style={{ margin: "8px 0 0", paddingLeft: 18, fontSize: 12.5, color: "#cdd2db", lineHeight: 1.6 }}>
               {s.newAccountDetails.map((d, i) => <li key={i}>{d}</li>)}
             </ul>
           )}
@@ -1444,15 +1446,15 @@ function NextMovePanel({ comparison }: { comparison: ReturnType<typeof compareSt
   const nm = rec.nextMove
   return (
     <div style={{ ...cardBox, borderTop: `3px solid ${ACCENT}` }}>
-      <div style={{ ...label, color: ACCENT }}>Your next move</div>
+      <div style={{ ...label, color: ACCENT_TEXT }}>Your next move</div>
       {nm ? (
-        <div style={{ padding: 16, background: "#fafafa", borderRadius: 10, border: `1px solid ${ACCENT}22`, marginBottom: 16 }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#111", marginBottom: 6 }}>{nm.headline}</div>
-          <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.55, marginBottom: 8 }}>{nm.detail}</div>
-          <div style={{ display: "flex", gap: 18, flexWrap: "wrap", fontSize: 13, color: "#666" }}>
-            <span>Type: <b style={{ color: "#111" }}>{nm.type}</b></span>
-            {nm.amount > 0 && <span>Amount: <b style={{ color: "#111" }}>{formatMoney(nm.amount)}</b></span>}
-            {nm.deadline && <span>Deadline: <b style={{ color: "#111" }}>{nm.deadline}</b></span>}
+        <div style={{ padding: 16, background: "#0f1219", borderRadius: 10, border: `1px solid ${ACCENT}22`, marginBottom: 16 }}>
+          <div style={{ fontSize: 20, fontWeight: 800, color: "#ffffff", marginBottom: 6 }}>{nm.headline}</div>
+          <div style={{ fontSize: 13.5, color: "#cdd2db", lineHeight: 1.55, marginBottom: 8 }}>{nm.detail}</div>
+          <div style={{ display: "flex", gap: 18, flexWrap: "wrap", fontSize: 13, color: "#9aa1ad" }}>
+            <span>Type: <b style={{ color: "#ffffff" }}>{nm.type}</b></span>
+            {nm.amount > 0 && <span>Amount: <b style={{ color: "#ffffff" }}>{formatMoney(nm.amount)}</b></span>}
+            {nm.deadline && <span>Deadline: <b style={{ color: "#ffffff" }}>{nm.deadline}</b></span>}
           </div>
           <div style={{ ...muted, marginTop: 8 }}>{nm.reason}</div>
         </div>
@@ -1463,18 +1465,18 @@ function NextMovePanel({ comparison }: { comparison: ReturnType<typeof compareSt
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         <div>
           <div style={label}>Why {rec.label} is recommended</div>
-          <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{comparison.whyRecommended}</div>
+          <div style={{ fontSize: 13, color: "#cdd2db", lineHeight: 1.6 }}>{comparison.whyRecommended}</div>
         </div>
         <div>
           <div style={label}>What would change the recommendation</div>
-          <div style={{ fontSize: 13, color: "#444", lineHeight: 1.6 }}>{comparison.whatWouldChange}</div>
+          <div style={{ fontSize: 13, color: "#cdd2db", lineHeight: 1.6 }}>{comparison.whatWouldChange}</div>
         </div>
       </div>
 
       {rec.assumptions.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <div style={label}>Assumptions</div>
-          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: "#555", lineHeight: 1.65 }}>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: "#cdd2db", lineHeight: 1.65 }}>
             {rec.assumptions.map((a, i) => <li key={i}>{a}</li>)}
           </ul>
         </div>
@@ -1521,7 +1523,7 @@ function ScheduleSection({ strategies, recommendedKind }: { strategies: Strategy
           </div>
 
           {capped && (
-            <div style={{ ...muted, color: "#b45309", marginBottom: 8 }}>
+            <div style={{ ...muted, color: "#f59e0b", marginBottom: 8 }}>
               Showing the first {ROW_CAP} of {rows.length} months. The remaining {rows.length - ROW_CAP} are not rendered.
             </div>
           )}
@@ -1529,7 +1531,7 @@ function ScheduleSection({ strategies, recommendedKind }: { strategies: Strategy
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
               <thead>
-                <tr style={{ textAlign: "right", color: "#999", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
+                <tr style={{ textAlign: "right", color: "#6b7280", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>#</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Date</th>
                   <th style={{ padding: "6px 8px" }}>Start bal</th>
@@ -1543,7 +1545,7 @@ function ScheduleSection({ strategies, recommendedKind }: { strategies: Strategy
               </thead>
               <tbody>
                 {shown.map(r => (
-                  <tr key={r.month} style={{ borderTop: "1px solid #f2f2f2" }}>
+                  <tr key={r.month} style={{ borderTop: "1px solid #23262e" }}>
                     <td style={{ padding: "5px 8px" }}>{r.month}</td>
                     <td style={{ padding: "5px 8px" }}>{r.dateISO}</td>
                     <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.startingBalance)}</td>
@@ -1552,7 +1554,7 @@ function ScheduleSection({ strategies, recommendedKind }: { strategies: Strategy
                     <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.payment)}</td>
                     <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(r.principal)}</td>
                     <td style={{ padding: "5px 8px", textAlign: "right", fontWeight: 600 }}>{formatMoney(r.endingBalance)}</td>
-                    <td style={{ padding: "5px 8px", color: "#0d7c5f", fontSize: 11 }}>{r.events.join(" · ")}</td>
+                    <td style={{ padding: "5px 8px", color: "#34d399", fontSize: 11 }}>{r.events.join(" · ")}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1606,8 +1608,8 @@ function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
         </div>
       </div>
 
-      <div style={{ padding: 14, borderRadius: 8, background: maxApr == null ? "#fef2f2" : "#ecfdf5", border: `1px solid ${maxApr == null ? "#fecaca" : "#a7f3d0"}`, marginBottom: 14 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: maxApr == null ? "#b91c1c" : "#0d7c5f" }}>
+      <div style={{ padding: 14, borderRadius: 8, background: maxApr == null ? "rgba(220,38,38,0.12)" : "rgba(13,150,104,0.14)", border: `1px solid ${maxApr == null ? "#7f1d1d" : "rgba(13,150,104,0.5)"}`, marginBottom: 14 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: maxApr == null ? "#f87171" : "#34d399" }}>
           {maxApr == null
             ? "No positive-APR loan beats your baseline at these terms."
             : `A loan only beats your baseline below ~${pctStr(maxApr)} APR.`}
@@ -1617,7 +1619,7 @@ function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
           <thead>
-            <tr style={{ color: "#999", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
+            <tr style={{ color: "#6b7280", textTransform: "uppercase", fontSize: 10.5, letterSpacing: "0.04em" }}>
               <th style={{ textAlign: "left", padding: "6px 8px" }}>APR</th>
               <th style={{ textAlign: "left", padding: "6px 8px" }}>Term</th>
               <th style={{ textAlign: "right", padding: "6px 8px" }}>Monthly</th>
@@ -1627,12 +1629,12 @@ function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
           </thead>
           <tbody>
             {grid.map((g, i) => (
-              <tr key={i} style={{ borderTop: "1px solid #f2f2f2" }}>
+              <tr key={i} style={{ borderTop: "1px solid #23262e" }}>
                 <td style={{ padding: "5px 8px" }}>{pctStr(g.apr)}</td>
                 <td style={{ padding: "5px 8px" }}>{g.termMonths} mo</td>
                 <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(g.monthlyPayment)}</td>
                 <td style={{ padding: "5px 8px", textAlign: "right" }}>{formatMoney(g.totalCost)}</td>
-                <td style={{ padding: "5px 8px", fontWeight: 600, color: g.beatsBaseline ? "#0d7c5f" : "#dc2626" }}>
+                <td style={{ padding: "5px 8px", fontWeight: 600, color: g.beatsBaseline ? "#34d399" : "#f87171" }}>
                   {g.beatsBaseline ? "Yes" : "No"}
                 </td>
               </tr>
@@ -1655,8 +1657,8 @@ function LoanSimulatorWidget({ picture }: { picture: FinancialPicture }) {
 
 function GuardrailFooter() {
   return (
-    <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#f9fafb", border: "1px solid #eee" }}>
-      <div style={{ fontSize: 12.5, color: "#777", lineHeight: 1.6 }}>
+    <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#0f1219", border: "1px solid #23262e" }}>
+      <div style={{ fontSize: 12.5, color: "#9aa1ad", lineHeight: 1.6 }}>
         <b>Educational simulator — not financial, lending, or tax advice.</b> Actual lender disclosures and signed
         loan documents control. Projected dates and savings are estimates, never guarantees.
       </div>

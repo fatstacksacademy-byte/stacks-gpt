@@ -47,11 +47,11 @@ const ROLE_DESCRIPTIONS: Record<RoleOrUnassigned, string> = {
 }
 
 const ROLE_COLORS: Record<RoleOrUnassigned, { fg: string; bg: string }> = {
-  "unassigned": { fg: "#999", bg: "#f5f5f5" },
-  "sub-in-progress": { fg: "#2563eb", bg: "#eff6ff" },
-  "daily-driver": { fg: "#0d7c5f", bg: "#e6f5f0" },
-  "sock-drawer": { fg: "#6b7280", bg: "#f3f4f6" },
-  "retention-pending": { fg: "#d97706", bg: "#fef3c7" },
+  "unassigned": { fg: "#6b7280", bg: "#0a0c10" },
+  "sub-in-progress": { fg: "#60a5fa", bg: "rgba(37,99,235,0.16)" },
+  "daily-driver": { fg: "#34d399", bg: "rgba(13,150,104,0.14)" },
+  "sock-drawer": { fg: "#6b7280", bg: "#0f1219" },
+  "retention-pending": { fg: "#f59e0b", bg: "#1c160a" },
   "downgrade-candidate": { fg: "#7c3aed", bg: "#ede9fe" },
 }
 
@@ -148,21 +148,21 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
   }, [accounts, savingsProfile, spendProfile])
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0c10" }}>
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px" }}>
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
+          <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
             {userEmail}
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", margin: "4px 0 6px", letterSpacing: "-0.02em" }}>Base</h1>
-          <div style={{ fontSize: 13, color: "#666", maxWidth: 680 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: "#ffffff", margin: "4px 0 6px", letterSpacing: "-0.02em" }}>Base</h1>
+          <div style={{ fontSize: 13, color: "#9aa1ad", maxWidth: 680 }}>
             Your full financial inventory — cards, accounts, balances, issuer standing. Spending is for chasing new bonuses; this is everything you&apos;re holding once the chase is done.
           </div>
         </div>
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: "center", color: "#999", fontSize: 13 }}>Loading…</div>
+          <div style={{ padding: 40, textAlign: "center", color: "#6b7280", fontSize: 13 }}>Loading…</div>
         ) : (
           <>
             <SnapshotPanel accounts={accounts} cards={cards} />
@@ -172,13 +172,13 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
             <AccountsPanel accounts={accounts} userId={userId} onChange={loadData} />
 
             <div style={{ marginTop: 28, marginBottom: 12 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", margin: 0, letterSpacing: "-0.01em" }}>Card inventory</h2>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#ffffff", margin: 0, letterSpacing: "-0.01em" }}>Card inventory</h2>
             </div>
 
             {cards.length === 0 ? (
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px", textAlign: "center" }}>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 10 }}>No cards tracked yet.</div>
-                <a href="/stacksos/spending" style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 700, textDecoration: "none" }}>
+              <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: "24px", textAlign: "center" }}>
+                <div style={{ fontSize: 13, color: "#9aa1ad", marginBottom: 10 }}>No cards tracked yet.</div>
+                <a href="/stacksos/spending" style={{ fontSize: 12, color: "#34d399", fontWeight: 700, textDecoration: "none" }}>
                   Add cards in Spending →
                 </a>
               </div>
@@ -189,14 +189,14 @@ export default function BaseClient({ userEmail, userId }: { userEmail: string; u
                 return (
                   <div key={role} style={{ marginBottom: 20 }}>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
-                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#111", margin: 0, letterSpacing: "-0.01em" }}>
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#ffffff", margin: 0, letterSpacing: "-0.01em" }}>
                         {ROLE_LABELS[role]}
                       </h3>
-                      <span style={{ fontSize: 11, color: "#999" }}>{group.length}</span>
+                      <span style={{ fontSize: 11, color: "#6b7280" }}>{group.length}</span>
                     </div>
-                    <div style={{ fontSize: 11, color: "#999", marginBottom: 10 }}>{ROLE_DESCRIPTIONS[role]}</div>
+                    <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 10 }}>{ROLE_DESCRIPTIONS[role]}</div>
                     {group.length === 0 ? (
-                      <div style={{ fontSize: 12, color: "#bbb", padding: "10px 14px", border: "1px dashed #e8e8e8", borderRadius: 10 }}>
+                      <div style={{ fontSize: 12, color: "#6b7280", padding: "10px 14px", border: "1px dashed #23262e", borderRadius: 10 }}>
                         Everything has a role — nice.
                       </div>
                     ) : (
@@ -230,26 +230,26 @@ function SnapshotPanel({ accounts, cards }: { accounts: OwnedAccount[]; cards: O
   const annualAF = useMemo(() => cards.reduce((s, c) => s + (c.annual_fee ?? 0), 0), [cards])
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
-      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 12 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
+      <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 12 }}>
         Snapshot
       </div>
       <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "baseline" }}>
         <div>
-          <div style={{ fontSize: 11, color: "#999" }}>Net cash + brokerage</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: "#0d7c5f", letterSpacing: "-0.02em" }}>{money(total)}</div>
+          <div style={{ fontSize: 11, color: "#6b7280" }}>Net cash + brokerage</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: "#34d399", letterSpacing: "-0.02em" }}>{money(total)}</div>
         </div>
         <div style={{ display: "flex", gap: 18 }}>
           {(Object.keys(totalsByType) as OwnedAccountType[]).map(type => (
             <div key={type}>
-              <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>{ACCOUNT_TYPE_LABELS[type]}</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: totalsByType[type] > 0 ? "#111" : "#bbb" }}>{money(totalsByType[type])}</div>
+              <div style={{ fontSize: 10, color: "#6b7280", textTransform: "uppercase" }}>{ACCOUNT_TYPE_LABELS[type]}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: totalsByType[type] > 0 ? "#ffffff" : "#6b7280" }}>{money(totalsByType[type])}</div>
             </div>
           ))}
         </div>
         <div style={{ marginLeft: "auto" }}>
-          <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Annual card fees</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: annualAF > 0 ? "#d97706" : "#bbb" }}>{money(annualAF)}</div>
+          <div style={{ fontSize: 10, color: "#6b7280", textTransform: "uppercase" }}>Annual card fees</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: annualAF > 0 ? "#f59e0b" : "#6b7280" }}>{money(annualAF)}</div>
         </div>
       </div>
     </div>
@@ -262,23 +262,23 @@ function SnapshotPanel({ accounts, cards }: { accounts: OwnedAccount[]; cards: O
 function RecommendationsPanel({ recs }: { recs: Recommendation[] }) {
   if (recs.length === 0) return null
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
-      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 12 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
+      <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 12 }}>
         Suggestions
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {recs.slice(0, 5).map(r => {
-          const tone = r.kind === "apy-move" ? "#0d7c5f" : "#2563eb"
-          const bg = r.kind === "apy-move" ? "#e6f5f0" : "#eff6ff"
+          const tone = r.kind === "apy-move" ? "#34d399" : "#60a5fa"
+          const bg = r.kind === "apy-move" ? "rgba(13,150,104,0.14)" : "rgba(37,99,235,0.16)"
           const label = r.kind === "apy-move" ? "APY MOVE" : "CARD"
           return (
-            <div key={r.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 12px", background: "#fafafa", borderRadius: 10 }}>
+            <div key={r.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 12px", background: "#0a0c10", borderRadius: 10 }}>
               <span style={{ fontSize: 9, fontWeight: 700, color: tone, background: bg, padding: "3px 8px", borderRadius: 99, letterSpacing: "0.05em", flexShrink: 0, marginTop: 2 }}>
                 {label}
               </span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{r.title}</div>
-                <div style={{ fontSize: 12, color: "#666", marginTop: 3 }}>{r.detail}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#ffffff" }}>{r.title}</div>
+                <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3 }}>{r.detail}</div>
               </div>
               {r.cta && (
                 <a href={r.cta.href} target={r.cta.href.startsWith("http") ? "_blank" : undefined} rel="noopener"
@@ -298,14 +298,14 @@ function RecommendationsPanel({ recs }: { recs: Recommendation[] }) {
 // Standing — Chase 5/24 (extensible to other issuer rules later)
 // ─────────────────────────────────────────────────────────────────────────
 function StandingPanel({ count524 }: { count524: number }) {
-  const tone = count524 < 5 ? "#0d7c5f" : "#dc2626"
-  const bg = count524 < 5 ? "#e6f5f0" : "#fee2e2"
+  const tone = count524 < 5 ? "#34d399" : "#f87171"
+  const bg = count524 < 5 ? "rgba(13,150,104,0.14)" : "rgba(220,38,38,0.12)"
   const note = count524 < 5
     ? `${5 - count524} Chase slot${5 - count524 !== 1 ? "s" : ""} open.`
     : "Over 5/24 — Chase personal cards will auto-deny."
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
-      <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 10 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+      <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 10 }}>
         Issuer standing
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -314,11 +314,11 @@ function StandingPanel({ count524 }: { count524: number }) {
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>Chase 5/24</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#ffffff" }}>Chase 5/24</span>
             <InfoTip term="fiveTwentyFour" label="Chase 5/24" />
           </div>
           <div style={{ fontSize: 12, color: tone, marginTop: 2 }}>{note}</div>
-          <div style={{ fontSize: 10, color: "#bbb", marginTop: 2 }}>Personal cards opened in the last 24 months across all issuers.</div>
+          <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>Personal cards opened in the last 24 months across all issuers.</div>
         </div>
       </div>
     </div>
@@ -380,22 +380,22 @@ function AccountsPanel({ accounts, userId, onChange }: {
     return out
   }, [accounts])
 
-  const inputStyle: React.CSSProperties = { padding: "7px 10px", fontSize: 12, border: "1px solid #e0e0e0", borderRadius: 6, background: "#fff", color: "#111" }
+  const inputStyle: React.CSSProperties = { padding: "7px 10px", fontSize: 12, border: "1px solid #2a2e38", borderRadius: 6, background: "#161922", color: "#ffffff" }
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+        <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
           Accounts
         </div>
         <button onClick={() => setAdding(!adding)}
-          style={{ fontSize: 11, fontWeight: 700, color: "#0d7c5f", background: "#e6f5f0", border: "none", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }}>
+          style={{ fontSize: 11, fontWeight: 700, color: "#34d399", background: "rgba(13,150,104,0.14)", border: "none", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }}>
           {adding ? "Cancel" : "+ Add account"}
         </button>
       </div>
 
       {adding && (
-        <div style={{ background: "#fafafa", borderRadius: 10, padding: "12px 14px", marginBottom: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8, alignItems: "center" }}>
+        <div style={{ background: "#0a0c10", borderRadius: 10, padding: "12px 14px", marginBottom: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8, alignItems: "center" }}>
           <input placeholder="Institution" value={form.institution} onChange={e => setForm({ ...form, institution: e.target.value })} style={inputStyle} />
           <select value={form.account_type} onChange={e => setForm({ ...form, account_type: e.target.value as OwnedAccountType })} style={inputStyle}>
             {OWNED_ACCOUNT_TYPES.map(t => <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>)}
@@ -404,14 +404,14 @@ function AccountsPanel({ accounts, userId, onChange }: {
           <input type="number" placeholder="Balance ($)" value={form.current_balance} onChange={e => setForm({ ...form, current_balance: e.target.value })} style={inputStyle} />
           <input type="number" step="0.01" placeholder="APY (%)" value={form.apy} onChange={e => setForm({ ...form, apy: e.target.value })} style={inputStyle} />
           <button onClick={handleAdd} disabled={!form.institution.trim()}
-            style={{ padding: "7px 14px", fontSize: 12, fontWeight: 700, background: form.institution.trim() ? "#0d7c5f" : "#ccc", color: "#fff", border: "none", borderRadius: 6, cursor: form.institution.trim() ? "pointer" : "not-allowed" }}>
+            style={{ padding: "7px 14px", fontSize: 12, fontWeight: 700, background: form.institution.trim() ? "#0d9668" : "#2a2e38", color: "#fff", border: "none", borderRadius: 6, cursor: form.institution.trim() ? "pointer" : "not-allowed" }}>
             Add
           </button>
         </div>
       )}
 
       {accounts.length === 0 && !adding && (
-        <div style={{ fontSize: 12, color: "#bbb", padding: "14px 16px", border: "1px dashed #e8e8e8", borderRadius: 10, textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "#6b7280", padding: "14px 16px", border: "1px dashed #23262e", borderRadius: 10, textAlign: "center" }}>
           No accounts yet. Add savings, checking, and brokerage to see your full snapshot.
         </div>
       )}
@@ -421,37 +421,37 @@ function AccountsPanel({ accounts, userId, onChange }: {
         if (list.length === 0) return null
         return (
           <div key={type} style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#666", fontWeight: 700, marginBottom: 6 }}>{ACCOUNT_TYPE_LABELS[type]}</div>
+            <div style={{ fontSize: 11, color: "#9aa1ad", fontWeight: 700, marginBottom: 6 }}>{ACCOUNT_TYPE_LABELS[type]}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {list.map(a => {
                 const isEditing = editingId === a.id
                 return (
-                  <div key={a.id} style={{ background: "#fafafa", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <div key={a.id} style={{ background: "#0a0c10", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                     <div style={{ flex: 1, minWidth: 180 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#ffffff" }}>
                         {a.institution}
-                        {a.nickname && <span style={{ fontWeight: 400, color: "#999", marginLeft: 6 }}>· {a.nickname}</span>}
+                        {a.nickname && <span style={{ fontWeight: 400, color: "#6b7280", marginLeft: 6 }}>· {a.nickname}</span>}
                       </div>
                     </div>
                     {isEditing ? (
                       <>
                         <input type="number" value={editBalance} onChange={e => setEditBalance(e.target.value)} style={{ ...inputStyle, width: 110 }} placeholder="Balance" />
                         <input type="number" step="0.01" value={editApy} onChange={e => setEditApy(e.target.value)} style={{ ...inputStyle, width: 90 }} placeholder="APY %" />
-                        <button onClick={() => handleSaveEdit(a.id)} style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#0d7c5f", border: "none", borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>Save</button>
-                        <button onClick={() => setEditingId(null)} style={{ fontSize: 11, color: "#999", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
+                        <button onClick={() => handleSaveEdit(a.id)} style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#0d9668", border: "none", borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>Save</button>
+                        <button onClick={() => setEditingId(null)} style={{ fontSize: 11, color: "#6b7280", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
                       </>
                     ) : (
                       <>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111", minWidth: 100, textAlign: "right" }}>{money(a.current_balance)}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#ffffff", minWidth: 100, textAlign: "right" }}>{money(a.current_balance)}</div>
                         <div style={{ fontSize: 11, color: "#7c3aed", fontWeight: 600, minWidth: 70, textAlign: "right" }}>
                           {a.apy != null ? `${(a.apy * 100).toFixed(2)}% APY` : "—"}
                         </div>
                         <button onClick={() => { setEditingId(a.id); setEditBalance(String(a.current_balance)); setEditApy(a.apy != null ? String(a.apy * 100) : "") }}
-                          style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
+                          style={{ fontSize: 11, color: "#60a5fa", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
                           Edit
                         </button>
                         <button onClick={() => handleDelete(a.id)}
-                          style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
+                          style={{ fontSize: 11, color: "#6b7280", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
                           ✕
                         </button>
                       </>
@@ -477,13 +477,13 @@ function InventoryCardRow({ card, onRoleChange }: {
   const months = monthsAgo(card.opened_date)
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "14px 18px", display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: "14px 18px", display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
       <div style={{ flex: 1, minWidth: 200 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{card.card_name}</span>
-          {card.issuer && <span style={{ fontSize: 11, color: "#999" }}>{card.issuer}</span>}
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#ffffff" }}>{card.card_name}</span>
+          {card.issuer && <span style={{ fontSize: 11, color: "#6b7280" }}>{card.issuer}</span>}
         </div>
-        <div style={{ fontSize: 11, color: "#999", marginTop: 3, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3, display: "flex", gap: 12, flexWrap: "wrap" }}>
           {opened && <span>Opened {opened}{months != null ? ` · ${months}mo` : ""}</span>}
           {(card.annual_fee ?? 0) > 0 && <span>AF ${card.annual_fee}</span>}
         </div>
@@ -494,7 +494,7 @@ function InventoryCardRow({ card, onRoleChange }: {
       <select
         value={role}
         onChange={e => onRoleChange(e.target.value as RoleOrUnassigned)}
-        style={{ padding: "6px 10px", fontSize: 12, border: "1px solid #e0e0e0", borderRadius: 6, background: "#fff", color: "#111", cursor: "pointer" }}
+        style={{ padding: "6px 10px", fontSize: 12, border: "1px solid #2a2e38", borderRadius: 6, background: "#161922", color: "#ffffff", cursor: "pointer" }}
       >
         <option value="unassigned">Unassigned</option>
         {OWNED_CARD_ROLES.map(r => (
@@ -511,30 +511,30 @@ function InventoryCardRow({ card, onRoleChange }: {
 function BaseOptimizerPanel({ opps }: { opps: BaseOpportunity[] }) {
   if (opps.length === 0) return null
   const kindColor: Record<BaseOpportunity["kind"], { fg: string; bg: string; label: string }> = {
-    "savings-rate":  { fg: "#0d7c5f", bg: "#e6f5f0", label: "SAVINGS" },
-    "checking-fee":  { fg: "#d97706", bg: "#fef3c7", label: "FEE" },
-    "card-category": { fg: "#2563eb", bg: "#eff6ff", label: "CARD" },
+    "savings-rate":  { fg: "#34d399", bg: "rgba(13,150,104,0.14)", label: "SAVINGS" },
+    "checking-fee":  { fg: "#f59e0b", bg: "#1c160a", label: "FEE" },
+    "card-category": { fg: "#60a5fa", bg: "rgba(37,99,235,0.16)", label: "CARD" },
   }
   const totalImpact = opps.reduce((s, o) => s + o.annualImpact, 0)
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
+    <div style={{ background: "#161922", border: "1px solid #23262e", borderRadius: 14, padding: "18px 22px", marginBottom: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
         <div>
-          <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+          <div style={{ fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
             Base Optimizer
           </div>
-          <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
             Static "set and forget" opportunities based on what you already have.
           </div>
         </div>
         {totalImpact > 0 && (
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 10, color: "#999", textTransform: "uppercase" }}>Potential gain</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>
+            <div style={{ fontSize: 10, color: "#6b7280", textTransform: "uppercase" }}>Potential gain</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#34d399" }}>
               ${totalImpact.toLocaleString()}
             </div>
-            <div style={{ fontSize: 9, color: "#bbb", marginTop: 1 }}>
+            <div style={{ fontSize: 9, color: "#6b7280", marginTop: 1 }}>
               mixed: savings is one-time, fees + cards are annual
             </div>
           </div>
@@ -544,13 +544,13 @@ function BaseOptimizerPanel({ opps }: { opps: BaseOpportunity[] }) {
         {opps.map(o => {
           const c = kindColor[o.kind]
           return (
-            <div key={o.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 12px", background: "#fafafa", borderRadius: 10 }}>
+            <div key={o.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 12px", background: "#0a0c10", borderRadius: 10 }}>
               <span style={{ fontSize: 9, fontWeight: 700, color: c.fg, background: c.bg, padding: "3px 8px", borderRadius: 99, letterSpacing: "0.05em", flexShrink: 0, marginTop: 2 }}>
                 {c.label}
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{o.title}</div>
-                <div style={{ fontSize: 12, color: "#666", marginTop: 3, lineHeight: 1.5 }}>{o.detail}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#ffffff" }}>{o.title}</div>
+                <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3, lineHeight: 1.5 }}>{o.detail}</div>
               </div>
               <a href={o.cta.href}
                 style={{ fontSize: 11, color: c.fg, fontWeight: 700, textDecoration: "none", flexShrink: 0, alignSelf: "center" }}>

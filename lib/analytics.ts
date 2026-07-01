@@ -22,6 +22,7 @@ export type AnalyticsEvent =
   | "bonus_skipped"
   | "custom_bonus_added"
   | "custom_bonus_modal_opened"
+  | "account_created"        // free account created inline (e.g. blog "Track this bonus")
   // Smart Import
   | "smart_import_opened"
   | "smart_import_extracted"

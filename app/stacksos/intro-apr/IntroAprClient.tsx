@@ -9,7 +9,8 @@ import { getSavingsProfile } from "../../../lib/savingsProfile"
 import { applyUrl } from "../../../lib/affiliateLinks"
 import { track } from "../../../lib/analytics"
 
-const ACCENT = "#0d7c5f"
+const ACCENT = "#34d399"
+const ACCENT_BG = "#0d9668"
 const money = (n: number) => (n < 0 ? `-$${Math.abs(Math.round(n)).toLocaleString()}` : `$${Math.round(n).toLocaleString()}`)
 const money2 = (n: number) => `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const pct1 = (n: number) => `${(n * 100).toFixed(1)}%`
@@ -100,10 +101,10 @@ function thumbColor(seed: string): string {
   return `hsl(${h % 360}, 42%, 38%)`
 }
 function CardArt({ card }: { card: AprCard }) {
-  const box: React.CSSProperties = { width: 46, height: 30, borderRadius: 5, flexShrink: 0, overflow: "hidden", border: "1px solid #ececec" }
+  const box: React.CSSProperties = { width: 46, height: 30, borderRadius: 5, flexShrink: 0, overflow: "hidden", border: "1px solid #23262e" }
   if (card.image_url) {
     return (
-      <div style={{ ...box, background: "#f7f7f7", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ ...box, background: "#0f1219", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <img src={card.image_url} alt="" aria-hidden loading="lazy" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
       </div>
     )
@@ -142,18 +143,18 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
     <div style={{ ...card, marginBottom: 26 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
         <div>
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: 0 }}>Best 0% cards right now</h2>
-          <div style={{ fontSize: 13, color: "#888", marginTop: 3 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#ffffff", margin: 0 }}>Best 0% cards right now</h2>
+          <div style={{ fontSize: 13, color: "#9aa1ad", marginTop: 3 }}>
             Ranked by the length of the 0% window — the metric that actually drives this play. {ranked.length} live cards.
           </div>
         </div>
         {/* Purchase vs balance-transfer lens */}
-        <div style={{ display: "flex", gap: 4, background: "#f4f4f4", border: "1px solid #e6e6e6", borderRadius: 7, padding: 3 }}>
+        <div style={{ display: "flex", gap: 4, background: "#0f1219", border: "1px solid #23262e", borderRadius: 7, padding: 3 }}>
           {(["purchase", "bt"] as const).map(m => {
             const active = mode === m
             return (
               <button key={m} onClick={() => pickMode(m)}
-                style={{ padding: "6px 14px", fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#666", background: active ? ACCENT : "transparent", border: "none", borderRadius: 5, cursor: "pointer" }}>
+                style={{ padding: "6px 14px", fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#9aa1ad", background: active ? ACCENT_BG : "transparent", border: "none", borderRadius: 5, cursor: "pointer" }}>
                 {m === "purchase" ? "0% Purchases" : "0% Balance Transfer"}
               </button>
             )
@@ -175,11 +176,11 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
           <option value="af">Sort: lowest annual fee</option>
           {mode === "bt" && <option value="btfee">Sort: lowest transfer fee</option>}
         </select>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#cdd2db", cursor: "pointer", whiteSpace: "nowrap" }}>
           <input type="checkbox" checked={noAF} onChange={e => setNoAF(e.target.checked)} />
           No annual fee
         </label>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#cdd2db", cursor: "pointer", whiteSpace: "nowrap" }}>
           <input
             type="checkbox"
             checked={bizOnly}
@@ -194,7 +195,7 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: "1px solid #e8e8e8", textAlign: "left", color: "#888" }}>
+            <tr style={{ borderBottom: "1px solid #23262e", textAlign: "left", color: "#9aa1ad" }}>
               <th style={th}>Card</th>
               <th style={{ ...th, textAlign: "right" }}>{metricLabel}</th>
               <th style={{ ...th, textAlign: "right" }}>Go-to APR</th>
@@ -207,16 +208,16 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
           </thead>
           <tbody>
             {shown.map(c => (
-              <tr key={c.id} style={{ borderBottom: "1px solid #f4f4f4" }}>
+              <tr key={c.id} style={{ borderBottom: "1px solid #23262e" }}>
                 <td style={td}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <CardArt card={c} />
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 230 }}>{c.card_name}</div>
-                      <div style={{ fontSize: 11, color: "#aaa", display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 230 }}>{c.card_name}</div>
+                      <div style={{ fontSize: 11, color: "#6b7280", display: "flex", alignItems: "center", gap: 6 }}>
                         <span style={{ textTransform: "capitalize" }}>{(c.issuer || "").replace(/_/g, " ")}</span>
                         {offPersonalCredit(c) && (
-                          <span style={{ fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 99, padding: "1px 6px", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
+                          <span style={{ fontSize: 9.5, fontWeight: 700, color: "#c4b5fd", background: "rgba(124,58,237,0.18)", borderRadius: 99, padding: "1px 6px", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
                             BUSINESS · OFF PERSONAL CREDIT
                           </span>
                         )}
@@ -226,26 +227,26 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
                 </td>
                 <td style={{ ...td, textAlign: "right" }}>
                   <span style={{ fontWeight: 800, color: ACCENT, fontSize: 15 }}>{introMonths(c, mode)}</span>
-                  <span style={{ fontSize: 11, color: "#bbb" }}> mo</span>
+                  <span style={{ fontSize: 11, color: "#6b7280" }}> mo</span>
                 </td>
-                <td style={{ ...td, textAlign: "right", color: "#666" }}>{gotoDisplay(c)}</td>
-                <td style={{ ...td, textAlign: "right", color: (c.annual_fee ?? 0) === 0 ? ACCENT : "#444" }}>
+                <td style={{ ...td, textAlign: "right", color: "#9aa1ad" }}>{gotoDisplay(c)}</td>
+                <td style={{ ...td, textAlign: "right", color: (c.annual_fee ?? 0) === 0 ? ACCENT : "#cdd2db" }}>
                   {(c.annual_fee ?? 0) === 0 ? "None" : `$${c.annual_fee}`}
                 </td>
                 {mode === "bt"
-                  ? <td style={{ ...td, textAlign: "right", color: "#666" }}>{c.intro_apr?.bt_fee_pct != null ? `${c.intro_apr.bt_fee_pct}%` : "—"}</td>
-                  : <td style={{ ...td, textAlign: "right", color: "#666" }}>{bonusDisplay(c)}</td>}
+                  ? <td style={{ ...td, textAlign: "right", color: "#9aa1ad" }}>{c.intro_apr?.bt_fee_pct != null ? `${c.intro_apr.bt_fee_pct}%` : "—"}</td>
+                  : <td style={{ ...td, textAlign: "right", color: "#9aa1ad" }}>{bonusDisplay(c)}</td>}
                 <td style={{ ...td, textAlign: "right", whiteSpace: "nowrap" }}>
                   {mode === "purchase" && (
                     <button onClick={() => onUse(c.id)}
-                      style={{ fontSize: 12, fontWeight: 600, color: ACCENT, background: "#eef9f4", border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: "5px 10px", cursor: "pointer", marginRight: 6 }}>
+                      style={{ fontSize: 12, fontWeight: 600, color: ACCENT, background: "rgba(13,150,104,0.14)", border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: "5px 10px", cursor: "pointer", marginRight: 6 }}>
                       Model it →
                     </button>
                   )}
                   {hasOfferLink(c) && (
                     <a href={applyUrl(c.id)} target="_blank" rel="noreferrer"
                        onClick={() => track("intro_apr_finder_apply", { card: c.card_name, mode })}
-                       style={{ fontSize: 12, fontWeight: 600, color: "#666", textDecoration: "none" }}>
+                       style={{ fontSize: 12, fontWeight: 600, color: "#9aa1ad", textDecoration: "none" }}>
                       Apply
                     </a>
                   )}
@@ -253,13 +254,13 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
               </tr>
             ))}
             {shown.length === 0 && (
-              <tr><td style={{ ...td, color: "#999", padding: "20px 8px" }} colSpan={6}>No 0% cards match those filters.</td></tr>
+              <tr><td style={{ ...td, color: "#6b7280", padding: "20px 8px" }} colSpan={6}>No 0% cards match those filters.</td></tr>
             )}
           </tbody>
         </table>
       </div>
       {ranked.length > ABS_CAP && (
-        <div style={{ fontSize: 12, color: "#999", marginTop: 10 }}>
+        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 10 }}>
           Showing the top {ABS_CAP} of {ranked.length}. Search or add a filter to narrow it down.
         </div>
       )}
@@ -267,11 +268,11 @@ function BestZeroAprCards({ onUse }: { onUse: (cardId: string) => void }) {
   )
 }
 
-const label: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5, display: "block" }
-const input: React.CSSProperties = { padding: "8px 10px", fontSize: 14, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: "100%" }
+const label: React.CSSProperties = { fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5, display: "block" }
+const input: React.CSSProperties = { padding: "8px 10px", fontSize: 14, background: "#161922", color: "#ffffff", border: "1px solid #2a2e38", borderRadius: 6, width: "100%" }
 const select: React.CSSProperties = { ...input }
 const fieldWrap: React.CSSProperties = { flex: 1, minWidth: 140 }
-const card: React.CSSProperties = { background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: 20 }
+const card: React.CSSProperties = { background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: 20 }
 
 export default function IntroAprClient({ userId }: { userId: string; isPaid: boolean }) {
   const cards = useMemo(() => purchaseIntroCards(), [])
@@ -353,10 +354,10 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
     <div>
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 32px" }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#ffffff", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
           0% APR Cards <InfoTip term="introApr" label="0% intro APR" size={16} />
         </h1>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
+        <p style={{ color: "#9aa1ad", fontSize: 14, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
           The play in plain English: put everyday spending on a 0% intro-APR card, pay only the minimum, and keep the cash
           you&apos;d have spent in your HYSA earning interest — then pay the card off in full before the 0% ends. Below, find the
           longest 0% cards (for purchases or balance transfers), ranked by the length of the no-interest window, then model
@@ -365,16 +366,16 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
 
         <BestZeroAprCards onUse={modelCard} />
 
-        <h2 ref={calcRef} style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 32, marginBottom: 6, scrollMarginTop: 16 }}>
+        <h2 ref={calcRef} style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", marginTop: 32, marginBottom: 6, scrollMarginTop: 16 }}>
           What a 0% window is worth — float calculator
         </h2>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 12, maxWidth: 720, lineHeight: 1.55 }}>
+        <p style={{ color: "#9aa1ad", fontSize: 14, marginBottom: 12, maxWidth: 720, lineHeight: 1.55 }}>
           Ride a card&apos;s 0% intro APR, pay only the minimum, and leave the cash that would have paid the bill
           in your HYSA earning interest. The bank floats your balance for free. This shows what that float is worth —
           stacked on top of your everyday earn and welcome bonus — and how the interest <b>decays</b> the later in the
           promo you spend (which is why re-upping a fresh card every ~6 months keeps the rate high).
         </p>
-        <p style={{ color: "#888", fontSize: 13, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
+        <p style={{ color: "#9aa1ad", fontSize: 13, marginBottom: 24, maxWidth: 720, lineHeight: 1.55 }}>
           The 0% period usually starts when you open the card. Any balance left when it ends jumps to the regular APR —
           pay it off before then.
         </p>
@@ -393,7 +394,7 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
                 ))}
               </select>
               {goToApr != null && (
-                <div style={{ fontSize: 11, color: "#b45309", marginTop: 6 }}>
+                <div style={{ fontSize: 11, color: "#f59e0b", marginTop: 6 }}>
                   ⚠ Go-to APR after the promo is ~{goToApr}%. Pay the full balance a few days before it ends or this all evaporates.
                 </div>
               )}
@@ -408,8 +409,8 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
               <Field label="Your HYSA APY" suffix="%" step={0.1} value={hysaApyPct} onChange={setHysaApyPct} />
             </Row>
 
-            <div style={{ borderTop: "1px solid #f0f0f0", margin: "16px 0", paddingTop: 4 }} />
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Rewards</div>
+            <div style={{ borderTop: "1px solid #23262e", margin: "16px 0", paddingTop: 4 }} />
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Rewards</div>
             <Row>
               <Field label="Points per $" value={pointsPerDollar} onChange={setPointsPerDollar} step={0.5} />
               <Field label="Point value" suffix="¢" value={cppCents} onChange={setCppCents} step={0.1} />
@@ -434,13 +435,13 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
 
           {/* ── Results ── */}
           <div style={{ flex: "1 1 380px", minWidth: 320, display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ background: "#f0faf5", border: `2px solid ${ACCENT}`, borderRadius: 14, padding: "22px 26px" }}>
+            <div style={{ background: "rgba(13,150,104,0.14)", border: `2px solid ${ACCENT}`, borderRadius: 14, padding: "22px 26px" }}>
               <div style={{ fontSize: 11, color: ACCENT, textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.06em" }}>Blended return on spend</div>
               <div style={{ fontSize: 40, fontWeight: 800, color: ACCENT, marginTop: 2, letterSpacing: "-0.02em" }}>
                 {pct1(result.returnOnSpend)}
                 <span style={{ fontSize: 18, color: "#7bbfa6", fontWeight: 700, marginLeft: 8 }}>≈ {result.blendedMultiplier.toFixed(1)}x</span>
               </div>
-              <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>
+              <div style={{ fontSize: 13, color: "#9aa1ad", marginTop: 4 }}>
                 {money(result.totalProfit)} profit on {money(result.totalSpend)} of spend
                 {result.welcomeBonusEarned ? " · welcome bonus earned ✓" : welcomeBonusPoints > 0 ? " · ⚠ bonus min spend not met in window" : ""}
               </div>
@@ -455,8 +456,8 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
               )}
               <BreakdownRow k="− Tax on interest" v={`-${money(result.taxOnInterest)}`} sub={`${taxRatePct}% of interest (1099-INT)`} muted />
               {result.annualFee > 0 && <BreakdownRow k="− Annual fee" v={`-${money(result.annualFee)}`} muted />}
-              <div style={{ borderTop: "1px solid #eee", marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <span style={{ fontWeight: 800, color: "#111" }}>Net profit</span>
+              <div style={{ borderTop: "1px solid #23262e", marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <span style={{ fontWeight: 800, color: "#ffffff" }}>Net profit</span>
                 <span style={{ fontWeight: 800, color: ACCENT, fontSize: 18 }}>{money(result.totalProfit)}</span>
               </div>
             </div>
@@ -464,7 +465,7 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
             {selectedCard?.offer_link && (
               <a href={applyUrl(selectedCard.id)} target="_blank" rel="noreferrer"
                  onClick={() => track("intro_apr_apply_click", { card: selectedCard.card_name })}
-                 style={{ display: "block", textAlign: "center", background: ACCENT, color: "#fff", fontWeight: 700, fontSize: 14, padding: "12px 0", borderRadius: 8, textDecoration: "none" }}>
+                 style={{ display: "block", textAlign: "center", background: ACCENT_BG, color: "#fff", fontWeight: 700, fontSize: 14, padding: "12px 0", borderRadius: 8, textDecoration: "none" }}>
                 Apply for {selectedCard.card_name} →
               </a>
             )}
@@ -474,19 +475,19 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
         {/* ── Decaying-interest schedule ── */}
         {result.schedule.length > 0 && (
           <div style={{ ...card, marginTop: 22 }}>
-            <div style={{ fontWeight: 700, color: "#111", marginBottom: 4 }}>The decaying float curve</div>
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>
+            <div style={{ fontWeight: 700, color: "#ffffff", marginBottom: 4 }}>The decaying float curve</div>
+            <div style={{ fontSize: 12, color: "#9aa1ad", marginBottom: 6 }}>
               Cash spent earlier in the 0% window sits in your savings longer, earning more — so spending later earns less.
               That&apos;s why the return &ldquo;decays&rdquo; toward the end.
             </div>
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 14 }}>
+            <div style={{ fontSize: 12, color: "#9aa1ad", marginBottom: 14 }}>
               Each month&apos;s spend floats in your HYSA until you pay the balance at the end of the promo. Spend early and it earns the
               full APY; spend late and there&apos;s barely any runway left — this is the whole reason to start a fresh 0% card mid-promo.
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid #e8e8e8", textAlign: "left", color: "#888" }}>
+                  <tr style={{ borderBottom: "1px solid #23262e", textAlign: "left", color: "#9aa1ad" }}>
                     <th style={th}>Month</th>
                     <th style={{ ...th, textAlign: "right" }}>Spend</th>
                     <th style={{ ...th, textAlign: "right" }}>Floats (mo)</th>
@@ -496,15 +497,15 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
                 </thead>
                 <tbody>
                   {result.schedule.map(r => (
-                    <tr key={r.month} style={{ borderBottom: "1px solid #f4f4f4" }}>
+                    <tr key={r.month} style={{ borderBottom: "1px solid #23262e" }}>
                       <td style={td}>{r.month + 1}</td>
                       <td style={{ ...td, textAlign: "right" }}>{money(r.spend)}</td>
                       <td style={{ ...td, textAlign: "right" }}>{r.floatMonths}</td>
-                      <td style={{ ...td, textAlign: "right", color: r.effectiveRateOnSpend > 0.02 ? ACCENT : "#999" }}>{pct1(r.effectiveRateOnSpend)}</td>
+                      <td style={{ ...td, textAlign: "right", color: r.effectiveRateOnSpend > 0.02 ? ACCENT : "#6b7280" }}>{pct1(r.effectiveRateOnSpend)}</td>
                       <td style={{ ...td, textAlign: "right", fontWeight: 600 }}>{money2(r.interest)}</td>
                     </tr>
                   ))}
-                  <tr style={{ background: "#f0faf5" }}>
+                  <tr style={{ background: "rgba(13,150,104,0.14)" }}>
                     <td style={{ ...td, fontWeight: 700 }}>Total</td>
                     <td style={{ ...td, textAlign: "right", fontWeight: 700 }}>{money(result.totalSpend)}</td>
                     <td style={td} />
@@ -518,7 +519,7 @@ export default function IntroAprClient({ userId }: { userId: string; isPaid: boo
         )}
 
         {/* ── Guardrails ── */}
-        <div style={{ marginTop: 22, padding: "16px 20px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, fontSize: 13, color: "#92400e", lineHeight: 1.6 }}>
+        <div style={{ marginTop: 22, padding: "16px 20px", background: "#1c160a", border: "1px solid #4a3a16", borderRadius: 10, fontSize: 13, color: "#f59e0b", lineHeight: 1.6 }}>
           <b>Before you run this:</b> only do it if the cash to repay is already sitting in the HYSA — one or two months of go-to-APR
           interest will wipe out the whole gain. Mark your calendar for the promo end date and pay the full balance a few days early.
           Business cards (Amex Blue Business Plus/Cash) are ideal because the balance doesn&apos;t report to your personal credit, so a
@@ -538,7 +539,7 @@ function Field({ label: lbl, value, onChange, suffix, step }: { label: string; v
     <div style={fieldWrap}>
       <label style={label}>{lbl}</label>
       <div style={{ position: "relative" }}>
-        {suffix && <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#bbb", fontSize: 13 }}>{suffix}</span>}
+        {suffix && <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#6b7280", fontSize: 13 }}>{suffix}</span>}
         <input
           type="number"
           inputMode="decimal"
@@ -556,13 +557,13 @@ function BreakdownRow({ k, v, sub, muted }: { k: string; v: string; sub?: string
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "5px 0" }}>
       <div>
-        <span style={{ fontSize: 13, color: muted ? "#999" : "#333" }}>{k}</span>
-        {sub && <span style={{ fontSize: 11, color: "#bbb", marginLeft: 8 }}>{sub}</span>}
+        <span style={{ fontSize: 13, color: muted ? "#6b7280" : "#cdd2db" }}>{k}</span>
+        {sub && <span style={{ fontSize: 11, color: "#6b7280", marginLeft: 8 }}>{sub}</span>}
       </div>
-      <span style={{ fontSize: 14, fontWeight: 600, color: muted ? "#999" : "#111" }}>{v}</span>
+      <span style={{ fontSize: 14, fontWeight: 600, color: muted ? "#6b7280" : "#ffffff" }}>{v}</span>
     </div>
   )
 }
 
 const th: React.CSSProperties = { padding: "6px 8px", fontWeight: 600 }
-const td: React.CSSProperties = { padding: "8px", color: "#444" }
+const td: React.CSSProperties = { padding: "8px", color: "#cdd2db" }

@@ -17,21 +17,21 @@ import { addOwnedCard } from "../../../lib/ownedCards"
 import { addSavingsEntry } from "../../../lib/savingsEntries"
 
 const card: React.CSSProperties = {
-  background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: 24, marginBottom: 16,
+  background: "#161922", border: "1px solid #23262e", borderRadius: 12, padding: 24, marginBottom: 16,
 }
 const label: React.CSSProperties = {
-  fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6,
+  fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6,
 }
 const primary: React.CSSProperties = {
-  background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8,
+  background: "#0d9668", color: "#fff", border: "none", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer",
 }
 const secondary: React.CSSProperties = {
-  background: "#fff", color: "#666", border: "1px solid #e0e0e0", borderRadius: 8,
+  background: "#161922", color: "#9aa1ad", border: "1px solid #23262e", borderRadius: 8,
   padding: "10px 18px", fontSize: 14, fontWeight: 500, cursor: "pointer",
 }
 const input: React.CSSProperties = {
-  padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, width: "100%",
+  padding: "8px 10px", fontSize: 13, border: "1px solid #2a2e38", borderRadius: 6, width: "100%",
 }
 
 type Phase = "upload" | "schema_review" | "matching" | "review" | "committing" | "done"
@@ -162,7 +162,7 @@ export default function ImportClient({ userId }: { userId: string }) {
       <CheckpointNav />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 32px 48px" }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Account Import</h1>
-        <p style={{ color: "#666", marginBottom: 24, lineHeight: 1.5 }}>
+        <p style={{ color: "#9aa1ad", marginBottom: 24, lineHeight: 1.5 }}>
           Upload a CSV (or paste delimited text) of your accounts. Stacks detects which columns mean what,
           matches each account to a catalog entry, then you confirm dates and commit to your profile.
         </p>
@@ -186,9 +186,9 @@ export default function ImportClient({ userId }: { userId: string }) {
                 <button style={{ ...secondary, marginTop: 8 }} onClick={parseFromPaste}>Parse paste</button>
               )}
             </div>
-            {error && <div style={{ color: "#dc2626", fontSize: 13, marginBottom: 12 }}>{error}</div>}
+            {error && <div style={{ color: "#f87171", fontSize: 13, marginBottom: 12 }}>{error}</div>}
             {sheet && (
-              <div style={{ fontSize: 12, color: "#666", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: "#9aa1ad", marginBottom: 12 }}>
                 Parsed {sheet.rows.length} row{sheet.rows.length === 1 ? "" : "s"} across {sheet.headers.length} columns.
               </div>
             )}
@@ -217,14 +217,14 @@ export default function ImportClient({ userId }: { userId: string }) {
           <div style={card}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Review {rows.length} match{rows.length === 1 ? "" : "es"}</h3>
-              <div style={{ fontSize: 12, color: "#666", textAlign: "right" }}>
+              <div style={{ fontSize: 12, color: "#9aa1ad", textAlign: "right" }}>
                 <div>
                   Matched: {rows.filter(r => r.match.top).length} ·
                   Low confidence: {rows.filter(r => r.match.top && r.match.top.confidence < 0.7).length} ·
                   Unmatched: {rows.filter(r => !r.match.top).length}
                 </div>
                 {matchStats && (
-                  <div style={{ fontSize: 11, color: "#0d7c5f", marginTop: 4 }}>
+                  <div style={{ fontSize: 11, color: "#34d399", marginTop: 4 }}>
                     {matchStats.heuristic_accepted}/{matchStats.total} matched locally (no AI call) · {matchStats.llm_resolved} sent to AI
                   </div>
                 )}
@@ -233,7 +233,7 @@ export default function ImportClient({ userId }: { userId: string }) {
 
             <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
               <div style={{ minWidth: 620 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", paddingBottom: 8, borderBottom: "1px solid #f0f0f0" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", paddingBottom: 8, borderBottom: "1px solid #23262e" }}>
                   <div>Source name</div><div>Match</div><div>Conf</div><div>Opened</div><div>Closed</div><div>Status</div>
                 </div>
 
@@ -251,12 +251,12 @@ export default function ImportClient({ userId }: { userId: string }) {
             )}
 
             {phase === "done" && (
-              <div style={{ marginTop: 16, padding: 16, background: "#f0f9f4", borderRadius: 8 }}>
-                <div style={{ fontWeight: 600, color: "#0d7c5f", marginBottom: 4 }}>
+              <div style={{ marginTop: 16, padding: 16, background: "rgba(13,150,104,0.14)", borderRadius: 8 }}>
+                <div style={{ fontWeight: 600, color: "#34d399", marginBottom: 4 }}>
                   Done. Saved {rows.filter(r => r.status === "saved").length} of {rows.filter(r => r.selected_id !== "skip").length}.
                 </div>
                 {rows.filter(r => r.status === "error").length > 0 && (
-                  <div style={{ fontSize: 12, color: "#9a3412" }}>
+                  <div style={{ fontSize: 12, color: "#f59e0b" }}>
                     {rows.filter(r => r.status === "error").length} failed. See per-row status above.
                   </div>
                 )}
@@ -286,7 +286,7 @@ function SchemaReview({ sheet, schema, onChange, onConfirm, onBack, error }: {
     { key: "status_col", label: "Status" },
     { key: "notes_col", label: "Notes" },
   ]
-  const confColor = schema.confidence >= 0.7 ? "#0d7c5f" : schema.confidence >= 0.4 ? "#d97706" : "#dc2626"
+  const confColor = schema.confidence >= 0.7 ? "#34d399" : schema.confidence >= 0.4 ? "#f59e0b" : "#f87171"
   return (
     <div style={card}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -298,8 +298,8 @@ function SchemaReview({ sheet, schema, onChange, onConfirm, onBack, error }: {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12, marginBottom: 16 }}>
         {fields.map(f => (
           <React.Fragment key={f.key}>
-            <div style={{ fontSize: 13, color: "#666", alignSelf: "center" }}>
-              {f.label}{f.required ? <span style={{ color: "#dc2626" }}> *</span> : null}
+            <div style={{ fontSize: 13, color: "#9aa1ad", alignSelf: "center" }}>
+              {f.label}{f.required ? <span style={{ color: "#f87171" }}> *</span> : null}
             </div>
             <select
               value={(schema[f.key] as string | null) ?? ""}
@@ -314,12 +314,12 @@ function SchemaReview({ sheet, schema, onChange, onConfirm, onBack, error }: {
       </div>
       <div style={{ marginBottom: 16 }}>
         <div style={label}>Preview (first 3 rows)</div>
-        <div style={{ overflowX: "auto", border: "1px solid #f0f0f0", borderRadius: 6 }}>
+        <div style={{ overflowX: "auto", border: "1px solid #23262e", borderRadius: 6 }}>
           <table style={{ fontSize: 11, borderCollapse: "collapse", width: "100%" }}>
             <thead>
               <tr>
                 {sheet.headers.map(h => (
-                  <th key={h} style={{ padding: 6, textAlign: "left", background: "#fafafa", borderBottom: "1px solid #f0f0f0", color: Object.values(schema).includes(h) ? "#0d7c5f" : "#666", fontWeight: 600 }}>{h}</th>
+                  <th key={h} style={{ padding: 6, textAlign: "left", background: "#0f1219", borderBottom: "1px solid #23262e", color: Object.values(schema).includes(h) ? "#34d399" : "#9aa1ad", fontWeight: 600 }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -327,7 +327,7 @@ function SchemaReview({ sheet, schema, onChange, onConfirm, onBack, error }: {
               {sheet.rows.slice(0, 3).map((r, i) => (
                 <tr key={i}>
                   {sheet.headers.map(h => (
-                    <td key={h} style={{ padding: 6, borderBottom: "1px solid #f5f5f5", color: "#333" }}>{r[h]}</td>
+                    <td key={h} style={{ padding: 6, borderBottom: "1px solid #23262e", color: "#cdd2db" }}>{r[h]}</td>
                   ))}
                 </tr>
               ))}
@@ -335,7 +335,7 @@ function SchemaReview({ sheet, schema, onChange, onConfirm, onBack, error }: {
           </table>
         </div>
       </div>
-      {error && <div style={{ color: "#dc2626", fontSize: 13, marginBottom: 12 }}>{error}</div>}
+      {error && <div style={{ color: "#f87171", fontSize: 13, marginBottom: 12 }}>{error}</div>}
       <div style={{ display: "flex", gap: 12 }}>
         <button style={primary} onClick={onConfirm}>Match accounts</button>
         <button style={secondary} onClick={onBack}>Back</button>
@@ -353,10 +353,10 @@ function RowEditor({ row, onChange, disabled }: { row: Row; onChange: (p: Partia
     ? null
     : row.match.candidates.find(c => c.catalog_id === row.selected_id)?.confidence ?? row.match.top?.confidence ?? null
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, padding: "10px 0", borderBottom: "1px solid #f5f5f5", fontSize: 13, alignItems: "center" }}>
-      <div style={{ color: "#111", fontWeight: 500, fontFamily: "monospace", fontSize: 12 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, padding: "10px 0", borderBottom: "1px solid #23262e", fontSize: 13, alignItems: "center" }}>
+      <div style={{ color: "#ffffff", fontWeight: 500, fontFamily: "monospace", fontSize: 12 }}>
         {row.data.raw_name}
-        {row.data.account_type && <div style={{ color: "#999", fontSize: 10, fontWeight: 400 }}>{row.data.account_type}</div>}
+        {row.data.account_type && <div style={{ color: "#6b7280", fontSize: 10, fontWeight: 400 }}>{row.data.account_type}</div>}
       </div>
       <select
         value={row.selected_id}
@@ -370,7 +370,7 @@ function RowEditor({ row, onChange, disabled }: { row: Row; onChange: (p: Partia
           </option>
         ))}
       </select>
-      <div style={{ fontSize: 12, color: conf == null ? "#999" : conf >= 0.7 ? "#0d7c5f" : "#d97706" }}>
+      <div style={{ fontSize: 12, color: conf == null ? "#6b7280" : conf >= 0.7 ? "#34d399" : "#f59e0b" }}>
         {conf == null ? "n/a" : `${Math.round(conf * 100)}%`}
       </div>
       <input
@@ -387,7 +387,7 @@ function RowEditor({ row, onChange, disabled }: { row: Row; onChange: (p: Partia
         style={{ ...input, padding: "6px 8px", fontSize: 12 }}
         disabled={disabled || row.selected_id === "skip"}
       />
-      <div style={{ fontSize: 11, color: row.status === "saved" ? "#0d7c5f" : row.status === "error" ? "#dc2626" : row.status === "saving" ? "#2563eb" : "#999" }}>
+      <div style={{ fontSize: 11, color: row.status === "saved" ? "#34d399" : row.status === "error" ? "#f87171" : row.status === "saving" ? "#60a5fa" : "#6b7280" }}>
         {row.status === "saved" ? "✓ saved" : row.status === "error" ? `✗ ${row.error ?? "error"}` : row.status === "saving" ? "saving…" : "pending"}
       </div>
     </div>
