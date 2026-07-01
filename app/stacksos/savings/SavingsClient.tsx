@@ -859,8 +859,16 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                 // in your HYSA?" — the same opportunity-cost compare the Pro
                 // sequencer does, surfaced on every tracked bonus (NOT Pro-gated).
                 const bonusAmt = e.bonus_amount ?? 0
+                // The bonus account ALSO earns its own base APY on the deposit over
+                // the hold — credit that alongside the bonus. Without it, a bonus
+                // bank paying 3% got compared bare against the FULL cost of pulling
+                // cash out of the user's HYSA, understating the edge (e.g. Capital
+                // One's $300 read as ~$92 instead of ~$260).
+                const bonusBankApy = catalogEntry?.base_apy ?? e.offer_apy ?? 0
+                const bonusBankInterest = e.estimated_yield ?? (deposit > 0 && holdDays > 0 && bonusBankApy > 0 ? Math.round(deposit * bonusBankApy * (holdDays / 365)) : 0)
+                const totalValue = bonusAmt + bonusBankInterest
                 const hysaWouldEarn = deposit > 0 && holdDays > 0 && currentApy > 0 ? deposit * currentApy * (holdDays / 365) : null
-                const hysaEdge = hysaWouldEarn != null ? bonusAmt - hysaWouldEarn : null
+                const hysaEdge = hysaWouldEarn != null ? totalValue - hysaWouldEarn : null
 
                 return (
                   <div key={e.id} style={{ background: DK.panel, border: "2px solid #34d399", borderRadius: 14, padding: "20px 24px" }}>
@@ -904,14 +912,19 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                         {hysaEdge != null && hysaWouldEarn != null ? (
                           <div style={{ fontSize: 12, marginTop: 4, color: hysaEdge > 0 ? DK.greenFg : "#f87171", fontWeight: 600 }}>
                             {hysaEdge > 0 ? "+" : ""}{money(Math.round(hysaEdge))} vs your {pct(currentApy)} HYSA
-                            <span style={{ color: "#6b7280", fontWeight: 400 }}> · it would earn {money(Math.round(hysaWouldEarn))} on {money(deposit)} over {holdDays}d</span>
+                            <span style={{ color: "#6b7280", fontWeight: 400 }}> · {money(bonusAmt)} bonus{bonusBankInterest > 0 ? ` + ${money(bonusBankInterest)} interest @ ${pct(bonusBankApy)}` : ""} vs {money(Math.round(hysaWouldEarn))} it'd earn on {money(deposit)} over {holdDays}d</span>
+                          </div>
+                        ) : bonusBankInterest > 0 ? (
+                          <div style={{ fontSize: 12, marginTop: 4, color: DK.greenFg, fontWeight: 600 }}>
+                            {money(totalValue)} total <span style={{ color: "#6b7280", fontWeight: 400 }}> · {money(bonusAmt)} bonus + {money(bonusBankInterest)} interest @ {pct(bonusBankApy)} over {holdDays}d · add your HYSA APY to see the edge</span>
                           </div>
                         ) : (
                           <div style={{ fontSize: 11, marginTop: 4, color: "#6b7280" }}>Add your HYSA APY in your profile to see the edge over just leaving the cash there</div>
                         )}
                       </div>
                       <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(e.bonus_amount ?? 0)}</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(totalValue)}</div>
+                        {bonusBankInterest > 0 && <div style={{ fontSize: 10, color: "#6b7280", marginTop: -4 }}>bonus + yield</div>}
                         {daysRemaining > 0 && <div style={{ fontSize: 11, color: "#f59e0b" }}>{daysRemaining} days remaining</div>}
                         <button onClick={() => toggleSavingsFlip(e.id)}
                           title={svFlipped ? "Back to the next step" : "See the full timeline & details"}

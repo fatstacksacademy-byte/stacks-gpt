@@ -527,6 +527,35 @@ export default function HubClient({
         { label: "Bonus posted", done: !!postedAt },
         { label: "Complete", done: false },
       ])
+      // Deposit-tier chooser for multi-tier savings bonuses, surfaced right on
+      // the dashboard. Changing the tier re-sizes the deposit target + bonus +
+      // projected yield exactly like the Savings tab's picker does.
+      const savCatalog = savingsBonusForEntry(e)
+      const dollars = (n: number) => `$${Math.round(n).toLocaleString()}`
+      const savTier = savCatalog && Array.isArray(savCatalog.tiers) && savCatalog.tiers.length > 1
+        ? {
+            accent: MODULE.savings.fg,
+            options: savCatalog.tiers.map(t => ({
+              key: t.min_deposit,
+              primary: dollars(t.bonus_amount),
+              secondary: `${dollars(t.min_deposit)} deposit`,
+              selected: t.min_deposit === (e.deposit_required ?? 0),
+            })),
+            onSelect: async (key: string | number) => {
+              const t = savCatalog.tiers.find(x => x.min_deposit === key)
+              if (!t) return
+              const holdDays = e.holding_period_days ?? 0
+              const interestEarned = Math.round(t.min_deposit * savCatalog.base_apy * (holdDays / 365))
+              await updateSavingsEntry(e.id, {
+                deposit_required: t.min_deposit,
+                bonus_amount: t.bonus_amount,
+                estimated_yield: interestEarned > 0 ? interestEarned : null,
+                expected_total_value: t.bonus_amount + interestEarned,
+              })
+              track("dashboard_bonus_advanced", { module: "savings", action: "tier_changed" })
+            },
+          }
+        : null
       out.push({
         module: "savings",
         name: e.institution_name,
@@ -545,6 +574,7 @@ export default function HubClient({
         advance,
         undo,
         checklist,
+        tier: savTier,
       })
     }
 

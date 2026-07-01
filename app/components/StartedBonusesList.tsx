@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { URGENCY_RANK, daysUntil, type BonusUrgency } from "../../lib/bonusNextStep"
 import { DD_SOURCES, DD_EMPLOYER } from "../../lib/ddSources"
 import PortalStacksBadge from "./PortalStacksBadge"
+import TierPicker, { type TierOption } from "./TierPicker"
 import { DK, MODULE, URGENCY_DK, moduleGradient } from "../../lib/stacksTheme"
 
 /**
@@ -66,6 +67,16 @@ export type StartedBonus = {
     required: number
     soFar: number
     log: (amount: number, source: string | null) => Promise<void>
+  } | null
+  /** Deposit-tier chooser — for multi-tier savings bonuses (e.g. Capital One
+   *  $20k→$300 vs $100k→$1,500). Lets the user re-pick the tier right on the
+   *  dashboard; changing it updates the deposit target + bonus everywhere.
+   *  Null when the bonus isn't tiered. */
+  tier?: {
+    options: TierOption[]
+    onSelect: (key: string | number) => void | Promise<void>
+    footnote?: string
+    accent: string
   } | null
 }
 
@@ -349,6 +360,20 @@ export default function StartedBonusesList({
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 700, color: xpReady ? DK.gold : color.fg, flexShrink: 0, minWidth: 30, textAlign: "right" }}>{pct}%</span>
                         <span title="The payout" style={{ fontSize: 14, flexShrink: 0, filter: cashNear ? "none" : "grayscale(0.85)", opacity: cashNear ? 1 : 0.45, transition: "filter .3s, opacity .3s" }}>💵</span>
+                      </div>
+                    )}
+
+                    {/* Deposit-tier chooser — for multi-tier savings bonuses,
+                        right on the dashboard (no need to open the Savings tab). */}
+                    {b.tier && b.tier.options.length > 1 && (
+                      <div style={{ padding: "10px 18px 0" }} onClick={(e) => e.stopPropagation()}>
+                        <TierPicker
+                          accent={b.tier.accent}
+                          label="Deposit tier"
+                          options={b.tier.options}
+                          onSelect={async (k) => { setBusyKey(key); try { await b.tier!.onSelect(k); onChanged?.() } finally { setBusyKey(null) } }}
+                          footnote={b.tier.footnote}
+                        />
                       </div>
                     )}
 
