@@ -2451,32 +2451,38 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
           </div>
         )}
 
-        {/* ── Free-tier upgrade nudge — replaces the sequencer hero cards ── */}
-        {!isPaid && (
-          <div style={{
-            background: DK.panel, border: `2px solid ${DK.border}`, borderRadius: 14,
-            padding: "20px 22px", marginBottom: 20,
-            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
-          }}>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
-                Pro feature
+        {/* ── Free-tier teaser — shows the value you qualify for (real, state-
+            filtered numbers) and gates the ranked queue behind Pro. ── */}
+        {!isPaid && (() => {
+          const qualifyCount = available.length + inProgress.length
+          const yearPotential = [...available]
+            .sort((a, b) => (b.bonus.bonus_amount ?? 0) - (a.bonus.bonus_amount ?? 0))
+            .slice(0, 12)
+            .reduce((s, b) => s + (b.bonus.bonus_amount ?? 0), 0)
+          return (
+            <div style={{ background: DK.panel, border: `2px solid ${DK.border}`, borderRadius: 14, padding: "20px 22px", marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
+                What you qualify for{profile.state ? ` in ${profile.state}` : ""}
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: DK.text, marginBottom: 4 }}>
-                Get the personalized bonus queue
+              <div style={{ display: "flex", gap: 26, flexWrap: "wrap", marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 30, fontWeight: 900, color: DK.text, lineHeight: 1 }}>{qualifyCount}</div>
+                  <div style={{ fontSize: 12, color: DK.textMute, marginTop: 3 }}>checking bonuses you qualify for</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 30, fontWeight: 900, color: DK.greenFg, lineHeight: 1 }}>${yearPotential.toLocaleString()}</div>
+                  <div style={{ fontSize: 12, color: DK.textMute, marginTop: 3 }}>from your top picks over the next year</div>
+                </div>
               </div>
-              <div style={{ fontSize: 13, color: DK.textMute, lineHeight: 1.5 }}>
-                Stacks ranks every live bonus for your paycheck and tells you which one to do next — sequenced by cooldowns and net profitability.
+              <div style={{ fontSize: 13, color: DK.textMute, lineHeight: 1.5, marginBottom: 14 }}>
+                Pro automatically <b style={{ color: DK.textDim }}>ranks them by profitability</b> for your paycheck and sequences them around cooldowns — so you always know which one to do next.
               </div>
+              <a href="/onboarding" style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
+                Upgrade to Pro to see your ranked queue →
+              </a>
             </div>
-            <a href="/onboarding" style={{
-              fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green,
-              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
-            }}>
-              Upgrade to Pro →
-            </a>
-          </div>
-        )}
+          )
+        })()}
 
         {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
