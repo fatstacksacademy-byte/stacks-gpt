@@ -82,7 +82,7 @@ export const monthlyBankPicks: MonthlyBankPicks[] = [
       {
         bonusId: "four-leaf-fcu-550-checking-2026",
         takeaway:
-          "Do this one first — before you open anything else. FourLeaf (formerly Bethpage) is ChexSystems-sensitive, and the data points show it cares mostly about how many accounts you've opened in the last month; zero or one is ideal, so apply while your recent-account count is still clean. One catch: unlike Bank of America, FourLeaf is strict about the direct deposit — it wants a real recurring payroll, pension, or government deposit of $500+ (ACH pushes from another bank are hit-or-miss here), so line up your actual paycheck. Land it and you get $350 up front, then $100 at 12 months and $100 at 24 months — $550 total.",
+          "Do this one first — before you open anything else. FourLeaf (formerly Bethpage) is ChexSystems-sensitive, and the data points show it cares mostly about how many accounts you've opened in the last month; zero or one is ideal, so apply while your recent-account count is still clean. Here's the part the four-leaf write-ups gloss over: the $350 only needs ONE qualifying $500+ direct deposit within 90 days — one paycheck and you're paid. The other $200 is a separate, two-year play: +$100 at 12 consecutive months and +$100 at 24, and if you miss a single month you forfeit both. Only real payroll/pension/gov deposits count (ACH pushes are hit-or-miss), so grab the easy $350, then decide on the $200 — it's a great low-effort hold if you can split your payroll (one paycheck/month here, the rest chasing other bonuses) or if you're parked in a Chex cooldown anyway. Just mind the opportunity cost of tying up a recurring-DD rail, and note it's once-per-lifetime.",
       },
       {
         bonusId: "bank-of-america-500-tiered-checking-2026",
@@ -105,9 +105,9 @@ export const monthlyBankPicks: MonthlyBankPicks[] = [
           "Expires July 7 — the fastest-dying offer here. Wells Fargo's Initiate Business Checking pays $400 just for keeping a $2,500 balance from day 30 to day 60: no direct deposit, no debit transactions. Deposit $25,000 instead and it jumps to $825. You don't need an LLC — a sole proprietorship qualifies.",
       },
       {
-        bonusId: "bmo-business-checking-1000-2026",
+        bonusId: "capital-one-360-savings-2026",
         takeaway:
-          "The biggest ceiling on the board: $400 for a $4,000 average balance, scaling to $1,500 at $100,000, plus 10 debit-card transactions — no direct deposit required. It runs through August 31, so it's not urgent, but if you've got idle cash it's the highest-dollar bonus of the month.",
+          "The Discover angle makes this my idle-cash pick of the month: Capital One just finished absorbing Discover, so it's the bank everyone's watching right now — and its 360 Performance Savings is quietly running one of the biggest deposit bonuses out there. Fund net-new money with promo code BONUS1500 and hold it 90 days: $300 at $20,000, $750 at $50,000, or a full $1,500 at $100,000. It's nationwide, needs no business, no debit transactions, and no direct deposit — just cash you park and leave. One catch: you're excluded if you've held an eligible Capital One savings account since January 1, 2024.",
       },
     ],
     honorableMentions: [

@@ -6249,7 +6249,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open a new Free Checking by 12/31/2026. Receive $350 after first qualifying recurring direct deposit of $500+ within 90 days. Earn an additional $100 after 12 consecutive months of qualifying DDs, and a third $100 after 24 consecutive months. Qualifying DDs must be recurring electronic deposits of paycheck, pension, or government benefits."
+      "other_requirements_text": "Open a new Free/Smart/Student Checking by 12/31/2026. $350 (First DD Bonus) after just ONE qualifying direct deposit of $500+ posts within 90 days — paid within 60 days of that first DD. +$100 (Second) after a qualifying DD posts for 12 CONSECUTIVE months following the initial DD; +$100 (Third) after 24 consecutive months. Miss any single month after the first DD and BOTH $100 tranches are forfeited. A qualifying DD is a recurring payroll/pension/government deposit of $500+; ACH pushes, bank transfers, ATM deposits, and P2P (Zelle) do NOT count. One checking bonus per person, ever."
     },
     "fees": {
       "monthly_fee": 0,
@@ -6266,8 +6266,8 @@ export const bonuses: any[] = [
       "state_restricted": false,
       "states_allowed": ["Nationwide (via membership)"],
       "states_excluded": [],
-      "lifetime_language": false,
-      "eligibility_notes": "Four Leaf FCU (formerly Bethpage Federal Credit Union, rebranded 2026). Membership eligibility paths not detailed in the offer terms — verify on the bank page before applying. Account must be opened between 02/02/2026 and 12/31/2026."
+      "lifetime_language": true,
+      "eligibility_notes": "Once-per-lifetime: not eligible if you've ever received a FourLeaf new-checking bonus, and only one checking bonus per person. Four Leaf FCU (formerly Bethpage Federal Credit Union, rebranded 2026). Membership eligibility paths not detailed in the offer terms — verify on the bank page before applying. Account must be opened between 02/02/2026 and 12/31/2026."
     },
     "timeline": {
       "bonus_posting_days_est": null,
@@ -6277,7 +6277,7 @@ export const bonuses: any[] = [
       "https://www.fourleaffcu.com/queens-open-an-account/",
       "https://www.doctorofcredit.com/four-leaf-federal-credit-union-550-checking-bonus-fka-as-bethpage-federalcredit-union/"
     ],
-    "raw_excerpt": "Four Leaf FCU (formerly Bethpage FCU) $550 tiered checking bonus: $350 initial after first $500+ qualifying DD within 90 days, then $100 at 12 months and $100 at 24 months of consecutive DDs. ChexSystems sensitive. Open by 12/31/2026.",
+    "raw_excerpt": "Four Leaf FCU (formerly Bethpage FCU) $550 tiered checking bonus: $350 after just ONE $500+ qualifying DD within 90 days, then $100 at 12 consecutive months and $100 at 24 consecutive months of DDs — miss any month and both $100s are forfeited. Once-per-lifetime. ChexSystems sensitive. Open by 12/31/2026.",
     "missing_fields": ["membership eligibility path"]
   },
   {
