@@ -59,6 +59,22 @@ function aggregateByLabel(items: ProjBreakdownItem[]): ProjBreakdownItem[] {
   return [...map.values()].sort((a, b) => b.amount - a.amount)
 }
 
+export type ProjYear = { total: number; items: ProjBreakdownItem[] }
+
+/**
+ * Split a horizon list into per-year buckets (year 1 / 2 / 3) so the dashboard
+ * can default to a one-year view and let the user tab into years 2 and 3. Each
+ * bucket carries its own aggregated breakdown + total.
+ */
+function projByYear<T>(list: T[], yearIndexOf: (x: T) => number, toItem: (x: T) => ProjBreakdownItem): ProjYear[] {
+  const buckets: ProjBreakdownItem[][] = [[], [], []]
+  for (const x of list) {
+    const y = yearIndexOf(x)
+    if (y >= 0 && y < 3) buckets[y].push(toItem(x))
+  }
+  return buckets.map(b => ({ total: b.reduce((s, i) => s + i.amount, 0), items: aggregateByLabel(b) }))
+}
+
 const PAYS_PER_MONTH: Record<string, number> = {
   weekly: 4.33,
   biweekly: 2.17,
@@ -182,16 +198,17 @@ export default function HubClient({
       .filter((e) => e.type === "bonus") as SequencedBonus[]
     const horizonBonuses = allBonuses.filter((b) => b.start_week * 7 <= PROJECTION_DAYS)
     const total = horizonBonuses.reduce((s, b) => s + (b.net_bonus ?? b.bonus_amount ?? 0), 0)
-    const items = aggregateByLabel(
-      horizonBonuses.map((b) => ({ label: b.bank_name, amount: b.net_bonus ?? b.bonus_amount ?? 0 })),
-    )
-    return { total, monthlyIncome: Math.round(getTotalMonthlyIncome(profile)), items }
+    const amtOf = (b: SequencedBonus) => b.net_bonus ?? b.bonus_amount ?? 0
+    const items = aggregateByLabel(horizonBonuses.map((b) => ({ label: b.bank_name, amount: amtOf(b) })))
+    const byYear = projByYear(horizonBonuses, (b) => Math.floor((b.start_week * 7) / 365), (b) => ({ label: b.bank_name, amount: amtOf(b) }))
+    return { total, monthlyIncome: Math.round(getTotalMonthlyIncome(profile)), items, byYear }
   }, [profile])
 
   const savingsProjection = useMemo(() => {
-    if (!savingsProfile) return { total: 0, items: [] as { label: string; amount: number }[] }
+    const emptyByYear: ProjYear[] = [{ total: 0, items: [] }, { total: 0, items: [] }, { total: 0, items: [] }]
+    if (!savingsProfile) return { total: 0, items: [] as ProjBreakdownItem[], byYear: emptyByYear }
     const balance = savingsProfile.current_balance ?? 0
-    if (balance <= 0) return { total: 0, items: [] }
+    if (balance <= 0) return { total: 0, items: [] as ProjBreakdownItem[], byYear: emptyByYear }
     const result = runSavingsSequencer({
       availableBalance: balance,
       userState: profile.state,
@@ -208,12 +225,14 @@ export default function HubClient({
       inHorizon.map((e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) })),
     )
     const total = inHorizon.reduce((s, e) => s + (e.total_earnings ?? 0), 0)
-    return { total: Math.round(total), items }
+    const byYear = projByYear(inHorizon, (e) => Math.floor(e.start_day / 365), (e) => ({ label: e.bank_name, amount: Math.round(e.total_earnings ?? 0) }))
+    return { total: Math.round(total), items, byYear }
   }, [savingsProfile, profile.state, profile.military_affiliated])
 
   const spendingProjection = useMemo(() => {
+    const emptyByYear: ProjYear[] = [{ total: 0, items: [] }, { total: 0, items: [] }, { total: 0, items: [] }]
     const monthlySpend = spendingProfile?.monthly_spend ?? 0
-    if (monthlySpend <= 0) return { total: 0, items: [] as { label: string; amount: number; note?: string }[], effectiveApy: null as number | null }
+    if (monthlySpend <= 0) return { total: 0, items: [] as ProjBreakdownItem[], effectiveApy: null as number | null, byYear: emptyByYear }
     // Mirror the Spending tab's controls: pace from localStorage,
     // rewards mode from localStorage, per-currency overrides from
     // spending_profile. So the dashboard's spending projection always
@@ -253,11 +272,29 @@ export default function HubClient({
       if (apy != null) { weightedApy += apy * s.card.min_spend; weightedSpend += s.card.min_spend }
     }
     const effectiveApy = weightedSpend > 0 ? weightedApy / weightedSpend : null
-    return { total: Math.round(horizonTotal), items, effectiveApy }
+    const byYear = projByYear(
+      horizonList,
+      (s) => Math.floor(Math.max(0, s.cumulative_months - s.months_to_complete) / 12),
+      (s) => { const apy = apyFor(s); return { label: s.card.card_name, amount: Math.round(s.net_value), note: apy != null ? fmtApy(apy) : undefined } },
+    )
+    return { total: Math.round(horizonTotal), items, effectiveApy, byYear }
   }, [spendingProfile, profile.state, profile.military_affiliated])
 
   const portfolio36mo =
     paycheckProjection.total + savingsProjection.total + spendingProjection.total
+
+  // Per-year portfolio views (year 1 default; tabs into years 2 & 3). Combines
+  // the three module projections for each year into one PortfolioCard payload.
+  const portfolioByYear = useMemo(() => {
+    return [0, 1, 2].map((y) => ({
+      total: (paycheckProjection.byYear[y]?.total ?? 0) + (spendingProjection.byYear[y]?.total ?? 0) + (savingsProjection.byYear[y]?.total ?? 0),
+      breakdown: [
+        { label: "Paycheck", amount: paycheckProjection.byYear[y]?.total ?? 0, href: "/stacksos/paycheck", items: paycheckProjection.byYear[y]?.items ?? [] },
+        { label: "Spending (Beta)", amount: spendingProjection.byYear[y]?.total ?? 0, href: "/stacksos/spending", items: spendingProjection.byYear[y]?.items ?? [] },
+        { label: "Savings", amount: savingsProjection.byYear[y]?.total ?? 0, href: "/stacksos/savings", items: savingsProjection.byYear[y]?.items ?? [] },
+      ],
+    }))
+  }, [paycheckProjection, spendingProjection, savingsProjection])
 
   // ─── Pro: snapshot the queue projection once/month ────────────────
   // Records this month's 3-year projection (best-effort) so QueueTrendCard can
@@ -908,14 +945,10 @@ export default function HubClient({
           isPaid ? (
             <>
             <QueueTrendCard snapshots={queueSnapshots} current={portfolio36mo} />
-            <PortfolioCard
-              total={portfolio36mo}
-              breakdown={[
-                { label: "Paycheck", amount: paycheckProjection.total, href: "/stacksos/paycheck", items: paycheckProjection.items },
-                { label: "Spending (Beta)", amount: spendingProjection.total, href: "/stacksos/spending", items: spendingProjection.items, note: spendingProjection.effectiveApy != null ? fmtApy(spendingProjection.effectiveApy) : undefined },
-                { label: "Savings", amount: savingsProjection.total, href: "/stacksos/savings", items: savingsProjection.items },
-              ]}
-            />
+            <PortfolioCard byYear={portfolioByYear} />
+            <div style={{ fontSize: 11, color: DK.textFaint, margin: "-14px 2px 20px" }}>
+              3-year total <b style={{ color: DK.textMute }}>${portfolio36mo.toLocaleString()}</b> — tap a year above to see just that year.
+            </div>
             </>
           ) : (
             // Free tier: the 3-yr projection is built from the Pro sequencers — don't

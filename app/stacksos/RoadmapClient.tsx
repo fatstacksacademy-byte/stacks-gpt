@@ -284,7 +284,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [skippedIds, setSkippedIds] = useState<string[]>([])
   const [showProjection, setShowProjection] = useState(false)
   const [projectionResult, setProjectionResult] = useState<SequencerResult | null>(null)
-  const [projectionTab, setProjectionTab] = useState<"year1" | "year2">("year1")
+  const [projectionTab, setProjectionTab] = useState<"year1" | "year2" | "year3">("year1")
   const [customBonuses, setCustomBonuses] = useState<CustomBonus[]>([])
   const [showAddCustom, setShowAddCustom] = useState(false)
   const [addCustomError, setAddCustomError] = useState<string | null>(null)
@@ -2681,6 +2681,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               const projected = getProjectedBonuses(projectionResult)
               const year1End = addDays(todayStr(), 365)
               const year2End = addDays(todayStr(), 730)
+              const year3End = addDays(todayStr(), 1095)
               const year1Bonuses = [
                 ...projected.filter(p => new Date(p.start_date) <= year1End),
                 ...customProjectedBonuses.filter(p => new Date(p.start_date) <= year1End),
@@ -2689,12 +2690,22 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 ...projected.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End),
                 ...customProjectedBonuses.filter(p => new Date(p.start_date) > year1End && new Date(p.start_date) <= year2End),
               ].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
-              const activeBonuses = projectionTab === "year1" ? year1Bonuses : year2Bonuses
+              const year3Bonuses = [
+                ...projected.filter(p => new Date(p.start_date) > year2End && new Date(p.start_date) <= year3End),
+                ...customProjectedBonuses.filter(p => new Date(p.start_date) > year2End && new Date(p.start_date) <= year3End),
+              ].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+              const activeBonuses = projectionTab === "year1" ? year1Bonuses : projectionTab === "year2" ? year2Bonuses : year3Bonuses
+              const prevYearEnd = projectionTab === "year2" ? year1End : year2End
+              const TAB_META = {
+                year1: { label: "This year", bonuses: year1Bonuses },
+                year2: { label: "Next year", bonuses: year2Bonuses },
+                year3: { label: "Year 3", bonuses: year3Bonuses },
+              } as const
               return (
                 <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
-                  {/* Tabs */}
+                  {/* Tabs — default to this year; Year 2 / Year 3 one tap away. */}
                   <div style={{ display: "flex", background: DK.panel2, borderRadius: 8, padding: 3, marginBottom: 14 }}>
-                    {(["year1", "year2"] as const).map(tab => (
+                    {(["year1", "year2", "year3"] as const).map(tab => (
                       <button key={tab} onClick={() => setProjectionTab(tab)} style={{
                         flex: 1, padding: "7px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6,
                         border: "none", cursor: "pointer",
@@ -2702,7 +2713,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         color: projectionTab === tab ? DK.text : DK.textMute,
                         boxShadow: projectionTab === tab ? "0 1px 4px rgba(0,0,0,0.4)" : "none",
                       }}>
-                        {tab === "year1" ? `This year · ${money(year1Bonuses.reduce((s, p) => s + p.net_bonus, 0))}` : `Next year · ${money(year2Bonuses.reduce((s, p) => s + p.net_bonus, 0))}`}
+                        {TAB_META[tab].label} · {money(TAB_META[tab].bonuses.reduce((s, p) => s + p.net_bonus, 0))}
                       </button>
                     ))}
                   </div>
@@ -2721,13 +2732,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       const sorted = [...activeBonuses].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
                       let bonusIdx = 0
 
-                      if (projectionTab === "year2") {
-                        // Check gap from year1End to first year2 bonus
+                      if (projectionTab !== "year1") {
+                        // Check gap from the prior year's end to the first bonus.
                         if (sorted.length > 0) {
                           const firstStart = new Date(sorted[0].start_date)
-                          const gapDays = Math.round((firstStart.getTime() - year1End.getTime()) / 86400000)
+                          const gapDays = Math.round((firstStart.getTime() - prevYearEnd.getTime()) / 86400000)
                           if (gapDays > 14) {
-                            items.push({ type: "gap", from: fmtDate(year1End), to: sorted[0].start_date })
+                            items.push({ type: "gap", from: fmtDate(prevYearEnd), to: sorted[0].start_date })
                           }
                         }
                       }

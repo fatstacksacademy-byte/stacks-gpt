@@ -20,18 +20,29 @@ type Breakdown = {
 }
 
 /**
- * 3-year projection breakdown — shown when the user toggles the
- * "Projection" tab on the dashboard. Lifetime/in-progress numbers live
- * in DashboardGoalBar now, so this card focuses on per-module breakdown.
+ * Projection breakdown — shown when the user toggles the "Projection" tab on
+ * the dashboard. Defaults to a one-year view with tabs into years 2 & 3 when
+ * `byYear` is supplied (year 1 selected by default); falls back to a single
+ * 3-year total otherwise. Lifetime/in-progress numbers live in
+ * DashboardGoalBar now, so this card focuses on per-module breakdown.
  */
 export default function PortfolioCard({
   total,
   breakdown,
+  byYear,
 }: {
-  total: number
-  breakdown: Breakdown[]
+  total?: number
+  breakdown?: Breakdown[]
+  /** Per-year payloads (index 0 = year 1). When present, renders year tabs. */
+  byYear?: { total: number; breakdown: Breakdown[] }[]
 }) {
   const [expandedLabel, setExpandedLabel] = useState<string | null>(null)
+  const [year, setYear] = useState(0)
+
+  const tabbed = !!byYear && byYear.length > 0
+  const activeTotal = tabbed ? (byYear![year]?.total ?? 0) : (total ?? 0)
+  const activeBreakdown = tabbed ? (byYear![year]?.breakdown ?? []) : (breakdown ?? [])
+  const YEAR_LABELS = ["This year", "Year 2", "Year 3"]
 
   return (
     <div
@@ -46,18 +57,38 @@ export default function PortfolioCard({
       className="portfolio-card"
     >
       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.75 }}>
-        3-Year Projection
+        {tabbed ? `${YEAR_LABELS[year]} Projection` : "3-Year Projection"}
       </div>
       <div
         className="portfolio-total"
         style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, marginTop: 4 }}
       >
-        ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+        ${activeTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}
       </div>
 
-      {breakdown.length > 0 && (
+      {tabbed && (
+        <div style={{ display: "flex", gap: 6, marginTop: 14 }}>
+          {byYear!.map((yr, i) => (
+            <button
+              key={i}
+              onClick={() => { setYear(i); setExpandedLabel(null) }}
+              style={{
+                flex: 1, padding: "7px 10px", fontSize: 12, fontWeight: 700, borderRadius: 8, cursor: "pointer",
+                border: "none",
+                background: year === i ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.08)",
+                color: "#fff", opacity: year === i ? 1 : 0.8,
+              }}
+            >
+              {YEAR_LABELS[i]}<br />
+              <span style={{ fontWeight: 800, fontSize: 13 }}>${yr.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeBreakdown.length > 0 && (
         <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 4 }}>
-          {breakdown.map(b => {
+          {activeBreakdown.map(b => {
             const isExpanded = expandedLabel === b.label
             const hasItems = (b.items?.length ?? 0) > 0
             return (
