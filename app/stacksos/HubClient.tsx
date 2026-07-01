@@ -32,6 +32,7 @@ import { getCompletedBonuses, markBonusPosted, updateBonusStep } from "../../lib
 import { getCustomBonuses, updateCustomBonus, type CustomBonus } from "../../lib/customBonuses"
 import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedCards"
 import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
+import { getDeposits, addDeposit, type BonusDeposit } from "../../lib/deposits"
 import type { CompletedBonus } from "../../lib/churn"
 import { DK, MODULE, moduleGradient } from "../../lib/stacksTheme"
 
@@ -143,6 +144,7 @@ export default function HubClient({
   // the user marks a bonus received (banked ticks up after this is true).
   const [dataReady, setDataReady] = useState(false)
   const [queueSnapshots, setQueueSnapshots] = useState<QueueSnapshot[]>([])
+  const [deposits, setDeposits] = useState<BonusDeposit[]>([])
 
   const loadData = useCallback(() => {
     Promise.allSettled([
@@ -152,6 +154,7 @@ export default function HubClient({
       getCustomBonuses(userId).then(setCustomBonuses),
       getOwnedCards(userId).then(setOwnedCards),
       getSavingsEntries(userId).then(setSavingsEntries),
+      getDeposits(userId).then(setDeposits),
     ]).finally(() => setDataReady(true))
   }, [userId])
 
@@ -368,6 +371,23 @@ export default function HubClient({
               },
             }
           : null
+      // Direct-deposit logging: total logged for this bonus so far + a log() so
+      // the user can add DDs (amount + source) toward the requirement right on
+      // the dashboard. Only surfaced for bonuses with a DD-total requirement that
+      // haven't been marked received yet.
+      const ddRequired = (b as { requirements?: { min_direct_deposit_total?: number | null } }).requirements?.min_direct_deposit_total ?? 0
+      const ddSoFar = deposits.filter(d => d.bonus_id === r.bonus_id).reduce((s, d) => s + (d.amount ?? 0), 0)
+      const depositCapability: StartedBonus["deposit"] =
+        ddRequired > 0 && !r.bonus_received
+          ? {
+              required: ddRequired,
+              soFar: ddSoFar,
+              log: async (amount: number, source: string | null) => {
+                await addDeposit(userId, r.bonus_id, amount, todayISO(), source)
+                track("deposit_source_recorded", { bonus_id: r.bonus_id, source: source ?? "employer", amount, surface: "dashboard" })
+              },
+            }
+          : null
       out.push({
         module: "paycheck",
         name: cat.bank_name ?? r.bonus_id,
@@ -383,6 +403,7 @@ export default function HubClient({
         advance,
         undo,
         checklist,
+        deposit: depositCapability,
       })
     }
 
@@ -529,7 +550,7 @@ export default function HubClient({
 
     // Drop items where nextStep is null — bonus is fully done (received + no hold remaining).
     return out.filter(item => item.nextStep != null)
-  }, [completedRecords, customBonuses, ownedCards, savingsEntries, profile.pay_frequency, profile.paycheck_amount])
+  }, [completedRecords, customBonuses, ownedCards, savingsEntries, deposits, profile.pay_frequency, profile.paycheck_amount])
 
   // ─── Lifetime earned (completed across all modules) ───────────────
   // Mirror the per-module logic so the dashboard number matches what each

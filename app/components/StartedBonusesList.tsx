@@ -58,6 +58,15 @@ export type StartedBonus = {
   undo?: AdvanceAction | null
   /** Ordered milestone checklist shown on the back of the card. */
   checklist?: ChecklistItem[]
+  /** Direct-deposit logging — for checking bonuses with a DD-total requirement.
+   *  Lets the user log individual deposits (amount + source) right on the
+   *  dashboard, accumulating toward the requirement. Null when the bonus has no
+   *  DD-total requirement (custom / spending / savings). */
+  deposit?: {
+    required: number
+    soFar: number
+    log: (amount: number, source: string | null) => Promise<void>
+  } | null
 }
 
 // Dark "mission board" module accents + urgency — pulled from the shared theme
@@ -104,6 +113,29 @@ export default function StartedBonusesList({
   const [ddValue, setDdValue] = useState("")
   const [ddSearchOpen, setDdSearchOpen] = useState(false)
   const [ddSearch, setDdSearch] = useState("")
+  // Deposit-logging form (log a DD toward a checking bonus's requirement).
+  const [depLogKey, setDepLogKey] = useState<string | null>(null)
+  const [depAmount, setDepAmount] = useState("")
+  const [depSource, setDepSource] = useState("")        // "" → Employer / payroll default
+  const [depSearchOpen, setDepSearchOpen] = useState(false)
+  const [depSearch, setDepSearch] = useState("")
+
+  function resetDepForm() {
+    setDepLogKey(null); setDepAmount(""); setDepSource(""); setDepSearchOpen(false); setDepSearch("")
+  }
+  async function submitDeposit(key: string, deposit: NonNullable<StartedBonus["deposit"]>) {
+    const amount = Math.round(Number(depAmount) || 0)
+    if (amount <= 0 || busyKey) return
+    const source = depSearchOpen ? (depSearch.trim() || null) : (depSource || DD_EMPLOYER)
+    setBusyKey(key)
+    try {
+      await deposit.log(amount, source)
+      resetDepForm()
+      onChanged?.()
+    } finally {
+      setBusyKey(null)
+    }
+  }
 
   // Tracks which cards have been flipped at least once, so the 3D flip-in
   // animation only fires on a real user flip — never on first paint.
@@ -319,6 +351,76 @@ export default function StartedBonusesList({
                         <span title="The payout" style={{ fontSize: 14, flexShrink: 0, filter: cashNear ? "none" : "grayscale(0.85)", opacity: cashNear ? 1 : 0.45, transition: "filter .3s, opacity .3s" }}>💵</span>
                       </div>
                     )}
+
+                    {/* Direct-deposit logging — progress toward the DD requirement
+                        + a "＋ Log a deposit" form (amount + source), right on the
+                        dashboard. Only for checking bonuses that carry a DD total. */}
+                    {b.deposit && (() => {
+                      const dep = b.deposit!
+                      const pctDep = dep.required > 0 ? Math.min(100, Math.round((dep.soFar / dep.required) * 100)) : 0
+                      const isLogging = depLogKey === key
+                      const employerActive = !depSearchOpen && (depSource === DD_EMPLOYER || !depSource)
+                      return (
+                        <div style={{ padding: "12px 18px 0" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
+                            <span style={{ fontSize: 11.5, fontWeight: 600, color: DK.textMute }}>💵 Direct deposits logged</span>
+                            <span style={{ fontSize: 11.5, fontWeight: 700, color: DK.greenFg }}>${dep.soFar.toLocaleString()} / ${dep.required.toLocaleString()}</span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 99, background: DK.panel2, border: `1px solid ${DK.border}`, overflow: "hidden", marginBottom: 8 }}>
+                            <div style={{ height: "100%", width: `${pctDep}%`, borderRadius: 99, background: `linear-gradient(90deg, ${DK.green}, ${DK.greenFg})`, transition: "width .5s ease" }} />
+                          </div>
+                          {!isLogging ? (
+                            <button onClick={(e) => { e.stopPropagation(); resetDepForm(); setDepLogKey(key) }}
+                              style={{ fontSize: 12, fontWeight: 700, color: DK.greenFg, background: "none", border: `1px solid ${DK.green}66`, borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
+                              ＋ Log a deposit
+                            </button>
+                          ) : (
+                            <div style={{ background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 10, padding: "10px 12px" }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, marginBottom: 8 }}>Log a direct deposit</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                <span style={{ fontSize: 15, fontWeight: 800, color: DK.textDim }}>$</span>
+                                <input autoFocus type="number" inputMode="numeric" value={depAmount} onChange={(e) => setDepAmount(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Amount"
+                                  style={{ flex: 1, minWidth: 0, padding: "8px 11px", fontSize: 15, fontWeight: 700, background: DK.panel, border: `1px solid ${DK.border2}`, borderRadius: 8, color: DK.text, outline: "none", boxSizing: "border-box" }} />
+                              </div>
+                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
+                                <button onClick={(e) => { e.stopPropagation(); setDepSource(DD_EMPLOYER); setDepSearchOpen(false); setDepSearch("") }}
+                                  style={{ padding: "6px 11px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: employerActive ? `1.5px solid ${DK.green}` : `1px solid ${DK.border2}`, background: employerActive ? MODULE.savings.soft : DK.panel, color: employerActive ? DK.greenFg : DK.textDim }}>
+                                  Employer / payroll
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); setDepSearchOpen(v => !v); setDepSource("") }}
+                                  style={{ padding: "6px 11px", fontSize: 12, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: depSearchOpen ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: depSearchOpen ? MODULE.paycheck.soft : DK.panel, color: depSearchOpen ? DK.accentFg : DK.textDim }}>
+                                  Other source…
+                                </button>
+                              </div>
+                              {depSearchOpen && (
+                                <div style={{ marginBottom: 8 }}>
+                                  <input value={depSearch} onChange={(e) => setDepSearch(e.target.value)} onClick={(e) => e.stopPropagation()} placeholder="Search bank, brokerage, or app…"
+                                    style={{ width: "100%", maxWidth: 300, padding: "7px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", background: DK.panel, color: DK.text, boxSizing: "border-box" }} />
+                                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                                    {DD_SOURCES.filter(s => s.toLowerCase().includes(depSearch.trim().toLowerCase())).slice(0, 8).map(s => (
+                                      <button key={s} onClick={(e) => { e.stopPropagation(); setDepSearch(s) }}
+                                        style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: depSearch.trim().toLowerCase() === s.toLowerCase() ? `1.5px solid ${DK.accent2}` : `1px solid ${DK.border2}`, background: depSearch.trim().toLowerCase() === s.toLowerCase() ? MODULE.paycheck.soft : DK.panel, color: DK.textDim }}>
+                                        {s}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              <div style={{ display: "flex", gap: 8 }}>
+                                <button onClick={(e) => { e.stopPropagation(); submitDeposit(key, dep) }} disabled={isBusy || !(Number(depAmount) > 0)}
+                                  style={{ padding: "8px 14px", fontSize: 12.5, fontWeight: 700, background: moduleGradient("paycheck"), color: "#fff", border: "none", borderRadius: 8, cursor: (isBusy || !(Number(depAmount) > 0)) ? "default" : "pointer", opacity: (isBusy || !(Number(depAmount) > 0)) ? 0.5 : 1 }}>
+                                  {isBusy ? "Logging…" : "Log deposit"}
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); resetDepForm() }}
+                                  style={{ padding: "8px 14px", fontSize: 12.5, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
 
                     {/* Front footer — the primary action (when there is one) + a
                         clear "Open in <module>" prompt, always visible so a started
