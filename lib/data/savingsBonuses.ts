@@ -999,11 +999,11 @@ export const savingsBonuses: SavingsBonus[] = [
     tiers: [{ min_deposit: 5000, bonus_amount: 400 }, { min_deposit: 25000, bonus_amount: 1200 }],
     cooldown_months: 12,
     fees: { monthly_fee: 30, early_closure_fee: 0, monthly_fee_waived: true },
-    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking ($25k→$1,200) or Business Essentials/Silver ($5k→$400). Promo code Q2DIG26 (direct channel — Business Essentials or Platinum) OR Q2AFL26 (Platinum, online/affiliate channel) — both valid, channel-specific; use the one for your application path. Deposit in 30 days, maintain 60 days, 6 transactions. Expires June 30, 2026." },
+    eligibility: { state_restricted: false, states_allowed: ["Nationwide (U.S.)"], lifetime_language: false, eligibility_notes: "Platinum Business Checking ($25k→$1,200) or Business Essentials/Silver ($5k→$400). Promo code Q3DIG26 (current quarter; U.S. Bank rotates the code quarterly). Deposit in 30 days, maintain 60 days, 6 transactions. Expires September 27, 2026." },
     source_links: ["https://www.usbank.com/splash/business-checking/business-checking-promo-var-4.html",
       "https://www.doctorofcredit.com/u-s-bank-400-900-business-checking-bonus/"
     ],
-    raw_excerpt: "U.S. Bank Business Checking $400 ($5k Silver/Essentials) / $1,200 ($25k Platinum). Maintain 60 days, 6 transactions. Promo Q2DIG26 (direct) or Q2AFL26 (Platinum online). Expires June 30, 2026.",
+    raw_excerpt: "U.S. Bank Business Checking $400 ($5k Silver/Essentials) / $1,200 ($25k Platinum). Maintain 60 days, 6 transactions. Promo Q3DIG26. Expires September 27, 2026.",
   },
   {
     id: "bmo-biz-savings-1000",

@@ -1089,14 +1089,15 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
         )}
 
         {!isPaid && (() => {
+          const balanceSet = (profile.current_balance ?? 0) > 0
           const qualifyCount = sequencerResult.entries.length
           const yearPotential = Math.round(sequencerResult.total_earnings)
           return (
             <div style={{ background: DK.panel, border: "2px solid #23262e", borderRadius: 14, padding: "20px 22px", marginBottom: 24 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                What you qualify for{profile.current_balance ? ` on your ${money(profile.current_balance)}` : ""}
+                {balanceSet ? `What you qualify for on your ${money(profile.current_balance ?? 0)}` : "See what you qualify for"}
               </div>
-              {qualifyCount > 0 ? (
+              {balanceSet && qualifyCount > 0 ? (
                 <>
                   <div style={{ display: "flex", gap: 26, flexWrap: "wrap", marginBottom: 12 }}>
                     <div>
@@ -1113,12 +1114,12 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
-                  Add your savings balance in your profile to see how many bonuses you qualify for and what they&apos;re worth. Pro <b style={{ color: DK.textDim }}>ranks them by effective APY</b> and sequences them across the year.
+                <div style={{ fontSize: 14, color: DK.textDim, lineHeight: 1.55, marginBottom: 14 }}>
+                  Add your <b style={{ color: "#ffffff" }}>savings balance</b> and we&apos;ll show how many bonuses you qualify for and what they&apos;re worth. Pro <b style={{ color: DK.textDim }}>ranks them by effective APY</b> and sequences them across the year.
                 </div>
               )}
-              <a href="/onboarding" style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
-                Upgrade to Pro to see your ranked queue →
+              <a href={balanceSet ? "/onboarding" : "/stacksos/profile"} style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
+                {balanceSet ? "Upgrade to Pro to see your ranked queue →" : "Add your info →"}
               </a>
             </div>
           )
