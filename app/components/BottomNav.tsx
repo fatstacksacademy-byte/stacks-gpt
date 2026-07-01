@@ -24,7 +24,8 @@ const MORE = [
   { label: "Debt", href: "/stacksos/debt", icon: "📉", desc: "Cheapest, fastest payoff plan" },
   { label: "0% APR", href: "/stacksos/intro-apr", icon: "🧊", desc: "Float cash on a 0%-APR card" },
   { label: "Card Value", href: "/stacksos/card-calculator", icon: "🧮", desc: "What a card is really worth" },
-  { label: "Sequencer", href: "/stacksos/sequencer", icon: "🎯", desc: "Optimize the order of your bonuses" },
+  // Paycheck sequencing is a Pro feature that lives under the Paycheck tab — it
+  // was never meant to be a standalone destination in the More sheet.
   { label: "History", href: "/stacksos/history", icon: "🏆", desc: "Your completed wins" },
   { label: "Import", href: "/stacksos/import", icon: "📊", desc: "Bring in a tracking spreadsheet" },
   { label: "Taxes", href: "/stacksos/taxes", icon: "🧾", desc: "Bonus income summary" },
