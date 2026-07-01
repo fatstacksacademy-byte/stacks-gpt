@@ -59,6 +59,16 @@ export type StartedBonus = {
   undo?: AdvanceAction | null
   /** Ordered milestone checklist shown on the back of the card. */
   checklist?: ChecklistItem[]
+  /** Editable key dates (opened / bonus posted / closed) shown on the back of
+   *  the card, so a date stamped when the box was checked can be corrected to
+   *  when the event actually happened. Same affordance the paycheck (BofA) card
+   *  has — surfaced on EVERY started bonus, on every surface. */
+  dateEdits?: {
+    key: string
+    label: string
+    value: string | null            // ISO yyyy-mm-dd
+    set: (iso: string) => Promise<void>
+  }[] | null
   /** Direct-deposit logging — for checking bonuses with a DD-total requirement.
    *  Lets the user log individual deposits (amount + source) right on the
    *  dashboard, accumulating toward the requirement. Null when the bonus has no
@@ -529,6 +539,31 @@ export default function StartedBonusesList({
                       <div style={{ fontSize: 11, color: DK.textMute, margin: "10px 18px 0", display: "flex", gap: 14, flexWrap: "wrap" }}>
                         {b.expected_payout_date && <span>Estimated payout {fmtDeadline(b.expected_payout_date)}</span>}
                         {b.safe_close_date && <span>Safe to close {fmtDeadline(b.safe_close_date)}</span>}
+                      </div>
+                    )}
+                    {/* Editable key dates — correct the open/posted/closed date to
+                        when it actually happened, right on the card. */}
+                    {b.dateEdits && b.dateEdits.length > 0 && (
+                      <div style={{ margin: "12px 18px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: DK.textFaint }}>Dates</div>
+                        {b.dateEdits.map((d) => (
+                          <div key={d.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                            <label htmlFor={`${key}:${d.key}`} style={{ fontSize: 12.5, color: DK.textMute }}>{d.label}</label>
+                            <input
+                              id={`${key}:${d.key}`}
+                              type="date"
+                              value={d.value ? d.value.slice(0, 10) : ""}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={async (e) => {
+                                const iso = e.target.value
+                                if (!iso || busyKey) return
+                                setBusyKey(key)
+                                try { await d.set(iso); onChanged?.() } finally { setBusyKey(null) }
+                              }}
+                              style={{ fontSize: 12.5, color: DK.text, background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 8, padding: "6px 9px", colorScheme: "dark" }}
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                     <div style={{ background: DK.panel2, borderTop: `1px solid ${DK.border}`, marginTop: 12, padding: "14px 18px 16px" }}>

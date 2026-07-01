@@ -28,7 +28,7 @@ import { bonuses } from "../../lib/data/bonuses"
 import type { UserProfile, IncomeSource } from "../../lib/profileTypes"
 import { getSavingsProfile, type SavingsProfile } from "../../lib/savingsProfile"
 import { getSpendingProfile, type SpendingProfile } from "../../lib/spendingProfile"
-import { getCompletedBonuses, markBonusPosted, updateBonusStep } from "../../lib/completedBonuses"
+import { getCompletedBonuses, markBonusPosted, updateBonusStep, updateOpenedDate } from "../../lib/completedBonuses"
 import { getCustomBonuses, updateCustomBonus, type CustomBonus } from "../../lib/customBonuses"
 import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedCards"
 import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
@@ -425,6 +425,11 @@ export default function HubClient({
               },
             }
           : null
+      // Editable key dates — open date always; posted date once the bonus lands.
+      const dateEdits: StartedBonus["dateEdits"] = [
+        { key: "opened", label: "Account opened", value: r.opened_date ?? null, set: async (iso: string) => { await updateOpenedDate(r.id, iso); track("dashboard_date_edited", { module: "paycheck", field: "opened" }) } },
+        ...(r.bonus_received ? [{ key: "posted", label: "Bonus posted", value: r.bonus_posted_date ?? null, set: async (iso: string) => { await markBonusPosted(r.id, r.actual_amount ?? cat.bonus_amount ?? 0, iso, r.dd_method ?? null); track("dashboard_date_edited", { module: "paycheck", field: "posted" }) } }] : []),
+      ]
       out.push({
         module: "paycheck",
         name: cat.bank_name ?? r.bonus_id,
@@ -441,6 +446,7 @@ export default function HubClient({
         undo,
         checklist,
         deposit: depositCapability,
+        dateEdits,
       })
     }
 
@@ -495,6 +501,9 @@ export default function HubClient({
         advance,
         undo,
         checklist,
+        dateEdits: [
+          { key: "opened", label: "Account opened", value: c.opened_date ?? null, set: async (iso: string) => { await updateCustomBonus(c.id, { opened_date: iso }); track("dashboard_date_edited", { module: "custom", field: "opened" }) } },
+        ],
       })
     }
 
@@ -528,6 +537,9 @@ export default function HubClient({
         expected_payout_date: expectedPayout,
         advance,
         checklist,
+        dateEdits: c.opened_date !== undefined ? [
+          { key: "opened", label: "Card opened", value: c.opened_date ?? null, set: async (iso: string) => { await updateOwnedCard(c.id, { opened_date: iso }); track("dashboard_date_edited", { module: "spending", field: "opened" }) } },
+        ] : null,
       })
     }
 
@@ -612,6 +624,11 @@ export default function HubClient({
         undo,
         checklist,
         tier: savTier,
+        dateEdits: [
+          { key: "opened", label: "Account opened", value: (e.account_opened_at ?? e.opened_date) ?? null, set: async (iso: string) => { await updateSavingsEntry(e.id, { account_opened_at: iso }); track("dashboard_date_edited", { module: "savings", field: "opened" }) } },
+          { key: "funded", label: "Funded", value: e.funded_at ?? null, set: async (iso: string) => { await updateSavingsEntry(e.id, { funded_at: iso }); track("dashboard_date_edited", { module: "savings", field: "funded" }) } },
+          ...(postedAt ? [{ key: "posted", label: "Bonus posted", value: e.bonus_posted_at ?? null, set: async (iso: string) => { await updateSavingsEntry(e.id, { bonus_posted_at: iso }); track("dashboard_date_edited", { module: "savings", field: "posted" }) } }] : []),
+        ],
       })
     }
 
