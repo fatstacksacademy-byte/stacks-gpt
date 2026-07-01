@@ -3781,11 +3781,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 style={{ fontSize: 13, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add open account
               </button>
+              {isPaid && (<>
               <span style={{ color: DK.border2 }}>|</span>
               <button onClick={() => setShowAdvanced(a => !a)}
                 style={{ fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 {showAdvanced ? "Hide full plan" : "View full bonus plan"}
               </button>
+              </>)}
               {!isPaid && (
                 <>
                   <span style={{ color: DK.border2 }}>|</span>
@@ -3794,7 +3796,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               )}
             </div>
 
-            {showAdvanced && (
+            {isPaid && showAdvanced && (
               <>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
                 {[...inProgress, ...available].filter(({ bonus: b }) => {
