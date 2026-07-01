@@ -163,6 +163,11 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
       <div style={{ display: "flex", gap: 6 }}>
         <input
           type="email"
+          name="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           required
           autoFocus
           placeholder="you@email.com"

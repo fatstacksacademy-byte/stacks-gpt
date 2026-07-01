@@ -287,12 +287,12 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
           <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div>
               <label style={labelStyle}>Email</label>
-              <input type="email" placeholder="you@email.com" required value={email}
+              <input type="email" name="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="you@email.com" required value={email}
                 onChange={e => setEmail(e.target.value)} style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Password</label>
-              <input type="password" placeholder="••••••••" required minLength={6} value={password}
+              <input type="password" name="new-password" autoComplete="new-password" placeholder="••••••••" required minLength={6} value={password}
                 onChange={e => setPassword(e.target.value)} style={inputStyle} />
             </div>
             {error && (
