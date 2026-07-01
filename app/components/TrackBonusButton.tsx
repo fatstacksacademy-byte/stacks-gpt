@@ -37,9 +37,11 @@ function moduleHrefFor(kind: TrackKind): string {
 export default function TrackBonusButton({ bonusId, bonusType, bankName, sourcePage, compact }: Props) {
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "added" | "duplicate" | "error">("idle")
   const [userId, setUserId] = useState<string | null>(null)
   const [doneMessage, setDoneMessage] = useState<string>("")
+  const [errorMsg, setErrorMsg] = useState<string>("")
 
   // The TrackKind we route by. Defaults to checking for catalog rows that
   // don't ship an explicit bonusType (kept for back-compat with older
@@ -72,28 +74,67 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
     }
   }
 
+  // Logged-out flow: create a free account (or sign into an existing one) right
+  // here, then write the bonus straight into the new dashboard — no email-only
+  // lead-capture detour. Email confirmation is off (see app/signup/page.tsx),
+  // so signInWithPassword establishes a session immediately after signUp.
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email.includes("@")) return
+    if (!email.includes("@") || password.length < 6) return
     setStatus("loading")
+    setErrorMsg("")
     try {
-      const res = await fetch("/api/bonus-interest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, bonusId, bonusType: kind, sourcePage }),
-      })
-      if (res.ok) {
-        setDoneMessage(`✓ Saved — we'll add ${bankName} to your account when you sign up`)
+      const supabase = createClient()
+      const { error: signUpError } = await supabase.auth.signUp({ email, password })
+      const alreadyRegistered =
+        !!signUpError && /already|registered|exists/i.test(signUpError.message)
+      if (signUpError && !alreadyRegistered) {
+        setStatus("error")
+        setErrorMsg(signUpError.message)
+        return
+      }
+
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({ email, password })
+      if (signInError || !signInData.user) {
+        setStatus("error")
+        setErrorMsg(
+          alreadyRegistered
+            ? "That email already has an account — check your password or sign in."
+            : "Account created — please sign in to finish tracking.",
+        )
+        return
+      }
+
+      const newUserId = signInData.user.id
+      setUserId(newUserId)
+      if (!alreadyRegistered) {
+        track("account_created", { source: sourcePage ?? "catalog_track_button", bonusId, kind })
+      }
+      track("custom_bonus_added", { source: sourcePage ?? "catalog_track_button", kind, bonusId })
+
+      const result: TrackResult = await trackCatalogBonus(newUserId, bonusId, kind)
+      if (result === "added") {
+        setDoneMessage(`✓ ${bankName} added to your dashboard`)
+        setOpen(false)
         setStatus("added")
+      } else if (result === "duplicate") {
+        setDoneMessage(`Already tracking ${bankName}`)
+        setOpen(false)
+        setStatus("duplicate")
       } else {
         setStatus("error")
+        setErrorMsg("Your account is ready, but we couldn't add the bonus. Open Stacks OS and try again.")
       }
     } catch {
       setStatus("error")
+      setErrorMsg("Something went wrong. Try again.")
     }
   }
 
-  // ── Terminal states (logged-in user only) — success / duplicate ──
+  // ── Terminal states — success / duplicate ──
+  // Reached by both an already-logged-in one-click track and a fresh inline
+  // signup (which sets userId mid-flow, so "View in Stacks OS →" shows too).
   if (status === "added" || status === "duplicate") {
     const bg = status === "duplicate" ? "#fff7ed" : "#e6f5f0"
     const border = status === "duplicate" ? "#fed7aa" : "#a7f3d0"
@@ -119,8 +160,10 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
     )
   }
 
-  // Logged-in user → one-click tracking, no email form
-  if (userId) {
+  // Logged-in user → one-click tracking, no signup form. Gated on !open so an
+  // inline signup that established a session mid-flow (but errored on the track)
+  // stays in the form to show the error instead of silently swapping views.
+  if (userId && !open) {
     return (
       <button
         type="button"
@@ -156,43 +199,62 @@ export default function TrackBonusButton({ bonusId, bonusType, bankName, sourceP
   }
 
   return (
-    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <form onSubmit={submit} onClick={(e) => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       <div style={{ fontSize: 12, color: "#666", lineHeight: 1.4 }}>
-        Drop your email — we&apos;ll save {bankName} to your Stacks OS account when you sign up, plus weekly bonus updates.
+        Create a free account and we&apos;ll drop <strong style={{ color: "#111" }}>{bankName}</strong> straight into your Stacks OS dashboard — pick a password and you&apos;re tracking in seconds.
       </div>
-      <div style={{ display: "flex", gap: 6 }}>
-        <input
-          type="email"
-          name="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          required
-          autoFocus
-          placeholder="you@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            flex: 1, padding: "8px 12px", fontSize: 13,
-            background: "#fff", color: "#111", border: "1px solid #e0e0e0",
-            borderRadius: 8, outline: "none",
-          }}
-        />
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            padding: "8px 14px", fontSize: 12, fontWeight: 700,
-            background: "#0d7c5f", color: "#fff", border: "none",
-            borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap",
-          }}>
-          {status === "loading" ? "..." : "Track"}
-        </button>
+      <input
+        type="email"
+        name="email"
+        autoComplete="email"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        required
+        autoFocus
+        placeholder="you@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        style={inputStyle}
+      />
+      <input
+        type="password"
+        name="new-password"
+        autoComplete="new-password"
+        required
+        minLength={6}
+        placeholder="Create a password (6+ characters)"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        style={inputStyle}
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          padding: "9px 14px", fontSize: 13, fontWeight: 700,
+          background: status === "loading" ? "#5aaa8a" : "#0d7c5f", color: "#fff", border: "none",
+          borderRadius: 8, cursor: status === "loading" ? "wait" : "pointer", whiteSpace: "nowrap",
+        }}>
+        {status === "loading" ? "Creating your account…" : "Create free account & track →"}
+      </button>
+      {errorMsg && <div style={{ fontSize: 11, color: "#ef4444", lineHeight: 1.4 }}>{errorMsg}</div>}
+      <div style={{ fontSize: 11, color: "#999" }}>
+        Already have an account?{" "}
+        <Link href="/login" onClick={(e) => e.stopPropagation()} style={{ color: "#0d7c5f", fontWeight: 600, textDecoration: "underline" }}>
+          Sign in
+        </Link>
+        {" "}— or just enter your email and password above to sign in and track.
       </div>
-      {status === "error" && <div style={{ fontSize: 11, color: "#ef4444" }}>Something went wrong. Try again.</div>}
     </form>
   )
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "9px 12px", fontSize: 13,
+  background: "#fff", color: "#111", border: "1px solid #e0e0e0",
+  borderRadius: 8, outline: "none", boxSizing: "border-box",
 }
