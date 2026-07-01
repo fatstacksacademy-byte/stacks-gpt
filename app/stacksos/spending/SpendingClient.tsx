@@ -575,14 +575,15 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
         />
 
         {!isPaid && (() => {
+          const spendSet = monthlySpend > 0
           const qualifyCount = ccSequence.length
           const yearPotential = Math.round(ccSequence.reduce((s, c) => s + c.net_value, 0))
           return (
             <div style={{ background: DK.panel, border: "2px solid #23262e", borderRadius: 14, padding: "20px 22px", marginBottom: 24 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                What you qualify for
+                {spendSet ? "What you qualify for" : "See what you qualify for"}
               </div>
-              {qualifyCount > 0 ? (
+              {spendSet ? (
                 <>
                   <div style={{ display: "flex", gap: 26, flexWrap: "wrap", marginBottom: 12 }}>
                     <div>
@@ -599,12 +600,12 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
-                  Add your monthly spend in your profile to see how many card bonuses are worth doing and their net value. Pro <b style={{ color: DK.textDim }}>ranks them by net value</b> and tells you which to apply for next.
+                <div style={{ fontSize: 14, color: DK.textDim, lineHeight: 1.55, marginBottom: 14 }}>
+                  Add your <b style={{ color: "#ffffff" }}>monthly spend</b> and we&apos;ll show how many card bonuses are worth doing and their net value at your spend. Pro <b style={{ color: DK.textDim }}>ranks them by net value</b> and tells you which to apply for next.
                 </div>
               )}
-              <a href="/onboarding" style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
-                Upgrade to Pro to see your ranked queue →
+              <a href={spendSet ? "/onboarding" : "/stacksos/profile"} style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
+                {spendSet ? "Upgrade to Pro to see your ranked queue →" : "Add your info →"}
               </a>
             </div>
           )
