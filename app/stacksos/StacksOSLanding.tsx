@@ -142,15 +142,15 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               Free — no credit card required
             </div>
             <h1 style={{ fontWeight: 800, color: "#111", lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
-              Track every bank bonus
+              Find your most profitable
               <br />
-              <span style={{ color: "#0d7c5f" }}>in one place — free.</span>
+              bank bonus <span style={{ color: "#0d7c5f" }}>in 60 seconds.</span>
             </h1>
             <p style={{ color: "#777", lineHeight: 1.6, margin: "0 0 12px", maxWidth: 480 }}>
-              Banks pay $300–$500 cash bonuses for new accounts. Stacks OS replaces your bonus spreadsheet — the full researched catalog, a checklist for every bonus, deposit and deadline tracking, cooldown countdowns, and lifetime earnings. All free.
+              Banks pay $300–$500 to open an account. Stacks OS tells you exactly which one to do next for your paycheck, tracks every deadline, and adds up your haul — alongside a crew clawing $1B back from the banks.
             </p>
             <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.6, margin: "0 0 32px", maxWidth: 480 }}>
-              Upgrade to <strong style={{ color: "#0d7c5f" }}>Pro ($10/mo)</strong> when you want the personalized queues that rank checking, savings, and credit-card bonuses and tell you which to do next.
+              Free to track every bonus. Upgrade to <strong style={{ color: "#0d7c5f" }}>Pro ($10/mo)</strong> for the personalized queue that ranks checking, savings, and card bonuses and re-sequences as offers change.
             </p>
             <div className="lp-cta-buttons">
               <a href="#signup" style={{
@@ -168,7 +168,7 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
               {[
                 { value: "Free", label: "to track any bonus" },
                 { value: "$3,000+", label: "potential first year" },
-                { value: "15 min", label: "to get started" },
+                { value: "60 sec", label: "to your bonus plan" },
               ].map((s, i) => (
                 <div key={i}>
                   <div style={{ fontSize: 28, fontWeight: 800, color: "#111" }}>{s.value}</div>
