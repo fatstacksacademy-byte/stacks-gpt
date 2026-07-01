@@ -7,6 +7,7 @@ import ToastHost from "./components/ToastHost"
 import PostHogProvider from "./components/PostHogProvider"
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar"
 import FloatingPushButton from "./components/FloatingPushButton"
+import InstallButton from "./components/InstallButton"
 
 // Read the GA4 measurement ID from env so the site stays untracked in dev/CI
 // and lights up automatically once NEXT_PUBLIC_GA_ID is set in production.
@@ -117,6 +118,7 @@ export default function RootLayout({
         <ToastHost />
         <ServiceWorkerRegistrar />
         <FloatingPushButton />
+        <InstallButton />
       </body>
       {GA_ID && <AnalyticsGate gaId={GA_ID} />}
     </html>
