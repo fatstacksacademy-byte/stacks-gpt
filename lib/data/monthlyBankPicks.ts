@@ -16,6 +16,30 @@ export type MonthlyBankPick = {
   takeaway: string
 }
 
+/**
+ * A quick "also worth knowing" nod — a bonus we mention in one line but don't
+ * give a full ranked card (e.g. an offer that's expiring or was covered
+ * recently). Rendered as a compact row under the picks.
+ */
+export type MonthlyHonorableMention = {
+  /** Must match an id in lib/data/bonuses.ts or lib/data/savingsBonuses.ts. */
+  bonusId: string
+  /** One-sentence note in Nathaniel's voice. */
+  note: string
+}
+
+/**
+ * An optional highlighted "the move this month" box shown above the picks —
+ * for a cross-pick strategy that doesn't belong to any single card (e.g.
+ * "use Ally as your Bank of America direct deposit").
+ */
+export type MonthlyStrategyCallout = {
+  title: string
+  body: string
+  /** Optional related-reading link (e.g. the "what counts as direct deposit" guide). */
+  link?: { href: string; label: string }
+}
+
 export type MonthlyBankPicks = {
   /** URL suffix, e.g. "june-2026" → /blog/best-bank-bonuses-june-2026. Lowercase, hyphenated. */
   monthSlug: string
@@ -27,11 +51,73 @@ export type MonthlyBankPicks = {
   videoId?: string
   /** 1-3 sentence intro shown above the picks. */
   intro: string
-  /** Ranked picks (#1 first). 3-4 entries works best with the layout. */
+  /** Ranked picks (#1 first). 3-6 entries works with the layout. */
   picks: MonthlyBankPick[]
+  /**
+   * Optional cross-pick strategy box. Authored in this TS file only — the
+   * /admin/blog-posts editor does NOT manage it, so the month's page.tsx
+   * overlays it from static after the DB read (an admin save that only writes
+   * the core fields can't silently drop it). See app/blog/best-bank-bonuses-july-2026/page.tsx.
+   */
+  strategyCallout?: MonthlyStrategyCallout
+  /** Optional one-line "also worth a look" nods. Same static-overlay caveat as strategyCallout. */
+  honorableMentions?: MonthlyHonorableMention[]
 }
 
 export const monthlyBankPicks: MonthlyBankPicks[] = [
+  {
+    monthSlug: "july-2026",
+    monthLabel: "July 2026",
+    publishedDate: "2026-07-01",
+    // videoId added after the companion video is uploaded (via /admin/blog-posts).
+    intro:
+      "These are the bank bonuses I'm prioritizing for July 2026 — ranked by how much you actually pocket, how simple the requirement is, and how confident I am the offer is still standing when you go to open the account. The theme this month is pairing accounts: the two Ally offers below aren't just their own free money — an ACH push from Ally is one of the most reliable ways to trigger Bank of America's direct-deposit requirement, so one account can do double duty. And move fast on Wells Fargo Business — it dies July 7.",
+    strategyCallout: {
+      title: "This month's move: use Ally as your Bank of America direct deposit",
+      body:
+        "Bank of America's bonus needs “direct deposits,” and the fine print says transfers from another bank don't count — but in practice an ACH push from Ally reliably triggers it (Doctor of Credit has 30+ confirmed data points). So the play is simple: open Ally Savings and/or Ally Invest, collect their own bonuses, then push money from Ally into Bank of America to satisfy BofA's requirement. One funding rail, three bonuses. It's a community-tested method, not something BofA promises in writing — so if you have real payroll, route that too, and don't close the account before the bonus posts.",
+      link: { href: "/blog/what-counts-as-direct-deposit", label: "What actually counts as a direct deposit →" },
+    },
+    picks: [
+      {
+        bonusId: "four-leaf-fcu-550-checking-2026",
+        takeaway:
+          "Do this one first — before you open anything else. FourLeaf (formerly Bethpage) is ChexSystems-sensitive, and the data points show it cares mostly about how many accounts you've opened in the last month; zero or one is ideal, so apply while your recent-account count is still clean. One catch: unlike Bank of America, FourLeaf is strict about the direct deposit — it wants a real recurring payroll, pension, or government deposit of $500+ (ACH pushes from another bank are hit-or-miss here), so line up your actual paycheck. Land it and you get $350 up front, then $100 at 12 months and $100 at 24 months — $550 total.",
+      },
+      {
+        bonusId: "bank-of-america-500-tiered-checking-2026",
+        takeaway:
+          "Bank of America is the anchor of this month's stack: nationwide and among the least ChexSystems-sensitive of the big banks. The bonus scales — $100 at $2,000 in deposits, $300 at $5,000, $500 at $10,000 — and most people should target the $100–$300 tiers, which you can hit with ACH pushes from the Ally accounts below.",
+      },
+      {
+        bonusId: "ally-savings-referral-2026",
+        takeaway:
+          "The easiest $100 on the list, and the one to open first of the two Ally accounts: it makes you an existing Ally customer (which unlocks the Invest bonus below) and gives you the ACH rail to push a “direct deposit” into Bank of America. Set up a $20+/month recurring transfer into Ally Online Savings for three months and the bonus posts — see the strategy note above.",
+      },
+      {
+        bonusId: "ally-invest-brokerage-2026",
+        takeaway:
+          "A flat $200 for moving $1,000 into an Ally Invest self-directed account is a 20% return in 90 days — one of the best bonus-to-deposit ratios anywhere. The catch: it's only for existing Ally Bank customers who've never had Ally Invest, so open the Ally Savings account above first, then come back for this.",
+      },
+      {
+        bonusId: "wells-fargo-initiate-business-400-2026",
+        takeaway:
+          "Expires July 7 — the fastest-dying offer here. Wells Fargo's Initiate Business Checking pays $400 just for keeping a $2,500 balance from day 30 to day 60: no direct deposit, no debit transactions. Deposit $25,000 instead and it jumps to $825. You don't need an LLC — a sole proprietorship qualifies.",
+      },
+      {
+        bonusId: "bmo-business-checking-1000-2026",
+        takeaway:
+          "The biggest ceiling on the board: $400 for a $4,000 average balance, scaling to $1,500 at $100,000, plus 10 debit-card transactions — no direct deposit required. It runs through August 31, so it's not urgent, but if you've got idle cash it's the highest-dollar bonus of the month.",
+      },
+    ],
+    honorableMentions: [
+      {
+        bonusId: "amex-rewards-checking-300-2026",
+        note:
+          "Covered it last week, and it dies July 30 — but if you already carry an Amex card, $7,500 in direct deposits over 90 days nets a quick $300. It isn't always available, so grab it if it fits. Full details and link in the description.",
+      },
+    ],
+  },
   {
     monthSlug: "june-2026",
     monthLabel: "June 2026",

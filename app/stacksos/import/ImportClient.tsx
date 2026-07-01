@@ -231,13 +231,17 @@ export default function ImportClient({ userId }: { userId: string }) {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", paddingBottom: 8, borderBottom: "1px solid #f0f0f0" }}>
-              <div>Source name</div><div>Match</div><div>Conf</div><div>Opened</div><div>Closed</div><div>Status</div>
-            </div>
+            <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+              <div style={{ minWidth: 620 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 60px 100px 100px 90px", gap: 10, fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", paddingBottom: 8, borderBottom: "1px solid #f0f0f0" }}>
+                  <div>Source name</div><div>Match</div><div>Conf</div><div>Opened</div><div>Closed</div><div>Status</div>
+                </div>
 
-            {rows.map((r, i) => (
-              <RowEditor key={i} row={r} onChange={p => updateRow(i, p)} disabled={phase !== "review"} />
-            ))}
+                {rows.map((r, i) => (
+                  <RowEditor key={i} row={r} onChange={p => updateRow(i, p)} disabled={phase !== "review"} />
+                ))}
+              </div>
+            </div>
 
             {phase === "review" && (
               <div style={{ display: "flex", gap: 12, marginTop: 16 }}>

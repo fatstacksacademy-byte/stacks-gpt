@@ -6,10 +6,14 @@ import { freshnessTier, type VerificationState } from "../../lib/verificationSta
 // the badge is just a factual "last verified on <date>" stamp. The dot color
 // is a subtle recency cue (green = recent, amber = getting old, grey = old or
 // not yet checked); the wording stays the same regardless of tier.
+//
+// Dark "mission board" palette — every surface that mounts this badge
+// (Paycheck, Spending, Savings) is now the dark reskin, so it sits on a
+// dark inset instead of a white pill.
 const PALETTE = {
-  fresh: { dot: "#10b981", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
-  stale: { dot: "#f59e0b", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
-  warn:  { dot: "#cbd5e1", bg: "#f4f6f8", fg: "#475569", border: "#e2e8f0" },
+  fresh: { dot: "#34d399", bg: "#12151c", fg: "#9aa1ad", border: "#23262e" },
+  stale: { dot: "#f59e0b", bg: "#12151c", fg: "#9aa1ad", border: "#23262e" },
+  warn:  { dot: "#6b7280", bg: "#12151c", fg: "#9aa1ad", border: "#23262e" },
 } as const
 
 function fmtVerifiedDate(verifiedAt: string): string {

@@ -14,6 +14,13 @@ type Article = {
 
 const articles: Article[] = [
   {
+    href: "/blog/best-bank-bonuses-july-2026",
+    title: "The Best Bank Bonuses for July 2026",
+    description: "My top offers this month — including the Ally trick that doubles as your Bank of America direct deposit, FourLeaf's $550 multi-year payout, and the Wells Fargo Business bonus that expires July 7.",
+    category: "Monthly Picks",
+    date: "July 1, 2026",
+  },
+  {
     href: "/blog/best-bank-bonuses-june-2026",
     title: "The Best Bank Bonuses for June 2026",
     description: "My four favorite offers this month, ranked by value, difficulty, and how likely they are to stay available.",

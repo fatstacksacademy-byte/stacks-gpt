@@ -2,16 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import PortfolioCard from "../components/PortfolioCard"
+import FatStackMeter from "../components/FatStackMeter"
 import StartedBonusesList, { type StartedBonus } from "../components/StartedBonusesList"
 import HistoricalWinsList, { type HistoricalWin } from "../components/HistoricalWinsList"
 import DashboardGoalBar from "../components/DashboardGoalBar"
 import PushOptIn from "../components/PushOptIn"
 import DashboardViewTabs, { type DashboardView } from "../components/DashboardViewTabs"
-import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep } from "../../lib/bonusNextStep"
+import { checkingBonusStep, customBonusStep, spendingCardStep, savingsEntryStep, urgencyFor } from "../../lib/bonusNextStep"
 import { savingsBonusForEntry } from "../../lib/data/savingsBonuses"
 import { getMilestoneDetail } from "../../lib/bonusSteps"
 import { track } from "../../lib/analytics"
 import CheckpointNav from "../components/CheckpointNav"
+import AcademyLedger from "../components/AcademyLedger"
 import WelcomeWizard from "../components/WelcomeWizard"
 import AddCustomBonusModal from "../components/AddCustomBonusModal"
 import { runSequencer, type SequencedBonus, type SequencerResult } from "../../lib/sequencer"
@@ -22,7 +24,7 @@ import { bonuses } from "../../lib/data/bonuses"
 import type { UserProfile, IncomeSource } from "../../lib/profileTypes"
 import { getSavingsProfile, type SavingsProfile } from "../../lib/savingsProfile"
 import { getSpendingProfile, type SpendingProfile } from "../../lib/spendingProfile"
-import { getCompletedBonuses, markBonusPosted } from "../../lib/completedBonuses"
+import { getCompletedBonuses, markBonusPosted, updateBonusStep } from "../../lib/completedBonuses"
 import { getCustomBonuses, updateCustomBonus, type CustomBonus } from "../../lib/customBonuses"
 import { getOwnedCards, updateOwnedCard, type OwnedCard } from "../../lib/ownedCards"
 import { getSavingsEntries, setSavingsMilestone, updateSavingsEntry, type SavingsEntry } from "../../lib/savingsEntries"
@@ -130,14 +132,21 @@ export default function HubClient({
   const [showWizard, setShowWizard] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [view, setView] = useState<DashboardView>("active")
+  // Gates the FatStackMeter: we only mount it once the first data load resolves,
+  // so it initializes with the real banked total instead of animating a bogus
+  // "+$X banked!" pop as the number hydrates from 0. Real pops still fire when
+  // the user marks a bonus received (banked ticks up after this is true).
+  const [dataReady, setDataReady] = useState(false)
 
   const loadData = useCallback(() => {
-    getSavingsProfile(userId).then(setSavingsProfile).catch(() => setSavingsProfile(null))
-    getSpendingProfile(userId).then(setSpendingProfile).catch(() => setSpendingProfile(null))
-    getCompletedBonuses(userId).then(setCompletedRecords).catch(() => setCompletedRecords([]))
-    getCustomBonuses(userId).then(setCustomBonuses).catch(() => setCustomBonuses([]))
-    getOwnedCards(userId).then(setOwnedCards).catch(() => setOwnedCards([]))
-    getSavingsEntries(userId).then(setSavingsEntries).catch(() => setSavingsEntries([]))
+    Promise.allSettled([
+      getSavingsProfile(userId).then(setSavingsProfile),
+      getSpendingProfile(userId).then(setSpendingProfile),
+      getCompletedBonuses(userId).then(setCompletedRecords),
+      getCustomBonuses(userId).then(setCustomBonuses),
+      getOwnedCards(userId).then(setOwnedCards),
+      getSavingsEntries(userId).then(setSavingsEntries),
+    ]).finally(() => setDataReady(true))
   }, [userId])
 
   useEffect(() => { loadData() }, [loadData])
@@ -276,9 +285,29 @@ export default function HubClient({
         done: m.status === "completed",
         current: m.status === "active",
       }))
-      // Confirming the cash is the only forward action that changes the
-      // dashboard state (the next-step label is date-driven). Intermediate
-      // milestones live on the Paycheck page.
+      // checkingBonusStep is date-only: once the user manually logs the deposit
+      // and advances to the posting/hold stage, its label goes stale (e.g. shows
+      // "Hit $500 direct deposit" after the DD requirement is already met). When
+      // the confirmed milestone is ahead of the deposit window, show the
+      // milestone-accurate objective + deadline so the dashboard "Next:" label
+      // agrees with the checklist and the "Mark bonus received" CTA. Mirrors the
+      // Paycheck page's front-of-card objective (RoadmapClient).
+      const activeKey = md.milestones.find((m) => m.status === "active")?.key ?? md.currentMilestone
+      let nextStepLabel = step.nextStep
+      let nextStepDeadline = step.deadline
+      let nextStepUrgency = step.urgency
+      if (step.nextStep != null && activeKey === "bonus_posted") {
+        nextStepLabel = "Confirm the bonus landed"
+        nextStepDeadline = expectedPayout
+        nextStepUrgency = urgencyFor(expectedPayout)
+      } else if (step.nextStep != null && activeKey === "safe_to_close") {
+        nextStepLabel = "Safe to close"
+        nextStepDeadline = safeClose
+        nextStepUrgency = urgencyFor(safeClose)
+      }
+      // Confirming the cash is the only forward action offered on the dashboard;
+      // the intermediate milestones (DD set up, requirement met) live on the
+      // Paycheck page's step-by-step flow.
       const advance: StartedBonus["advance"] =
         !r.bonus_received && r.current_step !== "applied"
           ? {
@@ -293,19 +322,35 @@ export default function HubClient({
               },
             }
           : null
+      // Undo — walk current_step back one milestone (mirrors the Paycheck page's
+      // per-step Undo). Only when we're past "account opened"; a manual override
+      // freezes the time-based auto-calc the same way the section page does.
+      const milestoneOrder = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted", "safe_to_close"]
+      const curMilestoneIdx = milestoneOrder.indexOf(md.currentMilestone)
+      const undo: StartedBonus["undo"] =
+        !r.bonus_received && r.current_step !== "applied" && curMilestoneIdx > 0
+          ? {
+              label: "Undo",
+              run: async () => {
+                await updateBonusStep(r.id, milestoneOrder[curMilestoneIdx - 1])
+                track("dashboard_bonus_undone", { module: "paycheck" })
+              },
+            }
+          : null
       out.push({
         module: "paycheck",
         name: cat.bank_name ?? r.bonus_id,
         amount: r.actual_amount ?? cat.bonus_amount ?? 0,
         started_date: r.opened_date,
-        nextStep: step.nextStep,
-        deadline: step.deadline,
-        urgency: step.urgency,
+        nextStep: nextStepLabel,
+        deadline: nextStepDeadline,
+        urgency: nextStepUrgency,
         href: "/stacksos/paycheck",
         bonus_id: r.bonus_id,
         expected_payout_date: expectedPayout,
         safe_close_date: safeClose,
         advance,
+        undo,
         checklist,
       })
     }
@@ -332,6 +377,17 @@ export default function HubClient({
       } else if (c.current_step === "requirements_met") {
         advance = { label: "Mark bonus posted", run: advanceToPosted }
       }
+      // Undo — reverse the "requirements met" mark back to the just-opened state.
+      const undo: StartedBonus["undo"] =
+        c.current_step === "requirements_met"
+          ? {
+              label: "Undo",
+              run: async () => {
+                await updateCustomBonus(c.id, { current_step: "account_opened" })
+                track("dashboard_bonus_undone", { module: "custom" })
+              },
+            }
+          : null
       const checklist = withCurrent([
         { label: "Account opened", done: true },
         ...(ddReq ? [{ label: "Requirements met", done: c.current_step === "requirements_met" || posted }] : []),
@@ -348,6 +404,7 @@ export default function HubClient({
         href: "/stacksos/paycheck",
         safe_close_date: safeClose,
         advance,
+        undo,
         checklist,
       })
     }
@@ -404,6 +461,13 @@ export default function HubClient({
       else if (txnsPending) advance = { label: "Mark transactions done", run: async () => { await setSavingsMilestone(e.id, "transactions_done_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "transactions_done" }) } }
       else if (!postedAt) advance = { label: "Mark bonus posted", run: async () => { await setSavingsMilestone(e.id, "bonus_posted_at", true); track("dashboard_bonus_advanced", { module: "savings", action: "bonus_posted" }) } }
       else advance = { label: "Mark complete", run: async () => { await updateSavingsEntry(e.id, { status: "completed" }); track("dashboard_bonus_advanced", { module: "savings", action: "completed" }) } }
+      // Undo — toggle off the most-recent set milestone (savings stores each as a
+      // reversible timestamp flag, so this is a clean one-step walk-back).
+      let undo: StartedBonus["undo"] = null
+      if (postedAt) undo = { label: "Undo", run: async () => { await setSavingsMilestone(e.id, "bonus_posted_at", false); track("dashboard_bonus_undone", { module: "savings" }) } }
+      else if (txnsDoneAt) undo = { label: "Undo", run: async () => { await setSavingsMilestone(e.id, "transactions_done_at", false); track("dashboard_bonus_undone", { module: "savings" }) } }
+      else if (fundedAt) undo = { label: "Undo", run: async () => { await setSavingsMilestone(e.id, "funded_at", false); track("dashboard_bonus_undone", { module: "savings" }) } }
+      else if (openedAt) undo = { label: "Undo", run: async () => { await setSavingsMilestone(e.id, "account_opened_at", false); track("dashboard_bonus_undone", { module: "savings" }) } }
       const checklist = withCurrent([
         { label: "Account opened", done: !!openedAt },
         { label: "Funded", done: !!fundedAt },
@@ -427,6 +491,7 @@ export default function HubClient({
         expected_payout_date: expectedPayout,
         safe_close_date: expectedPayout, // for savings, payout date IS safe-to-withdraw
         advance,
+        undo,
         checklist,
       })
     }
@@ -542,6 +607,28 @@ export default function HubClient({
     return out.sort((a, b) => (b.date || "").localeCompare(a.date || ""))
   }, [completedRecords, customBonuses, ownedCards, savingsEntries])
 
+  // ─── The Stack: banked THIS YEAR across every module ──────────────
+  // Drives the FatStackMeter hero — the gamified "growing pile of cash" the
+  // Paycheck tab uses, but here it aggregates paycheck + spending + savings so
+  // the dashboard shows one combined stack for everything. Count-up + bill-drop
+  // pops fire on their own whenever this ticks up (a bonus is marked received).
+  const thisYear = new Date().getFullYear()
+  const bankedThisYear = useMemo(() => {
+    return Math.round(
+      historicalWins
+        .filter((w) => w.date && new Date(w.date + "T00:00:00").getFullYear() === thisYear)
+        .reduce((s, w) => s + w.amount, 0),
+    )
+  }, [historicalWins, thisYear])
+  const bankedThisYearCount = useMemo(
+    () => historicalWins.filter((w) => w.date && new Date(w.date + "T00:00:00").getFullYear() === thisYear).length,
+    [historicalWins, thisYear],
+  )
+  // Goal = what's realistically landing: already banked + everything in progress.
+  // A near-term, fillable target so the meter reads as an honest, satisfying bar
+  // (a 3-yr projection would leave it perpetually near-empty).
+  const stackGoal = Math.max(1, bankedThisYear + inProgressValue)
+
   return (
     <>
       {showWizard && (
@@ -611,6 +698,17 @@ export default function HubClient({
             </a>
           </div>
         </div>
+
+        {dataReady ? (
+          <FatStackMeter
+            banked={bankedThisYear}
+            goal={stackGoal}
+            count={bankedThisYearCount}
+            countLabel={bankedThisYearCount === 1 ? "bonus banked" : "bonuses banked"}
+          />
+        ) : (
+          <div style={{ minHeight: 150, marginBottom: 22, borderRadius: 18, background: "radial-gradient(140% 120% at 50% 0%, #1c2230, #12141b)", border: "1px solid #23262e" }} />
+        )}
 
         <DashboardGoalBar
           projection36mo={portfolio36mo}
@@ -725,6 +823,11 @@ export default function HubClient({
           >
             Tax summary →
           </a>
+        </div>
+
+        {/* Fat Stacks Academy — collective $1B ledger + this recruit's stack */}
+        <div style={{ marginTop: 28 }}>
+          <AcademyLedger variant="inline" userContribution={lifetimeEarned} />
         </div>
       </div>
 

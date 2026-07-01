@@ -16,6 +16,10 @@ import { getCustomBonuses, addCustomBonus, closeCustomBonus, deleteCustomBonus, 
 import { getDeposits, addDeposit, deleteDeposit, BonusDeposit } from "../../lib/deposits"
 import { DD_SOURCES } from "../../lib/ddSources"
 import InfoTip from "../components/InfoTip"
+import GoalProgressBar from "../components/GoalProgressBar"
+import FatStackMeter from "../components/FatStackMeter"
+import NextStepBar from "../components/NextStepBar"
+import FeeStrip, { type FeeWaiver } from "../components/FeeStrip"
 import { getNotes, upsertNote } from "../../lib/notes"
 import { getSkippedBonuses, skipBonus, unskipBonus } from "../../lib/skippedBonuses"
 import { getOpenAccounts, addOpenAccount, deleteOpenAccount, OpenAccount } from "../../lib/openAccounts"
@@ -39,6 +43,37 @@ type Bonus = (typeof allBonuses)[number]
 
 const DAYS_PER_PAY: Record<string, number> = {
   weekly: 7, biweekly: 14, semimonthly: 15.2, monthly: 30.4,
+}
+
+// ── Dark "mission board" palette ──────────────────────────────────────────
+// The Paycheck tab is themed after the card-preview mock: a near-black board
+// with raised dark panels, glowing accent borders, and gradient module pills.
+// Centralized here so every surface stays consistent.
+const DK = {
+  board: "#0a0c10",        // page background
+  panel: "#161922",        // raised card surface
+  panel2: "#0f1219",       // inset surface (inputs, sub-panels)
+  panel3: "#12151c",       // alt row
+  border: "#23262e",       // hairline
+  border2: "#2a2e38",      // stronger hairline / input border
+  text: "#ffffff",
+  textDim: "#cdd2db",      // primary body
+  textMute: "#9aa1ad",     // secondary
+  textFaint: "#6b7280",    // labels / captions
+  accent: "#3b82f6",       // paycheck blue (from)
+  accent2: "#2563eb",      // paycheck blue (to)
+  accentFg: "#60a5fa",     // blue text on dark
+  accentGlow: "rgba(37,99,235,0.45)",
+  green: "#0d9668",
+  greenFg: "#34d399",
+  gold: "#f7d774",
+  goldDeep: "#d4a017",
+  amber: "#f59e0b",
+  amberBg: "#1c160a",
+  amberBorder: "#4a3a16",
+  red: "#f87171",
+  redBg: "rgba(220,38,38,0.12)",
+  redBorder: "#7f1d1d",
 }
 
 type IncomeSourceLocal = { pay_frequency: PayFrequency; paycheck_amount: number }
@@ -233,6 +268,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   const [addingDeposit, setAddingDeposit] = useState<string | null>(null)
   const [newDepositAmt, setNewDepositAmt] = useState("")
   const [newDepositDate, setNewDepositDate] = useState(todayStr())
+  // Where the deposit being logged came from — "Employer / payroll" or an
+  // account name. Captured per deposit (migration 040) as forward-looking data
+  // on which funding methods actually count toward each bank's DD requirement.
+  const [newDepositSource, setNewDepositSource] = useState("Employer / payroll")
+  const [depositSrcSearchOpen, setDepositSrcSearchOpen] = useState(false)
   const [verificationStates, setVerificationStates] = useState<Map<string, VerificationState>>(new Map())
   const [bonusNotes, setBonusNotes] = useState<Record<string, string>>({})
   const [editingNote, setEditingNote] = useState<string | null>(null)
@@ -297,6 +337,24 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
   const [expandedFees, setExpandedFees] = useState<string | null>(null)
   const [expandedDD, setExpandedDD] = useState<string | null>(null)
+
+  // Card flip: the north-star "one next step on the front, full checklist on the
+  // back" pattern. A working card shows only the objective + XP bar + action up
+  // front; flipping reveals the granular checkbox checklist and the under-the-hood
+  // detail sheet. Tracked per-bonus-id so each card flips independently.
+  const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set())
+  // Tracks which cards have been flipped at least once, so the 3D flip-in
+  // animation only fires on a real user flip — never on first paint (which
+  // would make every card swing in at once on load).
+  const flipAnimatedRef = useRef<Set<string>>(new Set())
+  const toggleFlip = useCallback((id: string) => {
+    flipAnimatedRef.current.add(id)
+    setFlippedCards((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }, [])
 
   // Per-bonus "qualifying transactions met" flag. Stored in localStorage
   // (user-side checklist, not worth a DB roundtrip). Only surfaced for
@@ -618,14 +676,63 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   async function handleAddDeposit(bonusId: string) {
     const amt = parseInt(newDepositAmt.replace(/\D/g, ""))
     if (!amt || amt <= 0) return
-    const dep = await addDeposit(userId, bonusId, amt, newDepositDate)
+    const source = newDepositSource.trim() || null
+    const dep = await addDeposit(userId, bonusId, amt, newDepositDate, source)
     if (dep) setDeposits(prev => [...prev, dep])
+    if (source && source !== "Employer / payroll") {
+      track("deposit_source_recorded", { bonus_id: bonusId, source })
+    }
     setAddingDeposit(null)
+    setDepositSrcSearchOpen(false)
   }
 
   async function handleDeleteDeposit(depositId: string) {
     await deleteDeposit(depositId)
     setDeposits(prev => prev.filter(d => d.id !== depositId))
+  }
+
+  // Compact "where did this deposit come from?" picker shared by the catalog and
+  // custom add-deposit forms. Employer/payroll is the qualifying default; any
+  // other source warns since self-transfers often don't count as a DD.
+  const renderDepositSourcePicker = (accent: string) => {
+    const isEmployer = newDepositSource === "Employer / payroll"
+    return (
+      <div style={{ marginTop: 8 }}>
+        <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 6 }}>
+          Where did it come from? <span style={{ color: DK.textFaint }}>(helps track what counts)</span>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+          <button type="button" onClick={() => { setNewDepositSource("Employer / payroll"); setDepositSrcSearchOpen(false) }}
+            style={{ padding: "7px 13px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: isEmployer ? "1.5px solid #0d7c5f" : `1px solid ${DK.border2}`, background: isEmployer ? "rgba(13,150,104,0.16)" : DK.panel2, color: isEmployer ? DK.greenFg : DK.textMute }}>
+            {isEmployer ? "✓ " : ""}🏦 Employer / payroll
+          </button>
+          <button type="button" onClick={() => { setDepositSrcSearchOpen(v => !v); if (isEmployer) setNewDepositSource("") }}
+            style={{ padding: "7px 13px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: depositSrcSearchOpen ? `1.5px solid ${accent}` : `1px solid ${DK.border2}`, background: depositSrcSearchOpen ? "rgba(124,58,237,0.18)" : DK.panel2, color: depositSrcSearchOpen ? accent : DK.textMute }}>
+            💳 Other account…
+          </button>
+          {!depositSrcSearchOpen && !isEmployer && newDepositSource && (
+            <span style={{ fontSize: 12, color: accent, fontWeight: 600 }}>via {newDepositSource}</span>
+          )}
+        </div>
+        {depositSrcSearchOpen && (
+          <div style={{ marginTop: 8 }}>
+            <input autoFocus value={newDepositSource} onChange={e => setNewDepositSource(e.target.value)} placeholder="Search bank, brokerage, or app…"
+              style={{ width: "100%", maxWidth: 320, padding: "8px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim, boxSizing: "border-box" as const }} />
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+              {DD_SOURCES.filter(s => s.toLowerCase().includes(newDepositSource.trim().toLowerCase())).slice(0, 8).map(s => (
+                <button type="button" key={s} onClick={() => setNewDepositSource(s)}
+                  style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: newDepositSource.trim().toLowerCase() === s.toLowerCase() ? `1.5px solid ${accent}` : "1px solid #2a2e38", background: newDepositSource.trim().toLowerCase() === s.toLowerCase() ? "rgba(124,58,237,0.18)" : DK.panel2, color: DK.textMute }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: DK.gold, marginTop: 8, lineHeight: 1.45 }}>
+              ⚠ Transfers from your own accounts often don&apos;t count as a qualifying direct deposit — confirm this one triggers the bonus.
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   async function handleSaveNote(bonusId: string) {
@@ -1057,12 +1164,43 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
   // empty there, otherwise active bonuses would be hidden from BOTH places and
   // free users would lose their in-progress tracker entirely.
   const slotBonusIds = new Set(isPaid ? workingBonuses.map(w => w.bonus.id) : [])
+  // A working bonus whose bonus has already POSTED is done with the active work —
+  // it's now just riding out the mandatory hold (or waiting on the bank). These
+  // sink to the BOTTOM of the slot grid as dimmed "⏳ Waiting" cards with a
+  // countdown, matching the mission board's USAA / FHB hold cards.
+  //
+  // CRITICAL: "posted" here must mean the USER actually confirmed the payout,
+  // never a time-based estimate. getMilestoneDetail(...).bonusPosted advances on
+  // elapsed days alone (autoCalculateMilestone), so relying on it would park a
+  // still-funding bonus in the "done & holding" pile and claim "safe to close"
+  // before the user ever saw the money land. Marking the payout sets
+  // bonus_received / bonus_posted_date / current_step — that's the real signal.
+  //
+  // NB: the "bonus_posted" milestone (and its legacy alias "wait") is the ACTIVE
+  // "waiting for the bonus to post" step — its subtitle literally reads "Waiting
+  // for bonus to post". Reaching it does NOT mean the money landed, so it is NOT
+  // a confirmation. Only markBonusPosted (→ safe_to_close / bonus_received /
+  // bonus_posted_date) or an actually-closed account ("close"/"kept_open") count.
+  const workDoneSteps = new Set(["safe_to_close", "close", "kept_open"])
+  const hasConfirmedPosted = (rec: CompletedBonus | undefined): boolean => {
+    if (!rec) return false
+    if (rec.bonus_posted_date) return true
+    if (rec.bonus_received === true) return true
+    return rec.current_step ? workDoneSteps.has(rec.current_step) : false
+  }
+  const isBonusWaiting = (item: typeof inProgress[number]) => {
+    const rec = completedRecords.find(r => r.bonus_id === item.bonus.id && !r.closed_date)
+    return hasConfirmedPosted(rec)
+  }
+  const workingActiveBonuses = workingBonuses.filter(w => !isBonusWaiting(w))
+  const workingWaitingBonuses = workingBonuses.filter(isBonusWaiting)
   type HeroSlot =
-    | { kind: "working"; working: typeof inProgress[number] }
+    | { kind: "working"; working: typeof inProgress[number]; waiting: boolean }
     | { kind: "open"; hb: typeof heroBonuses[number]; heroIdx: number }
   const slotCards: HeroSlot[] = [
-    ...workingBonuses.map((working) => ({ kind: "working" as const, working })),
+    ...workingActiveBonuses.map((working) => ({ kind: "working" as const, working, waiting: false })),
     ...heroBonuses.map((hb, heroIdx) => ({ kind: "open" as const, hb, heroIdx })),
+    ...workingWaitingBonuses.map((working) => ({ kind: "working" as const, working, waiting: true })),
   ]
 
   const fmtOfferExpiry = (iso: string | null | undefined): string | null => {
@@ -1096,8 +1234,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
     if (r.min_balance > 0) steps.push({ label: `Maintain a $${r.min_balance.toLocaleString()} average daily balance` })
     if (b.timeline?.must_remain_open_days) steps.push({ label: `Keep the account open ${b.timeline.must_remain_open_days} days`, detail: (b.fees?.early_closure_fee ?? 0) > 0 ? `$${b.fees.early_closure_fee} early-closure fee if closed sooner` : undefined })
     const specRow = (label: string, value: React.ReactNode) => (
-      <div style={{ display: "flex", alignItems: "baseline", gap: 16, padding: "9px 0", borderBottom: "1px solid #f2f2f2" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", width: 124, flexShrink: 0 }}>{label}</div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16, padding: "9px 0", borderBottom: "1px solid #23262e" }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", width: 124, flexShrink: 0 }}>{label}</div>
         <div style={{ flex: 1 }}>{value}</div>
       </div>
     )
@@ -1105,20 +1243,20 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       <div>
         <div style={{ marginTop: 4 }}>
           {specRow("Bonus amount", <span style={{ fontSize: 30, fontWeight: 800, color: accentColor, lineHeight: 1 }}>{money(effAmt)}</span>)}
-          {specRow("Account type", <span style={{ fontSize: 15, color: "#333" }}>{prettyProduct(b.product_type)}</span>)}
-          {expiry && specRow("Offer expires", <span style={{ fontSize: 15, color: "#333" }}>{expiry}</span>)}
+          {specRow("Account type", <span style={{ fontSize: 15, color: DK.textDim }}>{prettyProduct(b.product_type)}</span>)}
+          {expiry && specRow("Offer expires", <span style={{ fontSize: 15, color: DK.textDim }}>{expiry}</span>)}
         </div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 18, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
           Bonus requirements
           {(b.requirements?.min_direct_deposit_total || b.requirements?.min_direct_deposit_per_deposit || b.requirements?.direct_deposit_required) ? <InfoTip term="directDeposit" label="direct deposit" /> : null}
         </div>
         <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
           {steps.map((s, i) => (
             <li key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: "#f1f5f9", color: accentColor, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+              <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: DK.panel2, color: accentColor, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
               <div>
-                <div style={{ fontSize: 14, color: "#1a1a1a", lineHeight: 1.4 }}>{s.label}</div>
-                {s.detail && <div style={{ fontSize: 12, color: "#999", marginTop: 1 }}>{s.detail}</div>}
+                <div style={{ fontSize: 14, color: DK.textDim, lineHeight: 1.4 }}>{s.label}</div>
+                {s.detail && <div style={{ fontSize: 12, color: DK.textMute, marginTop: 1 }}>{s.detail}</div>}
               </div>
             </li>
           ))}
@@ -1147,7 +1285,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         ]
                         return (
                           <div key={b.id} style={{
-                            background: "#fff",
+                            background: DK.panel,
                             border: "2px solid #d97706",
                             borderRadius: 14, overflow: "hidden",
                             boxShadow: "0 2px 12px rgba(217,119,6,0.06)",
@@ -1155,15 +1293,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             {/* Header */}
                             <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                               <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-                                <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
-                                <span style={{ fontSize: 10, color: "#d97706", background: "#fef3c7", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: DK.text }}>{b.bank_name}</div>
+                                <span style={{ fontSize: 10, color: DK.amber, background: DK.amberBg, padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Application pending</span>
                               </div>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
                             </div>
 
                             {/* Checklist preview — Applied done, rest locked until approved */}
                             <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999", marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: DK.textMute, marginBottom: 8 }}>Steps to unlock {money(b.bonus_amount)}</div>
                               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
                                   <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: "#0d7c5f", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1171,12 +1309,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                       <path d="M3 7L6 10L11 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                   </div>
-                                  <span style={{ fontSize: 14, color: "#888", textDecoration: "line-through" }}>Applied</span>
+                                  <span style={{ fontSize: 14, color: DK.textMute, textDecoration: "line-through" }}>Applied</span>
                                 </div>
                                 {lockedSteps.map((label) => (
                                   <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                                    <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, border: "2px solid #e5e5e5", background: "transparent" }} />
-                                    <span style={{ fontSize: 14, color: "#ccc" }}>{label}</span>
+                                    <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, border: "2px solid #2a2e38", background: "transparent" }} />
+                                    <span style={{ fontSize: 14, color: DK.textFaint }}>{label}</span>
                                   </div>
                                 ))}
                               </div>
@@ -1186,37 +1324,37 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             <div style={{ padding: "14px 24px 20px" }}>
                               {!isApprovingThis ? (
                                 <>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 4 }}>What happened with your application?</div>
-                                  <div style={{ fontSize: 11, color: "#999", marginBottom: 8 }}>Most banks decide within a business day and email you — come back here to record it.</div>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, marginBottom: 4 }}>What happened with your application?</div>
+                                  <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 8 }}>Most banks decide within a business day and email you — come back here to record it.</div>
                                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                                     <button onClick={() => { setApprovingId(record.id); setApplyDateValue(todayStr()) }}
                                       style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
                                       ✓ Approved
                                     </button>
                                     <button onClick={() => handleDenyApplication(record.id)}
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#b91c1c", border: "1px solid #fecaca", borderRadius: 8, cursor: "pointer" }}>
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 500, background: "transparent", color: DK.red, border: `1px solid ${DK.redBorder}`, borderRadius: 8, cursor: "pointer" }}>
                                       ✗ Denied
                                     </button>
                                     <button disabled
                                       title="No decision yet — check back when you hear from the bank"
-                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#fef3c7", color: "#d97706", border: "1px solid #fde68a", borderRadius: 8, cursor: "default" }}>
+                                      style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: DK.amberBg, color: DK.amber, border: `1px solid ${DK.amberBorder}`, borderRadius: 8, cursor: "default" }}>
                                       Still pending
                                     </button>
                                   </div>
-                                  <div style={{ fontSize: 12, color: "#bbb", marginTop: 10 }}>Denied applications go back to your recommendations.</div>
+                                  <div style={{ fontSize: 12, color: DK.textFaint, marginTop: 10 }}>Denied applications go back to your recommendations.</div>
                                 </>
                               ) : (
                                 <>
-                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#666", marginBottom: 8 }}>When did the account open?</div>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, marginBottom: 8 }}>When did the account open?</div>
                                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                                     <input type="date" value={applyDateValue} onChange={(e) => setApplyDateValue(e.target.value)}
-                                      style={{ padding: "9px 12px", fontSize: 14, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                      style={{ padding: "9px 12px", fontSize: 14, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim }} />
                                     <button onClick={() => handleApproveApplication(record.id, b, applyDateValue)}
                                       style={{ padding: "10px 18px", fontSize: 14, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
                                       Confirm open date
                                     </button>
                                     <button onClick={() => setApprovingId(null)}
-                                      style={{ padding: "10px 14px", fontSize: 14, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                      style={{ padding: "10px 14px", fontSize: 14, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                                       Cancel
                                     </button>
                                   </div>
@@ -1245,7 +1383,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       // bar below still reads $0 — the two now share one source of truth.
                       const milestoneDetail = getMilestoneDetail(b, record, profile.pay_frequency, profile.paycheck_amount, depositedSoFar, bonusDeposits.length)
 
+                      // milestoneDetail.bonusPosted is milestoneIndex >= 3, which is
+                      // TRUE the moment the checklist reaches the "bonus_posted" step —
+                      // but that step means "waiting for the bonus to post", NOT that
+                      // the money landed. Gate the "Mark account closed / Keep open"
+                      // actions on the REAL confirmation instead, so a user sitting at
+                      // the posting step still sees the "Confirm the bonus landed / Log
+                      // the payout" CTA rather than being told to close early.
+                      const payoutConfirmed = hasConfirmedPosted(record)
+
                       const isDetailsExpanded = expandedDetails === b.id
+                      const isFlipped = flippedCards.has(b.id)
+                      const flipAnimate = flipAnimatedRef.current.has(b.id)
 
                       // Fee avoidance info
                       const hasFee = fees?.monthly_fee && fees.monthly_fee > 0
@@ -1253,38 +1402,113 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
                       return (
                         <div key={b.id} style={{
-                          background: "#fff",
-                          border: milestoneDetail.bonusPosted ? "1px solid #e0e0e0" : "2px solid #2563eb",
+                          background: DK.panel,
+                          border: payoutConfirmed ? "1px solid #2a2e38" : "2px solid #2563eb",
                           borderRadius: 14, overflow: "hidden",
-                          boxShadow: milestoneDetail.bonusPosted ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
+                          boxShadow: payoutConfirmed ? "none" : "0 2px 12px rgba(37,99,235,0.05)",
                         }}>
                           {/* ── Header: Bank + Amount ── */}
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                             <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                              <div style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{b.bank_name}</div>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: DK.text }}>{b.bank_name}</div>
                               {(b as any).expired && (
-                                <span style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, padding: "2px 8px" }}>Expired</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: DK.red, background: DK.redBg, border: `1px solid ${DK.redBorder}`, borderRadius: 6, padding: "2px 8px" }}>Expired</span>
                               )}
                               {bestLink(b.source_links) && (
                                 <a href={applyUrl(b.id)} target="_blank" rel="noreferrer"
-                                  style={{ fontSize: 11, color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                                  style={{ fontSize: 11, color: DK.accentFg, textDecoration: "none", fontWeight: 500 }}>
                                   View offer
                                 </a>
                               )}
                               {getPostByBonusId(b.id) && (
                                 <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
-                                  style={{ fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 500 }}>
+                                  style={{ fontSize: 11, color: DK.greenFg, textDecoration: "none", fontWeight: 500 }}>
                                   Read review
                                 </a>
                               )}
                             </div>
-                            <div style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
+                              <button onClick={() => toggleFlip(b.id)}
+                                title={isFlipped ? "Back to the next step" : "See every step & the details"}
+                                style={{ fontSize: 11, fontWeight: 700, color: isFlipped ? DK.accentFg : DK.textMute, background: isFlipped ? "rgba(37,99,235,0.14)" : DK.panel2, border: `1px solid ${isFlipped ? "rgba(37,99,235,0.4)" : DK.border2}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap" as const, display: "flex", alignItems: "center", gap: 5 }}>
+                                {isFlipped ? "↩ Summary" : "☰ All steps"}
+                              </button>
+                            </div>
                           </div>
 
-                          {/* ── Checklist ── */}
+                          {/* ── Flip body: everything below the header lives on a single
+                              keyed face that re-mounts and does a 3D rotateY swing on each
+                              flip. Keying by front/back gives the physical card-flip feel
+                              without the fragile absolute-stacking + height-measuring the
+                              prototype used (our faces have dynamic, expandable heights). ── */}
+                          <div
+                            key={isFlipped ? "back" : "front"}
+                            style={flipAnimate ? {
+                              animation: `${isFlipped ? "rmFlipBack" : "rmFlipFront"} .5s cubic-bezier(.2,.7,.2,1) both`,
+                              transformOrigin: "center",
+                              willChange: "transform",
+                            } : undefined}
+                          >
+
+                          {/* ── Next step hero: the "one clear objective + XP bar" face.
+                              Sits above the full checklist so the user sees exactly ONE
+                              action instead of a wall of checkboxes — the checklist stays
+                              below as the detailed source of truth. ── */}
+                          {!isFlipped && !payoutConfirmed && (() => {
+                            const order: MilestoneKey[] = ["account_opened", "dd_confirmed", "deposit_met", "bonus_posted", "safe_to_close"]
+                            const active = milestoneDetail.milestones.find((m) => m.status === "active")
+                            const activeKey = (active?.key ?? milestoneDetail.currentMilestone) as MilestoneKey
+                            const depPct = totalRequired > 0 ? Math.min(1, depositedSoFar / totalRequired) : 0
+                            const stepPct =
+                              activeKey === "account_opened" ? 6 :
+                              activeKey === "dd_confirmed" ? 25 :
+                              activeKey === "deposit_met" ? 30 + depPct * 55 :
+                              activeKey === "bonus_posted" ? 90 : 100
+                            const objective =
+                              activeKey === "account_opened" ? "Open the account" :
+                              activeKey === "dd_confirmed" ? "Set up your recurring direct deposit" :
+                              activeKey === "deposit_met" ? (totalRequired > 0 ? `Hit the direct-deposit target — ${money(depositedSoFar)} of ${money(totalRequired)}` : "Hit the direct-deposit requirement") :
+                              activeKey === "bonus_posted" ? "Confirm the bonus landed" :
+                              "Hold, then it's safe to close"
+                            const actionLabel =
+                              activeKey === "account_opened" ? "Mark opened" :
+                              activeKey === "dd_confirmed" ? "Mark DD set up" :
+                              activeKey === "deposit_met" ? "Mark requirement met" :
+                              activeKey === "bonus_posted" ? "Log the payout" : null
+                            const advance = () => {
+                              if (activeKey === "bonus_posted") {
+                                setPendingStepDate({ id: b.id, type: "posted" })
+                                setStepDateValue(todayStr())
+                                setStepActualAmount(String(b.bonus_amount))
+                                setDdMethodValue(""); setDdSearchOpen(false); setDdSearch("")
+                                return
+                              }
+                              const idx = order.indexOf(activeKey)
+                              if (idx >= 0 && idx < order.length - 1) handleMilestoneOverride(b.id, order[idx + 1])
+                            }
+                            return (
+                              <div style={{ padding: "16px 24px 0" }}>
+                                <NextStepBar
+                                  objective={objective}
+                                  pct={stepPct}
+                                  actionLabel={actionLabel}
+                                  onAction={advance}
+                                  daysLeft={activeKey === "deposit_met" ? daysRemaining : null}
+                                  accentFrom="#2563eb"
+                                  accentTo="#3b82f6"
+                                  glow="rgba(37,99,235,0.5)"
+                                />
+                              </div>
+                            )
+                          })()}
+
+                          {/* ── Checklist (back of card) — the full granular step list
+                              lives behind the flip so the front stays one next step. ── */}
+                          {isFlipped && (
                           <div style={{ padding: "16px 24px 0" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Steps to unlock {money(b.bonus_amount)}</div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: DK.textMute }}>Steps to unlock {money(b.bonus_amount)}</div>
                               {/* Undo: go back one step */}
                               {milestoneDetail.currentMilestone !== "account_opened" && (
                                 <button onClick={() => {
@@ -1294,7 +1518,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     handleMilestoneOverride(b.id, stepOrder[currentIdx - 1])
                                   }
                                 }}
-                                  style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
+                                  style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
                                   Undo
                                 </button>
                               )}
@@ -1342,7 +1566,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     onClick={handleCheck}>
                                     <div style={{
                                       width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                                      border: isCompleted ? "none" : `2px solid ${isActive ? "#2563eb" : "#d4d4d4"}`,
+                                      border: isCompleted ? "none" : `2px solid ${isActive ? "#2563eb" : DK.border2}`,
                                       background: isCompleted ? "#0d7c5f" : "transparent",
                                       display: "flex", alignItems: "center", justifyContent: "center",
                                     }}>
@@ -1354,7 +1578,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     </div>
                                     <span style={{
                                       fontSize: 14,
-                                      color: isCompleted ? "#888" : isActive ? "#111" : "#bbb",
+                                      color: isCompleted ? DK.textMute : isActive ? DK.text : DK.textFaint,
                                       fontWeight: isActive ? 600 : 400,
                                       textDecoration: isCompleted ? "line-through" : "none",
                                     }}>
@@ -1362,39 +1586,47 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     </span>
                                     {m.key === "account_opened" && isCompleted && record.opened_date && (
                                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                        <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(record.opened_date)}</span>
+                                        <span style={{ fontSize: 11, color: DK.textFaint }}>· {fmtShortDate(record.opened_date)}</span>
                                         <button onClick={(e) => { e.stopPropagation(); setPendingStepDate({ id: b.id, type: "open" }); setStepDateValue(record.opened_date) }}
                                           title="Edit open date"
-                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                                          style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
                                       </span>
                                     )}
                                     {m.key === "bonus_posted" && isCompleted && (
                                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                                        {record.bonus_posted_date && <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(record.bonus_posted_date)}</span>}
-                                        {record.actual_amount != null && <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>{money(record.actual_amount)}</span>}
-                                        {record.dd_method && <span style={{ fontSize: 10, color: "#666", background: "#f3f4f6", padding: "1px 7px", borderRadius: 99 }}>via {record.dd_method}</span>}
+                                        {record.bonus_posted_date && <span style={{ fontSize: 11, color: DK.textFaint }}>· {fmtShortDate(record.bonus_posted_date)}</span>}
+                                        {record.actual_amount != null && <span style={{ fontSize: 11, color: DK.greenFg, fontWeight: 600 }}>{money(record.actual_amount)}</span>}
+                                        {record.dd_method && <span style={{ fontSize: 10, color: DK.textMute, background: DK.panel3, padding: "1px 7px", borderRadius: 99 }}>via {record.dd_method}</span>}
                                         <button onClick={(e) => { e.stopPropagation(); setPendingStepDate({ id: b.id, type: "posted" }); setStepDateValue(record.bonus_posted_date ?? todayStr()); setStepActualAmount(String(record.actual_amount ?? b.bonus_amount)); setDdMethodValue(record.dd_method ?? ""); setDdSearchOpen(false); setDdSearch("") }}
                                           title="Edit posted details"
-                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                                          style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
                                       </span>
                                     )}
                                   </div>
                                 )
                               })}
                             </div>
+                          </div>
+                          )}
+
+                          {/* Inline step editors live OUTSIDE the flip: the front's
+                              "Log the payout" action and the back's checkbox both open
+                              them, so they must render in either view. */}
+                          {pendingStepDate?.id === b.id && (pendingStepDate?.type === "open" || pendingStepDate?.type === "posted") && (
+                          <div style={{ padding: "12px 24px 0" }}>
                             {/* Inline "Account Opened" date editor — correct the open date */}
                             {pendingStepDate?.id === b.id && pendingStepDate?.type === "open" && (
-                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", marginBottom: 8 }}>When did this account open?</div>
+                              <div style={{ marginTop: 4, padding: "12px 14px", background: "rgba(37,99,235,0.14)", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: DK.accentFg, marginBottom: 8 }}>When did this account open?</div>
                                 <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                                   <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
-                                    style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                    style={{ padding: "8px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim }} />
                                   <button onClick={() => handleConfirmOpenDate(b.id)}
                                     style={{ padding: "9px 16px", fontSize: 13, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
                                     Save date
                                   </button>
                                   <button onClick={() => setPendingStepDate(null)}
-                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                    style={{ padding: "9px 14px", fontSize: 13, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                                     Cancel
                                   </button>
                                 </div>
@@ -1402,51 +1634,51 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             )}
                             {/* Inline "Bonus Posted" prompt — real amount + posting date */}
                             {pendingStepDate?.id === b.id && pendingStepDate?.type === "posted" && (
-                              <div style={{ marginTop: 4, padding: "12px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 8 }}>Bonus posted — confirm the details</div>
+                              <div style={{ marginTop: 4, padding: "12px 14px", background: "rgba(13,150,104,0.14)", border: "1px solid rgba(13,150,104,0.4)", borderRadius: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: DK.greenFg, marginBottom: 8 }}>Bonus posted — confirm the details</div>
                                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
                                   <div>
-                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Date posted</div>
+                                    <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 3 }}>Date posted</div>
                                     <input type="date" value={stepDateValue} onChange={(e) => setStepDateValue(e.target.value)}
-                                      style={{ padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333" }} />
+                                      style={{ padding: "8px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim }} />
                                   </div>
                                   <div>
-                                    <div style={{ fontSize: 11, color: "#999", marginBottom: 3 }}>Amount received</div>
+                                    <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 3 }}>Amount received</div>
                                     <div style={{ position: "relative" }}>
-                                      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
+                                      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 13 }}>$</span>
                                       <input type="number" value={stepActualAmount} onChange={(e) => setStepActualAmount(e.target.value)}
                                         placeholder={String(b.bonus_amount)}
-                                        style={{ width: 120, padding: "8px 10px 8px 20px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
+                                        style={{ width: 120, padding: "8px 10px 8px 20px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim, boxSizing: "border-box" as const }} />
                                     </div>
                                   </div>
                                 </div>
                                 {/* Which direct-deposit source actually triggered the bonus —
                                     a forward-looking data point on what works per bank. */}
                                 <div style={{ marginTop: 12 }}>
-                                  <div style={{ fontSize: 11, color: "#999", marginBottom: 6 }}>
-                                    Which deposit triggered it? <span style={{ color: "#bbb" }}>(optional — helps track what works)</span>
+                                  <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 6 }}>
+                                    Which deposit triggered it? <span style={{ color: DK.textFaint }}>(optional — helps track what works)</span>
                                   </div>
                                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                                     <button onClick={() => { setDdMethodValue(ddMethodValue === "Employer / payroll" ? "" : "Employer / payroll"); setDdSearchOpen(false); setDdSearch("") }}
-                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddMethodValue === "Employer / payroll" ? "1.5px solid #0d7c5f" : "1px solid #ddd", background: ddMethodValue === "Employer / payroll" ? "#e6f5f0" : "#fff", color: ddMethodValue === "Employer / payroll" ? "#0d7c5f" : "#555" }}>
+                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddMethodValue === "Employer / payroll" ? "1.5px solid #0d7c5f" : `1px solid ${DK.border2}`, background: ddMethodValue === "Employer / payroll" ? "rgba(13,150,104,0.16)" : DK.panel2, color: ddMethodValue === "Employer / payroll" ? DK.greenFg : DK.textMute }}>
                                       {ddMethodValue === "Employer / payroll" ? "✓ " : ""}Employer / payroll
                                     </button>
                                     <button onClick={() => { setDdSearchOpen(v => !v); setDdMethodValue("") }}
-                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? "1.5px solid #2563eb" : "1px solid #ddd", background: ddSearchOpen ? "#eff6ff" : "#fff", color: ddSearchOpen ? "#2563eb" : "#555" }}>
+                                      style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: "pointer", border: ddSearchOpen ? "1.5px solid #2563eb" : `1px solid ${DK.border2}`, background: ddSearchOpen ? "rgba(37,99,235,0.16)" : DK.panel2, color: ddSearchOpen ? DK.accentFg : DK.textMute }}>
                                       Other source…
                                     </button>
                                     {!ddSearchOpen && ddMethodValue && ddMethodValue !== "Employer / payroll" && (
-                                      <span style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>via {ddMethodValue}</span>
+                                      <span style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>via {ddMethodValue}</span>
                                     )}
                                   </div>
                                   {ddSearchOpen && (
                                     <div style={{ marginTop: 8 }}>
                                       <input autoFocus value={ddSearch} onChange={(e) => setDdSearch(e.target.value)} placeholder="Search bank, brokerage, or app…"
-                                        style={{ width: "100%", maxWidth: 320, padding: "8px 10px", fontSize: 13, border: "1px solid #ddd", borderRadius: 8, outline: "none", color: "#333", boxSizing: "border-box" as const }} />
+                                        style={{ width: "100%", maxWidth: 320, padding: "8px 10px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, outline: "none", color: DK.textDim, boxSizing: "border-box" as const }} />
                                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
                                         {DD_SOURCES.filter(s => s.toLowerCase().includes(ddSearch.trim().toLowerCase())).slice(0, 8).map(s => (
                                           <button key={s} onClick={() => setDdSearch(s)}
-                                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "1.5px solid #2563eb" : "1px solid #e0e0e0", background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "#eff6ff" : "#fff", color: "#555" }}>
+                                            style={{ padding: "4px 10px", fontSize: 12, borderRadius: 99, cursor: "pointer", border: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "1.5px solid #2563eb" : "1px solid #2a2e38", background: ddSearch.trim().toLowerCase() === s.toLowerCase() ? "rgba(37,99,235,0.16)" : DK.panel2, color: DK.textMute }}>
                                             {s}
                                           </button>
                                         ))}
@@ -1460,44 +1692,48 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     Confirm
                                   </button>
                                   <button onClick={() => setPendingStepDate(null)}
-                                    style={{ padding: "9px 14px", fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                    style={{ padding: "9px 14px", fontSize: 13, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                                     Cancel
                                   </button>
                                 </div>
                               </div>
                             )}
                           </div>
+                          )}
 
                           {/* ── Deposits ── */}
-                          {totalRequired > 0 && !milestoneDetail.bonusPosted && (
+                          {!isFlipped && totalRequired > 0 && !milestoneDetail.bonusPosted && (
                             <div style={{ padding: "12px 24px 0" }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: DK.textMute }}>
                                   Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
                                 </span>
-                                <button onClick={() => { setAddingDeposit(addingDeposit === b.id ? null : b.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
-                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
+                                <button onClick={() => { setAddingDeposit(addingDeposit === b.id ? null : b.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()); setNewDepositSource("Employer / payroll"); setDepositSrcSearchOpen(false) }}
+                                  style={{ fontSize: 18, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
                                   +
                                 </button>
                               </div>
                               {/* Progress bar */}
-                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: bonusDeposits.length > 0 ? 8 : 0 }}>
-                                <div style={{
-                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
-                                  width: `${totalRequired > 0 ? Math.min(100, (depositedSoFar / totalRequired) * 100) : 0}%`,
-                                  transition: "width 0.3s ease",
-                                }} />
+                              <div style={{ marginBottom: bonusDeposits.length > 0 ? 8 : 0 }}>
+                                <GoalProgressBar current={depositedSoFar} target={totalRequired} accent="#2563eb" dark />
                               </div>
                               {/* Deposit entries */}
                               {bonusDeposits.length > 0 && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                   {bonusDeposits.map((d) => (
                                     <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
-                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
+                                      <span style={{ color: DK.textMute, display: "flex", alignItems: "center", gap: 6 }}>
+                                        {fmtShortDate(d.deposit_date)}
+                                        {d.source && (
+                                          <span style={{ fontSize: 10, color: d.source === "Employer / payroll" ? DK.textMute : DK.gold, background: d.source === "Employer / payroll" ? DK.panel3 : DK.amberBg, padding: "1px 7px", borderRadius: 99 }}>
+                                            {d.source === "Employer / payroll" ? "🏦" : "💳"} {d.source}
+                                          </span>
+                                        )}
+                                      </span>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                        <span style={{ color: DK.text, fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
                                         <button onClick={() => handleDeleteDeposit(d.id)}
-                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                          style={{ fontSize: 10, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
                                       </div>
                                     </div>
                                   ))}
@@ -1505,29 +1741,80 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               )}
                               {/* Inline add form */}
                               {addingDeposit === b.id && (
-                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
-                                  <div style={{ position: "relative", flex: 1 }}>
-                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
-                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
-                                      placeholder="Amount" />
+                                <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #23262e" }}>
+                                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                    <div style={{ position: "relative", flex: 1 }}>
+                                      <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 13 }}>$</span>
+                                      <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                        style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                                        placeholder="Amount" />
+                                    </div>
+                                    <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                      style={{ padding: "6px 8px", fontSize: 12, border: `1px solid ${DK.border2}`, borderRadius: 6, outline: "none", color: DK.textMute }} />
+                                    <button onClick={() => handleAddDeposit(b.id)}
+                                      style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
+                                      Add
+                                    </button>
                                   </div>
-                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
-                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
-                                  <button onClick={() => handleAddDeposit(b.id)}
-                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
-                                    Add
-                                  </button>
+                                  {renderDepositSourcePicker("#2563eb")}
                                 </div>
                               )}
                             </div>
                           )}
 
+                          {/* ── Fee reality check (the gamified "net after fees +
+                              STACK PROTECTED" strip). Only shows when the bonus
+                              actually carries a fee — the full "Fees & how to avoid"
+                              breakdown still lives in the expandable below. ── */}
+                          {!isFlipped && !milestoneDetail.bonusPosted && ((fees?.monthly_fee ?? 0) > 0 || (fees?.early_closure_fee ?? 0) > 0) && (() => {
+                            const feeText = fees?.monthly_fee_waiver_text ?? ""
+                            // Banks often list SEVERAL ways to dodge the same fee
+                            // ("$500 daily balance OR a direct deposit OR Preferred
+                            // Rewards"). Rather than fragile clause-splitting on messy
+                            // narrative text, scan the whole blurb for known waiver
+                            // signals and emit ONE clean, canonical option per signal.
+                            const waiversList: FeeWaiver[] = []
+                            if ((fees?.monthly_fee ?? 0) > 0 && feeText) {
+                              // Balance waiver — largest $ figure that reads like a real
+                              // balance threshold (never the small monthly-fee amount,
+                              // e.g. "$4.95/mo … $500+ daily balance" → $500, not $4).
+                              if (/balance|minimum|maintain/i.test(feeText)) {
+                                const amounts = (feeText.match(/\$\s?[\d,]+(?:\.\d+)?/g) ?? [])
+                                  .map((s: string) => parseInt(s.replace(/[^\d.]/g, "").split(".")[0], 10))
+                                  .filter((n: number) => !isNaN(n) && n >= 100)
+                                if (amounts.length > 0) {
+                                  const balance = Math.max(...amounts)
+                                  waiversList.push({ type: "balance", label: `keep a $${balance.toLocaleString()} balance`, balance })
+                                }
+                              }
+                              // Direct-deposit waiver
+                              if (/direct deposit|recurring|payroll|qualifying deposit/i.test(feeText)) {
+                                waiversList.push({ type: "dd", label: "keep a qualifying direct deposit going" })
+                              }
+                              // Named relationship / eligibility waivers → clean labels
+                              if (/preferred rewards/i.test(feeText)) waiversList.push({ type: "other", label: "enroll in Preferred Rewards" })
+                              if (/\bstudent\b/i.test(feeText) || /under\s?2[0-9]|ages?\s?2[0-9]/i.test(feeText)) waiversList.push({ type: "other", label: "be a student / under 25" })
+                              if (/e-?statement|paperless/i.test(feeText)) waiversList.push({ type: "other", label: "go paperless (e-statements)" })
+                            }
+                            const holdingDays = b.timeline?.must_remain_open_days ?? req?.holding_period_days ?? windowDays ?? 90
+                            return (
+                              <div style={{ padding: "12px 24px 0" }}>
+                                <FeeStrip
+                                  bonusAmount={b.bonus_amount}
+                                  monthlyFee={fees?.monthly_fee ?? 0}
+                                  earlyClosureFee={fees?.early_closure_fee ?? 0}
+                                  holdingDays={holdingDays}
+                                  waivers={waiversList.length ? waiversList : undefined}
+                                />
+                              </div>
+                            )
+                          })()}
+
                           {/* ── Qualifying transactions checkbox ──
                               Only renders when the bonus's requirements actually
                               include debit_transactions_required. State persists
                               in localStorage. */}
-                          {!milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (() => {
+                          {isFlipped && !milestoneDetail.bonusPosted && req?.debit_transactions_required > 0 && (() => {
                             const txMet = !!transactionsMet[b.id]
                             return (
                               <div
@@ -1547,10 +1834,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     </svg>
                                   )}
                                 </div>
-                                <span style={{ fontSize: 12, color: txMet ? "#888" : "#7c3aed", fontWeight: 600, textDecoration: txMet ? "line-through" : "none" }}>
+                                <span style={{ fontSize: 12, color: txMet ? DK.textMute : "#7c3aed", fontWeight: 600, textDecoration: txMet ? "line-through" : "none" }}>
                                   {req.debit_transactions_required} qualifying transactions met
                                   {!txMet && windowDays > 0 && (
-                                    <span style={{ color: "#bbb", fontWeight: 400, marginLeft: 6 }}>
+                                    <span style={{ color: DK.textFaint, fontWeight: 400, marginLeft: 6 }}>
                                       (within {windowDays} days)
                                     </span>
                                   )}
@@ -1560,11 +1847,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           })()}
 
                           {/* ── Urgency ── */}
-                          {!milestoneDetail.bonusPosted && windowDays > 0 && (
+                          {!isFlipped && !milestoneDetail.bonusPosted && windowDays > 0 && (
                             <div style={{
                               padding: "10px 24px 0",
                               fontSize: 12,
-                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
+                              color: daysRemaining <= 14 ? DK.red : daysRemaining <= 30 ? DK.amber : DK.textMute,
                               fontWeight: daysRemaining <= 30 ? 600 : 400,
                             }}>
                               {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining to complete
@@ -1572,7 +1859,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           )}
 
                           {/* ── Actions ── */}
-                          {milestoneDetail.bonusPosted && !keptOpen.includes(b.id) && (
+                          {payoutConfirmed && !keptOpen.includes(b.id) && (
                             <div style={{ padding: "16px 24px 0" }}>
                               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
@@ -1584,16 +1871,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                   if (record) await markKeptOpen(record.id, true)
                                   setKeptOpen(prev => [...prev, b.id])
                                 }}
-                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                  style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: DK.textMute, border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                                   Keep open
                                 </button>
-                                <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
+                                <div style={{ fontSize: 12, color: DK.textMute, flex: "1 1 100%", marginTop: 4 }}>
                                   Closing the account starts your cooldown period for this bonus.
                                 </div>
                               </div>
                             </div>
                           )}
-                          {!milestoneDetail.bonusPosted && (
+                          {!isFlipped && !milestoneDetail.bonusPosted && (
                             <div style={{ padding: "14px 24px 0" }}>
                               <button onClick={() => {
                                 const ecf = b.fees?.early_closure_fee ?? 0
@@ -1604,17 +1891,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 if (!confirm(msg)) return
                                 setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(false); setActualAmount("")
                               }}
-                                style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
+                                style={{ fontSize: 12, color: DK.textFaint, background: "none", border: "1px solid #23262e", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
                                 Mark as closed
                               </button>
                             </div>
                           )}
 
-                          {/* ── Fees & how to avoid (expandable) ── */}
+                          {/* ── Fees & how to avoid (expandable) — back-of-card detail ── */}
+                          {isFlipped && (
                           <div style={{ padding: "10px 24px 0" }}>
                             <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
-                              style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                              <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
+                              style={{ fontSize: 12, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 9, color: DK.textMute }}>{expandedFees === b.id ? "▲" : "▼"}</span>
                               Fees &amp; how to avoid
                             </button>
                             {expandedFees === b.id && (() => {
@@ -1622,17 +1910,17 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               return (
                                 <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8, paddingBottom: 4 }}>
                                   {!feeG.hasGuidance ? (
-                                    <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly or early-closure fees.</div>
+                                    <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>No monthly or early-closure fees.</div>
                                   ) : (
                                     <>
                                       {feeG.lines.map((line, i) => {
                                         const isClose = line.includes("early-closure") || line.startsWith("Keep the account open")
                                         return (
-                                          <div key={i} style={{ fontSize: 12, color: isClose ? "#d97706" : "#444", lineHeight: 1.5 }}>{line}</div>
+                                          <div key={i} style={{ fontSize: 12, color: isClose ? DK.amber : DK.textDim, lineHeight: 1.5 }}>{line}</div>
                                         )
                                       })}
                                       {feeWaiverText && (
-                                        <div style={{ fontSize: 11, color: "#999", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                        <div style={{ fontSize: 11, color: DK.textMute, lineHeight: 1.5 }}>{feeWaiverText}</div>
                                       )}
                                     </>
                                   )}
@@ -1640,17 +1928,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               )
                             })()}
                           </div>
+                          )}
 
-                          {/* ── What counts as direct deposit (expandable) ── */}
-                          {(() => {
+                          {/* ── What counts as direct deposit (expandable) — back-of-card detail ── */}
+                          {isFlipped && (() => {
                             const ddMethods = blogContent[b.id]?.ddMethods
                             if (!ddMethods || ddMethods.length === 0) return null
                             const isOpen = expandedDD === b.id
                             return (
                               <div style={{ padding: "10px 24px 0" }}>
                                 <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
-                                  style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                                  <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                                  style={{ fontSize: 12, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                                  <span style={{ fontSize: 9, color: DK.textMute }}>{isOpen ? "▲" : "▼"}</span>
                                   What counts as direct deposit
                                 </button>
                                 {isOpen && (
@@ -1659,13 +1948,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                       <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                         <span style={{
                                           fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
-                                          color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                          color: dd.works === true ? DK.greenFg : dd.works === "mixed" ? DK.amber : DK.red,
                                         }}>
                                           {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
                                         </span>
                                         <div>
-                                          <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
-                                          {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                          <span style={{ fontSize: 12, color: DK.textDim }}>{dd.method}</span>
+                                          {dd.notes && <div style={{ fontSize: 11, color: DK.textMute, marginTop: 1 }}>{dd.notes}</div>}
                                         </div>
                                       </div>
                                     ))}
@@ -1675,73 +1964,75 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                             )
                           })()}
 
-                          {/* ── Bonus details (expandable) ── */}
+                          {/* ── Bonus details (expandable) — back-of-card detail ── */}
+                          {isFlipped && (
                           <div style={{ padding: "10px 24px 4px" }}>
                             <button
                               onClick={() => setExpandedDetails(isDetailsExpanded ? null : b.id)}
-                              style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                              style={{ fontSize: 12, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                               {isDetailsExpanded ? "Hide details" : "Bonus details"}
                             </button>
                           </div>
+                          )}
 
-                          {isDetailsExpanded && (
+                          {isFlipped && isDetailsExpanded && (
                             <div style={{ padding: "0 24px 8px", marginTop: 4 }}>
                               {/* Fee avoidance */}
                               {hasFee && (
                                 <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Avoid monthly fee</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 4 }}>Avoid monthly fee</div>
                                   {feeWaiverText ? (
-                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{feeWaiverText}</div>
+                                    <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{feeWaiverText}</div>
                                   ) : (
-                                    <div style={{ fontSize: 12, color: "#666" }}>${fees.monthly_fee}/month fee applies</div>
+                                    <div style={{ fontSize: 12, color: DK.textMute }}>${fees.monthly_fee}/month fee applies</div>
                                   )}
                                 </div>
                               )}
                               {!hasFee && (
                                 <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#0d7c5f" }}>No monthly fee</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.greenFg }}>No monthly fee</div>
                                 </div>
                               )}
 
                               {/* Qualification window */}
                               {windowDays > 0 && (
                                 <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Qualification window</div>
-                                  <div style={{ fontSize: 12, color: "#666" }}>Complete within {windowDays} days of account opening.</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 4 }}>Qualification window</div>
+                                  <div style={{ fontSize: 12, color: DK.textMute }}>Complete within {windowDays} days of account opening.</div>
                                 </div>
                               )}
 
                               {/* Other requirements */}
                               {req?.other_requirements_text && (
                                 <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Requirements</div>
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{req.other_requirements_text}</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 4 }}>Requirements</div>
+                                  <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{req.other_requirements_text}</div>
                                 </div>
                               )}
 
                               {/* Eligibility notes */}
                               {b.eligibility?.eligibility_notes && (
                                 <div style={{ marginBottom: 12 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Eligibility</div>
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 4 }}>Eligibility</div>
+                                  <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>
                                 </div>
                               )}
 
                               {/* Screening */}
-                              <div style={{ display: "flex", gap: 16, fontSize: 11, color: "#999" }}>
+                              <div style={{ display: "flex", gap: 16, fontSize: 11, color: DK.textMute }}>
                                 {b.screening?.chex_sensitive && <span>ChexSystems: {b.screening.chex_sensitive}</span>}
                                 {b.screening?.hard_pull !== null && b.screening?.hard_pull !== undefined && <span>Hard pull: {b.screening.hard_pull ? "Yes" : "No"}</span>}
                               </div>
 
-                              <div style={{ fontSize: 11, color: "#bbb", marginTop: 8 }}>Requirements are set by the bank and may change.</div>
+                              <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 8 }}>Requirements are set by the bank and may change.</div>
 
                               {/* Notes */}
-                              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+                              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #23262e" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111" }}>Your notes</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text }}>Your notes</div>
                                   {editingNote !== b.id && (
                                     <button onClick={() => { setEditingNote(b.id); setNoteText(bonusNotes[b.id] ?? "") }}
-                                      style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                                      style={{ fontSize: 11, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                                       {bonusNotes[b.id] ? "Edit" : "Add note"}
                                     </button>
                                   )}
@@ -1750,18 +2041,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                   <div>
                                     <textarea value={noteText} onChange={e => setNoteText(e.target.value)}
                                       placeholder="Add a reminder, tracking info, or anything useful..."
-                                      style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, resize: "vertical", minHeight: 50, boxSizing: "border-box" as const, fontFamily: "inherit", color: "#333" }} />
+                                      style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: `1px solid ${DK.border2}`, borderRadius: 6, resize: "vertical", minHeight: 50, boxSizing: "border-box" as const, fontFamily: "inherit", color: DK.textDim }} />
                                     <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
                                       <button onClick={() => handleSaveNote(b.id)}
                                         style={{ fontSize: 11, padding: "4px 12px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>Save</button>
                                       <button onClick={() => setEditingNote(null)}
-                                        style={{ fontSize: 11, padding: "4px 12px", background: "none", color: "#999", border: "1px solid #e0e0e0", borderRadius: 4, cursor: "pointer" }}>Cancel</button>
+                                        style={{ fontSize: 11, padding: "4px 12px", background: "none", color: DK.textMute, border: "1px solid #2a2e38", borderRadius: 4, cursor: "pointer" }}>Cancel</button>
                                     </div>
                                   </div>
                                 ) : bonusNotes[b.id] ? (
-                                  <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{bonusNotes[b.id]}</div>
+                                  <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{bonusNotes[b.id]}</div>
                                 ) : (
-                                  <div style={{ fontSize: 11, color: "#ccc" }}>No notes yet</div>
+                                  <div style={{ fontSize: 11, color: DK.textFaint }}>No notes yet</div>
                                 )}
                               </div>
                             </div>
@@ -1770,33 +2061,92 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {/* ── Edit terms / Remove ── */}
                           <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <button onClick={() => openEditCatalogTerms(b.id)}
-                              style={{ fontSize: 11, color: Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "#d97706" : "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              style={{ fontSize: 11, color: Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? DK.amber : "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                               {Object.keys(catalogOverrides[b.id] ?? {}).length > 0 ? "Edited terms ✎" : "Edit terms"}
                             </button>
                             <button onClick={() => handleDelete(b.id)}
-                              style={{ fontSize: 11, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                               Remove
                             </button>
                           </div>
+                          </div>{/* ── end flip body ── */}
                         </div>
                       )
   }
 
+  // A "waiting" bonus: the deposit work is done and the bonus has posted; it's now
+  // riding out the mandatory hold before it's safe to close. Dimmed, topped with a
+  // countdown chip; the full working card (close / keep-open actions) still renders
+  // underneath. Shared by the slot grid AND the "Currently working on" fallback so
+  // the ⏳ Waiting treatment looks identical wherever a card lands.
+  const renderWaitingCard = (item: typeof inProgress[number]) => {
+    const b = item.bonus
+    const rec = completedRecords.find(r => r.bonus_id === b.id && !r.closed_date)
+    // Cards only reach here once the user CONFIRMED the payout (isBonusWaiting /
+    // isWaiting gate on hasConfirmedPosted), so "posted" is a fact, not a guess.
+    // The only open question is the mandatory-open hold: use must_remain_open_days
+    // ONLY — bonus_posting_days_est is irrelevant now that the bonus has posted,
+    // and md.safeToClose can't be trusted here because markBonusPosted jumps
+    // current_step straight to "safe_to_close" the instant the payout is logged.
+    const holdDays: number | null = b.timeline?.must_remain_open_days ?? null
+    const openedDate = rec?.opened_date ? new Date(rec.opened_date + "T00:00:00") : null
+    const todayD = new Date(); todayD.setHours(0, 0, 0, 0)
+    const daysSinceOpen = openedDate ? Math.max(0, Math.floor((todayD.getTime() - openedDate.getTime()) / 86400000)) : 0
+    const ready = holdDays == null || daysSinceOpen >= holdDays
+    const daysLeft = holdDays != null ? Math.max(0, holdDays - daysSinceOpen) : 0
+    const readyDate = holdDays != null && openedDate ? new Date(openedDate.getTime() + holdDays * 86400000) : null
+    const pct = holdDays ? Math.min(100, Math.round((daysSinceOpen / holdDays) * 100)) : 100
+    const label = holdDays == null
+      ? "Bonus posted — safe to close"
+      : ready
+      ? "Hold complete — safe to close now"
+      : "Bonus posted — in holding period"
+    return (
+      <div key={b.id} style={{ opacity: ready ? 1 : 0.85 }}>
+        <div style={{ marginBottom: 8, borderRadius: 10, padding: "8px 12px", background: ready ? "rgba(13,124,95,0.14)" : DK.panel2, border: `1px solid ${ready ? "rgba(13,124,95,0.4)" : DK.border2}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 15 }}>{ready ? "🎉" : "⏳"}</span>
+            <span style={{ fontSize: 12.5, fontWeight: 700, color: ready ? DK.greenFg : DK.textDim }}>
+              {b.bank_name} · {label}
+            </span>
+            {!ready && holdDays != null && (
+              <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, color: DK.textFaint, whiteSpace: "nowrap" as const }}>
+                {daysLeft}d left{readyDate ? ` · ${fmtShortDate(readyDate.toISOString().slice(0, 10))}` : ""}
+              </span>
+            )}
+          </div>
+          {!ready && holdDays != null && (
+            <div style={{ marginTop: 7, height: 5, borderRadius: 99, background: "#0c0e13", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${pct}%`, borderRadius: 99, background: "linear-gradient(90deg,#1e7a52,#f7d774)" }} />
+            </div>
+          )}
+        </div>
+        {renderStandardWorkingCard(item)}
+      </div>
+    )
+  }
+
   if (!mounted || loadingRecords) {
-    return <div style={{ minHeight: "100vh", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#999", fontSize: 14 }}>Loading...</div></div>
+    return <div style={{ minHeight: "100vh", background: DK.board, display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: DK.textMute, fontSize: 14 }}>Loading...</div></div>
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa", color: "#1a1a1a", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: DK.board, color: DK.textDim, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       <style>{`
         .rm-topbar { padding: 14px 32px; }
-        .rm-topbar-email { font-size: 12px; color: #bbb; }
+        .rm-topbar-email { font-size: 12px; color: ${DK.textFaint}; }
         .rm-content { padding: 28px 32px 80px; }
         /* Hero slot flip: each income slot flips in place from its requirements
            summary to its live checklist when started. */
         .hero-slot { perspective: 1600px; margin-bottom: 20px; }
         .hero-flip { transition: transform 0.24s ease, opacity 0.24s ease; transform-origin: center; backface-visibility: hidden; }
         .hero-flip.flipping { transform: rotateY(90deg); opacity: 0.15; }
+        /* Working-card flip: the body below the header swings in on a vertical
+           axis when the user toggles between the next-step face and the full
+           checklist. Front swings from the left, back from the right, so the two
+           read as opposite sides of one physical card. */
+        @keyframes rmFlipFront { 0% { transform: perspective(1400px) rotateY(-90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1400px) rotateY(0deg); opacity: 1 } }
+        @keyframes rmFlipBack  { 0% { transform: perspective(1400px) rotateY(90deg); opacity: 0 } 55% { opacity: 1 } 100% { transform: perspective(1400px) rotateY(0deg); opacity: 1 } }
         @media (max-width: 768px) {
           .rm-topbar { padding: 12px 16px; }
           .rm-topbar-email { display: none; }
@@ -1804,12 +2154,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         }
       `}</style>
       {/* Top Bar */}
-      <div className="rm-topbar" style={{ borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: "#fff" }}>
-        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#111" }}>Stacks OS</span>
+      <div className="rm-topbar" style={{ borderBottom: `1px solid ${DK.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto", background: DK.panel }}>
+        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: DK.text }}>Stacks OS</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span className="rm-topbar-email">{userEmail}</span>
           <select value={profile.state ?? ""} onChange={e => setProfile({ state: e.target.value || null })}
-            style={{ fontSize: 12, color: profile.state ? "#0d7c5f" : "#999", background: "#fff", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
+            style={{ fontSize: 12, color: profile.state ? DK.greenFg : DK.textMute, background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 6, padding: "5px 8px", cursor: "pointer" }}>
             <option value="">Nationwide bonuses only</option>
             {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
               <option key={s} value={s}>{s}</option>
@@ -1827,15 +2177,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       </div>
 
       {/* System status strip */}
-      <div style={{ background: "#f0faf5", borderBottom: "1px solid #d1fae5", padding: "8px 0", width: "100%" }}>
+      <div style={{ background: DK.panel2, borderBottom: `1px solid ${DK.border}`, padding: "8px 0", width: "100%" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 12, color: "#555" }}>
-            Tracking <strong>{(allBonuses as { expired?: boolean }[]).filter(b => !b.expired).length}</strong> bank bonuses
+          <span style={{ fontSize: 12, color: DK.textMute }}>
+            Tracking <strong style={{ color: DK.textDim }}>{(allBonuses as { expired?: boolean }[]).filter(b => !b.expired).length}</strong> bank bonuses
           </span>
-          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-          <span style={{ fontSize: 12, color: "#555" }}>Your roadmap updates as offers change</span>
-          <span style={{ fontSize: 12, color: "#aaa" }}>·</span>
-          <span style={{ fontSize: 12, color: "#aaa" }}>
+          <span style={{ fontSize: 12, color: DK.textFaint }}>·</span>
+          <span style={{ fontSize: 12, color: DK.textMute }}>Your roadmap updates as offers change</span>
+          <span style={{ fontSize: 12, color: DK.textFaint }}>·</span>
+          <span style={{ fontSize: 12, color: DK.textFaint }}>
             Last updated {new Date(lastDiscoverRun.lastRunAt + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
           </span>
         </div>
@@ -1860,7 +2210,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         })
         if (urgentBonuses.length === 0) return null
         return (
-          <div style={{ background: "#fffbeb", borderBottom: "1px solid #f0c040", padding: "10px 32px" }}>
+          <div style={{ background: DK.amberBg, borderBottom: `1px solid ${DK.amberBorder}`, padding: "10px 32px" }}>
             <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontSize: 14 }}>&#x26A0;&#xFE0F;</span>
               {urgentBonuses.map(({ bonus: b }) => {
@@ -1870,7 +2220,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 const deadline = new Date(startDate.getTime() + windowDays * 86400000)
                 const daysLeft = Math.ceil((deadline.getTime() - Date.now()) / 86400000)
                 return (
-                  <span key={b.id} style={{ fontSize: 13, color: daysLeft <= 7 ? "#dc2626" : "#d97706", fontWeight: 600 }}>
+                  <span key={b.id} style={{ fontSize: 13, color: daysLeft <= 7 ? DK.red : DK.amber, fontWeight: 600 }}>
                     {b.bank_name}: {daysLeft} day{daysLeft !== 1 ? "s" : ""} left to meet deposit requirement
                   </span>
                 )
@@ -1882,10 +2232,21 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }} className="rm-content">
 
+        {/* The Stack — gamified running total of paycheck bonuses banked this
+            year, with in-progress value as the goal. Ticks up + pops when a
+            bonus is marked received. Mirrors Savings & Spending. */}
+        <FatStackMeter
+          banked={Math.round(totalEarned + customEarned)}
+          goal={Math.round(totalEarned + customEarned + inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress)}
+          label="Banked this year"
+          count={allEarned.length + closedCustom.filter(c => c.bonus_received).length + customKeptOpen.length}
+          countLabel="completed"
+        />
+
         {/* Settings Panel */}
         {showSettings && (
-          <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>Pay Profile <InfoTip term="payProfile" label="pay profile" /></div>
+          <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 12, padding: "24px 28px", marginBottom: 28 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: DK.text, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>Pay Profile <InfoTip term="payProfile" label="pay profile" /></div>
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
               <div>
                 <div style={settingsLabel}>Pay frequency</div>
@@ -1896,7 +2257,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div>
                 <div style={settingsLabel}>Paycheck amount</div>
                 <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                   <input type="number" value={profile.paycheck_amount} onChange={e => setProfile({ paycheck_amount: Number(e.target.value) })} style={settingsInputLight} min={0} step={100} />
                 </div>
               </div>
@@ -1911,7 +2272,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               </div>
               <div>
                 <div style={settingsLabel}>Military-affiliated</div>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#333", cursor: "pointer" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: DK.textDim, cursor: "pointer" }}>
                   <input
                     type="checkbox"
                     checked={profile.military_affiliated === true}
@@ -1922,9 +2283,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               </div>
             </div>
             {/* Additional income sources */}
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 4 }}>Additional income sources</div>
-              <div style={{ fontSize: 11, color: "#bbb", marginBottom: 12 }}>Add other jobs or side income with separate direct deposits. This speeds up your projected timelines and may unlock bonuses with higher deposit requirements.</div>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${DK.border}` }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 4 }}>Additional income sources</div>
+              <div style={{ fontSize: 11, color: DK.textFaint, marginBottom: 12 }}>Add other jobs or side income with separate direct deposits. This speeds up your projected timelines and may unlock bonuses with higher deposit requirements.</div>
 
               {/* Income source 2 */}
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 10 }}>
@@ -1949,7 +2310,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   <div>
                     <div style={settingsLabel}>Amount</div>
                     <div style={{ position: "relative" }}>
-                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                       <input type="number"
                         value={(profile as any).income_2_amount ?? ""}
                         onChange={e => setProfile({ income_2_amount: Number(e.target.value) || null } as any)}
@@ -1984,7 +2345,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     <div>
                       <div style={settingsLabel}>Amount</div>
                       <div style={{ position: "relative" }}>
-                        <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                        <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                         <input type="number"
                           value={(profile as any).income_3_amount ?? ""}
                           onChange={e => setProfile({ income_3_amount: Number(e.target.value) || null } as any)}
@@ -1997,7 +2358,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               )}
             </div>
             {/* Filters — match the brokerage/business toggle style from Savings */}
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f0f0f0", display: "flex", gap: 20, flexWrap: "wrap" }}>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${DK.border}`, display: "flex", gap: 20, flexWrap: "wrap" }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
                 <input
                   type="checkbox"
@@ -2008,17 +2369,17 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       localStorage.setItem("stacks_only_low_chex", e.target.checked ? "1" : "0")
                     }
                   }}
-                  style={{ accentColor: "#d97706" }}
+                  style={{ accentColor: DK.amber }}
                 />
-                <span style={{ fontSize: 13, color: "#555" }}>
-                  Sensitive ChexSystems <span style={{ color: "#bbb" }}>— only show chex-friendly bonuses</span>
+                <span style={{ fontSize: 13, color: DK.textMute }}>
+                  Sensitive ChexSystems <span style={{ color: DK.textFaint }}>— only show chex-friendly bonuses</span>
                 </span>
               </label>
             </div>
 
             {/* Save — the panel already auto-saves on change, but an explicit
                 button + confirmation makes the action feel deliberate. */}
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #f0f0f0", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${DK.border}`, display: "flex", alignItems: "center", gap: 12 }}>
               <button
                 onClick={handleSaveProfile}
                 disabled={profileSaveState === "saving"}
@@ -2031,9 +2392,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 {profileSaveState === "saving" ? "Saving…" : "Save profile"}
               </button>
               {profileSaveState === "saved" && (
-                <span style={{ fontSize: 13, color: "#0d7c5f", fontWeight: 600 }}>✓ Saved</span>
+                <span style={{ fontSize: 13, color: DK.greenFg, fontWeight: 600 }}>✓ Saved</span>
               )}
-              <span style={{ fontSize: 11, color: "#ccc", marginLeft: "auto" }}>Changes also save automatically</span>
+              <span style={{ fontSize: 11, color: DK.textFaint, marginLeft: "auto" }}>Changes also save automatically</span>
             </div>
           </div>
         )}
@@ -2041,8 +2402,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         {/* ── First-run "Start here" banner ── */}
         {inProgress.length === 0 && activeCustom.length === 0 && allClosed.length === 0 && closedCustom.length === 0 && (
           <div style={{
-            background: "linear-gradient(135deg, #e6f5f0 0%, #f0faf6 100%)",
-            border: "1px solid #c8e6d8",
+            background: "linear-gradient(135deg, rgba(13,150,104,0.14) 0%, rgba(13,150,104,0.05) 100%)",
+            border: `1px solid ${DK.green}`,
             borderRadius: 12,
             padding: "16px 20px",
             marginBottom: 16,
@@ -2052,13 +2413,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             flexWrap: "wrap",
           }}>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "#0d7c5f", fontWeight: 700, marginBottom: 4 }}>
+              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: DK.greenFg, fontWeight: 700, marginBottom: 4 }}>
                 Start here
               </div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0a5c47", margin: "0 0 4px" }}>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: DK.text, margin: "0 0 4px" }}>
                 {isPaid ? "Pick your first bonus" : "Add the bonus you're working on"}
               </h2>
-              <p style={{ fontSize: 13, color: "#0a5c47", margin: 0, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: DK.textDim, margin: 0, lineHeight: 1.5 }}>
                 {isPaid
                   ? "We've sequenced the bonuses below by what you can realistically finish given your paycheck. Tap the green \"Start\" button on the first one to begin."
                   : "Browse the public catalog or type one in manually — Stacks tracks deposits, deadlines, and your lifetime earnings."}
@@ -2070,23 +2431,23 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         {/* ── Free-tier upgrade nudge — replaces the sequencer hero cards ── */}
         {!isPaid && (
           <div style={{
-            background: "#fff", border: "2px solid #e8e8e8", borderRadius: 14,
+            background: DK.panel, border: `2px solid ${DK.border}`, borderRadius: 14,
             padding: "20px 22px", marginBottom: 20,
             display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
           }}>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
                 Pro feature
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: DK.text, marginBottom: 4 }}>
                 Get the personalized bonus queue
               </div>
-              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.5 }}>
+              <div style={{ fontSize: 13, color: DK.textMute, lineHeight: 1.5 }}>
                 Stacks ranks every live bonus for your paycheck and tells you which one to do next — sequenced by cooldowns and net profitability.
               </div>
             </div>
             <a href="/onboarding" style={{
-              fontSize: 13, fontWeight: 700, color: "#fff", background: "#0d7c5f",
+              fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green,
               padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
             }}>
               Upgrade to Pro →
@@ -2096,23 +2457,23 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
         {/* ── Stats Bar — always first ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
-                <div style={{ fontSize: 11, color: "#bbb", marginTop: 3 }}>{allClosed.length + closedCustom.length} bonus{allClosed.length + closedCustom.length !== 1 ? "es" : ""} completed</div>
+              <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                <div style={{ fontSize: 11, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.05em" }}>Lifetime earned</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: DK.gold, marginTop: 2 }}>${(totalEarned + customEarned).toLocaleString()}</div>
+                <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 3 }}>{allClosed.length + closedCustom.length} bonus{allClosed.length + closedCustom.length !== 1 ? "es" : ""} completed</div>
               </div>
-              <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#2563eb", marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
+              <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                <div style={{ fontSize: 11, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.05em" }}>In progress</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: DK.accentFg, marginTop: 2 }}>${(inProgress.reduce((s, b) => s + b.bonus.bonus_amount, 0) + customInProgress).toLocaleString()}</div>
               </div>
               {isPaid && (
-                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available bonuses</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginTop: 2 }}>{available.length + inProgress.length}</div>
-                  <button onClick={handleToggleProjection} style={{ fontSize: 11, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
+                <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.05em" }}>Available bonuses</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: DK.text, marginTop: 2 }}>{available.length + inProgress.length}</div>
+                  <button onClick={handleToggleProjection} style={{ fontSize: 11, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600, marginTop: 4 }}>
                     {showProjection ? "Hide plan" : "View full bonus plan"}
                   </button>
-                  <div style={{ fontSize: 10, color: "#ccc", marginTop: 3 }}>Portfolio projection lives on the Dashboard.</div>
+                  <div style={{ fontSize: 10, color: DK.textFaint, marginTop: 3 }}>Portfolio projection lives on the Dashboard.</div>
                 </div>
               )}
             </div>
@@ -2132,27 +2493,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               ].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
               const activeBonuses = projectionTab === "year1" ? year1Bonuses : year2Bonuses
               return (
-                <div style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+                <div style={{ background: DK.panel, border: `1px solid ${DK.border}`, borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
                   {/* Tabs */}
-                  <div style={{ display: "flex", background: "#f0f0f0", borderRadius: 8, padding: 3, marginBottom: 14 }}>
+                  <div style={{ display: "flex", background: DK.panel2, borderRadius: 8, padding: 3, marginBottom: 14 }}>
                     {(["year1", "year2"] as const).map(tab => (
                       <button key={tab} onClick={() => setProjectionTab(tab)} style={{
                         flex: 1, padding: "7px 10px", fontSize: 12, fontWeight: 600, borderRadius: 6,
                         border: "none", cursor: "pointer",
-                        background: projectionTab === tab ? "#fff" : "transparent",
-                        color: projectionTab === tab ? "#111" : "#999",
-                        boxShadow: projectionTab === tab ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                        background: projectionTab === tab ? DK.panel3 : "transparent",
+                        color: projectionTab === tab ? DK.text : DK.textMute,
+                        boxShadow: projectionTab === tab ? "0 1px 4px rgba(0,0,0,0.4)" : "none",
                       }}>
                         {tab === "year1" ? `This year · ${money(year1Bonuses.reduce((s, p) => s + p.net_bonus, 0))}` : `Next year · ${money(year2Bonuses.reduce((s, p) => s + p.net_bonus, 0))}`}
                       </button>
                     ))}
                   </div>
-                  <div style={{ fontSize: 12, color: "#bbb", marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, color: DK.textFaint, marginBottom: 10 }}>
                     Based on ${profile.paycheck_amount.toLocaleString()} {profile.pay_frequency} paycheck · {activeBonuses.length} opportunities
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {activeBonuses.length === 0 ? (
-                      <div style={{ fontSize: 13, color: "#bbb", textAlign: "center", padding: "16px 0" }}>No bonuses projected for this period.</div>
+                      <div style={{ fontSize: 13, color: DK.textFaint, textAlign: "center", padding: "16px 0" }}>No bonuses projected for this period.</div>
                     ) : (() => {
                       // Build display list with gap cards injected between bonuses
                       type DisplayItem =
@@ -2187,11 +2548,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
                       return items.map((item, i) =>
                         item.type === "gap" ? (
-                          <div key={`gap-${i}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fafafa", border: "1px dashed #e0e0e0", borderRadius: 8 }}>
-                            <span style={{ fontSize: 11, color: "#ccc", fontWeight: 700, width: 20 }}>—</span>
+                          <div key={`gap-${i}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: DK.panel2, border: `1px dashed ${DK.border2}`, borderRadius: 8 }}>
+                            <span style={{ fontSize: 11, color: DK.textFaint, fontWeight: 700, width: 20 }}>—</span>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: "#bbb" }}>No bonus available yet</div>
-                              <div style={{ fontSize: 11, color: "#ccc" }}>{item.from} → {item.to}</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute }}>No bonus available yet</div>
+                              <div style={{ fontSize: 11, color: DK.textFaint }}>{item.from} → {item.to}</div>
                             </div>
                           </div>
                         ) : (() => {
@@ -2199,21 +2560,21 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           const startFmt = fmtDate(new Date(p.start_date + "T00:00:00"))
                           const payoutFmt = fmtDate(new Date(p.payout_date + "T00:00:00"))
                           return (
-                            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#f8f8f8", borderRadius: 8, gap: 8 }}>
+                            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: DK.panel2, borderRadius: 8, gap: 8 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                                <span style={{ fontSize: 11, color: "#bbb", fontWeight: 700, width: 20, flexShrink: 0 }}>{item.idx + 1}</span>
+                                <span style={{ fontSize: 11, color: DK.textFaint, fontWeight: 700, width: 20, flexShrink: 0 }}>{item.idx + 1}</span>
                                 <div style={{ minWidth: 0 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{p.bank_name}</span>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{p.bank_name}</span>
                                     {p.isCustom && (
-                                      <span style={{ fontSize: 10, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 4, padding: "1px 6px", letterSpacing: "0.04em" }}>Custom</span>
+                                      <span style={{ fontSize: 10, fontWeight: 700, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", borderRadius: 4, padding: "1px 6px", letterSpacing: "0.04em" }}>Custom</span>
                                     )}
                                   </div>
-                                  <div style={{ fontSize: 11, color: "#999" }}>Start {startFmt} → Payout ~{payoutFmt}</div>
+                                  <div style={{ fontSize: 11, color: DK.textMute }}>Start {startFmt} → Payout ~{payoutFmt}</div>
                                 </div>
                               </div>
                               <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: "#0d7c5f" }}>{money(p.bonus_amount)}</span>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: DK.greenFg }}>{money(p.bonus_amount)}</span>
                               </div>
                             </div>
                           )
@@ -2226,18 +2587,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     const netTotal = activeBonuses.reduce((s, p) => s + p.net_bonus, 0)
                     const totalFees = grossTotal - netTotal
                     return (
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "#f0faf5", borderRadius: 8, alignItems: "center" }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Total projected</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", marginTop: 6, background: "rgba(13,150,104,0.12)", borderRadius: 8, alignItems: "center" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>Total projected</span>
                         <div style={{ textAlign: "right" }}>
-                          <span style={{ fontSize: 14, fontWeight: 800, color: "#0d7c5f" }}>{money(netTotal)}</span>
+                          <span style={{ fontSize: 14, fontWeight: 800, color: DK.greenFg }}>{money(netTotal)}</span>
                           {totalFees > 0 && (
-                            <span style={{ fontSize: 11, color: "#999", marginLeft: 6 }}>(net of {money(totalFees)} in fees)</span>
+                            <span style={{ fontSize: 11, color: DK.textMute, marginLeft: 6 }}>(net of {money(totalFees)} in fees)</span>
                           )}
                         </div>
                       </div>
                     )
                   })()}
-                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 10, textAlign: "center", lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 10, textAlign: "center", lineHeight: 1.5 }}>
                     Your bonus plan updates automatically as offers change and you complete bonuses.
                   </div>
                 </div>
@@ -2245,21 +2606,41 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             })()}
 
             {/* ── HERO: Action Cards (one per open income slot) ── */}
-            {isPaid && slotCards.map((slot) => {
+            {isPaid && slotCards.map((slot, slotI) => {
               // ── Active tracker slot ──────────────────────────────────────────
               // A bonus that's already started renders its live checklist here, in
               // the same slot it was recommended in. Flip it to review requirements.
               if (slot.kind === "working") {
                 const w = slot.working
+                // ── Waiting slot ── the bonus has posted; it's just riding out
+                // the hold now. Sunk to the bottom, dimmed, with a countdown chip.
+                // A "⏳ Waiting" divider is dropped in above the first one.
+                if (slot.waiting) {
+                  const isFirstWaiting = slotCards.findIndex(s => s.kind === "working" && s.waiting) === slotI
+                  return (
+                    <div key={`slot-${w.bonus.id}`}>
+                      {isFirstWaiting && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "8px 0 12px" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.06em" }}>⏳ Waiting</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: DK.textMute, background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 99, padding: "1px 8px" }}>{workingWaitingBonuses.length}</span>
+                          <span style={{ fontSize: 11.5, color: DK.textFaint }}>deposit work done — riding out the hold</span>
+                        </div>
+                      )}
+                      <div className="hero-slot">
+                        {renderWaitingCard(w)}
+                      </div>
+                    </div>
+                  )
+                }
                 return (
                   <div key={`slot-${w.bonus.id}`} className="hero-slot">
                     <div className={`hero-flip${startingId === w.bonus.id ? " flipping" : ""}`}>
                       {flippedHeroes.has(w.bonus.id) ? (
-                        <div style={{ background: "#fff", border: "2px solid #2563eb", borderRadius: 16, padding: "26px 28px 24px", boxShadow: "0 2px 12px rgba(37,99,235,0.05)" }}>
+                        <div style={{ background: DK.panel, border: `2px solid ${DK.accent2}`, borderRadius: 16, padding: "26px 28px 24px", boxShadow: `0 2px 20px ${DK.accentGlow}` }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, gap: 12 }}>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{w.bonus.bank_name}</div>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: DK.text }}>{w.bonus.bank_name}</div>
                             <button onClick={() => toggleHeroFlip(w.bonus.id)}
-                              style={{ fontSize: 12, fontWeight: 600, color: "#2563eb", background: "none", border: "1px solid #2563eb", borderRadius: 8, padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
+                              style={{ fontSize: 12, fontWeight: 600, color: DK.accentFg, background: "none", border: `1px solid ${DK.accent2}`, borderRadius: 8, padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
                               ← Back to checklist
                             </button>
                           </div>
@@ -2269,7 +2650,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                         <>
                           {renderStandardWorkingCard(w)}
                           <button onClick={() => toggleHeroFlip(w.bonus.id)}
-                            style={{ fontSize: 12, fontWeight: 600, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "8px 2px 0" }}>
+                            style={{ fontSize: 12, fontWeight: 600, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: "8px 2px 0" }}>
                             ↻ View requirements
                           </button>
                         </>
@@ -2284,35 +2665,35 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               const face = hb.kind === "custom" ? (
                 // Custom bonus hero card
                 <div style={{
-                  background: "#fff", border: "2px solid #7c3aed", borderRadius: 16, padding: "36px 32px",
-                  boxShadow: "0 4px 24px rgba(124,58,237,0.08)",
+                  background: DK.panel, border: "2px solid #7c3aed", borderRadius: 16, padding: "36px 32px",
+                  boxShadow: "0 4px 28px rgba(124,58,237,0.28)",
                 }}>
                   {heroBonuses.length > 1 && (
-                    <div style={{ fontSize: 11, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, color: "#c4b5fd", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
                       Income source {workingBonuses.length + heroIdx + 1} — open slot
                     </div>
                   )}
-                  <div style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: DK.text, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
                     {totalEarned > 0 || heroIdx > 0 ? `Your Next ${money(hb.bonus.bonus_amount)} Is Ready` : `Your First ${money(hb.bonus.bonus_amount)} Is Ready`}
                   </div>
-                  <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>Custom bonus you added</div>
+                  <div style={{ fontSize: 14, color: DK.textMute, marginTop: 6 }}>Custom bonus you added</div>
                   <div style={{ marginTop: 20, display: "flex", gap: 28, alignItems: "baseline" }}>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>{hb.bonus.bank_name}</div>
-                    <span style={{ fontSize: 11, color: "#7c3aed", background: "#ede9fe", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: DK.text }}>{hb.bonus.bank_name}</div>
+                    <span style={{ fontSize: 11, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", padding: "2px 8px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
                     {hb.weeksToComplete && (
-                      <div style={{ fontSize: 14, color: "#666" }}>
+                      <div style={{ fontSize: 14, color: DK.textMute }}>
                         Complete in {Math.ceil(hb.weeksToComplete / 2)} pay cycle{Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}
                       </div>
                     )}
                   </div>
-                  {hb.bonus.notes && <div style={{ fontSize: 14, color: "#555", marginTop: 8 }}>{hb.bonus.notes}</div>}
+                  {hb.bonus.notes && <div style={{ fontSize: 14, color: DK.textMute, marginTop: 8 }}>{hb.bonus.notes}</div>}
                   {hb.bonus.dd_required && hb.bonus.min_dd_total && (
-                    <div style={{ fontSize: 14, color: "#555", marginTop: 8 }}>
+                    <div style={{ fontSize: 14, color: DK.textMute, marginTop: 8 }}>
                       Deposit ${hb.bonus.min_dd_total.toLocaleString()} in {hb.bonus.deposit_window_days ?? 90} days
                     </div>
                   )}
                   {hb.bonus.cooldown_months && (
-                    <div style={{ fontSize: 13, color: "#888", marginTop: 6, display: "flex", alignItems: "center", gap: 5 }}>Repeatable · every {hb.bonus.cooldown_months}mo <InfoTip term="churnable" label="repeatable bonus" /></div>
+                    <div style={{ fontSize: 13, color: DK.textMute, marginTop: 6, display: "flex", alignItems: "center", gap: 5 }}>Repeatable · every {hb.bonus.cooldown_months}mo <InfoTip term="churnable" label="repeatable bonus" /></div>
                   )}
                   <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                     <button onClick={() => openStartCustomModal(hb.bonus)}
@@ -2320,11 +2701,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       Start now
                     </button>
                     <button onClick={() => handleOpenEditCustom(hb.bonus)}
-                      style={{ padding: "16px 20px", fontSize: 14, color: "#7c3aed", background: "none", border: "1px solid #c4b5fd", borderRadius: 12, cursor: "pointer" }}>
+                      style={{ padding: "16px 20px", fontSize: 14, color: "#c4b5fd", background: "none", border: "1px solid #6d28d9", borderRadius: 12, cursor: "pointer" }}>
                       Edit
                     </button>
                     <button onClick={async () => { await updateCustomBonus(hb.bonus.id, { current_step: "skipped" }); setCustomBonuses(prev => prev.map(x => x.id === hb.bonus.id ? { ...x, current_step: "skipped" } : x)) }}
-                      style={{ padding: "16px 20px", fontSize: 14, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 12, cursor: "pointer" }}>
+                      style={{ padding: "16px 20px", fontSize: 14, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 12, cursor: "pointer" }}>
                       Not now
                     </button>
                   </div>
@@ -2332,8 +2713,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               ) : (
                 // Standard bonus hero card
                 <div style={{
-                  background: "#fff", border: `2px solid ${accentColor}`, borderRadius: 16, padding: "36px 32px",
-                  boxShadow: heroIdx === 0 ? "0 4px 24px rgba(13,124,95,0.08)" : "0 4px 24px rgba(37,99,235,0.06)",
+                  background: DK.panel, border: `2px solid ${accentColor}`, borderRadius: 16, padding: "36px 32px",
+                  boxShadow: heroIdx === 0 ? "0 4px 28px rgba(13,150,104,0.28)" : `0 4px 28px ${DK.accentGlow}`,
                 }}>
                   {heroBonuses.length > 1 && (
                     <div style={{ fontSize: 11, color: accentColor, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: 8 }}>
@@ -2345,14 +2726,14 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       <div style={{ fontSize: 11, fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {totalEarned > 0 || heroIdx > 0 ? "Your next bonus" : "Your first bonus"} · ready to start
                       </div>
-                      <div style={{ fontSize: 26, fontWeight: 800, color: "#111", lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 4 }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, color: DK.text, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 4 }}>
                         {hb.bonus.bank_name}
                       </div>
                     </div>
                     <button
                       onClick={() => openEditCatalogTerms(hb.bonus.id)}
                       title="Customize bonus terms"
-                      style={{ fontSize: 12, fontWeight: 600, color: "#888", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, marginTop: 4 }}
+                      style={{ fontSize: 12, fontWeight: 600, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, marginTop: 4 }}
                     >
                       {Object.keys(catalogOverrides[hb.bonus.id] ?? {}).length > 0 ? "Edited ✎" : "Edit terms"}
                     </button>
@@ -2367,29 +2748,29 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
                     return (
                       <>
-                        <div style={{ fontSize: 13, color: "#888", marginTop: 4, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ fontSize: 13, color: DK.textMute, marginTop: 4, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                           <VerifiedBadge state={verificationStates.get(hb.bonus.id)} />
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
             {hb.velocity ? `Earns ~$${Math.round(hb.velocity)}/week on your paycheck` : "You qualify based on your paycheck"}
             {hb.velocity ? <InfoTip term="velocity" label="earnings per week" /> : null}
           </span>
                           <span>· Complete in {hb.weeksToComplete ? `${Math.ceil(hb.weeksToComplete / 2)} pay cycle${Math.ceil(hb.weeksToComplete / 2) > 1 ? "s" : ""}` : "a few weeks"}</span>
-                          {hasOverride && <span style={{ color: "#d97706", fontWeight: 600 }}>· terms customized</span>}
+                          {hasOverride && <span style={{ color: DK.amber, fontWeight: 600 }}>· terms customized</span>}
                         </div>
                         <div style={{ marginTop: 18 }}>
                           {renderOfferSummaryFace(hb.bonus, accentColor)}
                         </div>
-                        {effNotes && <div style={{ fontSize: 13, color: "#555", marginTop: 12, fontStyle: "italic" }}>{effNotes}</div>}
+                        {effNotes && <div style={{ fontSize: 13, color: DK.textMute, marginTop: 12, fontStyle: "italic" }}>{effNotes}</div>}
                         {hb.bonus.tiers && hb.bonus.tiers.length > 1 && (
                           <div style={{ marginTop: 12 }}>
-                          <div style={{ fontSize: 11, color: "#888", marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
+                          <div style={{ fontSize: 11, color: DK.textMute, marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
                             Deposit more, earn more <InfoTip term="tier" label="bonus tiers" />
                           </div>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                             {hb.bonus.tiers.map((t: { bonus: number; min_dd_total: number }) => {
                               const isSelected = hb.bonus.bonus_amount === t.bonus
                               return (
-                                <div key={t.bonus} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, border: isSelected ? `1.5px solid ${accentColor}` : "1px solid #e0e0e0", color: isSelected ? accentColor : "#999", fontWeight: isSelected ? 700 : 400, background: isSelected ? "#f6faf8" : "transparent" }}>
+                                <div key={t.bonus} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, border: isSelected ? `1.5px solid ${accentColor}` : `1px solid ${DK.border2}`, color: isSelected ? DK.accentFg : DK.textMute, fontWeight: isSelected ? 700 : 400, background: isSelected ? "rgba(37,99,235,0.12)" : "transparent" }}>
                                   ${t.bonus} at ${t.min_dd_total.toLocaleString()} DD
                                 </div>
                               )
@@ -2402,7 +2783,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       this is what you have to put in on day 1, not maintain. */}
                   {hb.bonus.requirements?.min_opening_deposit > 0 && (
                     <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                      <div style={{ fontSize: 12, color: "#888", background: "#f5f5f5", padding: "4px 10px", borderRadius: 6 }}>
+                      <div style={{ fontSize: 12, color: DK.textMute, background: DK.panel2, padding: "4px 10px", borderRadius: 6 }}>
                         ${hb.bonus.requirements.min_opening_deposit} min to open
                       </div>
                     </div>
@@ -2412,7 +2793,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       early_closure_fee into one amber line so users see both
                       constraints at once instead of two separate gray pills. */}
                   {hb.bonus.timeline?.must_remain_open_days && (
-                    <div style={{ marginTop: 12, fontSize: 13, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
+                    <div style={{ marginTop: 12, fontSize: 13, color: DK.amber, background: DK.amberBg, border: `1px solid ${DK.amberBorder}`, borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
                       Must keep open {hb.bonus.timeline.must_remain_open_days} days
                       {(hb.bonus.fees?.early_closure_fee ?? 0) > 0 && (
                         <> · ${hb.bonus.fees.early_closure_fee} early closure fee</>
@@ -2424,31 +2805,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       flag: users were confused that "$15k bonus" required
                       MAINTAINING $15k, not just depositing it once. */}
                   {hb.bonus.requirements?.min_balance > 0 && (
-                    <div style={{ marginTop: 8, fontSize: 13, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
+                    <div style={{ marginTop: 8, fontSize: 13, color: DK.amber, background: DK.amberBg, border: `1px solid ${DK.amberBorder}`, borderRadius: 8, padding: "8px 12px", fontWeight: 500 }}>
                       Bonus based on average daily balance (not total deposits) — ${hb.bonus.requirements.min_balance.toLocaleString()} required
                     </div>
                   )}
 
-                  <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                  <div style={{ marginTop: 14, borderTop: `1px solid ${DK.border}`, paddingTop: 12 }}>
                     <button onClick={() => setExpandedFees(expandedFees === hb.bonus.id ? null : hb.bonus.id)}
-                      style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{ fontSize: 10, color: "#999" }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
+                      style={{ fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontSize: 10, color: DK.textFaint }}>{expandedFees === hb.bonus.id ? "▲" : "▼"}</span>
                       Fees &amp; how to avoid
                     </button>
                     {expandedFees === hb.bonus.id && (
                       <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
                         {hb.bonus.fees?.monthly_fee && hb.bonus.fees.monthly_fee > 0 ? (
                           <div>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${hb.bonus.fees.monthly_fee}/month</div>
                             {hb.bonus.fees.monthly_fee_waiver_text && (
-                              <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
+                              <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{hb.bonus.fees.monthly_fee_waiver_text}</div>
                             )}
                           </div>
                         ) : (
-                          <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                          <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>No monthly fee</div>
                         )}
                         {hb.bonus.fees?.early_closure_fee > 0 && (
-                          <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                          <div style={{ fontSize: 12, color: DK.amber }}>Early closure fee: ${hb.bonus.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
                         )}
                       </div>
                     )}
@@ -2459,10 +2840,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     if (!ddMethods || ddMethods.length === 0) return null
                     const isOpen = expandedDD === hb.bonus.id
                     return (
-                      <div style={{ marginTop: 2, borderTop: "1px solid #f0f0f0", paddingTop: 12 }}>
+                      <div style={{ marginTop: 2, borderTop: `1px solid ${DK.border}`, paddingTop: 12 }}>
                         <button onClick={() => setExpandedDD(isOpen ? null : hb.bonus.id)}
-                          style={{ fontSize: 13, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ fontSize: 10, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                          style={{ fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontSize: 10, color: DK.textFaint }}>{isOpen ? "▲" : "▼"}</span>
                           What counts as direct deposit
                         </button>
                         {isOpen && (
@@ -2471,13 +2852,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                 <span style={{
                                   fontSize: 10, fontWeight: 700, lineHeight: "18px", flexShrink: 0,
-                                  color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                  color: dd.works === true ? DK.greenFg : dd.works === "mixed" ? DK.amber : DK.red,
                                 }}>
                                   {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
                                 </span>
                                 <div>
-                                  <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
-                                  {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                  <span style={{ fontSize: 12, color: DK.textDim }}>{dd.method}</span>
+                                  {dd.notes && <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 1 }}>{dd.notes}</div>}
                                 </div>
                               </div>
                             ))}
@@ -2506,12 +2887,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               alignItems: "center",
                               gap: 10,
                               padding: "8px 12px",
-                              background: isCombo ? "#e6f5f0" : "#f8f8f8",
-                              border: `1px solid ${isCombo ? "#a7f3d0" : "#e8e8e8"}`,
+                              background: isCombo ? "rgba(13,150,104,0.14)" : DK.panel2,
+                              border: `1px solid ${isCombo ? DK.green : DK.border2}`,
                               borderRadius: 10,
                               cursor: "pointer",
                               fontSize: 12,
-                              color: isCombo ? "#0d7c5f" : "#555",
+                              color: isCombo ? DK.greenFg : DK.textMute,
                               fontWeight: isCombo ? 600 : 500,
                             }}
                           >
@@ -2519,7 +2900,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               type="checkbox"
                               checked={isCombo}
                               onChange={() => {}}
-                              style={{ accentColor: "#0d7c5f", cursor: "pointer" }}
+                              style={{ accentColor: "#0d9668", cursor: "pointer" }}
                             />
                             <span>
                               Open as combo with{" "}
@@ -2535,7 +2916,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           </label>
                         )}
                         {combo?.selfOverride?.note && isCombo && (
-                          <div style={{ marginTop: 8, fontSize: 11, color: "#d97706", lineHeight: 1.5 }}>
+                          <div style={{ marginTop: 8, fontSize: 11, color: DK.amber, lineHeight: 1.5 }}>
                             {combo.selfOverride.note}
                           </div>
                         )}
@@ -2553,16 +2934,16 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           )}
                           <button onClick={() => handleMarkApplied(hb.bonus)}
                             title="I already applied — track the approval decision next"
-                            style={{ padding: "12px 14px", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer" }}>
+                            style={{ padding: "12px 14px", fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer" }}>
                             I applied
                           </button>
                           <button onClick={() => setAlreadyHadBonusId(alreadyHadBonusId === hb.bonus.id ? null : hb.bonus.id)}
                             title="Record as already completed so we stop recommending it"
-                            style={{ padding: "12px 14px", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer" }}>
+                            style={{ padding: "12px 14px", fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer" }}>
                             {alreadyHadBonusId === hb.bonus.id ? "Cancel" : "Already had"}
                           </button>
                           <button onClick={() => handleSkip(hb.bonus.id)}
-                            style={{ padding: "12px 14px", fontSize: 13, color: "#bbb", background: "none", border: "none", cursor: "pointer" }}>
+                            style={{ padding: "12px 14px", fontSize: 13, color: DK.textFaint, background: "none", border: "none", cursor: "pointer" }}>
                             Not now
                           </button>
                         </div>
@@ -2583,18 +2964,18 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   })()}
                   {getPostByBonusId(hb.bonus.id) && (
                     <a href={`/blog/${getPostByBonusId(hb.bonus.id)!.slug}`}
-                      style={{ display: "block", marginTop: 10, fontSize: 12, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                      style={{ display: "block", marginTop: 10, fontSize: 12, color: DK.greenFg, textDecoration: "none", fontWeight: 600 }}>
                       Read full review &rarr;
                     </a>
                   )}
                   {heroIdx === 0 && (
                     <div style={{ marginTop: 16 }}>
                       <button onClick={() => setShowDisclaimer(d => !d)}
-                        style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                        style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                         {showDisclaimer ? "Hide disclaimer" : "Disclaimer"}
                       </button>
                       {showDisclaimer && (
-                        <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
+                        <p style={{ fontSize: 11, color: DK.textFaint, lineHeight: 1.5, marginTop: 6, marginBottom: 0 }}>
                           Information shown is for planning purposes only. Bonus terms and fees are set by the bank and may change. Always confirm details with the institution before applying.
                         </p>
                       )}
@@ -2627,17 +3008,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 .sort((a, b) => {
                 const recA = completedRecords.find(r => r.bonus_id === a.bonus.id && !r.closed_date)
                 const recB = completedRecords.find(r => r.bonus_id === b.bonus.id && !r.closed_date)
-                const aPosted = recA ? getMilestoneDetail(a.bonus, recA, profile.pay_frequency, profile.paycheck_amount).bonusPosted : false
-                const bPosted = recB ? getMilestoneDetail(b.bonus, recB, profile.pay_frequency, profile.paycheck_amount).bonusPosted : false
+                const aPosted = hasConfirmedPosted(recA)
+                const bPosted = hasConfirmedPosted(recB)
                 if (aPosted && !bPosted) return 1
                 if (!aPosted && bPosted) return -1
                 return 0
               })
-              if (activeBonuses.length === 0 && activeCustom.length === 0) return null
+
+              // Split the active list into "still doing the work" vs "done, now
+              // waiting on the bank / the mandatory hold". The waiting ones sink
+              // into their own dimmed group with a countdown — the mission-board
+              // "⏳ Waiting" state (the USAA / FHB hold cards from the prototype).
+              const isWaiting = (item: typeof inProgress[number]) => {
+                const rec = completedRecords.find(r => r.bonus_id === item.bonus.id && !r.closed_date)
+                return hasConfirmedPosted(rec)
+              }
+              const workingItems = activeBonuses.filter(i => !isWaiting(i))
+              const waitingItems = activeBonuses.filter(isWaiting)
+
+              if (workingItems.length === 0 && waitingItems.length === 0 && activeCustom.length === 0) return null
 
               return (
+                <>
+                {(workingItems.length > 0 || activeCustom.length > 0) && (
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Currently working on</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {activeCustom.map(c => {
                       const windowDays = c.deposit_window_days ?? c.holding_period_days ?? 56
@@ -2678,27 +3073,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 
                       return (
                         <div key={c.id} style={{
-                          background: "#fff",
-                          border: bonusPosted ? "1px solid #e0e0e0" : "2px solid #7c3aed",
+                          background: DK.panel,
+                          border: bonusPosted ? "1px solid #2a2e38" : "2px solid #7c3aed",
                           borderRadius: 14, overflow: "hidden",
                           boxShadow: bonusPosted ? "none" : "0 2px 12px rgba(124,58,237,0.05)",
                         }}>
                           {/* Header */}
                           <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                             <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                              <span style={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{c.bank_name}</span>
-                              <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                              <span style={{ fontSize: 20, fontWeight: 800, color: DK.text }}>{c.bank_name}</span>
+                              <span style={{ fontSize: 10, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
                             </div>
-                            <span style={{ fontSize: 20, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</span>
+                            <span style={{ fontSize: 20, fontWeight: 800, color: DK.greenFg }}>{money(c.bonus_amount)}</span>
                           </div>
 
                           {/* Checklist */}
                           <div style={{ padding: "16px 24px 0" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: "#999" }}>Steps to unlock {money(c.bonus_amount)}</div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: DK.textMute }}>Steps to unlock {money(c.bonus_amount)}</div>
                               {c.current_step !== null && (
                                 <button onClick={undoCustomStep}
-                                  style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
+                                  style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
                                   Undo
                                 </button>
                               )}
@@ -2721,7 +3116,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     }}>
                                     <div style={{
                                       width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                                      border: step.done ? "none" : `2px solid ${isActive ? "#7c3aed" : "#d4d4d4"}`,
+                                      border: step.done ? "none" : `2px solid ${isActive ? "#7c3aed" : DK.border2}`,
                                       background: step.done ? "#0d7c5f" : "transparent",
                                       display: "flex", alignItems: "center", justifyContent: "center",
                                     }}>
@@ -2733,7 +3128,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     </div>
                                     <span style={{
                                       fontSize: 14,
-                                      color: step.done ? "#888" : isActive ? "#111" : "#bbb",
+                                      color: step.done ? DK.textMute : isActive ? DK.text : DK.textFaint,
                                       fontWeight: isActive ? 600 : 400,
                                       textDecoration: step.done ? "line-through" : "none",
                                     }}>
@@ -2741,10 +3136,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     </span>
                                     {step.key === "account_opened" && step.done && c.opened_date && (
                                       <>
-                                        <span style={{ fontSize: 11, color: "#bbb" }}>· {fmtShortDate(c.opened_date)}</span>
+                                        <span style={{ fontSize: 11, color: DK.textFaint }}>· {fmtShortDate(c.opened_date)}</span>
                                         <button
                                           onClick={e => { e.stopPropagation(); setPendingStepDate({ id: c.id, type: "open", isEdit: true }); setStepDateValue(c.opened_date) }}
-                                          style={{ fontSize: 11, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>
+                                          style={{ fontSize: 11, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>
                                           ✎
                                         </button>
                                       </>
@@ -2758,8 +3153,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {/* Inline date prompt — Account Opened */}
                           {pendingStepDate?.id === c.id && pendingStepDate?.type === "open" && (
                             <div style={{ padding: "8px 24px 0" }}>
-                              <div style={{ background: "#f9f5ff", border: "1px solid #e0d7ff", borderRadius: 10, padding: "14px 16px" }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#7c3aed", marginBottom: 10 }}>When did you open the account?</div>
+                              <div style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.4)", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#c4b5fd", marginBottom: 10 }}>When did you open the account?</div>
                                 <input type="date" value={stepDateValue} onChange={e => setStepDateValue(e.target.value)}
                                   style={{ ...modalInput, marginBottom: 10 }} />
                                 <div style={{ display: "flex", gap: 8 }}>
@@ -2781,49 +3176,55 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {c.dd_required && totalRequired > 0 && (
                             <div style={{ padding: "12px 24px 0" }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                <span style={{ fontSize: 12, color: "#888" }}>
+                                <span style={{ fontSize: 12, color: DK.textMute }}>
                                   Deposits — ${depositedSoFar.toLocaleString()} of ${totalRequired.toLocaleString()}
                                 </span>
-                                <button onClick={() => { setAddingDeposit(addingDeposit === c.id ? null : c.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()) }}
-                                  style={{ fontSize: 18, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
+                                <button onClick={() => { setAddingDeposit(addingDeposit === c.id ? null : c.id); setNewDepositAmt(String(profile.paycheck_amount)); setNewDepositDate(todayStr()); setNewDepositSource("Employer / payroll"); setDepositSrcSearchOpen(false) }}
+                                  style={{ fontSize: 18, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: "0 4px", fontWeight: 400, lineHeight: 1 }}>
                                   +
                                 </button>
                               </div>
-                              <div style={{ height: 4, background: "#e8e8e8", borderRadius: 2, overflow: "hidden", marginBottom: customDeposits.length > 0 ? 8 : 0 }}>
-                                <div style={{
-                                  height: "100%", borderRadius: 2, background: "#0d7c5f",
-                                  width: `${Math.min(100, (depositedSoFar / totalRequired) * 100)}%`,
-                                  transition: "width 0.3s ease",
-                                }} />
+                              <div style={{ marginBottom: customDeposits.length > 0 ? 8 : 0 }}>
+                                <GoalProgressBar current={depositedSoFar} target={totalRequired} accent="#7c3aed" dark />
                               </div>
                               {customDeposits.length > 0 && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 4 }}>
                                   {customDeposits.map(d => (
                                     <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
-                                      <span style={{ color: "#888" }}>{fmtShortDate(d.deposit_date)}</span>
+                                      <span style={{ color: DK.textMute, display: "flex", alignItems: "center", gap: 6 }}>
+                                        {fmtShortDate(d.deposit_date)}
+                                        {d.source && (
+                                          <span style={{ fontSize: 10, color: d.source === "Employer / payroll" ? DK.textMute : DK.gold, background: d.source === "Employer / payroll" ? DK.panel3 : DK.amberBg, padding: "1px 7px", borderRadius: 99 }}>
+                                            {d.source === "Employer / payroll" ? "🏦" : "💳"} {d.source}
+                                          </span>
+                                        )}
+                                      </span>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <span style={{ color: "#111", fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
+                                        <span style={{ color: DK.text, fontWeight: 500 }}>${d.amount.toLocaleString()}</span>
                                         <button onClick={() => handleDeleteDeposit(d.id)}
-                                          style={{ fontSize: 10, color: "#ccc", background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
+                                          style={{ fontSize: 10, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: 0 }}>✕</button>
                                       </div>
                                     </div>
                                   ))}
                                 </div>
                               )}
                               {addingDeposit === c.id && (
-                                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #f0f0f0" }}>
-                                  <div style={{ position: "relative", flex: 1 }}>
-                                    <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 13 }}>$</span>
-                                    <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
-                                      style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: "1px solid #ddd", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
-                                      placeholder="Amount" />
+                                <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #23262e" }}>
+                                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                    <div style={{ position: "relative", flex: 1 }}>
+                                      <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 13 }}>$</span>
+                                      <input type="number" value={newDepositAmt} onChange={e => setNewDepositAmt(e.target.value)}
+                                        style={{ width: "100%", padding: "6px 8px 6px 22px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                                        placeholder="Amount" />
+                                    </div>
+                                    <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
+                                      style={{ padding: "6px 8px", fontSize: 12, border: `1px solid ${DK.border2}`, borderRadius: 6, outline: "none", color: DK.textMute }} />
+                                    <button onClick={() => handleAddDeposit(c.id)}
+                                      style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
+                                      Add
+                                    </button>
                                   </div>
-                                  <input type="date" value={newDepositDate} onChange={e => setNewDepositDate(e.target.value)}
-                                    style={{ padding: "6px 8px", fontSize: 12, border: "1px solid #ddd", borderRadius: 6, outline: "none", color: "#666" }} />
-                                  <button onClick={() => handleAddDeposit(c.id)}
-                                    style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap" as const }}>
-                                    Add
-                                  </button>
+                                  {renderDepositSourcePicker("#7c3aed")}
                                 </div>
                               )}
                             </div>
@@ -2833,7 +3234,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {!bonusPosted && windowDays > 0 && (
                             <div style={{
                               padding: "10px 24px 0", fontSize: 12,
-                              color: daysRemaining <= 14 ? "#dc2626" : daysRemaining <= 30 ? "#d97706" : "#999",
+                              color: daysRemaining <= 14 ? DK.red : daysRemaining <= 30 ? DK.amber : DK.textMute,
                               fontWeight: daysRemaining <= 30 ? 600 : 400,
                             }}>
                               {daysRemaining > 0 ? `${daysRemaining} days remaining to complete` : "Window may have passed"}
@@ -2843,17 +3244,17 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {/* Actions */}
                           {pendingStepDate?.id === c.id && pendingStepDate?.type === "close" ? (
                             <div style={{ padding: "16px 24px 0" }}>
-                              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 16px" }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#0d7c5f", marginBottom: 10 }}>When did you close the account?</div>
+                              <div style={{ background: "rgba(13,150,104,0.14)", border: "1px solid rgba(13,150,104,0.4)", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: DK.greenFg, marginBottom: 10 }}>When did you close the account?</div>
                                 <input type="date" value={stepDateValue} onChange={e => setStepDateValue(e.target.value)}
                                   style={{ ...modalInput, marginBottom: 10 }} />
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                                   <input type="checkbox" id={`cr-${c.id}`} checked={stepBonusReceived} onChange={e => setStepBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                                  <label htmlFor={`cr-${c.id}`} style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+                                  <label htmlFor={`cr-${c.id}`} style={{ fontSize: 13, color: DK.textMute }}>I received the bonus</label>
                                 </div>
                                 {stepBonusReceived && (
                                   <div style={{ position: "relative", marginBottom: 10 }}>
-                                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                                     <input type="number" value={stepActualAmount} onChange={e => setStepActualAmount(e.target.value)}
                                       placeholder={String(c.bonus_amount)} style={{ ...modalInput, paddingLeft: 24 }} />
                                   </div>
@@ -2879,10 +3280,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                       Mark account closed
                                     </button>
                                     <button onClick={() => handleCustomKeptOpen(c.id)}
-                                      style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer" }}>
+                                      style={{ padding: "10px 20px", fontSize: 14, fontWeight: 500, background: "transparent", color: DK.textMute, border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer" }}>
                                       Keep open
                                     </button>
-                                    <div style={{ fontSize: 12, color: "#999", flex: "1 1 100%", marginTop: 4 }}>
+                                    <div style={{ fontSize: 12, color: DK.textMute, flex: "1 1 100%", marginTop: 4 }}>
                                       Closing the account starts your cooldown period for this bonus.
                                     </div>
                                   </div>
@@ -2891,7 +3292,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                               {!bonusPosted && (
                                 <div style={{ padding: "14px 24px 0" }}>
                                   <button onClick={() => { setPendingStepDate({ id: c.id, type: "close" }); setStepDateValue(todayStr()); setStepBonusReceived(false); setStepActualAmount("") }}
-                                    style={{ fontSize: 12, color: "#bbb", background: "none", border: "1px solid #e8e8e8", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
+                                    style={{ fontSize: 12, color: DK.textFaint, background: "none", border: "1px solid #23262e", borderRadius: 8, cursor: "pointer", padding: "8px 16px" }}>
                                     Mark as closed
                                   </button>
                                 </div>
@@ -2902,48 +3303,65 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           {/* Edit / Remove */}
                           <div style={{ padding: "8px 24px 16px", display: "flex", justifyContent: "flex-end", gap: 12 }}>
                             <button onClick={() => handleOpenEditCustom(c)}
-                              style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                              style={{ fontSize: 11, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                               Edit
                             </button>
                           </div>
                         </div>
                       )
                     })}
-                    {activeBonuses.map((item) => renderStandardWorkingCard(item))}
+                    {workingItems.map((item) => renderStandardWorkingCard(item))}
 
                   </div>
                 </div>
+                )}
+
+                {/* ⏳ Waiting — deposit work done, riding out the hold / waiting on
+                    the bank. Sunk below the active work, dimmed, with a countdown. */}
+                {waitingItems.length > 0 && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.06em" }}>⏳ Waiting</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: DK.textMute, background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 99, padding: "1px 8px" }}>{waitingItems.length}</span>
+                      <span style={{ fontSize: 11, color: DK.textFaint }}>done working — banking on the payout</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {waitingItems.map(renderWaitingCard)}
+                    </div>
+                  </div>
+                )}
+                </>
               )
             })()}
 
             {/* ── Available next ── */}
             {isPaid && queueItems.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Available next</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {queueItems.map((q, i) => {
                     if (q.kind === "custom") {
                       const c = q.bonus
                       const payCycles = q.weeksToComplete ? Math.ceil(q.weeksToComplete / 2) : null
                       return (
-                        <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                        <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div>
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</span>
-                                <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                                <span style={{ fontSize: 15, fontWeight: 700, color: DK.text }}>{c.bank_name}</span>
+                                <span style={{ fontSize: 10, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
                               </div>
-                              <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                              <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>
                                 {payCycles ? `Complete in ~${payCycles} pay cycle${payCycles > 1 ? "s" : ""}` : (c.notes || "Custom bonus")}
                               </div>
                             </div>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: DK.greenFg }}>{money(c.bonus_amount)}</div>
                           </div>
                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                             <button onClick={() => openStartCustomModal(c)}
                               style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Start now</button>
                             <button onClick={async () => { await updateCustomBonus(c.id, { current_step: "skipped" }); setCustomBonuses(prev => prev.map(x => x.id === c.id ? { ...x, current_step: "skipped" } : x)) }}
-                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
+                              style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           </div>
                         </div>
                       )
@@ -2952,49 +3370,49 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     const b = q.bonus
                     const weeksUntil = i === 0 ? (currentBonus?.weeksToComplete ?? 0) : (currentBonus?.weeksToComplete ?? 0) + (queueItems[0]?.kind === "standard" ? (queueItems[0].weeksToComplete ?? 0) : 0)
                     return (
-                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                      <div key={b.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: DK.text }}>{b.bank_name}</div>
+                            <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>
                               Eligible in ~{weeksUntil} weeks
-                              {q.velocity ? <span style={{ color: "#0d7c5f", marginLeft: 8 }}>${Math.round(q.velocity)}/wk</span> : null}
+                              {q.velocity ? <span style={{ color: DK.greenFg, marginLeft: 8 }}>${Math.round(q.velocity)}/wk</span> : null}
                             </div>
                           </div>
-                          <div style={{ fontSize: 18, fontWeight: 800, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
                         </div>
                         <div style={{ display: "flex", gap: 8, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
                           <button onClick={() => handleMarkApplied(b)}
                             style={{ fontSize: 12, padding: "6px 14px", background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>I applied</button>
                           <button onClick={() => handleSkip(b.id)}
-                            style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
+                            style={{ fontSize: 12, padding: "6px 14px", border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 8, cursor: "pointer" }}>Not now</button>
                           {getPostByBonusId(b.id) && (
                             <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
-                              style={{ marginLeft: "auto", fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                              style={{ marginLeft: "auto", fontSize: 11, color: DK.greenFg, textDecoration: "none", fontWeight: 600 }}>
                               Read review &rarr;
                             </a>
                           )}
                         </div>
-                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
+                        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #23262e" }}>
                           <button onClick={() => setExpandedFees(expandedFees === b.id ? null : b.id)}
-                            style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                            <span style={{ fontSize: 9, color: "#999" }}>{expandedFees === b.id ? "▲" : "▼"}</span>
+                            style={{ fontSize: 12, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span style={{ fontSize: 9, color: DK.textMute }}>{expandedFees === b.id ? "▲" : "▼"}</span>
                             Fees &amp; how to avoid
                           </button>
                           {expandedFees === b.id && (
                             <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
                               {b.fees?.monthly_fee && b.fees.monthly_fee > 0 ? (
                                 <div>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Monthly fee: ${b.fees.monthly_fee}/month</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: DK.text, marginBottom: 3 }}>Monthly fee: ${b.fees.monthly_fee}/month</div>
                                   {b.fees.monthly_fee_waiver_text && (
-                                    <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{b.fees.monthly_fee_waiver_text}</div>
+                                    <div style={{ fontSize: 12, color: DK.textMute, lineHeight: 1.5 }}>{b.fees.monthly_fee_waiver_text}</div>
                                   )}
                                 </div>
                               ) : (
-                                <div style={{ fontSize: 12, color: "#0d7c5f", fontWeight: 600 }}>No monthly fee</div>
+                                <div style={{ fontSize: 12, color: DK.greenFg, fontWeight: 600 }}>No monthly fee</div>
                               )}
                               {b.fees?.early_closure_fee > 0 && (
-                                <div style={{ fontSize: 12, color: "#d97706" }}>Early closure fee: ${b.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
+                                <div style={{ fontSize: 12, color: DK.amber }}>Early closure fee: ${b.fees.early_closure_fee} — keep the account open until the holding period ends.</div>
                               )}
                             </div>
                           )}
@@ -3005,10 +3423,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           if (!ddMethods || ddMethods.length === 0) return null
                           const isOpen = expandedDD === b.id
                           return (
-                            <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f5f5f5" }}>
+                            <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #23262e" }}>
                               <button onClick={() => setExpandedDD(isOpen ? null : b.id)}
-                                style={{ fontSize: 12, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                                <span style={{ fontSize: 9, color: "#999" }}>{isOpen ? "▲" : "▼"}</span>
+                                style={{ fontSize: 12, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                                <span style={{ fontSize: 9, color: DK.textMute }}>{isOpen ? "▲" : "▼"}</span>
                                 What counts as direct deposit
                               </button>
                               {isOpen && (
@@ -3017,13 +3435,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                     <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                       <span style={{
                                         fontSize: 10, fontWeight: 700, lineHeight: "17px", flexShrink: 0,
-                                        color: dd.works === true ? "#0d7c5f" : dd.works === "mixed" ? "#d97706" : "#ef4444",
+                                        color: dd.works === true ? DK.greenFg : dd.works === "mixed" ? DK.amber : DK.red,
                                       }}>
                                         {dd.works === true ? "YES" : dd.works === "mixed" ? "MAYBE" : "NO"}
                                       </span>
                                       <div>
-                                        <span style={{ fontSize: 12, color: "#333" }}>{dd.method}</span>
-                                        {dd.notes && <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>{dd.notes}</div>}
+                                        <span style={{ fontSize: 12, color: DK.textDim }}>{dd.method}</span>
+                                        {dd.notes && <div style={{ fontSize: 11, color: DK.textMute, marginTop: 1 }}>{dd.notes}</div>}
                                       </div>
                                     </div>
                                   ))}
@@ -3051,60 +3469,60 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               return (
                 <div style={{ marginBottom: 24 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em" }}>Accounts open</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em" }}>Accounts open</div>
                     <button onClick={() => setShowAddOpenAccount(true)}
-                      style={{ fontSize: 12, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                      style={{ fontSize: 12, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
                       + Add existing account
                     </button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {keptOpenRecords.map(({ bonus: b }) => (
-                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                      <div key={b.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{b.bank_name}</div>
-                              <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>+{money(b.bonus_amount)} earned</span>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: DK.text }}>{b.bank_name}</div>
+                              <span style={{ fontSize: 11, color: DK.greenFg, fontWeight: 600 }}>+{money(b.bonus_amount)} earned</span>
                             </div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Account still open · Close to become eligible again</div>
+                            <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>Account still open · Close to become eligible again</div>
                           </div>
                           <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
+                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: DK.textMute, border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
                             Close account
                           </button>
                         </div>
                       </div>
                     ))}
                     {customKeptOpen.map(c => (
-                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                      <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{c.bank_name}</div>
-                              <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
-                              <span style={{ fontSize: 11, color: "#0d7c5f", fontWeight: 600 }}>+{money(c.bonus_amount)} earned</span>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: DK.text }}>{c.bank_name}</div>
+                              <span style={{ fontSize: 10, color: DK.textMute, background: DK.panel2, padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                              <span style={{ fontSize: 11, color: DK.greenFg, fontWeight: 600 }}>+{money(c.bonus_amount)} earned</span>
                             </div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Account still open · Close to become eligible again</div>
+                            <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>Account still open · Close to become eligible again</div>
                           </div>
                           <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#666", border: "1px solid #ddd", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
+                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: DK.textMute, border: `1px solid ${DK.border2}`, borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>
                             Close account
                           </button>
                         </div>
                       </div>
                     ))}
                     {openAccounts.map(acct => (
-                      <div key={acct.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "16px 20px" }}>
+                      <div key={acct.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "16px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>{acct.bank_name}</div>
-                            <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: DK.text }}>{acct.bank_name}</div>
+                            <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>
                               {acct.opened_date ? `Opened ${fmtShortDate(acct.opened_date)}` : "Account open"}
                               {acct.notes ? ` · ${acct.notes}` : ""}
                             </div>
                           </div>
                           <button onClick={async () => { await deleteOpenAccount(acct.id); await loadRecords() }}
-                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: "#bbb", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>
+                            style={{ fontSize: 12, padding: "6px 14px", background: "transparent", color: DK.textFaint, border: "1px solid #2a2e38", borderRadius: 8, cursor: "pointer" }}>
                             Remove
                           </button>
                         </div>
@@ -3118,24 +3536,24 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             {/* ── Cooldown ── */}
             {(inCooldown.length > 0 || customInCooldown.length > 0) && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Cooling down</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Cooling down</div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   {inCooldown.map(({ bonus: b, churnStatus }) => {
                     const s = churnStatus as Extract<ChurnStatus, { status: "in_cooldown" }>
                     return (
-                      <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 12, color: "#d97706", marginTop: 3 }}>{s.days_remaining} days left</div>
+                      <div key={b.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: DK.amber, marginTop: 3 }}>{s.days_remaining} days left</div>
                       </div>
                     )
                   })}
                   {customInCooldown.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
+                    <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 10, padding: "12px 16px", minWidth: 180 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                        <span style={{ fontSize: 9, color: "#999", background: "#f0f0f0", padding: "1px 6px", borderRadius: 99 }}>Custom</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{c.bank_name}</span>
+                        <span style={{ fontSize: 9, color: DK.textMute, background: DK.panel2, padding: "1px 6px", borderRadius: 99 }}>Custom</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "#d97706", marginTop: 3 }}>{c.days_remaining} days left</div>
+                      <div style={{ fontSize: 12, color: DK.amber, marginTop: 3 }}>{c.days_remaining} days left</div>
                     </div>
                   ))}
                 </div>
@@ -3145,31 +3563,31 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             {/* ── Skipped bonuses ── */}
             {(skippedBonuses.length > 0 || customSkipped.length > 0) && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Skipped</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Skipped</div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   {skippedBonuses.map(({ bonus: b }) => (
-                    <div key={b.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                    <div key={b.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                       <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
-                        <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{money(b.bonus_amount)}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{b.bank_name}</div>
+                        <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>{money(b.bonus_amount)}</div>
                       </div>
                       <button onClick={() => handleUnskip(b.id)}
-                        style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                        style={{ fontSize: 11, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                         Restore
                       </button>
                     </div>
                   ))}
                   {customSkipped.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                    <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 10, padding: "12px 16px", minWidth: 180, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                          <span style={{ fontSize: 9, color: "#999", background: "#f0f0f0", padding: "1px 6px", borderRadius: 99 }}>Custom</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{c.bank_name}</span>
+                          <span style={{ fontSize: 9, color: DK.textMute, background: DK.panel2, padding: "1px 6px", borderRadius: 99 }}>Custom</span>
                         </div>
-                        <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{money(c.bonus_amount)}</div>
+                        <div style={{ fontSize: 12, color: DK.textMute, marginTop: 2 }}>{money(c.bonus_amount)}</div>
                       </div>
                       <button onClick={() => handleCustomUnskip(c.id)}
-                        style={{ fontSize: 11, color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
+                        style={{ fontSize: 11, color: DK.accentFg, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
                         Restore
                       </button>
                     </div>
@@ -3181,15 +3599,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             {/* ── Earnings History ── */}
             {allClosed.length > 0 && (
               <details style={{ marginBottom: 24 }}>
-                <summary style={{ fontSize: 13, fontWeight: 600, color: "#999", cursor: "pointer", padding: "6px 0" }}>Earnings history ({allClosed.length})</summary>
+                <summary style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, cursor: "pointer", padding: "6px 0" }}>Earnings history ({allClosed.length})</summary>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                   {allClosed.sort((a, b) => new Date(b.closed_date!).getTime() - new Date(a.closed_date!).getTime()).map(r => {
                     const bonus = allBonuses.find(b => b.id === r.bonus_id)
                     if (!bonus) return null
                     return (
-                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 14px", background: "#fff", borderRadius: 8, border: "1px solid #e8e8e8" }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{bonus.bank_name} <span style={{ fontSize: 11, color: "#bbb" }}>{fmtShortDate(r.closed_date!)}</span></span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0d7c5f" }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
+                      <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 14px", background: DK.panel, borderRadius: 8, border: "1px solid #23262e" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{bonus.bank_name} <span style={{ fontSize: 11, color: DK.textFaint }}>{fmtShortDate(r.closed_date!)}</span></span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: DK.greenFg }}>{money(r.actual_amount ?? bonus.bonus_amount)}</span>
                       </div>
                     )
                   })}
@@ -3200,32 +3618,32 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             {/* ── Custom Bonuses (all — manage from here) ── */}
             {customBonuses.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Custom bonuses</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: DK.textMute, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Custom bonuses</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {customBonuses.filter(c => !c.closed_date).map(c => {
                     const statusLabel = c.current_step === "pending" ? "In queue" : c.current_step === "skipped" ? "Skipped" : c.current_step === "kept_open" ? "Account open" : "In progress"
-                    const statusColor = c.current_step === "pending" ? "#999" : c.current_step === "skipped" ? "#bbb" : "#7c3aed"
+                    const statusColor = c.current_step === "pending" ? DK.textMute : c.current_step === "skipped" ? DK.textFaint : "#7c3aed"
                     const isMatching = matchingCustomId === c.id
                     return (
-                      <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px" }}>
+                      <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "12px 20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                              <span style={{ fontSize: 10, color: "#7c3aed", background: "#ede9fe", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{c.bank_name}</span>
+                              <span style={{ fontSize: 10, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", padding: "2px 7px", borderRadius: 99, fontWeight: 700 }}>Custom</span>
                             </div>
                             <div style={{ fontSize: 11, marginTop: 2, color: statusColor }}>{statusLabel} · {money(c.bonus_amount)}</div>
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <button onClick={() => setMatchingCustomId(isMatching ? null : c.id)}
                               title="Promote this custom bonus to a catalog-tracked bonus"
-                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #a7f3d0", color: "#0d7c5f", background: "#f0faf5", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid rgba(13,150,104,0.5)", color: DK.greenFg, background: "rgba(13,150,104,0.14)", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
                               {isMatching ? "Cancel match" : "Match to catalog"}
                             </button>
                             <button onClick={() => { setEditingCustom(c); setCustomBank(c.bank_name); setCustomAmount(String(c.bonus_amount)); setCustomDate(c.opened_date); setCustomNotes(c.notes ?? ""); setCustomChurnable(c.cooldown_months != null); setCustomCooldown(String(c.cooldown_months ?? 12)); setCustomDdRequired(c.dd_required ?? false); setCustomMinDdTotal(c.min_dd_total ? String(c.min_dd_total) : ""); setCustomMinDdPerDeposit(c.min_dd_per_deposit ? String(c.min_dd_per_deposit) : ""); setCustomDdCount(c.dd_count_required ? String(c.dd_count_required) : ""); setCustomDepositWindow(c.deposit_window_days ? String(c.deposit_window_days) : ""); setCustomHoldingPeriod(c.holding_period_days ? String(c.holding_period_days) : ""); setCustomMonthlyFee(c.monthly_fee != null ? String(c.monthly_fee) : ""); setCustomMonthlyFeeWaiver(c.monthly_fee_waiver_text ?? ""); setCustomEarlyClosureFee(c.early_closure_fee != null ? String(c.early_closure_fee) : ""); setCustomLifetimeRestricted(c.lifetime_restricted ?? false) }}
-                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#555", background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 6, cursor: "pointer" }}>Edit</button>
                             <button onClick={() => handleDeleteCustom(c.id)}
-                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
+                              style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
                           </div>
                         </div>
                         {isMatching && (
@@ -3255,27 +3673,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     )
                   })}
                   {closedCustom.map(c => (
-                    <div key={c.id} style={{ background: "#fff", border: "1px solid #e8e8e8", borderRadius: 12, padding: "12px 20px", opacity: editingCloseDateId === c.id ? 1 : 0.6 }}>
+                    <div key={c.id} style={{ background: DK.panel, border: "1px solid #23262e", borderRadius: 12, padding: "12px 20px", opacity: editingCloseDateId === c.id ? 1 : 0.6 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                            <span style={{ fontSize: 10, color: "#999", background: "#f0f0f0", padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: DK.text }}>{c.bank_name}</span>
+                            <span style={{ fontSize: 10, color: DK.textMute, background: DK.panel2, padding: "2px 7px", borderRadius: 99, fontWeight: 600 }}>Custom</span>
                           </div>
-                          <div style={{ fontSize: 11, color: "#999", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                          <div style={{ fontSize: 11, color: DK.textMute, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
                             Closed {fmtShortDate(c.closed_date!)}
                             <button onClick={() => { setEditingCloseDateId(c.id); setEditingCloseDateVal(c.closed_date!) }}
-                              style={{ fontSize: 10, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
+                              style={{ fontSize: 10, color: DK.textFaint, background: "none", border: "none", cursor: "pointer", padding: "0 2px", lineHeight: 1 }}>✎</button>
                           </div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           {c.bonus_received ? (
-                            <span style={{ fontSize: 15, fontWeight: 700, color: "#0d7c5f" }}>{money(c.actual_amount ?? c.bonus_amount)}</span>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: DK.greenFg }}>{money(c.actual_amount ?? c.bonus_amount)}</span>
                           ) : (
-                            <span style={{ fontSize: 12, color: "#999" }}>Not received</span>
+                            <span style={{ fontSize: 12, color: DK.textMute }}>Not received</span>
                           )}
                           <button onClick={() => handleDeleteCustom(c.id)}
-                            style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
+                            style={{ fontSize: 11, padding: "4px 10px", border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 6, cursor: "pointer" }}>Remove</button>
                         </div>
                       </div>
                       {editingCloseDateId === c.id && (
@@ -3304,11 +3722,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   value={bonusSearch}
                   onChange={e => { setBonusSearch(e.target.value); if (e.target.value) setShowAdvanced(true) }}
                   placeholder="Search bank bonuses by name…"
-                  style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#111", outline: "none", boxSizing: "border-box" }}
+                  style={{ width: "100%", padding: "9px 34px 9px 12px", fontSize: 13, border: "1px solid #2a2e38", borderRadius: 8, background: DK.panel, color: DK.text, outline: "none", boxSizing: "border-box" }}
                 />
                 {bonusSearch && (
                   <button onClick={() => setBonusSearch("")}
-                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
                     aria-label="Clear search">✕</button>
                 )}
               </div>
@@ -3317,32 +3735,32 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             {/* ── Bottom links ── */}
             <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
               <button onClick={() => setShowAddCustom(true)}
-                style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                style={{ fontSize: 13, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add custom bonus
               </button>
               {(userEmail === "booth.nathaniel@gmail.com" || userEmail === "fatstacksacademy@gmail.com") && (
                 <>
-                  <span style={{ color: "#e0e0e0" }}>|</span>
+                  <span style={{ color: DK.border2 }}>|</span>
                   <a href="/stacksos/import"
-                    style={{ fontSize: 13, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                    style={{ fontSize: 13, color: DK.greenFg, textDecoration: "none", fontWeight: 600 }}>
                     ↑ Import spreadsheet
                   </a>
                 </>
               )}
-              <span style={{ color: "#e0e0e0" }}>|</span>
+              <span style={{ color: DK.border2 }}>|</span>
               <button onClick={() => setShowAddOpenAccount(true)}
-                style={{ fontSize: 13, color: "#0d7c5f", background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
+                style={{ fontSize: 13, color: DK.greenFg, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 + Add open account
               </button>
-              <span style={{ color: "#e0e0e0" }}>|</span>
+              <span style={{ color: DK.border2 }}>|</span>
               <button onClick={() => setShowAdvanced(a => !a)}
-                style={{ fontSize: 13, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                style={{ fontSize: 13, color: DK.textMute, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 {showAdvanced ? "Hide full plan" : "View full bonus plan"}
               </button>
               {!isPaid && (
                 <>
-                  <span style={{ color: "#e0e0e0" }}>|</span>
-                  <span style={{ fontSize: 13, color: "#bbb" }}>🔍 Search banks — Pro only</span>
+                  <span style={{ color: DK.border2 }}>|</span>
+                  <span style={{ fontSize: 13, color: DK.textFaint }}>🔍 Search banks — Pro only</span>
                 </>
               )}
             </div>
@@ -3359,7 +3777,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   const isExpanded = expandedCard === b.id
                   return (
                     <div key={b.id} style={{
-                      background: "#fff", border: isActive ? "1px solid #bfdbfe" : "1px solid #e8e8e8",
+                      background: DK.panel, border: isActive ? "1px solid rgba(37,99,235,0.5)" : "1px solid #23262e",
                       borderRadius: 12, padding: "18px 20px", opacity: feasible !== false ? 1 : 0.4,
                       cursor: "pointer", transition: "border-color 0.15s",
                     }}
@@ -3367,19 +3785,19 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                     >
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <div>
-                          <div style={{ fontSize: 15, fontWeight: 600, color: "#111" }}>{b.bank_name}</div>
-                          {isActive && <div style={{ fontSize: 11, color: "#2563eb", marginTop: 2 }}>Active</div>}
+                          <div style={{ fontSize: 15, fontWeight: 600, color: DK.text }}>{b.bank_name}</div>
+                          {isActive && <div style={{ fontSize: 11, color: DK.accentFg, marginTop: 2 }}>Active</div>}
                         </div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#0d7c5f" }}>{money(b.bonus_amount)}</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: DK.greenFg }}>{money(b.bonus_amount)}</div>
                       </div>
                       <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 12 }}>
-                        <span><span style={{ color: "#bbb" }}>Time </span><span style={{ color: "#666" }}>{weeksToComplete ? `${weeksToComplete}w` : "\u2014"}</span></span>
-                        <span><span style={{ color: "#bbb" }}>Fee </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></span>
-                        {velocity && <span><span style={{ color: "#bbb" }}>$/wk </span><span style={{ color: "#0d7c5f" }}>${velocity.toFixed(0)}</span></span>}
+                        <span><span style={{ color: DK.textFaint }}>Time </span><span style={{ color: DK.textMute }}>{weeksToComplete ? `${weeksToComplete}w` : "\u2014"}</span></span>
+                        <span><span style={{ color: DK.textFaint }}>Fee </span><span style={{ color: DK.textMute }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></span>
+                        {velocity && <span><span style={{ color: DK.textFaint }}>$/wk </span><span style={{ color: DK.greenFg }}>${velocity.toFixed(0)}</span></span>}
                       </div>
                       {/* Hold + closure warning — always visible on the card face. */}
                       {b.timeline?.must_remain_open_days && (
-                        <div style={{ marginTop: 8, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px" }}>
+                        <div style={{ marginTop: 8, fontSize: 11, color: DK.amber, background: DK.amberBg, border: `1px solid ${DK.amberBorder}`, borderRadius: 6, padding: "6px 10px" }}>
                           Must keep open {b.timeline.must_remain_open_days} days
                           {(b.fees?.early_closure_fee ?? 0) > 0 && (
                             <> · ${b.fees.early_closure_fee} early closure fee</>
@@ -3388,7 +3806,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                       )}
                       {/* Average-daily-balance warning — surface up front. */}
                       {b.requirements?.min_balance > 0 && (
-                        <div style={{ marginTop: 6, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px" }}>
+                        <div style={{ marginTop: 6, fontSize: 11, color: DK.amber, background: DK.amberBg, border: `1px solid ${DK.amberBorder}`, borderRadius: 6, padding: "6px 10px" }}>
                           Bonus based on average daily balance (not total deposits) — ${b.requirements.min_balance.toLocaleString()} required
                         </div>
                       )}
@@ -3396,13 +3814,13 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                           (e.g. CIBC's in-branch-only application). Same amber
                           treatment so it's impossible to miss. */}
                       {(b as { notes?: string }).notes && (
-                        <div style={{ marginTop: 6, fontSize: 11, color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 6, padding: "6px 10px", lineHeight: 1.5 }}>
+                        <div style={{ marginTop: 6, fontSize: 11, color: DK.amber, background: DK.amberBg, border: `1px solid ${DK.amberBorder}`, borderRadius: 6, padding: "6px 10px", lineHeight: 1.5 }}>
                           {(b as { notes?: string }).notes}
                         </div>
                       )}
                       {isExpanded && (
-                        <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0f0f0" }} onClick={e => e.stopPropagation()}>
-                          <div style={{ fontSize: 13, color: "#777", lineHeight: 1.6, marginBottom: 10 }}>
+                        <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #23262e" }} onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: 13, color: DK.textMute, lineHeight: 1.6, marginBottom: 10 }}>
                             {b.requirements?.min_direct_deposit_total
                               ? `Deposit $${b.requirements.min_direct_deposit_total.toLocaleString()} within ${b.requirements.deposit_window_days ?? "\u2014"} days.`
                               : b.requirements?.min_direct_deposit_per_deposit
@@ -3410,45 +3828,45 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                                 : "Set up direct deposit."}
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginBottom: 10 }}>
-                            <div><span style={{ color: "#bbb" }}>Window: </span><span style={{ color: "#666" }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
-                            <div><span style={{ color: "#bbb" }}>Bonus posts: </span><span style={{ color: "#666" }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
-                            <div><span style={{ color: "#bbb" }}>Cooldown: </span><span style={{ color: "#666" }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
-                            <div><span style={{ color: "#bbb" }}>Fee: </span><span style={{ color: "#666" }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
-                            <div><span style={{ color: "#bbb" }}>Keep open: </span><span style={{ color: "#666" }}>{numOrDash(b.timeline?.must_remain_open_days, "days")}</span></div>
-                            <div><span style={{ color: b.fees?.early_closure_fee > 0 ? "#d97706" : "#bbb" }}>Closure fee: </span><span style={{ color: b.fees?.early_closure_fee > 0 ? "#d97706" : "#666", fontWeight: b.fees?.early_closure_fee > 0 ? 600 : 400 }}>{b.fees?.early_closure_fee > 0 ? `$${b.fees.early_closure_fee}` : "$0"}</span></div>
+                            <div><span style={{ color: DK.textFaint }}>Window: </span><span style={{ color: DK.textMute }}>{numOrDash(b.requirements?.deposit_window_days, "days")}</span></div>
+                            <div><span style={{ color: DK.textFaint }}>Bonus posts: </span><span style={{ color: DK.textMute }}>{numOrDash(b.timeline?.bonus_posting_days_est, "days")}</span></div>
+                            <div><span style={{ color: DK.textFaint }}>Cooldown: </span><span style={{ color: DK.textMute }}>{(b as any).cooldown_months == null ? "One-time" : `${(b as any).cooldown_months}mo`}</span></div>
+                            <div><span style={{ color: DK.textFaint }}>Fee: </span><span style={{ color: DK.textMute }}>{b.fees?.monthly_fee === 0 ? "$0" : money(b.fees?.monthly_fee)}</span></div>
+                            <div><span style={{ color: DK.textFaint }}>Keep open: </span><span style={{ color: DK.textMute }}>{numOrDash(b.timeline?.must_remain_open_days, "days")}</span></div>
+                            <div><span style={{ color: b.fees?.early_closure_fee > 0 ? DK.amber : DK.textFaint }}>Closure fee: </span><span style={{ color: b.fees?.early_closure_fee > 0 ? DK.amber : DK.textMute, fontWeight: b.fees?.early_closure_fee > 0 ? 600 : 400 }}>{b.fees?.early_closure_fee > 0 ? `$${b.fees.early_closure_fee}` : "$0"}</span></div>
                             {b.requirements?.min_opening_deposit > 0 && (
-                              <div><span style={{ color: "#bbb" }}>Min to open: </span><span style={{ color: "#666" }}>${b.requirements.min_opening_deposit}</span></div>
+                              <div><span style={{ color: DK.textFaint }}>Min to open: </span><span style={{ color: DK.textMute }}>${b.requirements.min_opening_deposit}</span></div>
                             )}
                             {b.requirements?.min_balance > 0 && (
-                              <div><span style={{ color: "#d97706" }}>Min balance: </span><span style={{ color: "#d97706", fontWeight: 600 }}>${b.requirements.min_balance.toLocaleString()}</span></div>
+                              <div><span style={{ color: DK.amber }}>Min balance: </span><span style={{ color: DK.amber, fontWeight: 600 }}>${b.requirements.min_balance.toLocaleString()}</span></div>
                             )}
                           </div>
-                          <details><summary style={{ fontSize: 11, color: "#bbb", cursor: "pointer" }}>Advanced details</summary>
+                          <details><summary style={{ fontSize: 11, color: DK.textFaint, cursor: "pointer" }}>Advanced details</summary>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11, marginTop: 8 }}>
-                              <div><span style={{ color: "#bbb" }}>Chex: </span><span style={{ color: "#666" }}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
-                              <div><span style={{ color: "#bbb" }}>Hard pull: </span><span style={{ color: "#666" }}>{yesNo(b.screening?.hard_pull)}</span></div>
-                              <div><span style={{ color: "#bbb" }}>Lifetime: </span><span style={{ color: "#666" }}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
+                              <div><span style={{ color: DK.textFaint }}>Chex: </span><span style={{ color: DK.textMute }}>{textOrDash(b.screening?.chex_sensitive)}</span></div>
+                              <div><span style={{ color: DK.textFaint }}>Hard pull: </span><span style={{ color: DK.textMute }}>{yesNo(b.screening?.hard_pull)}</span></div>
+                              <div><span style={{ color: DK.textFaint }}>Lifetime: </span><span style={{ color: DK.textMute }}>{yesNo(b.eligibility?.lifetime_language)}</span></div>
                             </div>
-                            {b.eligibility?.eligibility_notes && <div style={{ fontSize: 11, color: "#999", marginTop: 8, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>}
+                            {b.eligibility?.eligibility_notes && <div style={{ fontSize: 11, color: DK.textMute, marginTop: 8, lineHeight: 1.5 }}>{b.eligibility.eligibility_notes}</div>}
                           </details>
                           <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                             {isActive ? (
                               <>
                                 <button onClick={() => { setActionBonus({ bonus: b, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(b.bonus_amount)) }}
-                                  style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
-                                <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #e0e0e0", color: "#999", background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
+                                  style={{ flex: 1, padding: "8px", fontSize: 12, border: `1px solid `, color: DK.red, background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
+                                <button onClick={() => handleDelete(b.id)} style={{ padding: "8px 12px", fontSize: 12, border: "1px solid #2a2e38", color: DK.textMute, background: "none", borderRadius: 8, cursor: "pointer" }}>Remove</button>
                               </>
                             ) : (
                               <>
                                 {link && <a href={applyUrl(b.id)} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", fontSize: 13, fontWeight: 600, background: "#0d7c5f", color: "#fff", border: "none", borderRadius: 8, textDecoration: "none", textAlign: "center" }}>Open account</a>}
                                 <button onClick={() => handleMarkApplied(b)}
-                                  style={{ padding: "8px 14px", fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 8, cursor: "pointer" }}>I applied</button>
+                                  style={{ padding: "8px 14px", fontSize: 12, color: DK.textMute, background: "none", border: "1px solid #2a2e38", borderRadius: 8, cursor: "pointer" }}>I applied</button>
                               </>
                             )}
                           </div>
                           {getPostByBonusId(b.id) && (
                             <a href={`/blog/${getPostByBonusId(b.id)!.slug}`}
-                              style={{ display: "block", marginTop: 10, fontSize: 11, color: "#0d7c5f", textDecoration: "none", fontWeight: 600 }}>
+                              style={{ display: "block", marginTop: 10, fontSize: 11, color: DK.greenFg, textDecoration: "none", fontWeight: 600 }}>
                               Read full review &rarr;
                             </a>
                           )}
@@ -3462,30 +3880,30 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   const isActive = c.current_step !== "pending"
                   return (
                     <div key={c.id} style={{
-                      background: "#fff", border: isActive ? "1px solid #ddd6fe" : "1px solid #e8e8e8",
+                      background: DK.panel, border: isActive ? "1px solid #6d28d9" : "1px solid #23262e",
                       borderRadius: 12, padding: "18px 20px",
                       opacity: cv.feasible ? 1 : 0.4,
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span style={{ fontSize: 15, fontWeight: 600, color: "#111" }}>{c.bank_name}</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#7c3aed", background: "#ede9fe", borderRadius: 4, padding: "1px 6px" }}>Custom</span>
+                            <span style={{ fontSize: 15, fontWeight: 600, color: DK.text }}>{c.bank_name}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#c4b5fd", background: "rgba(124,58,237,0.2)", borderRadius: 4, padding: "1px 6px" }}>Custom</span>
                           </div>
-                          {isActive && <div style={{ fontSize: 11, color: "#7c3aed", marginTop: 2 }}>Active</div>}
+                          {isActive && <div style={{ fontSize: 11, color: "#c4b5fd", marginTop: 2 }}>Active</div>}
                         </div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: "#0d7c5f" }}>{money(c.bonus_amount)}</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: DK.greenFg }}>{money(c.bonus_amount)}</div>
                       </div>
                       <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 12 }}>
-                        {cv.weeksToComplete && <span><span style={{ color: "#bbb" }}>Time </span><span style={{ color: "#666" }}>{cv.weeksToComplete}w</span></span>}
-                        {c.deposit_window_days && <span><span style={{ color: "#bbb" }}>Window </span><span style={{ color: "#666" }}>{c.deposit_window_days}d</span></span>}
-                        {cv.velocity && <span><span style={{ color: "#bbb" }}>$/wk </span><span style={{ color: "#0d7c5f" }}>${cv.velocity.toFixed(0)}</span></span>}
+                        {cv.weeksToComplete && <span><span style={{ color: DK.textFaint }}>Time </span><span style={{ color: DK.textMute }}>{cv.weeksToComplete}w</span></span>}
+                        {c.deposit_window_days && <span><span style={{ color: DK.textFaint }}>Window </span><span style={{ color: DK.textMute }}>{c.deposit_window_days}d</span></span>}
+                        {cv.velocity && <span><span style={{ color: DK.textFaint }}>$/wk </span><span style={{ color: DK.greenFg }}>${cv.velocity.toFixed(0)}</span></span>}
                       </div>
-                      {c.notes && <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>{c.notes}</div>}
+                      {c.notes && <div style={{ fontSize: 12, color: DK.textMute, marginTop: 6 }}>{c.notes}</div>}
                       <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                         {isActive ? (
                           <button onClick={() => { setActionCustom({ bonus: c, mode: "close" }); setActionDate(todayStr()); setBonusReceived(true); setActualAmount(String(c.bonus_amount)) }}
-                            style={{ flex: 1, padding: "8px", fontSize: 12, border: "1px solid #dc2626", color: "#dc2626", background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
+                            style={{ flex: 1, padding: "8px", fontSize: 12, border: `1px solid `, color: DK.red, background: "none", borderRadius: 8, cursor: "pointer" }}>Close</button>
                         ) : (
                           <button onClick={() => openStartCustomModal(c)}
                             style={{ flex: 1, padding: "8px", fontSize: 12, fontWeight: 600, background: "#7c3aed", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Start now</button>
@@ -3499,8 +3917,8 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             )}
 
         {/* ── Page disclaimer ── */}
-        <div style={{ marginTop: 32, padding: "16px 0", borderTop: "1px solid #f0f0f0" }}>
-          <p style={{ fontSize: 11, color: "#bbb", lineHeight: 1.6, margin: 0 }}>
+        <div style={{ marginTop: 32, padding: "16px 0", borderTop: "1px solid #23262e" }}>
+          <p style={{ fontSize: 11, color: DK.textFaint, lineHeight: 1.6, margin: 0 }}>
             Bonus offers, requirements, and fees are determined by the financial institution and may change at any time. Stacks OS aggregates publicly available information but cannot guarantee accuracy. Always verify the current terms directly with the bank before applying.
           </p>
         </div>
@@ -3512,9 +3930,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
         const hasOverride = Object.keys(catalogOverrides[editingCatalogTerms] ?? {}).length > 0
         return (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
-            <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Customize Terms</div>
-              <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>{b?.bank_name ?? editingCatalogTerms} — overrides saved locally, only affect your view</div>
+            <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 420, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>Customize Terms</div>
+              <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>{b?.bank_name ?? editingCatalogTerms} — overrides saved locally, only affect your view</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
                 <div>
                   <label style={modalLabel}>Bonus amount ($)</label>
@@ -3541,7 +3959,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <button onClick={() => setEditingCatalogTerms(null)} style={cancelBtnLight}>Cancel</button>
                 {hasOverride && (
                   <button onClick={() => clearCatalogTermOverride(editingCatalogTerms)}
-                    style={{ ...cancelBtnLight, color: "#dc2626" }}>Reset</button>
+                    style={{ ...cancelBtnLight, color: DK.red }}>Reset</button>
                 )}
                 <button onClick={() => saveCatalogTermOverride(editingCatalogTerms)} style={confirmBtnLight}>Save</button>
               </div>
@@ -3585,23 +4003,23 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
             )
           })()}
           {actionBonus.mode === "close" && (
-            <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionBonus.bonus.bank_name}</div>
-              <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
+            <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 400, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>{actionBonus.bonus.bank_name}</div>
+              <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>When did you close this account?</div>
               <label style={modalLabel}>Account closed date</label>
               <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
               <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
                 <input type="checkbox" id="bonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                <label htmlFor="bonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+                <label htmlFor="bonusReceived" style={{ fontSize: 13, color: DK.textMute }}>I received the bonus</label>
               </div>
               {bonusReceived && (
                 <>
                   <label style={modalLabel}>Amount received</label>
                   <div style={{ position: "relative" }}>
-                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                     <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionBonus.bonus.bonus_amount)} />
                   </div>
-                  <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
+                  <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 4 }}>Listed: ${actionBonus.bonus.bonus_amount.toLocaleString()}</div>
                 </>
               )}
               <div style={modalActions}>
@@ -3616,15 +4034,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       {/* Add Custom Bonus Modal */}
       {showAddCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Custom Bonus</div>
-            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bonus that isn't in our database yet.</div>
+          <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 420, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>Add Custom Bonus</div>
+            <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>Track a bonus that isn't in our database yet.</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {/* Smart Import — paste a URL and let Claude pre-fill the form */}
-              <div style={{ background: "#f6faf8", border: "1px solid #d8ece4", borderRadius: 10, padding: 12 }}>
+              <div style={{ background: DK.panel2, border: `1px solid ${DK.border2}`, borderRadius: 10, padding: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#0d7c5f", letterSpacing: "0.02em" }}>SMART IMPORT</span>
-                  <span style={{ fontSize: 11, color: "#7a9c8e" }}>· paste a bonus offer link</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: DK.greenFg, letterSpacing: "0.02em" }}>SMART IMPORT</span>
+                  <span style={{ fontSize: 11, color: DK.textMute }}>· paste a bonus offer link</span>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   <input
@@ -3648,10 +4066,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                   </button>
                 </div>
                 {smartImportError && (
-                  <div style={{ fontSize: 11, color: "#dc2626", marginTop: 6 }}>{smartImportError}</div>
+                  <div style={{ fontSize: 11, color: DK.red, marginTop: 6 }}>{smartImportError}</div>
                 )}
                 {smartImportApplied && !smartImportError && (
-                  <div style={{ fontSize: 11, color: "#0d7c5f", marginTop: 6 }}>Pre-filled below. Review and adjust before saving.</div>
+                  <div style={{ fontSize: 11, color: DK.greenFg, marginTop: 6 }}>Pre-filled below. Review and adjust before saving.</div>
                 )}
               </div>
               <div>
@@ -3661,15 +4079,15 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div>
                 <label style={modalLabel}>Bonus amount</label>
                 <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                   <input type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} placeholder="200" style={{ ...modalInput, paddingLeft: 24 }} />
                 </div>
               </div>
               {/* Direct deposit requirements */}
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <input type="checkbox" id="customDdRequired" checked={customDdRequired} onChange={e => setCustomDdRequired(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="customDdRequired" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Requires direct deposit</label>
+                  <label htmlFor="customDdRequired" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500 }}>Requires direct deposit</label>
                 </div>
                 {customDdRequired && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 4 }}>
@@ -3703,7 +4121,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
               </div>
 
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
                   <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee ($)</label>
                   <input type="number" step="0.01" value={customMonthlyFee} onChange={e => setCustomMonthlyFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
@@ -3723,27 +4141,27 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Any requirements or details" style={modalInput} />
               </div>
 
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" id="customChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="customChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
+                  <label htmlFor="customChurnable" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
                 </div>
                 {customChurnable && (
                   <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
-                    <label style={{ fontSize: 13, color: "#666" }}>Cooldown period:</label>
+                    <label style={{ fontSize: 13, color: DK.textMute }}>Cooldown period:</label>
                     <input type="number" value={customCooldown} onChange={e => setCustomCooldown(e.target.value)}
                       style={{ ...modalInput, width: 70, padding: "6px 10px", textAlign: "center" as const }} min={1} />
-                    <span style={{ fontSize: 13, color: "#666" }}>months</span>
+                    <span style={{ fontSize: 13, color: DK.textMute }}>months</span>
                   </div>
                 )}
                 <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="checkbox" id="customLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: "#dc2626" }} />
-                  <label htmlFor="customLifetime" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
+                  <input type="checkbox" id="customLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: DK.red }} />
+                  <label htmlFor="customLifetime" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
                 </div>
               </div>
             </div>
             {addCustomError && (
-              <div style={{ fontSize: 12, color: "#dc2626", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", marginTop: 12 }}>
+              <div style={{ fontSize: 12, color: DK.red, background: DK.redBg, border: `1px solid ${DK.redBorder}`, borderRadius: 8, padding: "8px 12px", marginTop: 12 }}>
                 {addCustomError}
               </div>
             )}
@@ -3758,11 +4176,11 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       {/* Start / Close Custom Bonus Modal */}
       {actionCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>{actionCustom.bonus.bank_name}</div>
+          <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 400, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>{actionCustom.bonus.bank_name}</div>
             {actionCustom.mode === "start" ? (
               <>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you open this account?</div>
+                <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>When did you open this account?</div>
                 <label style={modalLabel}>Account opened date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
                 <div style={modalActions}>
@@ -3772,21 +4190,21 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               </>
             ) : (
               <>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>When did you close this account?</div>
+                <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>When did you close this account?</div>
                 <label style={modalLabel}>Account closed date</label>
                 <input type="date" value={actionDate} onChange={e => setActionDate(e.target.value)} style={modalInput} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 12px" }}>
                   <input type="checkbox" id="customBonusReceived" checked={bonusReceived} onChange={e => setBonusReceived(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="customBonusReceived" style={{ fontSize: 13, color: "#666" }}>I received the bonus</label>
+                  <label htmlFor="customBonusReceived" style={{ fontSize: 13, color: DK.textMute }}>I received the bonus</label>
                 </div>
                 {bonusReceived && (
                   <>
                     <label style={modalLabel}>Amount received</label>
                     <div style={{ position: "relative" }}>
-                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                       <input type="number" value={actualAmount} onChange={e => setActualAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} placeholder={String(actionCustom.bonus.bonus_amount)} />
                     </div>
-                    <div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Listed: ${actionCustom.bonus.bonus_amount.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: DK.textFaint, marginTop: 4 }}>Listed: ${actionCustom.bonus.bonus_amount.toLocaleString()}</div>
                   </>
                 )}
                 <div style={modalActions}>
@@ -3802,9 +4220,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       {/* Edit Custom Bonus Modal */}
       {editingCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)", maxHeight: "90vh", overflowY: "auto" as const }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Edit Custom Bonus</div>
-            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>{editingCustom.bank_name}</div>
+          <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 420, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)", maxHeight: "90vh", overflowY: "auto" as const }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>Edit Custom Bonus</div>
+            <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>{editingCustom.bank_name}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
                 <label style={modalLabel}>Bank name</label>
@@ -3813,7 +4231,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <div>
                 <label style={modalLabel}>Bonus amount</label>
                 <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#999", fontSize: 14 }}>$</span>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DK.textMute, fontSize: 14 }}>$</span>
                   <input type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} style={{ ...modalInput, paddingLeft: 24 }} />
                 </div>
               </div>
@@ -3821,10 +4239,10 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <label style={modalLabel}>Account opened date</label>
                 <input type="date" value={customDate} onChange={e => setCustomDate(e.target.value)} style={modalInput} />
               </div>
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <input type="checkbox" id="editCustomDdRequired" checked={customDdRequired} onChange={e => setCustomDdRequired(e.target.checked)} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="editCustomDdRequired" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Requires direct deposit</label>
+                  <label htmlFor="editCustomDdRequired" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500 }}>Requires direct deposit</label>
                 </div>
                 {customDdRequired && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 4 }}>
@@ -3855,7 +4273,7 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <label style={{ ...modalLabel, fontSize: 11 }}>Holding period after bonus posts (days, optional)</label>
                 <input type="number" value={customHoldingPeriod} onChange={e => setCustomHoldingPeriod(e.target.value)} placeholder="e.g. 60" style={{ ...modalInput, padding: "6px 10px" }} />
               </div>
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
                   <label style={{ ...modalLabel, fontSize: 11 }}>Monthly fee ($)</label>
                   <input type="number" step="0.01" value={customMonthlyFee} onChange={e => setCustomMonthlyFee(e.target.value)} placeholder="0" style={{ ...modalInput, padding: "6px 10px" }} />
@@ -3873,22 +4291,22 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
                 <label style={modalLabel}>Notes (optional)</label>
                 <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} style={modalInput} />
               </div>
-              <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+              <div style={{ borderTop: "1px solid #23262e", paddingTop: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" id="editCustomChurnable" checked={customChurnable} onChange={e => { setCustomChurnable(e.target.checked); if (e.target.checked) setCustomLifetimeRestricted(false) }} style={{ accentColor: "#0d7c5f" }} />
-                  <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: "#333", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
+                  <label htmlFor="editCustomChurnable" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 5 }}>This bonus can be earned again later <InfoTip term="churnable" label="churnable" /></label>
                 </div>
                 {customChurnable && (
                   <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
-                    <label style={{ fontSize: 13, color: "#666" }}>Cooldown period:</label>
+                    <label style={{ fontSize: 13, color: DK.textMute }}>Cooldown period:</label>
                     <input type="number" value={customCooldown} onChange={e => setCustomCooldown(e.target.value)}
                       style={{ ...modalInput, width: 70, padding: "6px 10px", textAlign: "center" as const }} min={1} />
-                    <span style={{ fontSize: 13, color: "#666" }}>months</span>
+                    <span style={{ fontSize: 13, color: DK.textMute }}>months</span>
                   </div>
                 )}
                 <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="checkbox" id="editCustomLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: "#dc2626" }} />
-                  <label htmlFor="editCustomLifetime" style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
+                  <input type="checkbox" id="editCustomLifetime" checked={customLifetimeRestricted} onChange={e => { setCustomLifetimeRestricted(e.target.checked); if (e.target.checked) setCustomChurnable(false) }} style={{ accentColor: DK.red }} />
+                  <label htmlFor="editCustomLifetime" style={{ fontSize: 13, color: DK.textDim, fontWeight: 500 }}>Limit one per lifetime (prior recipients ineligible forever)</label>
                 </div>
               </div>
             </div>
@@ -3897,9 +4315,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
               <button onClick={handleSaveEditCustom} disabled={!customBank || !customAmount}
                 style={{ ...confirmBtnLight, opacity: (!customBank || !customAmount) ? 0.5 : 1 }}>Save</button>
             </div>
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #f5f5f5", display: "flex", justifyContent: "center" }}>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #23262e", display: "flex", justifyContent: "center" }}>
               <button onClick={async () => { await handleDeleteCustom(editingCustom.id); setEditingCustom(null) }}
-                style={{ fontSize: 12, color: "#dc2626", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
+                style={{ fontSize: 12, color: DK.red, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
                 Delete this bonus permanently
               </button>
             </div>
@@ -3910,9 +4328,9 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
       {/* Add Open Account Modal */}
       {showAddOpenAccount && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 400, border: "1px solid #e0e0e0", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: "#111" }}>Add Open Account</div>
-            <div style={{ fontSize: 13, color: "#888", marginBottom: 20 }}>Track a bank account you have open (no bonus needed).</div>
+          <div style={{ background: DK.panel, borderRadius: 16, padding: 32, width: 400, border: "1px solid #2a2e38", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4, color: DK.text }}>Add Open Account</div>
+            <div style={{ fontSize: 13, color: DK.textMute, marginBottom: 20 }}>Track a bank account you have open (no bonus needed).</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
                 <label style={modalLabel}>Bank name</label>
@@ -3943,12 +4361,12 @@ export default function RoadmapClient({ userEmail, userId, isPaid }: { userEmail
 }
 
 /* ── Styles ── */
-const topBtn: React.CSSProperties = { fontSize: 12, color: "#999", background: "none", border: "1px solid #e0e0e0", borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
-const settingsLabel: React.CSSProperties = { fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
-const settingsSelectLight: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6 }
-const settingsInputLight: React.CSSProperties = { padding: "8px 12px 8px 26px", fontSize: 14, background: "#fff", color: "#111", border: "1px solid #e0e0e0", borderRadius: 6, width: 140 }
-const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "#888", display: "block", marginBottom: 6 }
-const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: "1px solid #e0e0e0", borderRadius: 8, boxSizing: "border-box" as const, background: "#fff", color: "#111" }
+const topBtn: React.CSSProperties = { fontSize: 12, color: DK.textMute, background: "none", border: `1px solid ${DK.border2}`, borderRadius: 6, padding: "5px 12px", cursor: "pointer" }
+const settingsLabel: React.CSSProperties = { fontSize: 11, color: DK.textFaint, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }
+const settingsSelectLight: React.CSSProperties = { padding: "8px 12px", fontSize: 13, background: DK.panel2, color: DK.textDim, border: `1px solid ${DK.border2}`, borderRadius: 6 }
+const settingsInputLight: React.CSSProperties = { padding: "8px 12px 8px 26px", fontSize: 14, background: DK.panel2, color: DK.textDim, border: `1px solid ${DK.border2}`, borderRadius: 6, width: 140 }
+const modalLabel: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: DK.textMute, display: "block", marginBottom: 6 }
+const modalInput: React.CSSProperties = { width: "100%", padding: "10px 12px", fontSize: 14, border: `1px solid ${DK.border2}`, borderRadius: 8, boxSizing: "border-box" as const, background: DK.panel2, color: DK.textDim }
 const modalActions: React.CSSProperties = { display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }
-const cancelBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "1px solid #e0e0e0", borderRadius: 8, background: "#fff", color: "#888", cursor: "pointer" }
-const confirmBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: "#0d7c5f", color: "#fff", cursor: "pointer", fontWeight: 700 }
+const cancelBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: `1px solid ${DK.border2}`, borderRadius: 8, background: DK.panel2, color: DK.textMute, cursor: "pointer" }
+const confirmBtnLight: React.CSSProperties = { padding: "10px 20px", fontSize: 13, border: "none", borderRadius: 8, background: DK.green, color: "#fff", cursor: "pointer", fontWeight: 700 }

@@ -20,10 +20,31 @@ const comingSoon = [
   { label: "Base", href: "/stacksos/base" },
 ] as const
 
+// Routes that have been reskinned to the dark "mission board" theme. The nav
+// renders dark on these so it flows into the tab below instead of floating a
+// white bar over a near-black board; every other route stays light.
+const DARK_ROUTES = ["/stacksos/paycheck", "/stacksos/spending", "/stacksos/savings"]
+
+// Dark palette — mirrors the DK constant in RoadmapClient so the shared nav
+// matches the reskinned tabs exactly.
+const DK = {
+  panel: "#161922",
+  panel2: "#0f1219",
+  border: "#23262e",
+  border2: "#2a2e38",
+  textMute: "#9aa1ad",
+  green: "#0d9668",
+  greenFg: "#34d399",
+  gold: "#f7d774",
+  goldBg: "#1c160a",
+}
+
 export default function CheckpointNav() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const dark = DARK_ROUTES.some(r => pathname.startsWith(r))
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href
@@ -44,7 +65,7 @@ export default function CheckpointNav() {
   }, [open])
 
   return (
-    <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e8e8e8", background: "#fff" }}>
+    <div className={dark ? "cpnav-root cpnav-dark" : "cpnav-root"} style={{ display: "flex", gap: 0, borderBottom: `1px solid ${dark ? DK.border : "#e8e8e8"}`, background: dark ? DK.panel : "#fff" }}>
       <div
         style={{
           maxWidth: 1100,
@@ -79,9 +100,9 @@ export default function CheckpointNav() {
                   padding: "10px 16px",
                   fontSize: 13,
                   fontWeight: active ? 700 : 500,
-                  color: active ? "#0d7c5f" : "#999",
+                  color: active ? (dark ? DK.greenFg : "#0d7c5f") : (dark ? DK.textMute : "#999"),
                   textDecoration: "none",
-                  borderBottom: active ? "2px solid #0d7c5f" : "2px solid transparent",
+                  borderBottom: active ? `2px solid ${dark ? DK.greenFg : "#0d7c5f"}` : "2px solid transparent",
                   transition: "color 0.15s, border-color 0.15s",
                   whiteSpace: "nowrap",
                   flexShrink: 0,
@@ -89,7 +110,7 @@ export default function CheckpointNav() {
               >
                 {tab.label}
                 {"beta" in tab && tab.beta && (
-                  <sup style={{ fontSize: 8, fontWeight: 700, color: "#0d7c5f", marginLeft: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                  <sup style={{ fontSize: 8, fontWeight: 700, color: dark ? DK.greenFg : "#0d7c5f", marginLeft: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     Beta
                   </sup>
                 )}
@@ -110,10 +131,10 @@ export default function CheckpointNav() {
                 padding: "10px 16px",
                 fontSize: 13,
                 fontWeight: comingSoonActive ? 700 : 500,
-                color: comingSoonActive ? "#0d7c5f" : "#999",
+                color: comingSoonActive ? (dark ? DK.greenFg : "#0d7c5f") : (dark ? DK.textMute : "#999"),
                 background: "none",
                 border: "none",
-                borderBottom: comingSoonActive ? "2px solid #0d7c5f" : "2px solid transparent",
+                borderBottom: comingSoonActive ? `2px solid ${dark ? DK.greenFg : "#0d7c5f"}` : "2px solid transparent",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 fontFamily: "inherit",
@@ -129,10 +150,10 @@ export default function CheckpointNav() {
                   top: "100%",
                   left: 8,
                   marginTop: 2,
-                  background: "#fff",
-                  border: "1px solid #e8e8e8",
+                  background: dark ? DK.panel : "#fff",
+                  border: `1px solid ${dark ? DK.border2 : "#e8e8e8"}`,
                   borderRadius: 8,
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.10)",
+                  boxShadow: dark ? "0 6px 20px rgba(0,0,0,0.5)" : "0 6px 20px rgba(0,0,0,0.10)",
                   padding: 6,
                   minWidth: 170,
                   zIndex: 50,
@@ -152,7 +173,7 @@ export default function CheckpointNav() {
                       padding: "8px 12px",
                       fontSize: 13,
                       fontWeight: 500,
-                      color: "#555",
+                      color: dark ? DK.textMute : "#555",
                       textDecoration: "none",
                       borderRadius: 6,
                       whiteSpace: "nowrap",
@@ -163,8 +184,8 @@ export default function CheckpointNav() {
                       style={{
                         fontSize: 9,
                         fontWeight: 700,
-                        color: "#b07b00",
-                        background: "#fff5e0",
+                        color: dark ? DK.gold : "#b07b00",
+                        background: dark ? DK.goldBg : "#fff5e0",
                         padding: "2px 6px",
                         borderRadius: 4,
                         textTransform: "uppercase",
@@ -180,12 +201,13 @@ export default function CheckpointNav() {
           </div>
         </div>
         <div style={{ marginLeft: 12, flexShrink: 0 }} className="cpnav-account">
-          <StacksAccountMenu compact />
+          <StacksAccountMenu compact dark={dark} />
         </div>
       </div>
       <style>{`
         .cpnav-tabs::-webkit-scrollbar { display: none; }
         .cpnav-soon-item:hover { background: #f4f4f4; }
+        .cpnav-dark .cpnav-soon-item:hover { background: #1c2029; }
         @media (max-width: 768px) {
           .cpnav-inner { padding: 0 12px !important; }
           .cpnav-account { margin-left: 8px !important; }

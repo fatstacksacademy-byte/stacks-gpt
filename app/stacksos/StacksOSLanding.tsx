@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import InfoTip from "../components/InfoTip"
+import AcademyLedger from "../components/AcademyLedger"
 
 export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: string | null }) {
   const supabase = createClient()
@@ -188,6 +189,9 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
           </div>
         </div>
       </section>
+
+      {/* ── FAT STACKS ACADEMY (collective $1B ledger) ── */}
+      <AcademyLedger />
 
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="lp-section" style={{ maxWidth: 1100, margin: "0 auto" }}>

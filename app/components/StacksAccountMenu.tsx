@@ -18,7 +18,21 @@ import { createClient } from "../../lib/supabase/client"
  * leave the user stranded with no feedback).
  */
 
-export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
+// Dark palette — mirrors the DK constant in RoadmapClient / CheckpointNav so
+// the account pill flows into the reskinned dark nav on dark routes.
+const DKA = {
+  panel: "#161922",
+  panel2: "#0f1219",
+  panelOpen: "#1c2029",
+  border: "#23262e",
+  border2: "#2a2e38",
+  text: "#ffffff",
+  textDim: "#cdd2db",
+  textMute: "#9aa1ad",
+  red: "#f87171",
+}
+
+export default function StacksAccountMenu({ compact, dark }: { compact?: boolean; dark?: boolean }) {
   const [email, setEmail] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
@@ -101,12 +115,12 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
           alignItems: "center",
           gap: 8,
           padding: compact ? "5px 10px" : "6px 14px",
-          background: open ? "#f6f6f5" : "#fff",
-          border: "1px solid #e8e8e8",
+          background: dark ? (open ? DKA.panelOpen : DKA.panel2) : (open ? "#f6f6f5" : "#fff"),
+          border: `1px solid ${dark ? DKA.border2 : "#e8e8e8"}`,
           borderRadius: 999,
           fontSize: 12,
           fontWeight: 600,
-          color: "#333",
+          color: dark ? DKA.textDim : "#333",
           cursor: "pointer",
           maxWidth: 280,
         }}
@@ -125,7 +139,7 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {trigger}
         </span>
-        <span style={{ fontSize: 10, color: "#999" }}>▾</span>
+        <span style={{ fontSize: 10, color: dark ? DKA.textMute : "#999" }}>▾</span>
       </button>
 
       {open && (
@@ -137,18 +151,18 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
             top: "calc(100% + 6px)",
             zIndex: 50,
             minWidth: 240,
-            background: "#fff",
-            border: "1px solid #e8e8e8",
+            background: dark ? DKA.panel : "#fff",
+            border: `1px solid ${dark ? DKA.border2 : "#e8e8e8"}`,
             borderRadius: 12,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+            boxShadow: dark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.08)",
             padding: 6,
           }}
         >
-          <div style={{ padding: "10px 12px", borderBottom: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>
+          <div style={{ padding: "10px 12px", borderBottom: `1px solid ${dark ? DKA.border : "#f0f0f0"}` }}>
+            <div style={{ fontSize: 11, color: dark ? DKA.textMute : "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>
               Signed in as
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#111", wordBreak: "break-all" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: dark ? DKA.text : "#111", wordBreak: "break-all" }}>
               {email}
             </div>
           </div>
@@ -156,7 +170,7 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
             href="/stacksos/profile"
             role="menuitem"
             onClick={() => setOpen(false)}
-            style={menuItemStyle}
+            style={dark ? { ...menuItemStyle, color: DKA.textDim } : menuItemStyle}
           >
             Edit profile
           </Link>
@@ -164,7 +178,7 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
             href="/stacksos"
             role="menuitem"
             onClick={() => setOpen(false)}
-            style={menuItemStyle}
+            style={dark ? { ...menuItemStyle, color: DKA.textDim } : menuItemStyle}
           >
             Dashboard
           </Link>
@@ -180,7 +194,7 @@ export default function StacksAccountMenu({ compact }: { compact?: boolean }) {
               background: "none",
               border: "none",
               cursor: loggingOut ? "wait" : "pointer",
-              color: "#b91c1c",
+              color: dark ? DKA.red : "#b91c1c",
             }}
           >
             {loggingOut ? "Signing out…" : "Log out"}

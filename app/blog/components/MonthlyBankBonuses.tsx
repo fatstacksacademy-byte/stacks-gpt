@@ -8,10 +8,13 @@ import {
   getPreviousMonths,
   type MonthlyBankPick,
   type MonthlyBankPicks,
+  type MonthlyHonorableMention,
 } from "../../../lib/data/monthlyBankPicks"
 import { practicalHoldDays } from "../../../lib/data/savingsBonuses"
 import { isBrokerageBonus } from "../../../lib/data/bonusCategories"
 import { applyUrl } from "../../../lib/affiliateLinks"
+import { type TrackKind } from "../../../lib/trackBonus"
+import TrackBonusButton from "../../components/TrackBonusButton"
 import AffiliateDisclosure from "./AffiliateDisclosure"
 
 const BASE = "https://fatstacksacademy.com"
@@ -24,12 +27,17 @@ function money(n: number): string {
 type ResolvedPick =
   | {
       kind: "checking" | "business-checking"
+      /** Which Stacks OS module the "Track" button writes to. */
+      trackKind: TrackKind
       rank: number
       bonusId: string
       bankShort: string
       articleTitle?: string
       bonusAmount: number
+      /** Qualifying amount: the DD total when a direct deposit is required, else the min balance. */
       ddRequired: number | null
+      /** False for no-DD offers (balance-based business bonuses) — flips the stat label. */
+      ddRequiredFlag: boolean
       windowDays: number | null
       monthlyFee: number | null
       takeaway: string
@@ -37,6 +45,8 @@ type ResolvedPick =
     }
   | {
       kind: "savings"
+      /** Which Stacks OS module the "Track" button writes to. */
+      trackKind: TrackKind
       rank: number
       bonusId: string
       bankShort: string
@@ -45,7 +55,10 @@ type ResolvedPick =
       minDeposit: number
       holdDays: number
       effApy: string
-      isBrokerage: boolean
+      /** Show a plain bonus-return ratio instead of an annualized APY — for brokerage
+       *  offers and any bonus whose qualifying action isn't a one-time parked deposit
+       *  (recurring transfers/spend), where an annualized APY would read as absurd. */
+      showReturn: boolean
       takeaway: string
       slug?: string
     }
@@ -61,7 +74,12 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
         product_name?: string
         business?: boolean
         bonus_amount: number
-        requirements?: { min_direct_deposit_total?: number; deposit_window_days?: number }
+        requirements?: {
+          min_direct_deposit_total?: number | null
+          deposit_window_days?: number
+          direct_deposit_required?: boolean
+          min_balance?: number | null
+        }
         fees?: { monthly_fee?: number }
       }
     | undefined
@@ -72,14 +90,22 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       isBusiness && !baseName.toLowerCase().includes("business")
         ? `${baseName} Business`
         : baseName
+    // Balance-based business bonuses require no direct deposit; headline the
+    // qualifying balance instead of falsely labelling it a "direct deposit".
+    const ddRequiredFlag = checking.requirements?.direct_deposit_required !== false
+    const qualifyingAmount = ddRequiredFlag
+      ? checking.requirements?.min_direct_deposit_total ?? null
+      : checking.requirements?.min_balance ?? null
     return {
       kind: isBusiness ? "business-checking" : "checking",
+      trackKind: isBusiness ? "business-checking" : "personal-checking",
       rank,
       bonusId: p.bonusId,
       bankShort: displayName,
       articleTitle,
       bonusAmount: checking.bonus_amount,
-      ddRequired: checking.requirements?.min_direct_deposit_total ?? null,
+      ddRequired: qualifyingAmount,
+      ddRequiredFlag,
       windowDays: checking.requirements?.deposit_window_days ?? null,
       monthlyFee: checking.fees?.monthly_fee ?? null,
       takeaway: p.takeaway,
@@ -106,6 +132,7 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
     ).toFixed(1)
     return {
       kind: "savings",
+      trackKind: isBrokerageBonus(savings) ? "brokerage" : "personal-savings",
       rank,
       bonusId: p.bonusId,
       bankShort: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
@@ -114,12 +141,51 @@ function resolvePick(p: MonthlyBankPick, rank: number): ResolvedPick | null {
       minDeposit: headlineTier.min_deposit,
       holdDays,
       effApy,
-      isBrokerage: isBrokerageBonus(savings),
+      showReturn: isBrokerageBonus(savings) || !!(savings as { deposit_action_label?: string }).deposit_action_label,
       takeaway: p.takeaway,
       slug,
     }
   }
 
+  return null
+}
+
+type ResolvedMention = {
+  bonusId: string
+  name: string
+  amount: number
+  note: string
+  trackKind: TrackKind
+  slug?: string
+}
+
+function resolveMention(m: MonthlyHonorableMention): ResolvedMention | null {
+  const post = getPostByBonusId(m.bonusId)
+  const checking = getCheckingBonusById(m.bonusId) as
+    | { bank_name: string; product_name?: string; business?: boolean; bonus_amount: number }
+    | undefined
+  if (checking) {
+    return {
+      bonusId: m.bonusId,
+      name: checking.product_name ?? checking.bank_name.split("(")[0].trim(),
+      amount: checking.bonus_amount,
+      note: m.note,
+      trackKind: checking.business ? "business-checking" : "personal-checking",
+      slug: post?.slug,
+    }
+  }
+  const savings = getSavingsBonusById(m.bonusId)
+  if (savings) {
+    const top = savings.tiers.reduce((a, b) => (b.bonus_amount > a.bonus_amount ? b : a))
+    return {
+      bonusId: m.bonusId,
+      name: (savings as any).product_name ?? savings.bank_name.split("(")[0].trim(),
+      amount: top.bonus_amount,
+      note: m.note,
+      trackKind: isBrokerageBonus(savings) ? "brokerage" : "personal-savings",
+      slug: post?.slug,
+    }
+  }
   return null
 }
 
@@ -147,6 +213,10 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
   const resolved = data.picks
     .map((p, i) => resolvePick(p, i + 1))
     .filter((x): x is ResolvedPick => x !== null)
+
+  const resolvedMentions = (data.honorableMentions ?? [])
+    .map(resolveMention)
+    .filter((x): x is ResolvedMention => x !== null)
 
   const previousMonths = getPreviousMonths(data.monthSlug).slice(0, 6)
   const url = `${BASE}/blog/best-bank-bonuses-${data.monthSlug}`
@@ -334,6 +404,60 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
           </div>
         )}
 
+        {data.strategyCallout && (
+          <div
+            style={{
+              background: "#fffdf5",
+              border: "1px solid #f5d78a",
+              borderRadius: 14,
+              padding: "22px 24px",
+              marginBottom: 36,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: "#a67c00",
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 8,
+              }}
+            >
+              The move this month
+            </div>
+            <h2
+              style={{
+                fontSize: 20,
+                fontWeight: 800,
+                color: "#111",
+                margin: "0 0 10px",
+                lineHeight: 1.3,
+              }}
+            >
+              {data.strategyCallout.title}
+            </h2>
+            <p style={{ fontSize: 15, color: "#444", lineHeight: 1.7, margin: 0 }}>
+              {data.strategyCallout.body}
+            </p>
+            {data.strategyCallout.link && (
+              <Link
+                href={data.strategyCallout.link.href}
+                style={{
+                  display: "inline-block",
+                  marginTop: 12,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#0d7c5f",
+                  textDecoration: "none",
+                }}
+              >
+                {data.strategyCallout.link.label}
+              </Link>
+            )}
+          </div>
+        )}
+
         {/* Per-pick cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 48 }}>
           {resolved.map((r) => (
@@ -428,11 +552,17 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                 {r.kind !== "savings" ? (
                   <>
                     <Stat
-                      label="Direct deposit"
-                      value={r.ddRequired != null ? money(r.ddRequired) : "Required"}
+                      label={r.ddRequiredFlag ? "Direct deposit" : "Min balance"}
+                      value={
+                        r.ddRequired != null
+                          ? money(r.ddRequired)
+                          : r.ddRequiredFlag
+                            ? "Required"
+                            : "No DD needed"
+                      }
                     />
                     <Stat
-                      label="Window"
+                      label={r.ddRequiredFlag ? "Window" : "Hold"}
                       value={r.windowDays != null ? `${r.windowDays} days` : "—"}
                     />
                     <Stat
@@ -451,7 +581,7 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                   <>
                     <Stat label="Min deposit" value={money(r.minDeposit)} />
                     <Stat label="Hold" value={`${r.holdDays} days`} />
-                    {r.isBrokerage ? (
+                    {r.showReturn ? (
                       <Stat
                         label="Bonus return"
                         value={`${Math.round((r.bonusAmount / r.minDeposit) * 100)}% in ${r.holdDays}d`}
@@ -534,10 +664,101 @@ export default function MonthlyBankBonuses({ data }: { data: MonthlyBankPicks })
                     Read full review &rarr;
                   </Link>
                 )}
+                <TrackBonusButton
+                  bonusId={r.bonusId}
+                  bonusType={r.trackKind}
+                  bankName={r.bankShort}
+                  sourcePage={`blog_monthly:${data.monthSlug}`}
+                />
               </div>
             </article>
           ))}
         </div>
+
+        {resolvedMentions.length > 0 && (
+          <div style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: "0 0 6px" }}>
+              Honorable mentions
+            </h2>
+            <p style={{ fontSize: 14, color: "#888", margin: "0 0 16px", lineHeight: 1.6 }}>
+              Worth a look, but they didn&rsquo;t make the ranked list this month.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {resolvedMentions.map((m) => (
+                <div
+                  key={m.bonusId}
+                  style={{
+                    display: "flex",
+                    gap: 16,
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    padding: "14px 18px",
+                    background: "#fafafa",
+                    border: "1px solid #eee",
+                    borderRadius: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 22,
+                      fontWeight: 800,
+                      color: "#0d7c5f",
+                      flexShrink: 0,
+                      minWidth: 70,
+                    }}
+                  >
+                    {money(m.amount)}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 220 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 3 }}>
+                      {m.name}
+                    </div>
+                    <p style={{ fontSize: 13, color: "#666", lineHeight: 1.55, margin: 0 }}>
+                      {m.note}
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                    <a
+                      href={applyUrl(m.bonusId)}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: "#0d7c5f",
+                        textDecoration: "none",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Open account &rarr;
+                    </a>
+                    {m.slug && (
+                      <Link
+                        href={`/blog/${m.slug}`}
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          color: "#888",
+                          textDecoration: "none",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Review &rarr;
+                      </Link>
+                    )}
+                    <TrackBonusButton
+                      bonusId={m.bonusId}
+                      bonusType={m.trackKind}
+                      bankName={m.name}
+                      sourcePage={`blog_monthly:${data.monthSlug}`}
+                      compact
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Link href="/blog/business-bank-bonuses-no-business-2026" style={{ textDecoration: "none" }}>
           <div

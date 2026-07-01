@@ -39,8 +39,10 @@ export type AnalyticsEvent =
   | "tax_summary_viewed"
   | "dashboard_tab_changed"
   | "dashboard_bonus_advanced"   // inline step-advance from a dashboard card
+  | "dashboard_bonus_undone"     // inline step-undo (walk back one milestone) from a dashboard card
   | "pay_profile_saved"          // explicit Save on the Paycheck pay-profile panel
   | "dd_method_recorded"         // which DD source triggered a bonus (Bonus Posted step)
+  | "deposit_source_recorded"    // where an individual logged deposit came from (per-deposit)
 
 export function track(event: AnalyticsEvent, props?: Record<string, unknown>) {
   try {
