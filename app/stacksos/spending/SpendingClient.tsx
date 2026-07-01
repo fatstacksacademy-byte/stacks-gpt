@@ -574,31 +574,41 @@ export default function SpendingClient({ userEmail, userId, isPaid }: { userEmai
           onAdded={loadData}
         />
 
-        {!isPaid && (
-          <div style={{
-            background: DK.panel, border: "2px solid #23262e", borderRadius: 14,
-            padding: "20px 22px", marginBottom: 24,
-            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
-          }}>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
-                Pro feature
+        {!isPaid && (() => {
+          const qualifyCount = ccSequence.length
+          const yearPotential = Math.round(ccSequence.reduce((s, c) => s + c.net_value, 0))
+          return (
+            <div style={{ background: DK.panel, border: "2px solid #23262e", borderRadius: 14, padding: "20px 22px", marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
+                What you qualify for
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#ffffff", marginBottom: 4 }}>
-                Get the ranked credit card queue
-              </div>
-              <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5 }}>
-                Stacks ranks every signup bonus for your spend — net value, 5/24, cooldowns — and tells you which card to apply for next.
-              </div>
+              {qualifyCount > 0 ? (
+                <>
+                  <div style={{ display: "flex", gap: 26, flexWrap: "wrap", marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 30, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{qualifyCount}</div>
+                      <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3 }}>card bonuses worth doing</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 30, fontWeight: 900, color: DK.greenFg, lineHeight: 1 }}>{formatCurrency(yearPotential)}</div>
+                      <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3 }}>net value at your spend</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
+                    Pro <b style={{ color: DK.textDim }}>ranks them by net value</b> for your spend — factoring 5/24, cooldowns, and fees — and tells you which card to apply for next.
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
+                  Add your monthly spend in your profile to see how many card bonuses are worth doing and their net value. Pro <b style={{ color: DK.textDim }}>ranks them by net value</b> and tells you which to apply for next.
+                </div>
+              )}
+              <a href="/onboarding" style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
+                Upgrade to Pro to see your ranked queue →
+              </a>
             </div>
-            <a href="/onboarding" style={{
-              fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green,
-              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
-            }}>
-              Upgrade to Pro →
-            </a>
-          </div>
-        )}
+          )
+        })()}
 
         {/* Active Cards — your in-progress "hero" cards, above the picks */}
         {activeCards.length > 0 && (

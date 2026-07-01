@@ -97,7 +97,7 @@ export const monthlyBankPicks: MonthlyBankPicks[] = [
       {
         bonusId: "ally-invest-brokerage-2026",
         takeaway:
-          "A flat $200 for moving $1,000 into an Ally Invest self-directed account is a 20% return in 90 days — one of the best bonus-to-deposit ratios anywhere. The catch: it's only for existing Ally Bank customers who've never had Ally Invest, so open the Ally Savings account above first, then come back for this.",
+          "A flat $200 for moving $1,000 into an Ally Invest self-directed account is a 20% return in 90 days — one of the best bonus-to-deposit ratios anywhere. Two catches: it's only for existing Ally Bank customers who've never had Ally Invest (so open the Ally Savings account above first), and the full $200 requires funding from a NON-Ally account — pushing money over from your Ally Savings only pays $100. Fund this one from an outside bank.",
       },
       {
         bonusId: "wells-fargo-initiate-business-400-2026",

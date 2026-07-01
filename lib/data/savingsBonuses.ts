@@ -326,14 +326,14 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],
       lifetime_language: true,
-      eligibility_notes: "New Ally Bank customers only. Cannot have had any Ally account since 1/24/24. One referral bonus per new customer. Requires 3 consecutive monthly automated recurring transfers."
+      eligibility_notes: "New Ally Bank customers only. Cannot have had any Ally account since 1/1/2024. Requires a referral link from an existing Ally customer (can't self-generate). One referral bonus per new customer. Requires 3 consecutive monthly automated recurring transfers of any amount."
     },
     source_links: [
       "https://www.ally.com/referral?code=6J7N9D8R8T&CP=MobileAppReferFriend"
     ,
       "https://www.doctorofcredit.com/ally-launches-pilot-referral-program-100-50/"
     ],
-    raw_excerpt: "Open Ally Online Savings via referral link, set up automated recurring transfer ($20/mo minimum), complete 3 consecutive months. Bonus posts after requirements met.",
+    raw_excerpt: "Open Ally Online Savings via a referral link (from an existing Ally customer), set up an automated recurring transfer of any amount (e.g. $20/mo), complete 3 consecutive months. Bonus posts after requirements met.",
     notes: "Extremely easy $100. No large deposit required. Set $20/mo recurring and forget it.",
     deposit_action_label: "Set up $20+/mo recurring transfer for 3 months",
   },
@@ -1379,7 +1379,7 @@ export const savingsBonuses: SavingsBonus[] = [
       { min_deposit: 25000, bonus_amount: 825, enroll_url: "https://accountoffers.wellsfargo.com/businesscheckingb" },
     ],
     cooldown_months: 24, // official offer terms: "Limit one business checking bonus offer per business entity or business owner within last 24 months" (accountoffers.wellsfargo.com, verified 2026-06-23). Prior value 12 was stale.
-    fees: { monthly_fee: 15, early_closure_fee: 0, monthly_fee_waived: true },
+    fees: { monthly_fee: 10, early_closure_fee: 0, monthly_fee_waived: true },
     eligibility: {
       state_restricted: false,
       states_allowed: ["Nationwide (U.S.)"],

@@ -1088,31 +1088,41 @@ export default function SavingsClient({ userEmail, userId, isPaid }: { userEmail
           </div>
         )}
 
-        {!isPaid && (
-          <div style={{
-            background: DK.panel, border: "2px solid #23262e", borderRadius: 14,
-            padding: "20px 22px", marginBottom: 24,
-            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap",
-          }}>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#9aa1ad", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
-                Pro feature
+        {!isPaid && (() => {
+          const qualifyCount = sequencerResult.entries.length
+          const yearPotential = Math.round(sequencerResult.total_earnings)
+          return (
+            <div style={{ background: DK.panel, border: "2px solid #23262e", borderRadius: 14, padding: "20px 22px", marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: DK.gold, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
+                What you qualify for{profile.current_balance ? ` on your ${money(profile.current_balance)}` : ""}
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#ffffff", marginBottom: 4 }}>
-                Get savings bonuses ranked for your balance
-              </div>
-              <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5 }}>
-                Stacks ranks every savings bonus and HYSA promotion by effective APY for your specific balance and sequences them across the year.
-              </div>
+              {qualifyCount > 0 ? (
+                <>
+                  <div style={{ display: "flex", gap: 26, flexWrap: "wrap", marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 30, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{qualifyCount}</div>
+                      <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3 }}>savings bonuses you qualify for</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 30, fontWeight: 900, color: DK.greenFg, lineHeight: 1 }}>{money(yearPotential)}</div>
+                      <div style={{ fontSize: 12, color: "#9aa1ad", marginTop: 3 }}>potential over the next year</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
+                    Pro <b style={{ color: DK.textDim }}>ranks them by effective APY</b> for your balance and sequences them across the year — so your cash is always in the highest-paying bonus.
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: 13, color: "#9aa1ad", lineHeight: 1.5, marginBottom: 14 }}>
+                  Add your savings balance in your profile to see how many bonuses you qualify for and what they&apos;re worth. Pro <b style={{ color: DK.textDim }}>ranks them by effective APY</b> and sequences them across the year.
+                </div>
+              )}
+              <a href="/onboarding" style={{ display: "inline-block", fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green, padding: "11px 18px", borderRadius: 10, textDecoration: "none" }}>
+                Upgrade to Pro to see your ranked queue →
+              </a>
             </div>
-            <a href="/onboarding" style={{
-              fontSize: 13, fontWeight: 700, color: "#fff", background: DK.green,
-              padding: "11px 18px", borderRadius: 10, textDecoration: "none", flexShrink: 0,
-            }}>
-              Upgrade to Pro →
-            </a>
-          </div>
-        )}
+          )
+        })()}
 
         {/* ── Recommended Savings Bonuses ── */}
         {isPaid && (sequencerResult.entries.length > 0 || recSearchQ) && (
