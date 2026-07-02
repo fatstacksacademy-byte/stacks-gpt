@@ -339,8 +339,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #23262e", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
               <Image
                 src="/demo-checking-bonuses.jpg"
-                width={1650}
-                height={1080}
+                width={2400}
+                height={2118}
                 alt="Stacks OS catalog showing checking bonuses available in Georgia, each with its direct-deposit requirement"
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
@@ -353,8 +353,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
             <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #23262e", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
               <Image
                 src="/demo-savings-bonuses.jpg"
-                width={1650}
-                height={1080}
+                width={2400}
+                height={1318}
                 alt="Stacks OS savings sequencer showing savings and brokerage bonuses ranked by effective APY with a 12-month projected total"
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
