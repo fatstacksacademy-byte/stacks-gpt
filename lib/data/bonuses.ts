@@ -793,6 +793,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "etrade-max-rate-checking-300-checking25",
+    "expired": true,
     "bank_name": "E*TRADE (Morgan Stanley Private Bank)",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3229,7 +3230,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 5,
       "billpay_required": null,
-      "other_requirements_text": "Get Real Checking. Up to $300 tiered: $200 for DD or online banking + 5 debit purchases, $50 for 5 bill payments or eStatements, $50 more for additional activity."
+      "other_requirements_text": "Get Real Checking. Up to $300 tiered: $200 for DD or online banking + 5 debit purchases, $50 for 5 bill payments or eStatements, and a final $50 loyalty bonus paid only after the account stays open a full 12 months (eStatements plus a recurring direct deposit or debit activity in the last statement cycle)."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -5009,7 +5010,7 @@ export const bonuses: any[] = [
       "min_balance": 10000,
       "debit_transactions_required": 5,
       "billpay_required": null,
-      "other_requirements_text": "Deposit $2,000 in 30 days for $400 (or $10,000 for $500), maintain 60 days, 5 qualifying transactions in 90 days. A separate enrollment link advertises $500 at $2,000 (YMMV — verify before relying on it). Expires July 15, 2026."
+      "other_requirements_text": "Deposit $2,000 in 30 days for $400 (or $10,000 for $500), maintain 60 days, 5 qualifying transactions in 90 days. A separate enrollment link advertises $500 at $2,000 (YMMV — verify before relying on it). Expires October 15, 2026."
     },
     "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Waived with $2,000 minimum daily balance.", "early_closure_fee": null },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard business verification." },
@@ -5018,7 +5019,7 @@ export const bonuses: any[] = [
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": ["HI"],
       "lifetime_language": true,
-      "eligibility_notes": "Business checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches; confirmed by HI residents). Note: Chase business CREDIT CARDS are obtainable in HI. Expires July 15, 2026 (extended; was May 14). New business checking customers only."
+      "eligibility_notes": "Business checking. Chase business deposit accounts are not available to Hawaii businesses (no HI Chase branches; confirmed by HI residents). Note: Chase business CREDIT CARDS are obtainable in HI. Expires October 15, 2026 (extended; was May 14). New business checking customers only."
     },
     "timeline": { "bonus_posting_days_est": 120, "must_remain_open_days": 180 },
     "source_links": [
