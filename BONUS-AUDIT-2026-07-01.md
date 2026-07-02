@@ -407,3 +407,94 @@ A second pass re-verified all 202 High findings against live sources (39 agents)
 - `etrade-max-rate-checking`: stale $15 fee also in summary/strategy/FAQ; catalog `fees.monthly_fee=15` stale; offer expired — mark catalog `expired`.
 - `usbank-business-checking-1200`: promo `Q2AFL26`→`Q3DIG26` also in strategy + FAQ (only summary/raw_excerpt patched).
 - `easthampton-savings`: 'Connecticut only' also in bestFor/cons + catalog `states_allowed`/`eligibility_notes`; true footprint MA/CT/RI/NH; amount is $325 not $300; catalog `expired:true`.
+
+---
+
+## Med-tier resolution — verify-then-apply (2026-07-01)
+
+Re-verified all 227 Med findings against live sources (51 agents). **156 confirmed, 62 rejected as false-positives, 9 uncertain.** Applied **151** source-confirmed fixes (5 skipped for manual).
+
+### ⛔ Med false-positives rejected (original kept — do NOT re-'fix')
+
+| slug | dimension | why the flag was wrong |
+|---|---|---|
+| `easthampton-savings-300-checking-2026` | Amount / internal contradiction | REJECTED — proposed fix ($325) contradicts the bank's own primary source. bankESB's own offer page (bankesb.com/potential) states verbatim 'Enjoy a $300 account |
+| `fulton-bank-business-500-2026` | windows | No proposed fix was supplied (empty proposedFix fields). The current strategy text ('deposit $5,000 within 60 days. No transaction or direct deposit requirement |
+| `keybank-business-500-2026` | fees | False premise. The finding claims 'Blog cons state "$15/month fee unless qualifying balance maintained"' — but the current KeyBank blog cons contain NO fee stri |
+| `chase-savings-combo-2026` | amount & tiering | REJECTED (false positive on the numbers). Live Chase page confirms exactly: Checking only $300, Savings only $200, Both accounts combined $900 ('an extra $400 b |
+| `ameriprise-savings-2026` | forfeiture/clawback | REJECTED / no fix. The finding itself recommends 'leave as-is but unverified' and proposes no replacement. My DoC fetch corroborates: the source 'does not speci |
+| `ameriprise-savings-2026` | windows | REJECTED (false positive -- the blog is correct). DoC confirms the maintenance language: 'maintain a daily balance equal to or greater than your balance on Apri |
+| `cit-bank-savings-300-2026` | expiration/deadline | The catalog's expired: true on cit-bank-savings-300-2026 is CORRECT (the flag is a false-positive 'error'), and there is no proposed fix to apply anyway. Live v |
+| `etrade-brokerage-2026` | eligibility/mechanic | False-positive flag with no proposed fix (empty file/text). Live sources (DoC + E*TRADE promo terms) confirm the offer is a PUBLIC promo-code offer via OFFER26  |
+| `chase-biz-savings-500` | eligibility/geography | False-positive risk / wrong direction. The DoC source describes the offer as 'Nationwide – online or in branch' with NO Hawaii exclusion, and a WebSearch found  |
+| `usbank-biz-savings-1200` | promo-code / channel | Stale finding — false positive. The finding was written against an OLD Q2 version of the files. The CURRENT blogContent.ts (L4024/L4025/L4028/L4031) and catalog |
+| `usbank-biz-savings-1200` | amount / superlative framing | Not a source-verifiable factual error. The live U.S. Bank page confirms the $1,200 at $25k tier is real and current (expires 9/27/2026), so the amount itself is |
+| `grasshopper-business-checking-750-2026` | posting timeline / holding period | False positive against the catalog. The catalog already carries the correct hard values: timeline.must_remain_open_days:150, eligibility_notes 'Bonus reversed i |
+| `varo-money-100-referral-dd` | amount | Live source (DoC + corroborating search) confirms the true current amount is $150 with a $500+ DD in 45 days (increased from $100 on 3/17/26; note some in-app u |
+| `huntington-400-perks-checking-2026` | windows (catalog) | Proposed fix changes the Platinum $600 window from '90 days' to '60 days' based solely on a DoC claim. The LIVE PRIMARY source contradicts this: Huntington's ow |
+| `huntington-400-perks-checking-2026` | amount (internal) | No fix was proposed (empty replacement) and none is warranted. Live sources (huntington.com terms via search, hustlermoneyblog) confirm BOTH tiers exist exactly |
+| `associated-bank-600-checking-2026` | repeatability | The flag ('24-month cooldown unverified/orphan') is a FALSE POSITIVE. The record is NOT an orphan — it exists in lib/data/stateBankBonuses.ts (id associated-ban |
+| `associated-bank-600-checking-2026` | tiering | The flag ('tiers/day-31-90 window unverified') is a FALSE POSITIVE. The LIVE source (associatedbank.com terms via search) confirms the blog's exact figures: 'To |
+| `first-bank-500-checking-2026` | windows | False positive / non-actionable. No proposed fix was supplied and the finding itself calls it 'minor - internally consistent.' Live-verified terms (bankchecking |
+| `old-national-bank-600-checking-2026` | repeatability | Live source CONFIRMS the once-per-lifetime language ('Limit one cash bonus per customer [TIN/SSN]' and recipient 'shall not be eligible to receive a cash bonus  |
+| `citizens-bank-400-checking-2026` | fees | False positive / defensible as-is. Verified via WebSearch (Citizens Bank official product pages + Wealthvieu/MyBankTracker, 2026): One Deposit Checking has NO m |
+| `becu-500-checking-2026` | requirements | False positive caused by offer conflation. The catalog record and blog describe BECU's $150 new-member offer (promo WPNEW2026): 10 qualifying transactions in 30 |
+| `neighborhood-cu-300-checking-2026` | DD mechanic / requirement | False positive. The current bankbonus.com listing (dated June 2026) quotes the live offer terms verbatim as 'make 30 or more debit card transactions of $5 or gr |
+| `neighborhood-cu-300-checking-2026` | Eligibility/geography | False positive. Neighborhood Credit Union's own site (myncu.com) states membership is open to ALL Texas residents: 'You're eligible if you live in the state of  |
+| `schwab-referral-500-checking-2026` | Windows / hold period | False positive. DoC live terms confirm BOTH numbers the catalog models: 'you must maintain the net deposit amount ... at Schwab for at least one year' (= 365-da |
+| `bcu-500-powerplus-checking-2026` | DD mechanic / requirements completeness | False positive. The BCU offer is EXPIRED (catalog expired:true, open-by 5/15/2026 passed; blog summary is prefixed '[EXPIRED — this offer's open-by deadline of  |
+| `trustone-500-checking-2026` | eligibility / geography (stale) | False positive — and the flag points the WRONG direction. The catalog's MN/WI-only restriction (state_restricted:true, states_allowed [MN,WI]) is CORRECT and co |
+| `visions-fcu-500-checking-2026` | DD mechanic | Live DoC confirms the sourceTruth (DD must be 'payroll from employment, pension, or Social Security'; ACH pushes/transfers do not qualify). But the flag is a fa |
+| `bank-of-hawaii-400-checking-2026` | forfeiture/clawback | False positive. The blog does NOT omit the clawback — the blogContent.ts entry already lists in cons (line 1528): 'Must stay open 180 days or pay a $70 early-cl |
+| `addition-financial-400-checking-2026` | DD mechanic (single vs recurring) | The proposed fix is empty (no file/current/replacement text) and unactionable. More importantly, the live source does NOT show the blog is wrong. Addition Finan |
+| `travis-cu-475-checking-2026` | DD mechanic | The exclusions are REAL and source-confirmed (DoC: 'Person to person payments such as Zelle and other cash apps are not eligible for this offer' and 'Only new m |
+| `country-bank-400-checking-2026` | requirements (omitted debit/spend) | False positive. Live source (DoC) confirms: 'At least 12 debit card purchases, post and settle' for three consecutive statement cycles, e-statement enrollment,  |
+| `psecu-300-checking-2026` | repeatability (lifetime vs cooldown) | Flag points the wrong direction. DoC shows TWO limit clauses: (a) 'Limit (1) new member incentive bonus per tax identification number ... per rolling 12-month p |
+| `affinity-fcu-100-checking-referral` | DD mechanic / amount | Flag points the wrong direction — the catalog and blog are CORRECT. Affinity's own terms/referral pages (share.affinityfcu.org/zone/terms and affinityfcu.com/re |
+| `teachers-fcu-300-checking-smart26` | Windows (start deadline) / DD streak | False positive. The consecutive-streak / forfeiture requirement IS confirmed by live sources (must receive $1,000+ QDD each monthly statement cycle for 6 consec |
+| `arizona-financial-300-checking-2026` | DD mechanic | Rejected: no fix to apply and the human-readable text is already correct. The live source (Arizona Financial terms via DoC + bankbonus) confirms the DD is recur |
+| `municipal-cu-350-checking-2026` | comparison | The finding's premise is FALSE. It claims 'Broadview's catalog record erroneously stores bonus_amount 800' — but bonuses.ts line 2636 already shows bonus_amount |
+| `oregon-state-cu-300-checking-2026` | requirements | False positive. The blog already discloses the consecutive/multi-month DD streak: cons[1]='Requires 2 months of consistent $500 DD' and strategy='set up $500+ m |
+| `oregon-state-cu-300-checking-2026` | repeatability/expiration | Blog is likely CORRECT to present the offer as active; the flag points the wrong direction. Live oregonstatecu.com homepage still advertises 'Open a checking ac |
+| `cyprus-cu-300-checking-2026` | dd-mechanic | Flag is a false positive AND the finding proposed no fix text. The forfeiture/consecutive-streak risk IS already disclosed in this entry: cons says 'Requires 3  |
+| `our-credit-union-300-checking-2026` | Misleading comparison (reinforces the omission) | Live source (ourcuonline.org/premium300 + bankbonus.com search) confirms OUR CU's $300 Premium Checking DOES require 'recurring monthly direct deposit totaling  |
+| `our-credit-union-300-checking-2026` | Internal field contradiction (excerpt vs structured fields) | Live source confirms BOTH structured fields are correct: min_opening_deposit:300 (deposit-match, deposit $300 to get $300) AND min_direct_deposit_total:500 (rec |
+| `cornerstone-financial-300-checking-2026` | amount framing / payout mechanic | False positive. The prose already accurately frames the payout as a monthly reimbursement, not a lump sum. The summary reads: '$300 Simple Streaming Checking bo |
+| `bank-five-nine-300-checking-2026` | requirements | Live source confirms the payroll option: 'Three (3) of the following deposit types to post in at least three (3) consecutive months; payroll, government or pens |
+| `bankhometown-300-checking-2026` | internal-consistency | Source confirms the two thresholds are distinct: minimum direct deposit amount $25, minimum opening balance $10. But the current blog prose 'Very low DD thresho |
+| `unity-bank-300-checking-2026` | repeatability | Catalog data is CORRECT and needs no fix (false-positive flag). Live source (DoC via WebSearch, Unity Bank T&C) confirms: 'This offer is only available to custo |
+| `compass-community-250-checking-2026` | DD mechanic / debit spend | False positive — the catalog and blog text are CORRECT and source-confirmed. Compass CCU's own promotion page confirms: $250 bonus, direct deposit of '$750 or m |
+| `valley-strong-250-checking-2026` | DD mechanic | False positive. Live source (DoC/BankBonus search: 'During the first 90 days, make monthly direct deposits OR have an average of 12 credit/debit card transactio |
+| `california-credit-union-250-checking-2026` | DD amount | False positive. The official bank page ccu.com/echecking-offer/ confirms '$250' bonus and 'recurring Direct Deposit with a minimum of $400 per month' plus 'Thre |
+| `honor-credit-union-250-checking-2026` | requirements | FLAG POINTS WRONG DIRECTION. The catalog ($500 DD + 8 debit within 60 days) is CORRECT for the CURRENT live offer. Confirmed via WebSearch of the current honorc |
+| `associated-healthcare-250-checking-2026` | repeatability | No proposed catalog fix was provided (empty proposedReplacementText), and the finding is a prose-disclosure nitpick on an ALREADY-EXPIRED entry (catalog expired |
+| `valleystar-250-checking-2026` | windows | False positive. The live DoC source (and ValleyStar T&Cs) show TWO distinct windows, not a contradiction: the FIRST direct deposit must post 'within 90 days aft |
+| `georgias-own-240-checking-2026` | dd-mechanic/recurring | False positive with no proposed fix. Live source confirms the bonus IS ongoing monthly: '$20 each monthly statement cycle for up to 12 months' (= up to $240), e |
+| `cefcu-225-checking-2026` | tiering/balance-requirement | False positive, no proposed fix. Live CEFCU site + DoC confirm the base $200 balance path is 'minimum individual balance of $5,000 or minimum household balance  |
+| `valley-first-200-checking-2026` | DD mechanic | The live source confirms the offer requires an 'established direct deposit of $750/month or more' with the $200 posting 100 calendar days after account opening. |
+| `washington-trust-200-checking-2026` | live verification / staleness | The finding's conclusion ('offer likely no longer exists') is REFUTED by the live source. The bank's OWN landing page https://www.washtrust.com/free-checking (a |
+| `washington-trust-200-checking-2026` | eligibility/geography | False positive — the catalog/prose are already CORRECT. Live source confirms this is 'The Washington Trust Company,' headquartered in Westerly, RI (the RI Banco |
+| `people-first-fcu-200-checking-2026` | tiering | Flag is a false positive. Live sources (peoplefirst.com checking-offer-250 page, bankbonus.com, DoC, hustlermoneyblog, maximizingmoney) all confirm the CURRENT  |
+| `1st-advantage-200-checking-2026` | DD-mechanic | The DD-mechanic itself is source-accurate, so the flag as a factual DD error is rejected. Live source (1stadvantage.org/checkingoffer) confirms verbatim: 'one m |
+| `north-state-bank-200-checking-2026` | windows | False positive. The 90-180 delayed-qualification nuance is NOT lost: the catalog other_requirements_text already states verbatim '...1 direct deposit in a singl |
+| `pinnacle-bank-200-checking-2026` | internal-consistency | Not a wrong value. DoC (fetched) confirms the DD 'must be your full payroll or government benefits' — and the catalog raw_excerpt ALREADY captures this: 'DD (fu |
+| `flushing-bank-350-checking-2026` | internal-consistency | False positive. The finding claims the ddMethods '$300 DD-tier cap' conflicts with the $350 headline and that the prose omits the open ($10) + balance ($40) tie |
+| `berkshire-bank-300-checking-2026` | dd-mechanic | This finding asserts the catalog/blog CORRECTLY surface the mechanic, and the live source confirms every value: DoC states 'recurring direct deposits totaling $ |
+
+### ⏭️ Med skipped during apply (manual)
+- `redstone-fcu-600-checking-2026` (no-match)
+- `seacoast-400-checking-2026` (multi(4))
+- `us-bank-smartly-checking-450-2026` (multi(8))
+- `bankhometown-300-checking-2026` (multi(2))
+- `blaze-credit-union-200-checking-2026` (multi(2))
+
+### ❓ Med uncertain (unverifiable)
+- `blue-foundry-savings-2026` — expiration/deadline
+- `merrill-edge-brokerage-2026` — amount/tiering
+- `bar-harbor-400-checking-2026` — windows
+- `figfcu-250-high-yield-checking-ghycheck` — DD mechanic (count) / staleness
+- `keypoint-cu-300-money4me-nm26` — Windows (deposit window field)
+- `cornerstone-financial-300-checking-2026` — expiration/staleness
+- `america-first-250-checking-2026` — expiration/deadline
+- `commonwealth-central-200-checking-2026` — repeatability/eligibility
+- `commonwealth-central-200-checking-2026` — holding period / forfeiture

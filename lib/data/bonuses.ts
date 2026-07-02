@@ -1322,6 +1322,7 @@ export const bonuses: any[] = [
   {
     "id": "fifth-third-400-checking-2026",
     "bank_name": "Fifth Third Bank",
+    "expired": true,
     "product_type": "checking",
     "bonus_amount": 350,
     "cooldown_months": 13,
@@ -1435,7 +1436,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 3,
       "billpay_required": null,
-      "other_requirements_text": "Open new checking, complete $2,000-$5,000+ in DD within 90 days, and make 3 debit card purchases. Expires May 1, 2026."
+      "other_requirements_text": "Open new checking, complete $2,000-$5,000+ in DD within 90 days, and make 3 debit card purchases. Accounts must be opened by June 13, 2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -1444,7 +1445,7 @@ export const bonuses: any[] = [
       "states_allowed": ["AZ","CO","FL","IL","IN","KS","MO","NM","OK","TX"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New checking customers only. Use promo code LEVELUP1 (Foundation) or LEVELUP2 (Pillar)."
+      "eligibility_notes": "New checking customers only. Must be opened in-person at a Busey location. Only one offer per household. Not eligible if you had a Busey personal checking account closed within the preceding 12 months or ever received a prior checking incentive. Use promo code LEVELUP1 (Foundation) or LEVELUP2 (Pillar)."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
     "source_links": [
@@ -1505,7 +1506,7 @@ export const bonuses: any[] = [
       "direct_deposit_required": true,
       "min_direct_deposit_total": 12000,
       "min_direct_deposit_per_deposit": null,
-      "dd_count_required": null,
+      "dd_count_required": 3,
       "deposit_window_days": 120,
       "holding_period_days": null,
       "min_opening_deposit": null,
@@ -1686,7 +1687,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 5,
       "billpay_required": null,
-      "other_requirements_text": "Open new checking with DD or 5-10 qualifying transactions within 90 days. DD not strictly required if you meet transaction count."
+      "other_requirements_text": "Within 90 days: EITHER set up direct deposit PLUS 5+ check/debit/ACH transactions, OR (no DD) complete one of: 10 checks, 8 debit-card purchases, 5 ACH debits, or 3 bill-pay transactions. Direct deposit is not required."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -1790,7 +1791,7 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 600,
     "cooldown_months": null,
-    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 3000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Freestyle Checking. $3,000 DD in 90 days. Enter email for promo code. Must keep open 6 months. Expires June 30, 2026." },
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 3000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Freestyle Checking. $3,000 DD in 90 days. Enter email for promo code. Must keep open 6 months. Expires August 31, 2026." },
     "fees": { "monthly_fee": 10, "monthly_fee_waiver_text": "$10/mo waived with one client-initiated debit or credit transaction per statement cycle, or if account holder is under 18 or 64+.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": { "state_restricted": true, "states_allowed": ["AL","FL","LA","MO","TX"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only. Must keep open 6 months." },
@@ -1813,7 +1814,7 @@ export const bonuses: any[] = [
       { "bonus": 350, "min_dd_total": 1000 }
     ],
     "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 1000, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 90, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Personal Checking $200 for $500 DD. MyChoice Premium $350 for $1k DD. 90-day window." },
-    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee on MyWay Checking.", "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "EZChoice Checking is fee-free; MyWay Banking is $4.95/mo (waived with one transaction). MyChoice Premium (the $350 tier) carries a monthly fee unless $7,500+ avg daily balance.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": { "state_restricted": true, "states_allowed": ["CT","DC","DE","MD","NJ","NY","PA","VA","WV"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New M&T checking customers only." },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": null },
@@ -1841,7 +1842,7 @@ export const bonuses: any[] = [
     "product_type": "checking",
     "bonus_amount": 300,
     "cooldown_months": null,
-    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "$500 recurring DD within 60 days. No monthly fees. Live as of July 2026 (DoC best-bonuses list); DE/DC/MD/NJ/PA/VA, new customers only (no Fulton checking in past 24 months)." },
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 500, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 60, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "$300 requires the Relationship Banking account ($20/mo maintenance fee, waivable with $5,000 min daily balance + 1 transaction, or $25,000 combined balances) with a $500+ recurring DD within 60 days. The fee-free Simply Checking account only pays $200 (via $500 recurring DD OR 15 debit-card purchases totaling $300+). Live as of July 2026 (DoC best-bonuses list); DE/DC/MD/NJ/PA/VA, new customers only (no Fulton checking in past 24 months)." },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": { "state_restricted": true, "states_allowed": ["DE","DC","MD","NJ","PA","VA"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "New checking customers only." },
@@ -1990,7 +1991,7 @@ export const bonuses: any[] = [
   {
     "id": "dedham-savings-750-checking-2026",
     "bank_name": "Dedham Savings",
-    "expired": true,
+    "expired": false,
     "product_type": "checking",
     "bonus_amount": 750,
     "cooldown_months": null,
@@ -2046,7 +2047,7 @@ export const bonuses: any[] = [
     "expired": false,
     "product_type": "checking",
     "bonus_amount": 500,
-    "expiration_date": "2026-06-30",
+    "expiration_date": "2026-09-30",
     "offer_verified_at": "2026-06-12",
     "cooldown_months": 24,
     "tiers": [
@@ -2106,7 +2107,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 90,
+      "deposit_window_days": 30,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
@@ -2210,7 +2211,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "first-commonwealth-400-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "First Commonwealth Bank",
     "product_type": "checking",
     "bonus_amount": 400,
@@ -2372,7 +2373,7 @@ export const bonuses: any[] = [
     "source_links": [
       "https://www.doctorofcredit.com/tx-la-credit-human-300-checking-bonus/"
     ],
-    "raw_excerpt": "$300 checking bonus with 2x $250 DD + 10 debit purchases of $10+ in 90 days. Promo code CheckingPromo2026. Nationwide."
+    "raw_excerpt": "$300 checking bonus with 2x $250 DD + 10 debit purchases of $10+ in 90 days. Promo code CheckingPromo2026. Geo-limited to San Antonio TX, Houston TX, New Orleans LA and surrounding areas."
   },
   {
     "id": "bank-of-hawaii-400-checking-2026",
@@ -2552,7 +2553,7 @@ export const bonuses: any[] = [
       "states_allowed": ["PA"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Pennsylvania residents only. Promo code SWITCH. New members only."
+      "eligibility_notes": "Pennsylvania residents only. Promo code 412. New members only."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": 365 },
     "source_links": [
@@ -2563,7 +2564,6 @@ export const bonuses: any[] = [
   },
   {
     "id": "penn-community-400-checking-2026",
-    "expired": true,
     "bank_name": "Penn Community Bank",
     "product_type": "checking",
     "bonus_amount": 400,
@@ -2646,7 +2646,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open Free Checking with $1000 DD within 60 days. Expires May 26, 2026."
+      "other_requirements_text": "Open Free Checking with $1000 DD within 45 days. Expires May 14, 2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee on Free Checking.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -2655,7 +2655,7 @@ export const bonuses: any[] = [
       "states_allowed": ["NY"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "New York residents only. New members only. Expires May 26, 2026."
+      "eligibility_notes": "New York residents only. New members only. Expires May 14, 2026."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
     "source_links": [
@@ -2672,9 +2672,9 @@ export const bonuses: any[] = [
     "bonus_amount": 350,
     "cooldown_months": null,
     "tiers": [
-      { "bonus": 150, "min_dd_total": 3000 },
-      { "bonus": 250, "min_dd_total": 6000 },
-      { "bonus": 350, "min_dd_total": 9000 }
+      { "bonus": 150, "min_dd_total": 1000 },
+      { "bonus": 250, "min_dd_total": 2000 },
+      { "bonus": 350, "min_dd_total": 3000 }
     ],
     "requirements": {
       "direct_deposit_required": true,
@@ -2704,7 +2704,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "independent-bank-350-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "Independent Bank",
     "product_type": "checking",
     "bonus_amount": 350,
@@ -2770,7 +2770,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "bar-harbor-400-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "Bar Harbor Bank and Trust",
     "product_type": "checking",
     "bonus_amount": 400,
@@ -2807,7 +2807,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "provident-cu-475-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "Provident Credit Union",
     "product_type": "checking",
     "bonus_amount": 475,
@@ -2923,7 +2923,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Open checking with promo code 25SUMMERBONUS. Make $500 DD within 60 days."
+      "other_requirements_text": "Open a free checking account (within FCU's 48-county field of membership) with the required $5 opening deposit. Make $500 cumulative direct deposit within the first 60 days. Account must stay open and in good standing 90 days for the bonus to post."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -2932,7 +2932,7 @@ export const bonuses: any[] = [
       "states_allowed": ["FL"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Florida residents only. Promo code 25SUMMERBONUS. New members only."
+      "eligibility_notes": "Open to anyone within Florida Credit Union's 48-county field of membership (not all of Florida). One bonus per household; anyone who has held an FCU checking account in the past 24 months does not qualify. New members only."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": null },
     "source_links": [
@@ -3116,7 +3116,7 @@ export const bonuses: any[] = [
     "bank_name": "Community State Bank",
     "product_type": "checking",
     "bonus_amount": 400,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": null,
@@ -3130,7 +3130,7 @@ export const bonuses: any[] = [
       "billpay_required": null,
       "other_requirements_text": "Open Edge Checking with $100 initial deposit. Make 2 DD + 15 debit transactions within 90 days."
     },
-    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee on Edge Checking.", "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee on Edge Checking.", "early_closure_fee": 30, "early_closure_fee_text": "$30 early closing fee if the Edge Checking account is closed within 90 calendar days of opening, regardless of bonus qualification." },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": {
       "state_restricted": true,
@@ -3161,7 +3161,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 5,
       "billpay_required": null,
-      "other_requirements_text": "Open checking with $500 recurring DD + 5 debit purchases per cycle within 60 days."
+      "other_requirements_text": "Must open the checking account IN BRANCH (Indiana branches only; not available online this cycle). Set up $500 recurring DD + 5 debit purchases per statement cycle within 60 days. Opt in to e-Statements. Existing STAR clients not eligible; limit one per household."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -3516,7 +3516,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "carter-bank-300-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "Carter Bank & Trust",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3549,7 +3549,6 @@ export const bonuses: any[] = [
   },
   {
     "id": "bmi-fcu-300-checking-2026",
-    "expired": true,
     "bank_name": "BMI FCU",
     "product_type": "checking",
     "bonus_amount": 300,
@@ -3632,7 +3631,7 @@ export const bonuses: any[] = [
       "billpay_required": null,
       "other_requirements_text": "Free Checking. Promo code CKPR. $2,000 monthly DD within 90 days ($6,000 total). 15 debit card purchases within 90 days."
     },
-    "fees": { "monthly_fee": 4, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": {
       "state_restricted": true,
@@ -3849,15 +3848,13 @@ export const bonuses: any[] = [
   },
   {
     "id": "tbk-bank-275-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "TBK Bank",
     "product_type": "checking",
     "bonus_amount": 275,
     "cooldown_months": null,
     "tiers": [
-      { "bonus": 100, "min_dd_total": 36000 },
-      { "bonus": 150, "min_dd_total": 36000 },
-      { "bonus": 275, "min_dd_total": 36000 }
+      { "bonus": 100, "min_dd_total": 12000 }
     ],
     "requirements": {
       "direct_deposit_required": true,
@@ -3887,7 +3884,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "point-breeze-275-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "Point Breeze Credit Union",
     "product_type": "checking",
     "bonus_amount": 275,
@@ -3970,7 +3967,7 @@ export const bonuses: any[] = [
       "billpay_required": null,
       "other_requirements_text": "Tiered bonus: $150 base for opening with debit card, +$50 for recurring ACH DD of $500+/month within 60 days, +up to $50 more for additional activity."
     },
-    "fees": { "monthly_fee": 20, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
+    "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
     "eligibility": {
       "state_restricted": true,
@@ -4100,7 +4097,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 20,
       "billpay_required": null,
-      "other_requirements_text": "Requires $400+ monthly e-deposits, 20+ debit/credit purchases per month, and Advantage Plus status. Ongoing monthly qualification."
+      "other_requirements_text": "Requires $400+ monthly e-deposits, 20+ debit/credit purchases, and Advantage Plus status met ONCE within the first 90 days of membership. Not an ongoing requirement."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -4132,7 +4129,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 8,
       "billpay_required": null,
-      "other_requirements_text": "Requires $500 DD + 8 debit card purchases within 60 days. Hard credit pull required. Free checking account."
+      "other_requirements_text": "Requires $500 DD + 8 debit card purchases within 60 days. Account must remain open and maintain a positive balance for at least 90 days or the $250 bonus is withdrawn. Hard credit pull required. Free checking account."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": true, "soft_pull": false, "screening_notes": "Hard credit pull required." },
@@ -4201,7 +4198,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Requires $500+ direct deposits AND $500+ debit card spending within 60 days."
+      "other_requirements_text": "Requires $500+ qualifying direct deposits AND $500+ in debit card purchases within 60 days (and $500 deposits + $500 debit purchases each month thereafter to avoid the $5 service fee). Must enroll in eStatements."
     },
     "fees": { "monthly_fee": 5, "monthly_fee_waiver_text": "$5/mo service fee applies in any month you do not meet the qualifications ($500+ electronic deposits AND $500+ combined net debit/credit purchases).", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -4210,7 +4207,7 @@ export const bonuses: any[] = [
       "states_allowed": ["NC", "SC"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Available in NC and SC. New members only."
+      "eligibility_notes": "Available in NC and SC. New members only — cannot have had an open REV checking account within the last 12 months."
     },
     "timeline": { "bonus_posting_days_est": 60, "must_remain_open_days": 180 },
     "source_links": ["https://www.revfcu.com/"],
@@ -4383,7 +4380,7 @@ export const bonuses: any[] = [
   },
   {
     "id": "cefcu-225-checking-2026",
-    "expired": true,
+    "expired": false,
     "bank_name": "CEFCU",
     "product_type": "checking",
     "bonus_amount": 225,
@@ -4710,7 +4707,7 @@ export const bonuses: any[] = [
       "states_allowed": ["KS"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "Kansas residents only. Must be educator or healthcare SEG member. New members only."
+      "eligibility_notes": "Membership open to anyone who lives, works, or is paid in 43+ Kansas counties (Johnson, Sedgwick, Shawnee, Wyandotte, Douglas, etc.), family of a member, or via free American Consumer Council enrollment — NOT restricted to educators/healthcare. New members only."
     },
     "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null },
     "source_links": ["https://www.cuofamerica.com/"],
@@ -4734,7 +4731,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": 6,
       "billpay_required": null,
-      "other_requirements_text": "Simply FREE or NOW Checking. In-branch opening. 6 debit purchases within 60 days + recurring DD maintained for 3 months."
+      "other_requirements_text": "Simply FREE Checking. DD established within 60 days and maintained EACH monthly cycle for a full year. 6 debit purchases per monthly cycle OR $1,000 VISA Platinum spend in 3 months. Online banking + eStatements. $100 clawback if not met in 12 months."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -4762,11 +4759,11 @@ export const bonuses: any[] = [
       "dd_count_required": null,
       "deposit_window_days": 60,
       "holding_period_days": null,
-      "min_opening_deposit": null,
+      "min_opening_deposit": 100,
       "min_balance": null,
       "debit_transactions_required": 6,
       "billpay_required": null,
-      "other_requirements_text": "Requires direct deposit or automatic payment (any amount) plus 6 debit card purchases within 60 days. Free account."
+      "other_requirements_text": "$100 minimum opening deposit required. Requires direct deposit or automatic payment (any amount) plus 6 debit card purchases within 60 days. Free account."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": "No monthly fee.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Low ChexSystems sensitivity." },
@@ -4927,7 +4924,7 @@ export const bonuses: any[] = [
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": 300,
+      "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
       "deposit_window_days": null,
@@ -5249,7 +5246,7 @@ export const bonuses: any[] = [
       "min_balance": 150000,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "HSBC Premier Relationship offer — four tiers: $1,500 bonus for $150K-$249K new money deposited/invested, $2,500 for $250K-$499K, $3,500 for $500K-$999K, and $5,000 for $1M+. No direct deposit requirement; balance-based. Funds must be net-new to HSBC. Fund by June 30, 2026 and hold through that date. Offer enrollment closes March 31, 2026."
+      "other_requirements_text": "HSBC Premier Relationship offer — four tiers: $1,500 bonus for $150K-$249K new money deposited/invested, $2,500 for $250K-$499K, $3,500 for $500K-$999K, and $5,000 for $1M+. No direct deposit requirement; balance-based. Funds must be net-new to HSBC. New promotional offer that began July 1, 2026. Premier checking account must be open by June 30, 2026; add qualifying new deposits by August 31, 2026 and MAINTAIN those balances through November 30, 2026. Bonus paid by February 15, 2027."
     },
     "fees": { "monthly_fee": 50, "monthly_fee_waiver_text": "Waived with $75,000+ in combined U.S. Dollar personal deposit + investment balances OR $5,000/mo in third-party recurring direct deposits.", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": "Verified 2026-04 from DoC + us.hsbc.com Premier Relationship offer page. Previous entry was stale: had a non-existent $600 tier at $75K and incorrectly marked DD as required. HSBC Premier is balance-qualified, not DD-qualified." },
@@ -5279,13 +5276,13 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": 500,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 60,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Military eligible only. Direct deposit required."
+      "other_requirements_text": "Military eligible only. Qualifying direct deposit of $500+ must post within 90 calendar days after account opening."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5365,8 +5362,8 @@ export const bonuses: any[] = [
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
-      "lifetime_language": true,
-      "eligibility_notes": "Membership required (join via NASA FCU membership path). One bonus per member per year; may require existing membership per recent DoC update."
+      "lifetime_language": false,
+      "eligibility_notes": "Membership required (join via NASA FCU membership path). One bonus per member per year (annual limit, not lifetime); may require existing membership per recent DoC update."
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
@@ -5439,8 +5436,8 @@ export const bonuses: any[] = [
       "state_restricted": false,
       "states_allowed": ["Nationwide (U.S.)"],
       "states_excluded": [],
-      "lifetime_language": true,
-      "eligibility_notes": "Business checking. New BlueVine business checking customers only."
+      "lifetime_language": false,
+      "eligibility_notes": "Business checking. New BlueVine business checking customers only. New-customer terms: has NOT had a Bluevine Business Checking account open in the last 12 months (12-month cooldown, not once-per-lifetime)."
     },
     "timeline": { "bonus_posting_days_est": 30, "must_remain_open_days": 150 },
     "source_links": [
@@ -5608,7 +5605,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": 500,
       "dd_count_required": 1,
-      "deposit_window_days": 90,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
@@ -5643,13 +5640,13 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": 1500,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": 45,
-      "holding_period_days": null,
+      "deposit_window_days": 150,
+      "holding_period_days": 180,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Northeastern PA only. See Fidelity Bank for full details."
+      "other_requirements_text": "Northeastern PA only. Core bonus requires $3,000/month in direct deposits (or recurring credits) for 3 consecutive months, completed within 150 calendar days of account opening. Early termination fee applies if the account is closed within 180 days. See Fidelity Bank for full details."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5679,7 +5676,7 @@ export const bonuses: any[] = [
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
@@ -5772,7 +5769,7 @@ export const bonuses: any[] = [
       "https://www.wecu.com/offer/",
       "https://www.doctorofcredit.com/wa-only-wecu-250-checking-bonus/"
     ],
-    "raw_excerpt": "WECU $250 checking bonus. WA only. Direct deposit required."
+    "raw_excerpt": "WECU $400 checking bonus. WA only. Direct deposit required."
   },
   {
     "id": "country-bank-400-checking-2026",
@@ -5825,7 +5822,7 @@ export const bonuses: any[] = [
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Lake & Porter County, IN only."
+      "other_requirements_text": "$500+ in aggregate ACH deposits each month for two months within 90 days of opening (counts as direct deposit), plus 10 member-initiated transactions, a debit card on the account, and paperless statement enrollment. Lake & Porter County, IN only. Bonus clawed back if closed within 6 months. Offer valid through 12/31/2026."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5870,7 +5867,7 @@ export const bonuses: any[] = [
       "states_allowed": ["NY", "NJ"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "State restricted: NY, NJ. New Flushing Bank checking customers only."
+      "eligibility_notes": "State restricted: NY, NJ; in-branch only. New Flushing Bank checking customers only. New money only. One bonus per household."
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
@@ -5886,16 +5883,16 @@ export const bonuses: any[] = [
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 1000,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 90,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "Set up recurring external direct deposits or ACH transfers totaling $1,000 or more that post within a single calendar month and within 90 days of account opening (e.g. two $500 paychecks in the same month qualifies). Transfers between your own Frontwave accounts do not count. Open checking AND savings the same day and enroll in eStatements; account must stay open 6 months or the bonus is forfeited."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -5918,6 +5915,8 @@ export const bonuses: any[] = [
     "bank_name": "PeoplesBank (Bankatpeoples)",
     "product_type": "checking",
     "bonus_amount": 350,
+    "expiration_date": "2026-06-30",
+    "offer_verified_at": "2026-07-01",
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
@@ -6027,16 +6026,16 @@ export const bonuses: any[] = [
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
-      "min_direct_deposit_total": null,
+      "min_direct_deposit_total": 500,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "Receive $500+ in qualifying direct deposits (payroll, pension, or government benefits) within 60 calendar days of account opening. Person-to-person and bank transfers do not count."
     },
     "fees": { "monthly_fee": 5, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6047,7 +6046,7 @@ export const bonuses: any[] = [
       "lifetime_language": true,
       "eligibility_notes": "State restricted: ME, NH. New Camden National checking customers only."
     },
-    "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 90, "must_remain_open_days": null, "payout_conditions_text": "$300 is deposited within 90 calendar days of the qualifying deposit. Account must be open, active and not overdrawn at the time the bonus is paid." },
     "source_links": [
       "https://www.doctorofcredit.com/me-nh-camden-national-bank-300-checking-bonus-2/"
     ],
@@ -6129,20 +6128,20 @@ export const bonuses: any[] = [
     "expired": true,
     "bank_name": "Sacramento Credit Union",
     "product_type": "checking",
-    "bonus_amount": 200,
+    "bonus_amount": 300,
     "cooldown_months": null,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": null,
       "min_direct_deposit_per_deposit": null,
       "dd_count_required": null,
-      "deposit_window_days": null,
+      "deposit_window_days": 60,
       "holding_period_days": null,
       "min_opening_deposit": null,
       "min_balance": null,
       "debit_transactions_required": null,
       "billpay_required": null,
-      "other_requirements_text": "Direct deposit required."
+      "other_requirements_text": "A direct deposit (electronic payroll, pension, or government benefits) must post to the new checking account by day 60 after account opening."
     },
     "fees": { "monthly_fee": 0, "monthly_fee_waiver_text": null, "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "low", "hard_pull": false, "soft_pull": true, "screening_notes": null },
@@ -6151,13 +6150,13 @@ export const bonuses: any[] = [
       "states_allowed": ["CA"],
       "states_excluded": [],
       "lifetime_language": true,
-      "eligibility_notes": "State restricted: CA. New Sacramento CU checking customers only."
+      "eligibility_notes": "State restricted: CA (El Dorado, Placer, Sacramento, Solano, Sutter, Yolo, Yuba counties). New Sacramento CU checking customers only. A one-time $5 membership fee is required to join the credit union (separate from the $0 monthly account fee)."
     },
     "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
     "source_links": [
       "https://www.doctorofcredit.com/ca-only-sacramento-credit-union-150-checking-bonus/"
     ],
-    "raw_excerpt": "Sacramento Credit Union $200 checking bonus. CA only. Direct deposit required."
+    "raw_excerpt": "Sacramento Credit Union $300 checking bonus. CA only. Direct deposit required."
   },
   {
     "id": "unitus-cu-300-checking-2026",
@@ -6165,7 +6164,7 @@ export const bonuses: any[] = [
     "bank_name": "Unitus Community Credit Union",
     "product_type": "checking",
     "bonus_amount": 300,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": null,
@@ -6200,7 +6199,7 @@ export const bonuses: any[] = [
     "bank_name": "AllTru Credit Union",
     "product_type": "checking",
     "bonus_amount": 300,
-    "cooldown_months": null,
+    "cooldown_months": 12,
     "requirements": {
       "direct_deposit_required": true,
       "min_direct_deposit_total": 1000,
@@ -6223,7 +6222,7 @@ export const bonuses: any[] = [
       "lifetime_language": true,
       "eligibility_notes": "Field of membership: must live, work, or worship in St. Charles County, St. Louis County, or St. Louis City, Missouri (not statewide MO). New AllTru CU checking customers only."
     },
-    "timeline": { "bonus_posting_days_est": null, "must_remain_open_days": null },
+    "timeline": { "bonus_posting_days_est": 15, "must_remain_open_days": null },
     "source_links": [
       "https://alltrucu.org/checking/personal-checking/",
       "https://www.alltrucu.com/"
@@ -6452,9 +6451,9 @@ export const bonuses: any[] = [
     "bonus_amount": 300,
     "cooldown_months": null,
     "tiers": [
-      { "bonus": 300, "min_dd_total": 100 }
+      { "bonus": 300, "min_dd_total": null }
     ],
-    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": 100, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 30, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Qualifying direct deposit + active debit card use within 30 days. Spring personal checking offer. Expires June 28, 2026." },
+    "requirements": { "direct_deposit_required": true, "min_direct_deposit_total": null, "min_direct_deposit_per_deposit": null, "dd_count_required": null, "deposit_window_days": 30, "holding_period_days": null, "min_opening_deposit": null, "min_balance": null, "debit_transactions_required": null, "billpay_required": null, "other_requirements_text": "Qualifying direct deposit + active debit card use within 30 days. Spring personal checking offer. Expires June 28, 2026." },
     "fees": { "monthly_fee": 15, "monthly_fee_waiver_text": "Access Checking $15/mo waived with qualifying DD + active debit use. Preferred and Prime tiers have $25/mo with balance-based waivers ($1,500 / $2,500).", "early_closure_fee": 0 },
     "screening": { "chex_sensitive": "unknown", "hard_pull": false, "soft_pull": true, "screening_notes": "Standard verification reported." },
     "eligibility": { "state_restricted": true, "states_allowed": ["CT"], "states_excluded": [], "lifetime_language": false, "eligibility_notes": "Connecticut residents only. New Ascend Bank checking customers." },

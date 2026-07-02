@@ -273,7 +273,7 @@ export const savingsBonuses: SavingsBonus[] = [
       state_restricted: true,
       states_allowed: ["FL"],
       lifetime_language: true,
-      eligibility_notes: "Florida residents only. New savings customers only. In-branch only. Promo code SWITCH600. Pairs with $400 Premium Checking bonus for $600 total."
+      eligibility_notes: "Florida residents only. New savings customers only. In-branch only. Promo code CON600. Pairs with $400 Premium Checking bonus for $600 total."
     },
     source_links: [
       "https://www.seacoastbank.com/switch600",
@@ -512,7 +512,7 @@ export const savingsBonuses: SavingsBonus[] = [
     source_links: ["https://www.us.hsbc.com/savings-accounts/",
       "https://www.doctorofcredit.com/hsbc-1500-7000-checking-bonus/"
     ],
-    raw_excerpt: "HSBC up to $7,000 savings bonus. Tiered from $10k-$500k. 4.1% APY. Premier relationship may be required.",
+    raw_excerpt: "HSBC Premier up to $5,000 bonus. Tiered $150k-$1M new money ($1,500/$2,500/$3,500/$5,000). ~3.3% conditional APY. Premier relationship required ($50/mo fee).",
   },
   {
     id: "moomoo-cash-sweep-2026",
@@ -593,7 +593,7 @@ export const savingsBonuses: SavingsBonus[] = [
     source_links: ["https://www.raisin.com/",
       "https://www.doctorofcredit.com/raisin-up-to-200-savings-bonus-referral-savebetter/"
     ],
-    raw_excerpt: "Raisin up to $1,500 savings bonus. 4.3% APY. Tiered: $100/$500/$1,000/$1,500. Stackable with TopCashback.",
+    raw_excerpt: "Raisin up to $1,500 savings bonus. 4.3% APY. Tiered: $70/$175/$350/$750/$1,500. Stackable with TopCashback.",
     notes: "Stackable with TopCashback for additional cashback on deposit."
   },
   // ─── BROKERAGE BONUSES ────────────────────────────────────────
@@ -1447,7 +1447,7 @@ export const savingsBonuses: SavingsBonus[] = [
       states_allowed: ["OH", "MI", "IN", "PA", "KY", "WV", "IL", "CO", "MN", "SC", "WI", "NC", "TX"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "New business checking customers only. State restricted. Apply by June 28, 2026 (confirmed live on huntington.com 2026-06-26). Monthly fee NOT waivable at the bonus deposit: the $400 tier opens Unlimited Business Checking ($20/mo, waived only at a $10k total deposit-relationship balance) and the $1,000 tier opens Unlimited Plus ($40/mo, waived only at $50k) — neither the $5k nor the $20k deposit clears its threshold (the cash bonus doesn't count), so plan on paying the monthly fee through the hold.",
+      eligibility_notes: "New business checking customers only. State restricted. Apply by October 14, 2026 (extended; confirmed live on huntington.com 2026-07-01). Monthly fee NOT waivable at the bonus deposit: the $400 tier opens Unlimited Business Checking ($20/mo, waived only at a $10k total deposit-relationship balance) and the $1,000 tier opens Unlimited Plus ($40/mo, waived only at $50k) — neither the $5k nor the $20k deposit clears its threshold (the cash bonus doesn't count), so plan on paying the monthly fee through the hold.",
     },
     source_links: [
       "https://www.huntington.com/business-banking-promotions-offers",
@@ -1478,13 +1478,13 @@ export const savingsBonuses: SavingsBonus[] = [
       states_allowed: ["CT", "DC", "DE", "MD", "NJ", "NY", "PA", "VA", "WV"],
       states_excluded: [],
       lifetime_language: true,
-      eligibility_notes: "New business checking customers only. Balance-based tiers measured in the 3rd month. State restricted: CT, DC, DE, MD, NJ, NY, PA, VA, WV. Expires June 30, 2026. Monthly fee waived: the bonus opens Business Essential ($5/mo, waived at $1k avg ledger), Plus ($15/mo at $7.5k), or Premium ($25/mo at $10k) — pick the account whose threshold your deposit clears (same avg-ledger metric as the bonus); also auto-waived the first 3 months, which covers the hold.",
+      eligibility_notes: "New business checking customers only. Balance-based tiers measured in the 3rd month. State restricted: CT, DC, DE, MD, NJ, NY, PA, VA, WV. Expires September 30, 2026. Monthly fee waived: the bonus opens Business Essential ($5/mo, waived at $1k avg ledger), Plus ($15/mo at $7.5k), or Premium ($25/mo at $10k) — pick the account whose threshold your deposit clears (same avg-ledger metric as the bonus); also auto-waived the first 3 months, which covers the hold.",
     },
     source_links: [
       "https://campaigns.mtb.com/bizbonus",
       "https://www.doctorofcredit.com/mt-bank-1500-business-checking-bonus/",
     ],
-    raw_excerpt: "M&T business checking bonus up to $1,500, balance-based tiers measured in the 3rd month. State restricted. Expires June 30, 2026.",
+    raw_excerpt: "M&T business checking bonus up to $1,500, balance-based tiers measured in the 3rd month. State restricted. Expires September 30, 2026.",
     business: true,
     notes: "Balance-hold business checking bonus (no DD). base_apy set 0.",
   },
