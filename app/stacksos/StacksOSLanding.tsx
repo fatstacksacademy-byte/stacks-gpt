@@ -322,27 +322,8 @@ export default function StacksOSLanding({ loggedInEmail }: { loggedInEmail: stri
         </div>
       </section>
 
-      {/* ── DEMO VIDEO ── */}
-      <section className="lp-section" style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", margin: "0 0 8px" }}>
-          See it in action
-        </h2>
-        <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 28px" }}>A 90-second look at how Stacks OS works.</p>
-        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
-          <iframe
-            src="https://www.youtube.com/embed/lVsb8fMmuDc"
-            title="Stacks OS — 90-second overview"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-          />
-        </div>
-        <p style={{ fontSize: 14, margin: "16px 0 0" }}>
-          <a href="https://youtu.be/vJcZPt2KWY8" target="_blank" rel="noopener noreferrer" style={{ color: "#34d399", fontWeight: 600, textDecoration: "none" }}>
-            Want the full tour? Watch the complete walkthrough →
-          </a>
-        </p>
-      </section>
+      {/* Demo video removed until a better recording is ready — the product
+          screenshots below carry "see it in action" for now. */}
 
       {/* ── SCREENSHOTS: checking + savings ── */}
       <section className="lp-section" style={{ maxWidth: 1000, margin: "0 auto" }}>
